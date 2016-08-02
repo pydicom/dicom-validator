@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xl="http://www.w3.org/1999/xlink" label="PS3.4" version="5.0" xml:id="PS3.4">
+  <title>PS3.4</title>
+  <subtitle>DICOM PS3.4 2016c - Service Class Specifications</subtitle>
+  <info>
+    <author>
+      <orgname>DICOM Standards Committee</orgname>
+    </author>
+    <copyright>
+      <year>2016</year>
+      <holder>NEMA</holder>
+    </copyright>
+  </info>
+  <chapter label="" status="1" xml:id="chapter_Notice">
+    <title>Notice and Disclaimer</title>
+    <para xml:id="para_b4dcb149-31bc-43e7-b80f-0a9bc5774a1d">The information in this publication was considered technically sound by the consensus of
+      persons engaged in the development and approval of the document at the time it was developed.
+      Consensus does not necessarily mean that there is unanimous agreement among every person
+      participating in the development of this document.</para>
+    <para xml:id="para_b1071725-dd18-4a83-9916-fba998566b53">NEMA standards and guideline publications, of which the document contained herein is one,
+      are developed through a voluntary consensus standards development process. This process brings
+      together volunteers and/or seeks out the views of persons who have an interest in the topic
+      covered by this publication. While NEMA administers the process and establishes rules to
+      promote fairness in the development of consensus, it does not write the document and it does
+      not independently test, evaluate, or verify the accuracy or completeness of any information or
+      the soundness of any judgments contained in its standards and guideline publications.</para>
+    <para xml:id="para_7dc2350c-56cc-4c26-b328-6fbf728f476a">NEMA disclaims liability for any personal injury, property, or other damages of any nature
+      whatsoever, whether special, indirect, consequential, or compensatory, directly or indirectly
+      resulting from the publication, use of, application, or reliance on this document. NEMA
+      disclaims and makes no guaranty or warranty, expressed or implied, as to the accuracy or
+      completeness of any information published herein, and disclaims and makes no warranty that the
+      information in this document will fulfill any of your particular purposes or needs. NEMA does
+      not undertake to guarantee the performance of any individual manufacturer or seller's products
+      or services by virtue of this standard or guide.</para>
+    <para xml:id="para_8501a6f6-9474-4871-a2f1-5e1abcff1d24">In publishing and making this document available, NEMA is not undertaking to render
+      professional or other services for or on behalf of any person or entity, nor is NEMA
+      undertaking to perform any duty owed by any person or entity to someone else. Anyone using
+      this document should rely on his or her own independent judgment or, as appropriate, seek the
+      advice of a competent professional in determining the exercise of reasonable care in any given
+      circumstances. Information and other standards on the topic covered by this publication may be
+      available from other sources, which the user may wish to consult for additional views or
+      information not covered by this publication.</para>
+    <para xml:id="para_10f80947-f555-44fa-a926-2320e6e66f2b">NEMA has no power, nor does it undertake to police or enforce compliance with the contents
+      of this document. NEMA does not certify, test, or inspect products, designs, or installations
+      for safety or health purposes. Any certification or other statement of compliance with any
+      health or safety-related information in this document shall not be attributable to NEMA and is
+      solely the responsibility of the certifier or maker of the statement.</para>
+  </chapter>
+  <chapter label="B" status="1" xml:id="chapter_B">
+    <title>Storage Service Class (Normative)</title>
+    <section label="B.5" status="2" xml:id="sect_B.5">
+      <title>Standard SOP Classes</title>
+      <para xml:id="para_31132281-abf4-449c-bba6-9e5508758d41">The SOP Classes in the Storage Service Class identify the Composite IODs to be stored. <xref linkend="table_B.5-1" xrefstyle="select: label"/> identifies Standard SOP Classes.</para>
+      <table frame="box" label="B.5-1" rules="all" xml:id="table_B.5-1">
+        <caption>Standard SOP Classes</caption>
+        <thead>
+          <tr valign="top">
+            <th align="center" colspan="1" rowspan="1">
+              <para xml:id="para_d5ac09f7-fad0-454d-ae01-98de6af5e14f">
+                <emphasis role="bold">SOP Class Name</emphasis>
+              </para>
+            </th>
+            <th align="center" colspan="1" rowspan="1">
+              <para xml:id="para_873bad43-46ef-4569-afca-d49dafa57b07">
+                <emphasis role="bold">SOP Class UID</emphasis>
+              </para>
+            </th>
+            <th align="center" colspan="1" rowspan="1">
+              <para xml:id="para_faee907c-fdfc-4e5a-ba41-631a1b2e811f">
+                <emphasis role="bold">IOD Specification (defined in <olink targetdoc="PS3.3" targetptr="PS3.3" xrefstyle="select: labelnumber"/>)</emphasis>
+              </para>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_b36d51e9-9fd3-4593-a9b0-6332de3c743d">CT Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_07b2f960-d45e-4a17-96c4-0b33711eb872">1.2.840.10008.5.1.4.1.1.2</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_43fc0a5b-3b04-41c5-8237-7f97488cdfb1">
+                <olink targetdoc="PS3.3" targetptr="sect_A.3" xrefstyle="select: title"/>
+              </para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_db88ae8c-4f26-41b0-a303-d75b19126b00">MR Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_2b482f97-8281-4845-bcf6-885aef4286e2">1.2.840.10008.5.1.4.1.1.4</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_e50d22ac-7033-4927-90a8-53137e6c75f5">
+                <olink targetdoc="PS3.3" targetptr="sect_A.4" xrefstyle="select: title"/>
+              </para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_7aab7019-9964-4e56-a3ac-cd7eadc737fd">RT Dose Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_7480266b-aac9-4d63-b348-0ecde92d71ef">1.2.840.10008.5.1.4.1.1.481.2</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_17941784-db43-480a-a772-e6dadf5792ab">
+                <olink targetdoc="PS3.3" targetptr="sect_A.18" xrefstyle="select: title"/>
+              </para>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <note>
+        <para xml:id="para_df400ae0-f4f4-4df6-9d09-99a74e2d6bf5">The Generic Implant Template Storage, Implant Assembly Template Storage, and Implant Template Group Storage SOP Classes were formerly specified in this table, incorrectly since they do not use the Patient / Study / Series / Instance information model. Those have been consolidated into the Non-Patient Object Storage Service Class (see <xref linkend="chapter_GG" xrefstyle="template: Annex %n"/>).</para>
+      </note>
+    </section>
+    <section label="B.6" status="2" xml:id="sect_B.6">
+      <title>Retired Standard SOP Classes</title>
+      <para xml:id="para_2503d5df-9191-40d8-995e-cd6077bb3535">The SOP Classes in <xref linkend="table_B.6-1" xrefstyle="select: label"/> were defined in previous versions of the DICOM Standard. They are now retired and have been replaced by new standard SOP Classes shown in <xref linkend="table_B.5-1" xrefstyle="select: label"/>.</para>
+      <note>
+        <para xml:id="para_ce7d3267-faad-4c5a-a1a3-c70b1d97ea76">Usage of the retired SOP Classes is permitted by DICOM. However, new implementations are strongly encouraged to implement the newer SOP Classes.</para>
+      </note>
+      <table frame="box" label="B.6-1" rules="all" xml:id="table_B.6-1">
+        <caption>Retired Standard SOP Classes</caption>
+        <thead>
+          <tr valign="top">
+            <th align="center" colspan="1" rowspan="1">
+              <para xml:id="para_b0a8210f-f63a-44b2-86a7-f8b7d9894df6">
+                <emphasis role="bold">SOP Class Name</emphasis>
+              </para>
+            </th>
+            <th align="center" colspan="1" rowspan="1">
+              <para xml:id="para_8fd688e2-1ec8-499a-a561-747b4adadccc">
+                <emphasis role="bold">SOP Class UID</emphasis>
+              </para>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_166d0955-aa7b-492a-b6a7-0bd5d0ab23d7">Nuclear Medicine Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_ffe3aba6-a6b6-4f4e-a1fc-ba19a51cfd70">1.2.840.10008.5.1.4.1.1.5</para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_53fcbab9-3f48-4d31-a3d3-606ae76a4a0a">Ultrasound Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_b3accfe8-de55-494d-8ed9-917c978eba2c">1.2.840.10008.5.1.4.1.1.6</para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_f1ccd571-d9f3-4690-bcc2-0b2404b2d41b">Ultrasound Multi-frame Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_21613a02-5c2e-4a4f-980f-96d3df618309">1.2.840.10008.5.1.4.1.1.3</para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_4b123e69-08f7-4dec-afdf-8c4b10be6d3e">X-Ray Angiographic Bi-plane Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_9635c990-9914-40a0-83a4-7589aa5577de">1.2.840.10008.5.1.4.1.1.12.3</para>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </chapter>
+</book>
