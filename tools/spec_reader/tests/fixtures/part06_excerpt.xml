@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" label="PS3.6" version="5.0" xml:id="PS3.6">
+  <title>PS3.6</title>
+  <subtitle>DICOM PS3.6 2016c - Data Dictionary</subtitle>
+  <info>
+    <author>
+      <orgname>DICOM Standards Committee</orgname>
+    </author>
+    <copyright>
+      <year>2016</year>
+      <holder>NEMA</holder>
+    </copyright>
+  </info>
+  <chapter label="6" status="1" xml:id="chapter_6">
+    <title>Registry of DICOM Data Elements</title>
+    <note>
+      <para xml:id="para_1371e1fd-401d-4a1d-b6b5-b3b02871fc12">For data elements that were present in ACR-NEMA 1.0 and 2.0 and that have been retired, the specifications of Value Representation and Value Multiplicity provided are recommendations for the purpose of interpreting their values in objects created in accordance with earlier versions of this standard. These recommendations are suggested as most appropriate for a particular data element; however, there is no guarantee that historical objects will not violate some requirements or specified VR and/or VM.</para>
+    </note>
+    <table frame="box" label="6-1" rules="all" xml:id="table_6-1">
+      <caption>Registry of DICOM Data Elements</caption>
+      <thead>
+        <tr valign="top">
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_3e8c52d5-3582-4ec4-a7e6-acd7604caf32">
+<emphasis role="bold">Tag</emphasis>
+</para>
+          </th>
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_ac298c3b-bcdd-462b-9240-c38e738bfb7c">
+<emphasis role="bold">Name</emphasis>
+</para>
+          </th>
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_99f6b0ff-e1b0-484e-83b5-c3003d61704c">
+<emphasis role="bold">Keyword</emphasis>
+</para>
+          </th>
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_42b3621d-8b30-46eb-8992-10bb21310ac7">
+<emphasis role="bold">VR</emphasis>
+</para>
+          </th>
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_551ea829-a949-4bfd-a201-bb102024e64c">
+<emphasis role="bold">VM</emphasis>
+</para>
+          </th>
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_3a18713f-2e81-4664-b9a1-e4e3d41957ab"/>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr valign="top">
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_a3b3bd4c-066d-47ca-9cfc-310e017063df">
+<emphasis role="italic">(0008,0001)</emphasis>
+</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_98dadd68-a5fc-4f46-9590-cf129f76a96f">
+<emphasis role="italic">Length to End</emphasis>
+</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_d4f02df2-6cdf-4324-afb8-5d033d1d63a2">
+<emphasis role="italic">Length​ToEnd</emphasis>
+</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_40ad40bf-10cb-42fe-bf58-10794de1d4e7">
+<emphasis role="italic">UL</emphasis>
+</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_f0c1b432-1911-4196-ac5e-c50217908dd9">
+<emphasis role="italic">1</emphasis>
+</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_b8e51f4b-5e85-4337-b2a7-14eecec3d1f5">
+<emphasis role="italic">RET</emphasis>
+</para>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_6069751d-e1fb-4740-ae70-a5af57b85778">(0008,0005)</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_0e3d7a81-72c1-4a28-b456-9765b8e0b848">Specific Character Set</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_1b7575f0-152e-4f8b-a5a5-b434d3644682">Specific​Character​Set</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_ab146458-275c-48d0-8b58-228df69ded71">CS</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_a46f6de2-e592-4f99-aa91-3cd5b24f5262">1-n</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_755031d6-eebd-409d-b07d-129b603eb54a"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_ba2a311b-753c-4692-a56a-cfb7c137f6ad">(0008,0006)</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_ac1de38b-0bbf-4f6c-ad21-280e68dbf6e4">Language Code Sequence</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_5165d4d7-dbc1-4c4f-81ba-7a18a64f2ec9">Language​Code​Sequence</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_1e1535d7-3875-45e8-8f2a-5e0f146626f3">SQ</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_01867379-4b83-4f55-a436-2ae58d012d38">1</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_c7394e55-2146-4907-9745-2af4085a6152"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_c05b3735-5881-4e19-9803-553fd6e9e0e1">(0008,0008)</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_fa038b6e-655e-4173-8fad-b76f924d05a1">Image Type</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_62df5011-d1e0-434a-ae31-fc666ee1f050">Image​Type</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_f025d97d-9e4c-4ac8-b5e7-27a85605ae85">CS</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_24ed6435-842d-4728-b5a9-f3d8ed8967fb">2-n</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_1e001805-1d11-4d14-89c3-edeb7f0fa33d"/>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </chapter>
+  <chapter label="A" status="1" xml:id="chapter_A">
+    <title>Registry of DICOM Unique Identifiers (UIDs) (Normative)</title>
+    <para xml:id="para_eeeb7c2d-e9a8-4c14-b93f-a28de9f9e338">
+<xref linkend="table_A-1" xrefstyle="select: label"/> lists the UID values that are registered and used throughout the Parts of the DICOM Standard. This central registry ensures that when additional UIDs are assigned, non-duplicate values are assigned.</para>
+    <table frame="box" label="A-1" rules="all" xml:id="table_A-1">
+      <caption>UID Values</caption>
+      <thead>
+        <tr valign="top">
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_89103697-fd54-4c3f-abbe-5655ae35308b">
+<emphasis role="bold">UID Value</emphasis>
+</para>
+          </th>
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_cb5b6b8a-9aec-44f2-8cdc-800a7cd327b7">
+<emphasis role="bold">UID Name</emphasis>
+</para>
+          </th>
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_08eb5599-7f50-4d17-bd10-6617063c6e31">
+<emphasis role="bold">UID Type</emphasis>
+</para>
+          </th>
+          <th align="center" colspan="1" rowspan="1">
+            <para xml:id="para_42e221e9-efb2-49d7-8712-69266c9bc2d4">
+<emphasis role="bold">Part</emphasis>
+</para>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr valign="top">
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_de68fe97-b7cf-497e-af8f-a653669ac4e4">1.2.840.10008.1.​1</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_935df29c-2e6c-4d50-aa93-83225337b0ba">Verification SOP Class</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_5e8dcea9-7c49-4751-b561-ca8a41698555">SOP Class</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_d37461b4-5537-4bf6-98b1-ded888b9b028">
+<olink targetdoc="PS3.4" targetptr="PS3.4" xrefstyle="select: labelnumber"/>
+</para>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_893becfb-16cd-4300-923d-e422781af211">1.2.840.10008.1.​2</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_ccbbb435-5d2e-4d4d-b2c2-a27a5a762f75">Implicit VR Little Endian: Default Transfer Syntax for DICOM</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_6e075f3d-2392-4c57-908c-889b50ebcbcd">Transfer Syntax</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_c2a11bee-08cc-422f-a64c-01dcb4baf73b">
+<olink targetdoc="PS3.5" targetptr="PS3.5" xrefstyle="select: labelnumber"/>
+</para>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_ff1dbc19-e1e3-4343-8660-5344b12d6aa8">1.2.840.10008.1.2.​4.​80</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_02d056d5-c8e2-4272-a257-841c6115b895">JPEG-LS Lossless Image Compression</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_3d3daa33-21f4-498e-92fd-e6f13f729f14">Transfer Syntax</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_a58981b6-022a-4e8e-8222-cff401677b8b">
+<olink targetdoc="PS3.5" targetptr="PS3.5" xrefstyle="select: labelnumber"/>
+</para>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </chapter>
+</book>
