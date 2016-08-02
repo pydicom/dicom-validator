@@ -1,5 +1,5 @@
 """
-Cahpter6Reader collects DICOM Data Element information.
+Chapter6Reader collects DICOM Data Element information.
 The information is taken from DICOM dictionary (PS3.6) in docbook format as provided by ACR NEMA.
 """
 from spec_reader.spec_reader import SpecReader, SpecReaderParseError
@@ -15,8 +15,8 @@ class Part6Reader(SpecReader):
             self._read_element_table()
         return self._data_elements
 
-    def data_element(self, group, id):
-        tag_id = (group, id)
+    def data_element(self, group, element):
+        tag_id = (group, element)
         return self.data_elements().get(tag_id)
 
     def _read_element_table(self):
@@ -29,19 +29,28 @@ class Part6Reader(SpecReader):
         for row_node in row_nodes:
             column_nodes = self._findall(row_node, ['td'])
             if len(column_nodes) == 6:
-                tag_attribs = None
+                tag_attributes = None
                 tag_ids = self._find(column_nodes[0], ['para']).text[1:-1].split(',')
                 if len(tag_ids) == 2:
-                    tag_attribs = [self._find(column_nodes[i], ['para']).text for i in attrib_indexes]
-                else:
-                    tag_ids = self._find(column_nodes[0], ['para', 'emphasis']).text[1:-1].split(',')
-                    if len(tag_ids) == 2:
-                        tag_attribs = [self._find(column_nodes[i], ['para', 'emphasis']).text for i in attrib_indexes]
-                if tag_attribs is not None:
-                    tag_id = (int(tag_ids[0]), int(tag_ids[1]))
-                    self._data_elements[tag_id] = {
-                        'name': tag_attribs[0],
-                        'vr': tag_attribs[1],
-                        'vm': tag_attribs[2],
-                        'prop': tag_attribs[3]
-                    }
+                    tag_attributes = [self._find_text(column_nodes[i]) for i in attrib_indexes]
+                if tag_attributes is not None:
+                    try:
+                        tag_id = (int(tag_ids[0], base=16), int(tag_ids[1], base=16))
+                        self._data_elements[tag_id] = {
+                            'name': tag_attributes[0],
+                            'vr': tag_attributes[1],
+                            'vm': tag_attributes[2],
+                            'prop': tag_attributes[3]
+                        }
+                    except ValueError:
+                        # special handling for tags like 60xx needed
+                        pass
+
+    def _find_text(self, node):
+        try:
+            return self._find(node, ['para']).text
+        except AttributeError:
+            try:
+                return self._find(node, ['para', 'emphasis']).text
+            except AttributeError:
+                return ''
