@@ -2,7 +2,7 @@
 Chapter3Reader collects DICOM Information Object Definition information for specific Storage SOP Classes.
 The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 """
-from spec_reader import SpecReader, SpecReaderParseError, SpecReaderLookupError
+from tools.spec_reader.spec_reader import SpecReader, SpecReaderParseError, SpecReaderLookupError
 
 
 class Part3Reader(SpecReader):

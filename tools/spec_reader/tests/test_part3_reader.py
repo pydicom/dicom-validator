@@ -3,8 +3,8 @@ import unittest
 
 import pyfakefs.fake_filesystem_unittest
 
-from spec_reader.part3_reader import Part3Reader
-from spec_reader.spec_reader import SpecReaderLookupError, SpecReaderParseError, SpecReaderFileError
+from tools.spec_reader.part3_reader import Part3Reader
+from tools.spec_reader.spec_reader import SpecReaderLookupError, SpecReaderParseError, SpecReaderFileError
 
 
 class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
@@ -12,7 +12,7 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'part03_a_excerpt.xml')) as f:
+        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'part03_a_excerpt.xml'), 'rb') as f:
             cls.doc_contents = f.read()
 
     def setUp(self):

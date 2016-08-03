@@ -3,7 +3,7 @@ import unittest
 
 import pyfakefs.fake_filesystem_unittest
 
-from spec_reader.part6_reader import Part6Reader
+from tools.spec_reader.part6_reader import Part6Reader
 
 
 class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
@@ -11,7 +11,7 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'part06_excerpt.xml')) as f:
+        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'part06_excerpt.xml'), 'rb') as f:
             cls.doc_contents = f.read()
 
     def setUp(self):

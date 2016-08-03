@@ -2,7 +2,7 @@
 Chapter6Reader collects DICOM Data Element information.
 The information is taken from DICOM dictionary (PS3.6) in docbook format as provided by ACR NEMA.
 """
-from spec_reader import SpecReader, SpecReaderParseError
+from tools.spec_reader.spec_reader import SpecReader, SpecReaderParseError
 
 
 class Part6Reader(SpecReader):
