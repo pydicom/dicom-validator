@@ -3,7 +3,7 @@ import unittest
 
 import pyfakefs.fake_filesystem_unittest
 
-from part6_reader import Part6Reader
+from spec_reader.part6_reader import Part6Reader
 
 
 class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):

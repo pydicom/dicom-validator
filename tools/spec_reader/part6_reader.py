@@ -2,7 +2,7 @@
 Chapter6Reader collects DICOM Data Element information.
 The information is taken from DICOM dictionary (PS3.6) in docbook format as provided by ACR NEMA.
 """
-from spec_reader.spec_reader import SpecReader, SpecReaderParseError
+from spec_reader import SpecReader, SpecReaderParseError
 
 
 class Part6Reader(SpecReader):
@@ -30,7 +30,7 @@ class Part6Reader(SpecReader):
             column_nodes = self._findall(row_node, ['td'])
             if len(column_nodes) == 6:
                 tag_attributes = None
-                tag_ids = self._find(column_nodes[0], ['para']).text[1:-1].split(',')
+                tag_ids = self._find_text(column_nodes[0])[1:-1].split(',')
                 if len(tag_ids) == 2:
                     tag_attributes = [self._find_text(column_nodes[i]) for i in attrib_indexes]
                 if tag_attributes is not None:
@@ -48,9 +48,14 @@ class Part6Reader(SpecReader):
 
     def _find_text(self, node):
         try:
-            return self._find(node, ['para']).text
+            text = self._find(node, ['para']).text
+            if text and text.strip():
+                return text.strip()
         except AttributeError:
-            try:
-                return self._find(node, ['para', 'emphasis']).text
-            except AttributeError:
-                return ''
+            pass
+        try:
+            text = self._find(node, ['para', 'emphasis']).text
+            if text and text.strip():
+                return text.strip()
+        except AttributeError:
+            return ''

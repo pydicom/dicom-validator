@@ -3,7 +3,7 @@ import unittest
 
 import pyfakefs.fake_filesystem_unittest
 
-from part3_reader import Part3Reader
+from spec_reader.part3_reader import Part3Reader
 from spec_reader.spec_reader import SpecReaderLookupError, SpecReaderParseError, SpecReaderFileError
 
 
