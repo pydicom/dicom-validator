@@ -43,3 +43,11 @@ class Part4Reader(SpecReader):
                     chapter = target_node.attrib['targetptr'].split('_')[1]
                     self._sop_class_uids[uid] = chapter
                     self._chapters[chapter] = uid
+        self._patch_incorrect_values()
+
+    def _patch_incorrect_values(self):
+        sc_sop_class_uid = '1.2.840.10008.5.1.4.1.1.7'
+        if self._sop_class_uids.get(sc_sop_class_uid, '') == 'A.8':
+            self._sop_class_uids[sc_sop_class_uid] = 'A.8.1'
+            self._chapters['A.8.1'] = sc_sop_class_uid
+            del self._chapters['A.8']
