@@ -69,6 +69,13 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual('C.7.5.1', module['ref'])
         self.assertEqual('M', module['use'])
 
+    def test_iod_descriptions(self):
+        descriptions = self.reader.iod_descriptions()
+        self.assertEqual(3, len(descriptions))
+        self.assertIn('A.3', descriptions)
+        self.assertIn('A.18', descriptions)
+        self.assertIn('A.38.1', descriptions)
+
 
 if __name__ == '__main__':
     unittest.main()

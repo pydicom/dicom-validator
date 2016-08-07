@@ -225,6 +225,38 @@
 </para>
           </td>
         </tr>
+        <tr valign="top">
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_ad555300-4ad5-471d-87ec-ff1115cdff9e">1.2.840.10008.5.1.4.1.​1.​2</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_ef22a711-0c5a-4b3c-b409-29efa1f981d8">CT Image Storage</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_50a4a107-b1b0-42ec-ba86-5f6eea165787">SOP Class</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_a7025751-c112-4333-8b35-e9a86974ce41">
+<olink targetdoc="PS3.4" targetptr="PS3.4" xrefstyle="select: labelnumber"/>
+</para>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_df7a7420-d16f-4555-bc43-373483e13a41">1.2.840.10008.​5.​1.​4.​1.​1.​6.​2</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_61d07ed0-37b3-47c3-807d-f49b1d20d360">Enhanced US Volume Storage</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_087fe339-d1ca-47d2-84d3-119bfcd7fdd3">SOP Class</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_b2a6dc97-7f52-47fa-9e5c-f14bdddb62f7">
+<olink targetdoc="PS3.4" targetptr="PS3.4" xrefstyle="select: labelnumber"/>
+</para>
+          </td>
+        </tr>
       </tbody>
     </table>
   </chapter>
