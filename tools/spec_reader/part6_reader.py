@@ -114,5 +114,8 @@ class Part6Reader(SpecReader):
                     uid_attributes = [self._find_text(column_nodes[i]) for i in range(3)]
                     if uid_attributes is not None:
                         uid_type = uid_attributes[2]
-                        self._uids.setdefault(uid_type, {})[uid_attributes[0]] = uid_attributes[1]
+                        # in PS3.6 xml there are multiple zero width (U+200B) spaces inside the UIDs
+                        # we remove them hoping this is the only such problem
+                        uid_value = uid_attributes[0].replace(u'\u200B', '')
+                        self._uids.setdefault(uid_type, {})[uid_value] = uid_attributes[1]
         return self._uids
