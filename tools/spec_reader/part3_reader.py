@@ -10,8 +10,10 @@ class Part3Reader(SpecReader):
 
     def __init__(self, spec_dir):
         super(Part3Reader, self).__init__(spec_dir)
+        self.part_nr = 3
         self._iod_descriptions = {}
         self._iod_nodes = {}
+        self._module_descriptions = {}
 
     def iod_description(self, chapter):
         """Return the IOD information for the given chapter.
@@ -44,9 +46,32 @@ class Part3Reader(SpecReader):
         return {chapter: self.iod_description(chapter) for chapter in self._get_iod_nodes()
                 if self.iod_description(chapter)['modules']}
 
+    def module_description(self, section):
+        """Return the module information in the given section.
+
+        The return value is a dict with the entries:
+          'title': The name of the module
+          'attributes': A dictionary of the contained module attributes with the tag as key.
+                     An attribute dict value has the following entries:
+                     'name': the tag name
+                     'type': the type (1, 1C, 2, 2C, 3)
+                     'items': only for sequence tags - contains a dictionary
+                              of the module attributes contained in the sequence
+        Raises SpecReaderLookupError if the section is not found.
+        """
+        if section not in self._module_descriptions:
+            section_node = self._get_section_node(section)
+            if section_node:
+                description = self._parse_module_description(section_node)
+                self._module_descriptions[section] = description
+        try:
+            return self._module_descriptions[section]
+        except KeyError:
+            raise SpecReaderLookupError('No definition found for section {}'.format(section))
+
     def _get_iod_nodes(self):
         if not self._iod_nodes:
-            chapter_a = self._find(self._get_doc_root(part_number=3), ['chapter[@label="A"]'])
+            chapter_a = self._find(self._get_doc_root(), ['chapter[@label="A"]'])
             if chapter_a is None:
                 raise SpecReaderParseError('Chapter A in Part 3 not found')
             # ignore A.1
@@ -64,9 +89,60 @@ class Part3Reader(SpecReader):
             self._iod_nodes = {node.attrib['label']: node for node in all_iod_nodes}
         return self._iod_nodes
 
+    def _get_section_node(self, section):
+        section_parts = section.split('.')
+        section_name = section_parts[0]
+        search_path = ['chapter[@label="{}"]'.format(section_name)]
+        for section_part in section_parts[1:]:
+            section_name = section_name + '.' + section_part
+            search_path.append('section[@label="{}"]'.format(section_name))
+        return self._find(self._get_doc_root(), search_path)
+
     def _parse_iod_node(self, iod_node):
         return {'title': self._find(iod_node, ['title']).text,
                 'modules': self._get_iod_modules(iod_node)}
+
+    def _parse_module_description(self, parent_node):
+        table_node = self._find(parent_node, ['table'])
+        # handle the case that the parent node is the table itself
+        if table_node is None:
+            table_node = parent_node
+        table_body_node = self._find(table_node, ['tbody'])
+        rows = self._findall(table_body_node, ['tr'])
+        current_level = 0
+        current_descriptions = [{}]
+        last_tag_id = None
+        for row in rows:
+            columns = self._findall(row, ['td'])
+            tag_name = self._find_text(columns[0])
+            level = tag_name.count('>', 0, 2)
+            tag_name = tag_name[level:]
+            if level > current_level:
+                sequence_description = {}
+                current_descriptions[-1][last_tag_id]['items'] = sequence_description
+                current_descriptions.append(sequence_description)
+            elif level < current_level:
+                current_descriptions.pop()
+            current_level = level
+            if len(columns) == 4:
+                tag_id = self._get_tag_id(columns[1])
+                if tag_id is not None:
+                    current_descriptions[-1][tag_id] = {
+                        'name': tag_name,
+                        'type': self._find_text(columns[2])
+                    }
+                    last_tag_id = tag_id
+            elif tag_name.startswith('Include'):
+                include_ref = self._find(columns[0], ['para', 'emphasis', 'xref']).attrib['linkend']
+                ref_node = self._get_ref_node(include_ref)
+                ref_description = self._parse_module_description(ref_node)
+                current_descriptions[-1].update(ref_description)
+                # todo: handle included table
+                pass
+            else:
+                # todo: other entries
+                pass
+        return current_descriptions[0]
 
     def _get_iod_modules(self, iod_node):
         module_table_sections = self._find_sections_with_title_endings(iod_node, (' Module Table',))
@@ -79,11 +155,11 @@ class Part3Reader(SpecReader):
                 name_index = 0 if row_span > 0 else 1
                 if row_span == 0:
                     row_span = int(columns[0].attrib['rowspan'])
-                name = self._find(columns[name_index], ['para']).text
+                name = self._find_text(columns[name_index])
                 modules[name] = {}
                 modules[name]['ref'] = self._find(columns[name_index + 1],
                                                   ['para', 'xref']).attrib['linkend'].split('_')[1]
-                modules[name]['use'] = self._find(columns[name_index + 2], ['para']).text
+                modules[name]['use'] = self._find_text(columns[name_index + 2])
                 row_span -= 1
         return modules
 

@@ -16,12 +16,12 @@ class IODValidator(object):
             if not sop_class_uid in self._iod_info:
                 errors['fatal'] = ['Unknown SOPClassUID']
             else:
-                errors = self._validate_cop_class(sop_class_uid)
+                errors = self._validate_sop_class(sop_class_uid)
         if 'fatal' in errors:
             self.logger.error('{} - aborting'.format(errors['fatal']))
         return errors
 
-    def _validate_cop_class(self, sop_class_uid):
+    def _validate_sop_class(self, sop_class_uid):
         errors = {}
         iod_info = self._iod_info[sop_class_uid]
         for module in iod_info['modules']:

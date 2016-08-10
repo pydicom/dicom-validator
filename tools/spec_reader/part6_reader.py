@@ -10,6 +10,7 @@ class Part6Reader(SpecReader):
 
     def __init__(self, spec_dir):
         super(Part6Reader, self).__init__(spec_dir)
+        self.part_nr = 6
         self._uids = None
         self._data_elements = None
 
@@ -41,7 +42,7 @@ class Part6Reader(SpecReader):
 
     def _read_element_table(self):
         self._data_elements = {}
-        table = self._find(self._get_doc_root(part_number=6),
+        table = self._find(self._get_doc_root(),
                            ['chapter[@label="6"]', 'table', 'tbody'])
         if table is None:
             raise SpecReaderParseError('Registry of DICOM Data Elements not found in PS3.6')
@@ -50,36 +51,16 @@ class Part6Reader(SpecReader):
         for row_node in row_nodes:
             column_nodes = self._findall(row_node, ['td'])
             if len(column_nodes) == 6:
-                tag_attributes = None
-                tag_ids = self._find_text(column_nodes[0])[1:-1].split(',')
-                if len(tag_ids) == 2:
+                tag_id = self._get_tag_id(column_nodes[0])
+                if tag_id is not None:
                     tag_attributes = [self._find_text(column_nodes[i]) for i in attrib_indexes]
-                if tag_attributes is not None:
-                    try:
-                        tag_id = (int(tag_ids[0], base=16), int(tag_ids[1], base=16))
+                    if tag_attributes is not None:
                         self._data_elements[tag_id] = {
                             'name': tag_attributes[0],
                             'vr': tag_attributes[1],
                             'vm': tag_attributes[2],
                             'prop': tag_attributes[3]
                         }
-                    except ValueError:
-                        # special handling for tags like 60xx needed
-                        pass
-
-    def _find_text(self, node):
-        try:
-            text = self._find(node, ['para']).text
-            if text and text.strip():
-                return text.strip()
-        except AttributeError:
-            pass
-        try:
-            text = self._find(node, ['para', 'emphasis']).text
-            if text and text.strip():
-                return text.strip()
-        except AttributeError:
-            return ''
 
     def uids(self, uid_type):
         """Return a dict of UID values (keys) and names for the given UID type."""
@@ -102,7 +83,7 @@ class Part6Reader(SpecReader):
     def _get_uids(self):
         if self._uids is None:
             self._uids = {}
-            table = self._find(self._get_doc_root(part_number=6),
+            table = self._find(self._get_doc_root(),
                                ['chapter[@label="A"]', 'table', 'tbody'])
             if table is None:
                 raise SpecReaderParseError('Registry of DICOM Unique Identifiers not found in PS3.6')

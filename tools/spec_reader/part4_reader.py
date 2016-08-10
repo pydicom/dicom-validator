@@ -10,6 +10,7 @@ class Part4Reader(SpecReader):
 
     def __init__(self, spec_dir):
         super(Part4Reader, self).__init__(spec_dir)
+        self.part_nr = 4
         self._sop_class_uids = {}  # SOP Class UID --> chapter
         self._chapters = {}  # chapter --> SOP Class UID
 
@@ -29,7 +30,7 @@ class Part4Reader(SpecReader):
         return self._chapters
 
     def _read_sop_table(self, chapter):
-        table = self._find(self._get_doc_root(part_number=4),
+        table = self._find(self._get_doc_root(),
                            ['chapter[@label="B"]', 'section[@label="{}"]'.format(chapter), 'table', 'tbody'])
         if table is None:
             raise SpecReaderParseError('SOP Class table in Part 4 not found')
@@ -37,7 +38,7 @@ class Part4Reader(SpecReader):
         for row_node in row_nodes:
             column_nodes = self._findall(row_node, ['td'])
             if len(column_nodes) == 3:
-                uid = self._find(column_nodes[1], ['para']).text
+                uid = self._find_text(column_nodes[1])
                 target_node = self._find(column_nodes[2], ['para', 'olink'])
                 if target_node is not None:
                     chapter = target_node.attrib['targetptr'].split('_')[1]
