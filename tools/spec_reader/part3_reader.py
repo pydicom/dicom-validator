@@ -69,6 +69,16 @@ class Part3Reader(SpecReader):
         except KeyError:
             raise SpecReaderLookupError('No definition found for section {}'.format(section))
 
+    def module_descriptions(self):
+        """Return the module attribute information for all IODs.
+
+        The return value is a dict with the section name as key and a description dict as value.
+        See module_description() for the content of the value dict.
+        """
+        # ensure that all module attributes are read
+        self.iod_descriptions()
+        return self._module_descriptions
+
     def _get_iod_nodes(self):
         if not self._iod_nodes:
             chapter_a = self._find(self._get_doc_root(), ['chapter[@label="A"]'])
@@ -108,6 +118,8 @@ class Part3Reader(SpecReader):
         if table_node is None:
             table_node = parent_node
         table_body_node = self._find(table_node, ['tbody'])
+        if table_body_node is None:
+            return
         rows = self._findall(table_body_node, ['tr'])
         current_level = 0
         current_descriptions = [{}]
@@ -125,20 +137,26 @@ class Part3Reader(SpecReader):
                 current_descriptions.pop()
             current_level = level
             if len(columns) == 4:
-                tag_id = self._get_tag_id(columns[1])
-                if tag_id is not None:
+                tag_id = self._find_text(columns[1])
+                if tag_id:
                     current_descriptions[-1][tag_id] = {
                         'name': tag_name,
                         'type': self._find_text(columns[2])
                     }
                     last_tag_id = tag_id
             elif tag_name.startswith('Include'):
-                include_ref = self._find(columns[0], ['para', 'emphasis', 'xref']).attrib['linkend']
+                include_node = self._find(columns[0], ['para', 'emphasis', 'xref'])
+                if include_node is None:
+                    # todo: functional group macros or similar
+                    continue
+                include_ref = include_node.attrib['linkend']
                 ref_node = self._get_ref_node(include_ref)
+                if ref_node is None:
+                    raise SpecReaderLookupError('Failed to lookup include reference ' + include_ref)
                 ref_description = self._parse_module_description(ref_node)
-                current_descriptions[-1].update(ref_description)
-                # todo: handle included table
-                pass
+                # it is allowed to have no attributes (example: Raw Data)
+                if ref_description is not None:
+                    current_descriptions[-1].update(ref_description)
             else:
                 # todo: other entries
                 pass
@@ -157,8 +175,10 @@ class Part3Reader(SpecReader):
                     row_span = int(columns[0].attrib['rowspan'])
                 name = self._find_text(columns[name_index])
                 modules[name] = {}
-                modules[name]['ref'] = self._find(columns[name_index + 1],
-                                                  ['para', 'xref']).attrib['linkend'].split('_')[1]
+                ref_section = self._find(columns[name_index + 1], ['para', 'xref']).attrib['linkend'].split('_')[1]
+                modules[name]['ref'] = ref_section
+                # make sure the module description is loaded
+                self.module_description(ref_section)
                 modules[name]['use'] = self._find_text(columns[name_index + 2])
                 row_span -= 1
         return modules

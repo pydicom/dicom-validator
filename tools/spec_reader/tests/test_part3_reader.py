@@ -80,26 +80,31 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertRaises(SpecReaderLookupError, self.reader.module_description, 'C.9.9.9')
         description = self.reader.module_description('C.7.1.3')
         self.assertEqual(9, len(description))
-        self.assertIn((0x0012, 0x0031), description)
-        self.assertEqual('Clinical Trial Site Name', description[(0x0012, 0x0031)]['name'])
-        self.assertEqual('2', description[(0x0012, 0x0031)]['type'])
+        self.assertIn('(0012,0031)', description)
+        self.assertEqual('Clinical Trial Site Name', description['(0012,0031)']['name'])
+        self.assertEqual('2', description['(0012,0031)']['type'])
 
     def test_sequence_in_module_description(self):
         description = self.reader.module_description('C.7.2.3')
         self.assertEqual(3, len(description))
-        self.assertIn((0x0012, 0x0083), description)
-        self.assertIn('items', description[(0x0012, 0x0083)])
-        sequence_description = description[(0x0012, 0x0083)]['items']
+        self.assertIn('(0012,0083)', description)
+        self.assertIn('items', description['(0012,0083)'])
+        sequence_description = description['(0012,0083)']['items']
         self.assertEqual(3, len(sequence_description))
-        self.assertIn((0x0012, 0x0020), sequence_description)
-        self.assertEqual('Clinical Trial Protocol ID', sequence_description[(0x0012, 0x0020)]['name'])
-        self.assertEqual('1C', sequence_description[(0x0012, 0x0020)]['type'])
+        self.assertIn('(0012,0020)', sequence_description)
+        self.assertEqual('Clinical Trial Protocol ID', sequence_description['(0012,0020)']['name'])
+        self.assertEqual('1C', sequence_description['(0012,0020)']['type'])
 
     def test_referenced_macro(self):
         description = self.reader.module_description('C.7.6.3')
         self.assertEqual(23, len(description))
-        self.assertIn((0x0028, 0x7FE0), description)
-        self.assertIn((0x7FE0, 0x0010), description)
+        self.assertIn('(0028,7FE0)', description)
+        self.assertIn('(7FE0,0010)', description)
+
+    def test_module_descriptions(self):
+        descriptions = self.reader.module_descriptions()
+        # modules from 3 classes (20/23/26) with overlapping common modules
+        self.assertEqual(42, len(descriptions))
 
 
 if __name__ == '__main__':

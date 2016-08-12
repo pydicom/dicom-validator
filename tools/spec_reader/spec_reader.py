@@ -55,7 +55,8 @@ class SpecReader(object):
 
     def _find(self, node, elements):
         search_string = '/'.join([self.docbook_ns + element for element in elements])
-        return node.find(search_string)
+        if node is not None:
+            return node.find(search_string)
 
     def _findall(self, node, elements):
         search_string = '/'.join([self.docbook_ns + element for element in elements])
@@ -65,7 +66,7 @@ class SpecReader(object):
         element, label = ref.split('_')
         if element == 'sect':
             element = 'section'
-        return self._get_doc_tree().find('//{}{}[@label="{}"]'.format(self.docbook_ns, element, label))
+        return self._get_doc_tree().find('.//{}{}[@label="{}"]'.format(self.docbook_ns, element, label))
 
     def _find_text(self, node):
         try:
@@ -80,12 +81,3 @@ class SpecReader(object):
                 return text.strip()
         except AttributeError:
             return ''
-
-    def _get_tag_id(self, node):
-        tag_ids = self._find_text(node)[1:-1].split(',')
-        if len(tag_ids) == 2:
-            try:
-                return int(tag_ids[0], base=16), int(tag_ids[1], base=16)
-            except ValueError:
-                # todo: special handling for tags like 60xx
-                pass

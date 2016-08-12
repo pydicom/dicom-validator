@@ -24,12 +24,11 @@ class Part6Reader(SpecReader):
             self._read_element_table()
         return self._data_elements
 
-    def data_element(self, group, element):
+    def data_element(self, tag_id):
         """Return the information about the specified tag.
 
         Arguments:
-            group: The tag group ID number (0x0008 - 0xFFFE)
-            element: The tag element ID (0x0000 - 0xFFFF)
+            tag_id: The tag ID as string in format (####,####)
         The return value is a dict with the the tag ID (group/element tuple) as key.
         The values of the retruned dict are dicts with the following entries:
             'name': The human readable tag name
@@ -37,7 +36,6 @@ class Part6Reader(SpecReader):
             'vm': The tag multiplicity (e.g. '1-N')
             'prop': Additional properties, like 'RET' for retired
         """
-        tag_id = (group, element)
         return self.data_elements().get(tag_id)
 
     def _read_element_table(self):
@@ -51,8 +49,8 @@ class Part6Reader(SpecReader):
         for row_node in row_nodes:
             column_nodes = self._findall(row_node, ['td'])
             if len(column_nodes) == 6:
-                tag_id = self._get_tag_id(column_nodes[0])
-                if tag_id is not None:
+                tag_id = self._find_text(column_nodes[0])
+                if tag_id:
                     tag_attributes = [self._find_text(column_nodes[i]) for i in attrib_indexes]
                     if tag_attributes is not None:
                         self._data_elements[tag_id] = {

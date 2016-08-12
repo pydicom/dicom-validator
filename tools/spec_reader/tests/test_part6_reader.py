@@ -23,10 +23,10 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.reader = Part6Reader(spec_path)
 
     def test_undefined_id(self):
-        self.assertIsNone(self.reader.data_element(11, 11))
+        self.assertIsNone(self.reader.data_element('(0011,0011)'))
 
     def test_data_element(self):
-        element = self.reader.data_element(0x0008, 0x0005)
+        element = self.reader.data_element('(0008,0005)')
         self.assertIsNotNone(element)
         self.assertEqual('Specific Character Set', element['name'])
         self.assertEqual('CS', element['vr'])
