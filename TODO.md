@@ -18,6 +18,7 @@
 * check for unsupported tags
 * check for conditional tags
 * check functional groups
+* NNxx groups (60xx)
 
 #### Other 
 * type validation :question:

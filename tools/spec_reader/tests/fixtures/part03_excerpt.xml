@@ -3071,24 +3071,6 @@
     <title>Composite Information Object Definitions (Normative)</title>
     <section label="A.1" status="2" xml:id="sect_A.1">
       <title>Elements of An Information Object Definition</title>
-      <para xml:id="para_b102a4e0-459f-49ee-839d-43efb0d859e4">Each Composite Information Object Definition is composed of the following Sections</para>
-      <orderedlist numeration="loweralpha">
-        <listitem>
-          <para xml:id="para_3c7af866-78d1-408f-ba44-158febb446fb">IOD Description</para>
-        </listitem>
-        <listitem>
-          <para xml:id="para_7b9349c8-526b-4ef1-b8aa-37dbb7a2e93a">IOD Entity-Relationship Model</para>
-        </listitem>
-        <listitem>
-          <para xml:id="para_fd7ab72e-1ff5-4e3e-b254-e268ad70b144">IOD Module Table</para>
-        </listitem>
-        <listitem>
-          <para xml:id="para_5d868e32-4f4f-4979-90c9-4acbc5dac10d">Optionally, a Functional Group Macros Table used by the <xref linkend="sect_C.7.6.16" xrefstyle="select: title"/>
-          </para>
-        </listitem>
-      </orderedlist>
-      <para xml:id="para_4d4c220a-42e9-4835-934c-7e809133eb7c">
-        <xref linkend="sect_A.1.1" xrefstyle="select: label"/>, <xref linkend="sect_A.1.2" xrefstyle="select: label"/> and <xref linkend="sect_A.1.3" xrefstyle="select: label"/> define the requirements of a) through d) above.</para>
     </section>
     <section label="A.3" status="2" xml:id="sect_A.3">
       <title>Computed Tomography Image IOD</title>
