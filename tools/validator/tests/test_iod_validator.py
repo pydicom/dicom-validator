@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import unittest
+
 from pydicom.dataset import Dataset
 
 from tools.validator.iod_validator import IODValidator
@@ -49,7 +50,7 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_missing_tags(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.2',   # CT
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.2',  # CT
             'PatientsName': 'XXX',
             'PatientID': 'ZZZ',
         })
@@ -68,7 +69,7 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_empty_tags(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.2',   # CT
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.2',  # CT
             'PatientsName': '',
             'Modality': None
         })

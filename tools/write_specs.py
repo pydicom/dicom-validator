@@ -2,9 +2,9 @@ import argparse
 import json
 import os
 
-from spec_reader.part6_reader import Part6Reader
 from spec_reader.part3_reader import Part3Reader
 from spec_reader.part4_reader import Part4Reader
+from spec_reader.part6_reader import Part6Reader
 
 
 def main():

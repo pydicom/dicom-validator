@@ -11,14 +11,32 @@
 * allowed enum values
 * condition for type C attributes
 
+#### Parse module conditions
+ * fix parsing of conditions with links
+ * parse tag values (done)
+ * check for "may be present otherwise" (done)
+ * handle uncheckable conditions as type "U" (done)
+ * handle required pixel type
+ * handle functional group macros present
+ * add parse result to part3 reader results
+
+#### Parse tag conditions
+* extend module condition parser
+* collect all used styles for tests
+
 ## Validator
 
 #### IOD Validator
-* check for mandatory tags
-* check for unsupported tags
-* check for conditional tags
-* check functional groups
-* NNxx groups (60xx)
+* module checks
+    * mandatory modules (mostly done)
+    * check condition for conditional modules
+    * check optional modules for consistence
+* check tags
+    * mandatory tags (mostly done)
+    * check condition for 1C/2C attributes
+    * unsupported tags
+    * functional groups
+    * NNxx groups (60xx)
 
 #### Other 
 * type validation :question:
