@@ -13,9 +13,6 @@
 
 #### Parse module conditions
  * fix parsing of conditions with links
- * parse tag values (done)
- * check for "may be present otherwise" (done)
- * handle uncheckable conditions as type "U" (done)
  * handle required pixel type
  * handle functional group macros present
  * add parse result to part3 reader results
@@ -36,7 +33,8 @@
     * check condition for 1C/2C attributes
     * unsupported tags
     * functional groups
-    * NNxx groups (60xx)
+    * repeating groups (60xx)
+* allow additional user input specs (fixed name)
 
 #### Other 
 * type validation :question:
@@ -44,14 +42,12 @@
 
 ## Tools
 
-#### Common stuff
-* get input from json files (instead of DICOM spec)
-* verbosity :question:
-* optional additional config files :question:
-
 #### Validator
 * allow several files / directories
 * output options (xml:question:)
+* get input from json files (instead of DICOM spec)
+* verbosity :question:
+* optional additional config files that replace part of the spec
 
 ## Miscellaneous
 * make smaller test data for part 3

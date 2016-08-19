@@ -1,1 +1,335 @@
-{"1.2.840.10008.5.1.4.1.1.7": {"modules": {"Modality LUT": {"use": "U", "ref": "C.11.1"}, "Image Pixel": {"use": "M", "ref": "C.7.6.3"}, "Clinical Trial Study": {"use": "U", "ref": "C.7.2.3"}, "Overlay Plane": {"use": "U", "ref": "C.9.2"}, "General Series": {"use": "M", "ref": "C.7.3.1"}, "General Study": {"use": "M", "ref": "C.7.2.1"}, "Clinical Trial Series": {"use": "U", "ref": "C.7.3.2"}, "ICC Profile": {"use": "U", "ref": "C.11.15"}, "Patient Study": {"use": "U", "ref": "C.7.2.2"}, "Clinical Trial Subject": {"use": "U", "ref": "C.7.1.3"}, "Device": {"use": "U", "ref": "C.7.6.12"}, "General Image": {"use": "M", "ref": "C.7.6.1"}, "SOP Common": {"use": "M", "ref": "C.12.1"}, "General Equipment": {"use": "U", "ref": "C.7.5.1"}, "Specimen": {"use": "U", "ref": "C.7.6.22"}, "Common Instance Reference": {"use": "U", "ref": "C.12.2"}, "SC Image": {"use": "M", "ref": "C.8.6.2"}, "VOI LUT": {"use": "U", "ref": "C.11.2"}, "SC Equipment": {"use": "M", "ref": "C.8.6.1"}, "Patient": {"use": "M", "ref": "C.7.1.1"}}, "title": "SC Image Information Objection Definition"}, "1.2.840.10008.5.1.4.1.1.2": {"modules": {"Device": {"use": "U", "ref": "C.7.6.12"}, "Overlay Plane": {"use": "U", "ref": "C.9.2"}, "Image Pixel": {"use": "M", "ref": "C.7.6.3"}, "Clinical Trial Study": {"use": "U", "ref": "C.7.2.3"}, "Image Plane": {"use": "M", "ref": "C.7.6.2"}, "General Series": {"use": "M", "ref": "C.7.3.1"}, "General Study": {"use": "M", "ref": "C.7.2.1"}, "Clinical Trial Series": {"use": "U", "ref": "C.7.3.2"}, "Patient Study": {"use": "U", "ref": "C.7.2.2"}, "Clinical Trial Subject": {"use": "U", "ref": "C.7.1.3"}, "Frame of Reference": {"use": "M", "ref": "C.7.4.1"}, "General Image": {"use": "M", "ref": "C.7.6.1"}, "Contrast/Bolus": {"use": "C - Required if contrast media was used in this image", "ref": "C.7.6.4"}, "General Equipment": {"use": "M", "ref": "C.7.5.1"}, "Specimen": {"use": "U", "ref": "C.7.6.22"}, "Common Instance Reference": {"use": "U", "ref": "C.12.2"}, "CT Image": {"use": "M", "ref": "C.8.2.1"}, "SOP Common": {"use": "M", "ref": "C.12.1"}, "VOI LUT": {"use": "U", "ref": "C.11.2"}, "Patient": {"use": "M", "ref": "C.7.1.1"}}, "title": "Computed Tomography Image IOD"}}
+{
+  "1.2.840.10008.5.1.4.1.1.2": {
+    "modules": {
+      "CT Image": {
+        "ref": "C.8.2.1", 
+        "use": "M"
+      }, 
+      "Clinical Trial Series": {
+        "ref": "C.7.3.2", 
+        "use": "U"
+      }, 
+      "Clinical Trial Study": {
+        "ref": "C.7.2.3", 
+        "use": "U"
+      }, 
+      "Clinical Trial Subject": {
+        "ref": "C.7.1.3", 
+        "use": "U"
+      }, 
+      "Common Instance Reference": {
+        "ref": "C.12.2", 
+        "use": "U"
+      }, 
+      "Contrast/Bolus": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.7.6.4", 
+        "use": "C - Required if contrast media was used in this image"
+      }, 
+      "Device": {
+        "ref": "C.7.6.12", 
+        "use": "U"
+      }, 
+      "Frame of Reference": {
+        "ref": "C.7.4.1", 
+        "use": "M"
+      }, 
+      "General Equipment": {
+        "ref": "C.7.5.1", 
+        "use": "M"
+      }, 
+      "General Image": {
+        "ref": "C.7.6.1", 
+        "use": "M"
+      }, 
+      "General Series": {
+        "ref": "C.7.3.1", 
+        "use": "M"
+      }, 
+      "General Study": {
+        "ref": "C.7.2.1", 
+        "use": "M"
+      }, 
+      "Image Pixel": {
+        "ref": "C.7.6.3", 
+        "use": "M"
+      }, 
+      "Image Plane": {
+        "ref": "C.7.6.2", 
+        "use": "M"
+      }, 
+      "Overlay Plane": {
+        "ref": "C.9.2", 
+        "use": "U"
+      }, 
+      "Patient": {
+        "ref": "C.7.1.1", 
+        "use": "M"
+      }, 
+      "Patient Study": {
+        "ref": "C.7.2.2", 
+        "use": "U"
+      }, 
+      "SOP Common": {
+        "ref": "C.12.1", 
+        "use": "M"
+      }, 
+      "Specimen": {
+        "ref": "C.7.6.22", 
+        "use": "U"
+      }, 
+      "VOI LUT": {
+        "ref": "C.11.2", 
+        "use": "U"
+      }
+    }, 
+    "title": "Computed Tomography Image IOD"
+  }, 
+  "1.2.840.10008.5.1.4.1.1.12.1.1": {
+    "modules": {
+      "Acquisition Context": {
+        "ref": "C.7.6.14", 
+        "use": "M"
+      }, 
+      "Cardiac Synchronization": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.7.6.18.1", 
+        "use": "C - Required if cardiac synchronization was applied."
+      }, 
+      "Clinical Trial Series": {
+        "ref": "C.7.3.2", 
+        "use": "U"
+      }, 
+      "Clinical Trial Study": {
+        "ref": "C.7.2.3", 
+        "use": "U"
+      }, 
+      "Clinical Trial Subject": {
+        "ref": "C.7.1.3", 
+        "use": "U"
+      }, 
+      "Common Instance Reference": {
+        "ref": "C.12.2", 
+        "use": "U"
+      }, 
+      "Device": {
+        "ref": "C.7.6.12", 
+        "use": "U"
+      }, 
+      "Enhanced Contrast/Bolus": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.7.6.4b", 
+        "use": "C - Required if contrast media was applied and the system is able to register contrast usage."
+      }, 
+      "Enhanced General Equipment": {
+        "ref": "C.7.5.2", 
+        "use": "M"
+      }, 
+      "Frame Extraction": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.12.3", 
+        "use": "C - Required if the SOP Instance was created in response to a Frame-Level retrieve request"
+      }, 
+      "Frame of Reference": {
+        "cond": {
+          "index": 0, 
+          "op": "=", 
+          "tag": "(0018,9474)", 
+          "type": "MU", 
+          "values": [
+            "YES"
+          ]
+        }, 
+        "ref": "C.7.4.1", 
+        "use": "C - Required if C-arm Positioner Tabletop Relationship (0018,9474) equals YES. May be present otherwise."
+      }, 
+      "General Equipment": {
+        "ref": "C.7.5.1", 
+        "use": "M"
+      }, 
+      "General Series": {
+        "ref": "C.7.3.1", 
+        "use": "M"
+      }, 
+      "General Study": {
+        "ref": "C.7.2.1", 
+        "use": "M"
+      }, 
+      "Image Pixel": {
+        "ref": "C.7.6.3", 
+        "use": "M"
+      }, 
+      "Multi-frame Dimension": {
+        "ref": "C.7.6.17", 
+        "use": "U"
+      }, 
+      "Multi-frame Functional Groups": {
+        "ref": "C.7.6.16", 
+        "use": "M"
+      }, 
+      "Patient": {
+        "ref": "C.7.1.1", 
+        "use": "M"
+      }, 
+      "Patient Study": {
+        "ref": "C.7.2.2", 
+        "use": "U"
+      }, 
+      "SOP Common": {
+        "ref": "C.12.1", 
+        "use": "M"
+      }, 
+      "Specimen": {
+        "ref": "C.7.6.22", 
+        "use": "U"
+      }, 
+      "Synchronization": {
+        "cond": {
+          "index": 0, 
+          "op": "=", 
+          "tag": "(0018,9474)", 
+          "type": "MN", 
+          "values": [
+            "YES"
+          ]
+        }, 
+        "ref": "C.7.4.2", 
+        "use": "C - Required if C-arm Positioner Tabletop Relationship (0018,9474) equals YES."
+      } 
+    }, 
+    "title": "Enhanced X-Ray Angiographic Image IOD"
+  }, 
+  "1.2.840.10008.5.1.4.1.1.481.2": {
+    "modules": {
+      "Clinical Trial Series": {
+        "ref": "C.7.3.2", 
+        "use": "U"
+      }, 
+      "Clinical Trial Study": {
+        "ref": "C.7.2.3", 
+        "use": "U"
+      }, 
+      "Clinical Trial Subject": {
+        "ref": "C.7.1.3", 
+        "use": "U"
+      }, 
+      "Common Instance Reference": {
+        "ref": "C.12.2", 
+        "use": "U"
+      }, 
+      "Frame Extraction": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.12.3", 
+        "use": "C - Required if the SOP Instance was created in response to a Frame-Level retrieve request"
+      }, 
+      "Frame of Reference": {
+        "ref": "C.7.4.1", 
+        "use": "M"
+      }, 
+      "General Equipment": {
+        "ref": "C.7.5.1", 
+        "use": "M"
+      }, 
+      "General Image": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.7.6.1", 
+        "use": "C - Required if dose data contains grid-based doses."
+      }, 
+      "General Study": {
+        "ref": "C.7.2.1", 
+        "use": "M"
+      }, 
+      "Image Pixel": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.7.6.3", 
+        "use": "C - Required if dose data contains grid-based doses."
+      }, 
+      "Image Plane": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.7.6.2", 
+        "use": "C - Required if dose data contains grid-based doses."
+      }, 
+      "Modality LUT": {
+        "ref": "C.11.1", 
+        "use": "U"
+      }, 
+      "Multi-frame": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.7.6.6", 
+        "use": "C - Required if dose data contains grid-based doses and pixel data is multi-frame data."
+      }, 
+      "Multi-frame Overlay": {
+        "ref": "C.9.3", 
+        "use": "U"
+      }, 
+      "Overlay Plane": {
+        "ref": "C.9.2", 
+        "use": "U"
+      }, 
+      "Patient": {
+        "ref": "C.7.1.1", 
+        "use": "M"
+      }, 
+      "Patient Study": {
+        "ref": "C.7.2.2", 
+        "use": "U"
+      }, 
+      "ROI Contour": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.8.8.6", 
+        "use": "C - Required if dose data contains dose points or isodose curves"
+      }, 
+      "RT DVH": {
+        "ref": "C.8.8.4", 
+        "use": "U"
+      }, 
+      "RT Dose": {
+        "ref": "C.8.8.3", 
+        "use": "M"
+      }, 
+      "RT Dose ROI": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.8.8.7", 
+        "use": "C - Required if dose data contains dose points or isodose curves"
+      }, 
+      "RT Series": {
+        "ref": "C.8.8.1", 
+        "use": "M"
+      }, 
+      "SOP Common": {
+        "ref": "C.12.1", 
+        "use": "M"
+      }, 
+      "Structure Set": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.8.8.5", 
+        "use": "C - Required if dose data contains dose points or isodose curves"
+      }
+    }, 
+    "title": "RT Dose IOD"
+  }
+}

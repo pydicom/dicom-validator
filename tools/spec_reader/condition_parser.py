@@ -4,7 +4,7 @@ import re
 class ConditionParser(object):
     """Parses a condition string defining if a module or tag shall be present in the data set."""
 
-    tag_expression = re.compile(r'([a-zA-Z ]+)(\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?( Value \d)?')
+    tag_expression = re.compile(r'([a-zA-Z \-]+)(\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?( Value \d)?')
 
     def __init__(self, dict_info):
         self._dict_info = dict_info

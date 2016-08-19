@@ -2,15 +2,17 @@
 Chapter3Reader collects DICOM Information Object Definition information for specific Storage SOP Classes.
 The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 """
+from tools.spec_reader.condition_parser import ConditionParser
 from tools.spec_reader.spec_reader import SpecReader, SpecReaderParseError, SpecReaderLookupError
 
 
 class Part3Reader(SpecReader):
     """Reads information from PS3.3 in docbook format."""
 
-    def __init__(self, spec_dir):
+    def __init__(self, spec_dir, dict_info=None):
         super(Part3Reader, self).__init__(spec_dir)
         self.part_nr = 3
+        self._dict_info = dict_info
         self._iod_descriptions = {}
         self._iod_nodes = {}
         self._module_descriptions = {}
@@ -165,6 +167,7 @@ class Part3Reader(SpecReader):
     def _get_iod_modules(self, iod_node):
         module_table_sections = self._find_sections_with_title_endings(iod_node, (' Module Table',))
         modules = {}
+        condition_parser = ConditionParser(self._dict_info) if self._dict_info is not None else None
         if len(module_table_sections) == 1:
             module_rows = self._findall(module_table_sections[0], ['table', 'tbody', 'tr'])
             row_span = 0
@@ -180,6 +183,8 @@ class Part3Reader(SpecReader):
                 # make sure the module description is loaded
                 self.module_description(ref_section)
                 modules[name]['use'] = self._find_text(columns[name_index + 2])
+                if condition_parser is not None and modules[name]['use'].startswith('C - '):
+                    modules[name]['cond'] = condition_parser.parse(modules[name]['use'])
                 row_span -= 1
         return modules
 

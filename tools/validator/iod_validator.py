@@ -42,18 +42,26 @@ class IODValidator(object):
         usage = module['use']
         module_info = self._module_info[module['ref']]
 
+        allowed = True
         if usage == 'M':
             required = True
         elif usage == 'U':
             required = False
         else:
-            required = self._module_is_required(usage)
-        if not required and not self._has_module(module_info):
+            required, allowed = self._module_is_required_or_allowed(module['cond'])
+        has_module = self._has_module(module_info)
+        if not required and not has_module:
             return errors
-        for tag_id_string, attribute in module_info.items():
-            result = self._validate_attribute(self._tag_id(tag_id_string), attribute)
-            if result is not None:
-                errors.setdefault(result, []).append(tag_id_string)
+
+        if not allowed and has_module:
+            for tag_id_string, attribute in module_info.items():
+                if self._tag_id(tag_id_string) in self._dataset:
+                    errors.setdefault('not allowed', []).append(tag_id_string)
+        else:
+            for tag_id_string, attribute in module_info.items():
+                result = self._validate_attribute(self._tag_id(tag_id_string), attribute)
+                if result is not None:
+                    errors.setdefault(result, []).append(tag_id_string)
         return errors
 
     def _validate_attribute(self, tag_id, attribute):
@@ -69,9 +77,27 @@ class IODValidator(object):
         if attribute_type == '1' and self._dataset[tag_id].value is None:
             return 'empty'
 
-    def _module_is_required(self, usage):
-        # todo: parse the condition and check if it is met if possible
-        return False
+    def _module_is_required_or_allowed(self, condition):
+        if condition['type'] == 'U':
+            return True, True
+        tag_id = self._tag_id(condition['tag'])
+        condition_fulfilled = tag_id in self._dataset
+        if condition_fulfilled:
+            tag = self._dataset[tag_id]
+            index = condition['index']
+            if index > 0:
+                condition_fulfilled = index <= tag.VM
+                if condition_fulfilled:
+                    tag_value = tag.value[index - 1]
+            elif tag.VM > 1:
+                tag_value = tag.value[0]
+            else:
+                tag_value = tag.value
+            condition_fulfilled = condition_fulfilled or self._tag_matches(tag_value, condition['op'],
+                                                                           condition['values'])
+        if condition_fulfilled:
+            return True, True
+        return False, condition['type'] == 'MU'
 
     def _attribute_is_required(self, usage):
         # todo: parse the condition and check if it is met if possible
@@ -89,7 +115,17 @@ class IODValidator(object):
     @staticmethod
     def _tag_id(tag_id_string):
         group, element = tag_id_string[1:-1].split(',')
-        # workaround for 60xx tags -> special handling needed
+        # workaround for repeating tags -> special handling needed
         if group.endswith('xx'):
             group = group[:2] + '00'
         return (int(group, 16) << 16) + int(element, 16)
+
+    @staticmethod
+    def _tag_matches(tag_value, operator, values):
+        if operator == '=':
+            return tag_value in values
+        if operator == '>':
+            return tag_value > values[0]
+        if operator == '<':
+            return tag_value < values[0]
+        return False
