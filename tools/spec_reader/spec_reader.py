@@ -70,14 +70,13 @@ class SpecReader(object):
 
     def _find_text(self, node):
         try:
-            text = self._find(node, ['para']).text
-            if text and text.strip():
-                return text.strip()
-        except AttributeError:
-            pass
-        try:
-            text = self._find(node, ['para', 'emphasis']).text
-            if text and text.strip():
-                return text.strip()
+            para_node = self._find(node, ['para'])
+            text_parts = [text.strip() for text in para_node.itertext() if text.strip()]
+            return ' '.join(text_parts) if text_parts else ''
         except AttributeError:
             return ''
+
+    @staticmethod
+    def _find_all_text(node):
+        text_parts = [text.strip() for text in node.itertext() if text.strip()]
+        return ' '.join(text_parts) if text_parts else ''

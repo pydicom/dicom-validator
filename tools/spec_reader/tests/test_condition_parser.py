@@ -78,3 +78,37 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual(0, result['index'])
         self.assertEqual('=', result['op'])
         self.assertEqual(['Frame Time (0018,1063)', 'Frame Time Vector (0018,1065)'], result['values'])
+
+    def test_shall_be_condition_with_absent_tag(self):
+        result = self.parser.parse('Some Stuff. Shall be present if Clinical Trial Subject Reading ID '
+                                   '(0012,0042) is absent. May be present otherwise.')
+        self.assertEqual('MU', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0012,0042)', result['tag'])
+        self.assertEqual(0, result['index'])
+        self.assertEqual('-', result['op'])
+        self.assertNotIn('values', result)
+
+    def test_has_a_value_of(self):
+        result = self.parser.parse('Required if Pixel Presentation (0008,9205) has a value of TRUE_COLOR.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0008,9205)', result['tag'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['TRUE_COLOR'], result['values'])
+
+    def test_not_present(self):
+        result = self.parser.parse('Required if VOI LUT Sequence (0028,3010) is not present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0028,3010)', result['tag'])
+        self.assertEqual('-', result['op'])
+        self.assertNotIn('values', result)
+
+    def test_is_present(self):
+        result = self.parser.parse('Required if Bounding Box Top Left Hand Corner (0070,0010) is present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0070,0010)', result['tag'])
+        self.assertEqual('+', result['op'])
+        self.assertNotIn('values', result)

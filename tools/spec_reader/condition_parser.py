@@ -1,4 +1,5 @@
 import re
+from collections import OrderedDict
 
 
 class ConditionParser(object):
@@ -22,33 +23,48 @@ class ConditionParser(object):
         'values': (optional) a list of values the tag shall have if the condition is fulfilled
         'op': (optional) the comparison operation used ('=', '<', '>') for the value(s)
         """
-        index = condition.lower().find('required if ')
-        if index == -1:
-            return {'type': 'U'}
-        condition = condition[len('required if ') + index:]
-        return self._parse_tag_expression(condition)
+        condition_prefixes = ('required if ', 'shall be present if ')
+        for prefix in condition_prefixes:
+            index = condition.lower().find(prefix)
+            if index >= 0:
+                condition = condition[len(prefix) + index:]
+                return self._parse_tag_expression(condition)
+        return {'type': 'U'}
 
     def _parse_tag_expression(self, condition):
         result = {'type': 'U'}
         if not condition or condition[0].islower():
             return result
-        operators = ('is greater than', 'is present and equals', 'value is',
-                     'has a value of', '=', 'equals', 'is')
-        op_index = None
+        operators = OrderedDict([
+            ('is greater than', '>'),
+            ('is present and equals', '='),
+            ('value is', '='),
+            ('has a value of', '='),
+            ('=', '='),
+            ('equals other than', '!='),
+            ('equals', '='),
+            ('is present', '+'),
+            ('is sent', '+'),
+            ('is not present', '-'),
+            ('is absent', '-'),
+            ('is', '=')]
+        )
+        operator_text = None
         op_offset = None
-        for i, operator in enumerate(operators):
-            offset = condition.find(operator)
+        for op in operators:
+            offset = condition.find(op)
             if offset > 0 and (op_offset is None or offset < op_offset):
                 op_offset = offset
-                op_index = i
-        if op_index is None:
+                operator_text = op
+        if operator_text is None:
             return result
         tag, value_index = self._parse_tag(condition[:op_offset])
         if tag is not None:
-            result['op'] = '>' if op_index == 0 else '='
+            result['op'] = operators[operator_text]
             result['tag'] = tag
             result['index'] = value_index
-            result['values'] = self._parse_tag_values(condition[op_offset + len(operators[op_index]):])
+            if operators[operator_text] in ('=', '!=', '>', '<'):
+                result['values'] = self._parse_tag_values(condition[op_offset + len(operator_text):])
             result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
         return result
 

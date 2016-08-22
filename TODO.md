@@ -6,31 +6,32 @@
 * handle functional groups
 * handle other SOP classes not in the table (presentation states etc.)
 
+#### Parse module conditions
+ * fix parsing of conditions with links :soon:
+ * handle required pixel type
+ * handle functional group macros present
+
 #### Parse attribute description
 * add number of allowed sequences items (1 vs 1-n)
 * allowed enum values
-* condition for type C attributes
 
-#### Parse module conditions
- * fix parsing of conditions with links
- * handle required pixel type
- * handle functional group macros present
- * add parse result to part3 reader results
-
-#### Parse tag conditions
-* extend module condition parser
-* collect all used styles for tests
+#### Parse attribute conditions
+* collect all used styles for tests :o:
+* extend module condition parser for all styles
+    * compound conditions
+    * compound conditions where not all parts can be checked
+* add special handling for code value related tags
 
 ## Validator
 
 #### IOD Validator
 * module checks
-    * mandatory modules (mostly done)
-    * check condition for conditional modules
+    * mandatory modules :o:
+    * check condition for conditional modules :o:
     * check optional modules for consistence
 * check tags
-    * mandatory tags (mostly done)
-    * check condition for 1C/2C attributes
+    * mandatory tags :o:
+    * check condition for 1C/2C attributes :soon:
     * unsupported tags
     * functional groups
     * repeating groups (60xx)

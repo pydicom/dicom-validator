@@ -12,10 +12,13 @@ class Part3Reader(SpecReader):
     def __init__(self, spec_dir, dict_info=None):
         super(Part3Reader, self).__init__(spec_dir)
         self.part_nr = 3
+        self._condition_parser = None
         self._dict_info = dict_info
         self._iod_descriptions = {}
         self._iod_nodes = {}
         self._module_descriptions = {}
+        if dict_info is not None:
+            self._condition_parser = ConditionParser(self._dict_info)
 
     def iod_description(self, chapter):
         """Return the IOD information for the given chapter.
@@ -140,11 +143,16 @@ class Part3Reader(SpecReader):
             current_level = level
             if len(columns) == 4:
                 tag_id = self._find_text(columns[1])
+                tag_type = self._find_text(columns[2])
                 if tag_id:
                     current_descriptions[-1][tag_id] = {
                         'name': tag_name,
-                        'type': self._find_text(columns[2])
+                        'type': tag_type,
                     }
+                    if self._condition_parser and tag_type in ('1C', '2C'):
+                        current_descriptions[-1][tag_id]['cond'] = self._condition_parser.parse(
+                            self._find_all_text(columns[3]))
+
                     last_tag_id = tag_id
             elif tag_name.startswith('Include'):
                 include_node = self._find(columns[0], ['para', 'emphasis', 'xref'])
@@ -167,7 +175,6 @@ class Part3Reader(SpecReader):
     def _get_iod_modules(self, iod_node):
         module_table_sections = self._find_sections_with_title_endings(iod_node, (' Module Table',))
         modules = {}
-        condition_parser = ConditionParser(self._dict_info) if self._dict_info is not None else None
         if len(module_table_sections) == 1:
             module_rows = self._findall(module_table_sections[0], ['table', 'tbody', 'tr'])
             row_span = 0
@@ -183,8 +190,8 @@ class Part3Reader(SpecReader):
                 # make sure the module description is loaded
                 self.module_description(ref_section)
                 modules[name]['use'] = self._find_text(columns[name_index + 2])
-                if condition_parser is not None and modules[name]['use'].startswith('C - '):
-                    modules[name]['cond'] = condition_parser.parse(modules[name]['use'])
+                if self._condition_parser is not None and modules[name]['use'].startswith('C - '):
+                    modules[name]['cond'] = self._condition_parser.parse(modules[name]['use'])
                 row_span -= 1
         return modules
 
