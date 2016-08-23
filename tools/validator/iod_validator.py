@@ -20,10 +20,10 @@ class IODValidator(object):
             else:
                 self._validate_sop_class(sop_class_uid)
         if 'fatal' in self.errors:
-            self.logger.error('{} - aborting'.format(self.errors['fatal']))
+            self.logger.error('%s - aborting', self.errors['fatal'])
         else:
             for error, tag_ids in self.errors.items():
-                self.logger.warning('Tag(s) {}:'.format(error))
+                self.logger.warning('Tag(s) %s:', error)
                 for tag_id in tag_ids:
                     self.logger.warning(tag_id)
         return self.errors
@@ -48,7 +48,7 @@ class IODValidator(object):
         elif usage == 'U':
             required = False
         else:
-            required, allowed = self._module_is_required_or_allowed(module['cond'])
+            required, allowed = self._object_is_required_or_allowed(module['cond'])
         has_module = self._has_module(module_info)
         if not required and not has_module:
             return errors
@@ -67,41 +67,42 @@ class IODValidator(object):
     def _validate_attribute(self, tag_id, attribute):
         attribute_type = attribute['type']
         has_tag = tag_id in self._dataset
-        if attribute_type in ('1C', '2C'):
-            if self._attribute_is_required('dummy'):
-                attribute_type = attribute_type[:1]
-            elif has_tag:
-                return 'missing'
-        if not has_tag and attribute_type in ('1', '2'):
+        value_required = attribute_type in ('1', '1C')
+        if attribute_type in ('1', '2'):
+            tag_required, tag_allowed = True, True
+        elif attribute_type in ('1C', '2C'):
+            if 'cond' in attribute:
+                tag_required, tag_allowed = self._object_is_required_or_allowed(attribute['cond'])
+            else:
+                tag_required, tag_allowed = False, True
+        else:
+            tag_required, tag_allowed = False, True
+        if not has_tag and tag_required:
             return 'missing'
-        if attribute_type == '1' and self._dataset[tag_id].value is None:
+        if tag_required and value_required and self._dataset[tag_id].value is None:
             return 'empty'
 
-    def _module_is_required_or_allowed(self, condition):
+    def _object_is_required_or_allowed(self, condition):
         if condition['type'] == 'U':
             return True, True
         tag_id = self._tag_id(condition['tag'])
+        tag_value = None
         condition_fulfilled = tag_id in self._dataset
         if condition_fulfilled:
             tag = self._dataset[tag_id]
             index = condition['index']
             if index > 0:
-                condition_fulfilled = index <= tag.VM
-                if condition_fulfilled:
+                if index <= tag.VM:
                     tag_value = tag.value[index - 1]
             elif tag.VM > 1:
                 tag_value = tag.value[0]
             else:
                 tag_value = tag.value
-            condition_fulfilled = condition_fulfilled or self._tag_matches(tag_value, condition['op'],
-                                                                           condition['values'])
+            if tag_value is not None:
+                condition_fulfilled = self._tag_matches(tag_value, condition['op'], condition['values'])
         if condition_fulfilled:
             return True, True
         return False, condition['type'] == 'MU'
-
-    def _attribute_is_required(self, usage):
-        # todo: parse the condition and check if it is met if possible
-        return False
 
     def _has_module(self, module_info):
         for tag_id_string, attribute in module_info.items():

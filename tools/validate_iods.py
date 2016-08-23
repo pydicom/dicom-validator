@@ -14,17 +14,17 @@ def main():
     parser.add_argument('dicomfile', help='Path of DICOM file to validate')
     parser.add_argument('--standard-path', '-src', help='', default='./DICOM')
     args = parser.parse_args()
-    chapter6reader = Part6Reader(args.standard_path)
-    dict_info = chapter6reader.data_elements()
-    chapter3reader = Part3Reader(args.standard_path, dict_info)
-    chapter4reader = Part4Reader(args.standard_path)
+    part6reader = Part6Reader(args.standard_path)
+    dict_info = part6reader.data_elements()
+    part3reader = Part3Reader(args.standard_path, dict_info)
+    part4reader = Part4Reader(args.standard_path)
 
-    iod_per_chapter_info = chapter3reader.iod_descriptions()
-    chapter_info = chapter4reader.iod_chapters()
+    iod_per_chapter_info = part3reader.iod_descriptions()
+    chapter_info = part4reader.iod_chapters()
     iod_info = {chapter_info[chapter]: iod_per_chapter_info[chapter]
                 for chapter in iod_per_chapter_info if chapter in chapter_info}
     data_set = filereader.read_file(args.dicomfile, stop_before_pixels=True, force=True)
-    return len(IODValidator(data_set, iod_info).validate())
+    return len(IODValidator(data_set, iod_info, part3reader.module_descriptions()).validate())
 
 
 if __name__ == '__main__':
