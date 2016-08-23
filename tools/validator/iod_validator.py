@@ -81,6 +81,8 @@ class IODValidator(object):
             return 'missing'
         if tag_required and value_required and self._dataset[tag_id].value is None:
             return 'empty'
+        if has_tag and not tag_allowed:
+            return 'not allowed'
 
     def _object_is_required_or_allowed(self, condition):
         if condition['type'] == 'U':

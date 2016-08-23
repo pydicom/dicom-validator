@@ -28,7 +28,7 @@
     * check condition for conditional modules :o:
     * check optional modules for consistence
 * check tags
-    * check condition for 1C/2C attributes :soon:
+    * check condition for 1C/2C attributes - test missing
     * unsupported tags
     * functional groups
     * repeating groups (60xx)
@@ -49,4 +49,3 @@
 
 ## Miscellaneous
 * make smaller test data for part 3
-* check travis - add pylint, check nicer test output
