@@ -39,14 +39,17 @@ class ConditionParser(object):
             ('is greater than', '>'),
             ('is present and equals', '='),
             ('value is', '='),
+            ('has a value of more than', '>'),
             ('has a value of', '='),
             ('=', '='),
             ('equals other than', '!='),
             ('equals', '='),
             ('is present', '+'),
             ('is sent', '+'),
+            ('is not sent', '-'),
             ('is not present', '-'),
             ('is absent', '-'),
+            ('is not', '!='),
             ('is', '=')]
         )
         operator_text = None
@@ -82,17 +85,13 @@ class ConditionParser(object):
 
     @staticmethod
     def _parse_tag_values(value_string):
-        end_index = value_string.find(';')
-        if end_index > 0:
-            value_string = value_string[:end_index]
-        else:
-            end_index = value_string.find('.')
-            if end_index > 0:
-                value_string = value_string[:end_index]
+        value_string = ConditionParser.extract_value_string(value_string)
         values = value_string.split(', ')
         tag_values = []
         for value in values:
             value = value.strip()
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1].strip()
             if ' or ' in value:
                 tag_values.extend(value.split(' or '))
             elif value.startswith('or '):
@@ -100,3 +99,25 @@ class ConditionParser(object):
             else:
                 tag_values.append(value)
         return tag_values
+
+    @staticmethod
+    def extract_value_string(value_string):
+        # remove stuff that breaks parser
+        value_string = value_string.replace('(Legacy Converted)', '')
+        start_index = 0
+        while True:
+            end_index = -1
+            for end_char in (';', '.'):
+                char_index = value_string.find(end_char, start_index)
+                if end_index < 0 or 0 <= char_index < end_index:
+                    end_index = char_index
+            apo_index = value_string.find('"', start_index)
+            if end_index < 0:
+                break
+            if 0 < apo_index < end_index:
+                start_index = value_string.find('"', apo_index + 1)
+            else:
+                if end_index > 0:
+                    value_string = value_string[:end_index]
+                break
+        return value_string

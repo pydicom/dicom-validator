@@ -7,7 +7,6 @@
 * handle other SOP classes not in the table (presentation states etc.)
 
 #### Parse module conditions
- * fix parsing of conditions with links :soon:
  * handle required pixel type
  * handle functional group macros present
 
@@ -26,11 +25,9 @@
 
 #### IOD Validator
 * module checks
-    * mandatory modules :o:
     * check condition for conditional modules :o:
     * check optional modules for consistence
 * check tags
-    * mandatory tags :o:
     * check condition for 1C/2C attributes :soon:
     * unsupported tags
     * functional groups

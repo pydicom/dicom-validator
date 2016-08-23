@@ -143,6 +143,66 @@
             <para xml:id="para_1e001805-1d11-4d14-89c3-edeb7f0fa33d"/>
           </td>
         </tr>
+        <tr valign="top">
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_5559d975-c28e-4273-bf3a-daed33412e9d">(0008,0016)</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_a0a0d9d4-35e3-42b7-aafc-e4f1bcf1096f">SOP Class UID</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_481d1de7-69bf-4d58-9e84-fabdaf795def">SOP​ClassUID</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_63ce8151-da87-4195-bff5-a36c2b0e03b2">UI</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_978ed04a-e808-4992-a341-c962089033aa">1</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_b832938d-8068-43e0-b2d0-c19313852f0c"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_07bc8803-afad-4b82-800d-9c641036d2a1">(0008,0060)</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_374e9fc9-e67e-4831-bd51-46def8c310cc">Modality</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_1a2e43d1-5d22-4823-8423-141ad9a4b625">Modality</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_14a9b67b-f386-46ec-a123-f95439c4a20c">CS</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_98185663-34dd-4ac4-9046-3eb77970dee6">1</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_7a8890ff-997f-4b40-a25f-27e900293df5"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_4d114d50-1542-402c-a71a-8812e0221943">(0028,0008)</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_a8a709f1-cd24-47dc-9190-bb16d204003d">Number of Frames</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_63b911ad-fce6-4a9b-b4a2-ae0110b2356e">Number​OfFrames</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_73fcfdd7-1ad8-4c6f-9216-e744237c17aa">IS</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_0d734f8d-e852-4fa2-91bc-5da756ece5b5">1</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_eb62a039-2e58-4098-ba49-4fbc992f42d6"/>
+          </td>
+        </tr>
       </tbody>
     </table>
   </chapter>

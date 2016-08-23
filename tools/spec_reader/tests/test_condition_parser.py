@@ -112,3 +112,32 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('(0070,0010)', result['tag'])
         self.assertEqual('+', result['op'])
         self.assertNotIn('values', result)
+
+    def test_not_sent(self):
+        result = self.parser.parse('Required if Anatomic Region Modifier Sequence (0008,2220) is not sent. ')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0008,2220)', result['tag'])
+        self.assertEqual('-', result['op'])
+        self.assertNotIn('values', result)
+
+    def test_remove_apostrophes(self):
+        result = self.parser.parse('Required if Lossy Image Compression (0028,2110) is "01".')
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['01'], result['values'])
+
+    def test_value_more_than(self):
+        result = self.parser.parse('Required if Data Point Rows (0028,9001) has a value of more than 1.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0028,9001)', result['tag'])
+        self.assertEqual('>', result['op'])
+        self.assertEqual(['1'], result['values'])
+
+    def test_is_not_with_uid(self):
+        result = self.parser.parse('Required if SOP Class UID is not "1.2.840.10008.5.1.4.1.1.4.4" (Legacy Converted).')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0008,0016)', result['tag'])
+        self.assertEqual('!=', result['op'])
+        self.assertEqual(['1.2.840.10008.5.1.4.1.1.4.4'], result['values'])
