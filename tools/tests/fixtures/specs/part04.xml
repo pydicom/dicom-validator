@@ -112,6 +112,19 @@
               </para>
             </td>
           </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_dabf3280-6cfa-410d-89f6-5143772847cd">Enhanced XA Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_d941fa01-6668-4f82-9d2c-8ba201f8cfe7">1.2.840.10008.5.1.4.1.1.12.1.1</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_9c55f529-1459-474c-827f-a49485d2a960">
+                <olink targetdoc="PS3.3" targetptr="sect_A.47" xrefstyle="select: title"/>
+              </para>
+            </td>
+          </tr>
         </tbody>
       </table>
       <note>

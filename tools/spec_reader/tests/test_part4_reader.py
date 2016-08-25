@@ -5,6 +5,7 @@ import pyfakefs.fake_filesystem_unittest
 
 from tools.spec_reader.part4_reader import Part4Reader
 from tools.spec_reader.spec_reader import SpecReaderLookupError, SpecReaderParseError
+from tools.tests.test_utils import spec_fixture_path
 
 
 class Part4ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
@@ -12,7 +13,7 @@ class Part4ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'part04_excerpt.xml'), 'rb') as f:
+        with open(os.path.join(spec_fixture_path(), 'part04.xml'), 'rb') as f:
             cls.doc_contents = f.read()
 
     def setUp(self):

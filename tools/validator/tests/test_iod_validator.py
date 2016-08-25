@@ -5,6 +5,7 @@ import unittest
 
 from pydicom.dataset import Dataset
 
+from tools.tests.test_utils import json_fixture_path
 from tools.validator.iod_validator import IODValidator
 
 
@@ -14,9 +15,9 @@ class IODValidatorTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'iod_info.json')) as f:
+        with open(os.path.join(json_fixture_path(), 'iod_info.json')) as f:
             cls.iod_specs = json.load(f)
-        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'module_info.json')) as f:
+        with open(os.path.join(json_fixture_path(), 'module_info.json')) as f:
             cls.module_specs = json.load(f)
 
     def setUp(self):

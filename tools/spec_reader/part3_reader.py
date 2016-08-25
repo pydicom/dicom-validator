@@ -185,7 +185,10 @@ class Part3Reader(SpecReader):
                     row_span = int(columns[0].attrib['rowspan'])
                 name = self._find_text(columns[name_index])
                 modules[name] = {}
-                ref_section = self._find(columns[name_index + 1], ['para', 'xref']).attrib['linkend'].split('_')[1]
+                try:
+                    ref_section = self._find(columns[name_index + 1], ['para', 'xref']).attrib['linkend'].split('_')[1]
+                except AttributeError:
+                    print('boo')
                 modules[name]['ref'] = ref_section
                 # make sure the module description is loaded
                 self.module_description(ref_section)

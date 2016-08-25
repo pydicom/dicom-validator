@@ -1,92 +1,4 @@
 {
-  "1.2.840.10008.5.1.4.1.1.2": {
-    "modules": {
-      "CT Image": {
-        "ref": "C.8.2.1", 
-        "use": "M"
-      }, 
-      "Clinical Trial Series": {
-        "ref": "C.7.3.2", 
-        "use": "U"
-      }, 
-      "Clinical Trial Study": {
-        "ref": "C.7.2.3", 
-        "use": "U"
-      }, 
-      "Clinical Trial Subject": {
-        "ref": "C.7.1.3", 
-        "use": "U"
-      }, 
-      "Common Instance Reference": {
-        "ref": "C.12.2", 
-        "use": "U"
-      }, 
-      "Contrast/Bolus": {
-        "cond": {
-          "type": "U"
-        }, 
-        "ref": "C.7.6.4", 
-        "use": "C - Required if contrast media was used in this image"
-      }, 
-      "Device": {
-        "ref": "C.7.6.12", 
-        "use": "U"
-      }, 
-      "Frame of Reference": {
-        "ref": "C.7.4.1", 
-        "use": "M"
-      }, 
-      "General Equipment": {
-        "ref": "C.7.5.1", 
-        "use": "M"
-      }, 
-      "General Image": {
-        "ref": "C.7.6.1", 
-        "use": "M"
-      }, 
-      "General Series": {
-        "ref": "C.7.3.1", 
-        "use": "M"
-      }, 
-      "General Study": {
-        "ref": "C.7.2.1", 
-        "use": "M"
-      }, 
-      "Image Pixel": {
-        "ref": "C.7.6.3", 
-        "use": "M"
-      }, 
-      "Image Plane": {
-        "ref": "C.7.6.2", 
-        "use": "M"
-      }, 
-      "Overlay Plane": {
-        "ref": "C.9.2", 
-        "use": "U"
-      }, 
-      "Patient": {
-        "ref": "C.7.1.1", 
-        "use": "M"
-      }, 
-      "Patient Study": {
-        "ref": "C.7.2.2", 
-        "use": "U"
-      }, 
-      "SOP Common": {
-        "ref": "C.12.1", 
-        "use": "M"
-      }, 
-      "Specimen": {
-        "ref": "C.7.6.22", 
-        "use": "U"
-      }, 
-      "VOI LUT": {
-        "ref": "C.11.2", 
-        "use": "U"
-      }
-    }, 
-    "title": "Computed Tomography Image IOD"
-  }, 
   "1.2.840.10008.5.1.4.1.1.12.1.1": {
     "modules": {
       "Acquisition Context": {
@@ -203,9 +115,97 @@
         }, 
         "ref": "C.7.4.2", 
         "use": "C - Required if C-arm Positioner Tabletop Relationship (0018,9474) equals YES."
-      } 
+      }
     }, 
     "title": "Enhanced X-Ray Angiographic Image IOD"
+  }, 
+  "1.2.840.10008.5.1.4.1.1.2": {
+    "modules": {
+      "CT Image": {
+        "ref": "C.8.2.1", 
+        "use": "M"
+      }, 
+      "Clinical Trial Series": {
+        "ref": "C.7.3.2", 
+        "use": "U"
+      }, 
+      "Clinical Trial Study": {
+        "ref": "C.7.2.3", 
+        "use": "U"
+      }, 
+      "Clinical Trial Subject": {
+        "ref": "C.7.1.3", 
+        "use": "U"
+      }, 
+      "Common Instance Reference": {
+        "ref": "C.12.2", 
+        "use": "U"
+      }, 
+      "Contrast/Bolus": {
+        "cond": {
+          "type": "U"
+        }, 
+        "ref": "C.7.6.4", 
+        "use": "C - Required if contrast media was used in this image"
+      }, 
+      "Device": {
+        "ref": "C.7.6.12", 
+        "use": "U"
+      }, 
+      "Frame of Reference": {
+        "ref": "C.7.4.1", 
+        "use": "M"
+      }, 
+      "General Equipment": {
+        "ref": "C.7.5.1", 
+        "use": "M"
+      }, 
+      "General Image": {
+        "ref": "C.7.6.1", 
+        "use": "M"
+      }, 
+      "General Series": {
+        "ref": "C.7.3.1", 
+        "use": "M"
+      }, 
+      "General Study": {
+        "ref": "C.7.2.1", 
+        "use": "M"
+      }, 
+      "Image Pixel": {
+        "ref": "C.7.6.3", 
+        "use": "M"
+      }, 
+      "Image Plane": {
+        "ref": "C.7.6.2", 
+        "use": "M"
+      }, 
+      "Overlay Plane": {
+        "ref": "C.9.2", 
+        "use": "U"
+      }, 
+      "Patient": {
+        "ref": "C.7.1.1", 
+        "use": "M"
+      }, 
+      "Patient Study": {
+        "ref": "C.7.2.2", 
+        "use": "U"
+      }, 
+      "SOP Common": {
+        "ref": "C.12.1", 
+        "use": "M"
+      }, 
+      "Specimen": {
+        "ref": "C.7.6.22", 
+        "use": "U"
+      }, 
+      "VOI LUT": {
+        "ref": "C.11.2", 
+        "use": "U"
+      }
+    }, 
+    "title": "Computed Tomography Image IOD"
   }, 
   "1.2.840.10008.5.1.4.1.1.481.2": {
     "modules": {

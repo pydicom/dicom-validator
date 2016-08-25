@@ -2,7 +2,8 @@ import json
 import os
 import unittest
 
-from spec_reader.condition_parser import ConditionParser
+from tools.spec_reader.condition_parser import ConditionParser
+from tools.tests.test_utils import json_fixture_path
 
 
 class ConditionParserTest(unittest.TestCase):
@@ -10,7 +11,7 @@ class ConditionParserTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'dict_info.json')) as f:
+        with open(os.path.join(json_fixture_path(), 'dict_info.json')) as f:
             cls.dict_info = json.load(f)
 
     def setUp(self):

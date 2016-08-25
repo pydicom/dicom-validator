@@ -5,6 +5,7 @@ import pyfakefs.fake_filesystem_unittest
 
 from tools.spec_reader.part3_reader import Part3Reader
 from tools.spec_reader.spec_reader import SpecReaderLookupError, SpecReaderParseError, SpecReaderFileError
+from tools.tests.test_utils import spec_fixture_path
 
 
 class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
@@ -12,7 +13,7 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(os.path.dirname(__file__), 'fixtures', 'part03_excerpt.xml'), 'rb') as f:
+        with open(os.path.join(spec_fixture_path(), 'part03.xml'), 'rb') as f:
             cls.doc_contents = f.read()
 
     def setUp(self):
@@ -47,7 +48,7 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
 
     def test_number_and_chapter_of_iods(self):
         iods = self.reader._get_iod_nodes()
-        self.assertEqual(3, len(iods))
+        self.assertEqual(4, len(iods))
         self.assertTrue('A.3' in iods)
         self.assertFalse('A.38' in iods)
         self.assertTrue('A.38.1' in iods)
@@ -71,7 +72,7 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
 
     def test_iod_descriptions(self):
         descriptions = self.reader.iod_descriptions()
-        self.assertEqual(3, len(descriptions))
+        self.assertEqual(4, len(descriptions))
         self.assertIn('A.3', descriptions)
         self.assertIn('A.18', descriptions)
         self.assertIn('A.38.1', descriptions)
