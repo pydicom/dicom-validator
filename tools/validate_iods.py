@@ -12,7 +12,9 @@ def main():
     parser = argparse.ArgumentParser(
         description='Validates DICOM file IODs')
     parser.add_argument('dicomfile', help='Path of DICOM file to validate')
-    parser.add_argument('--standard-path', '-src', help='', default='./DICOM')
+    parser.add_argument('--standard-path', '-src',
+                        help='Path with the DICOM specs in docbook format',
+                        default='./DICOM')
     args = parser.parse_args()
     part6reader = Part6Reader(args.standard_path)
     dict_info = part6reader.data_elements()

@@ -2,6 +2,8 @@
 Chapter3Reader collects DICOM Information Object Definition information for specific Storage SOP Classes.
 The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 """
+from itertools import groupby
+
 from tools.spec_reader.condition_parser import ConditionParser
 from tools.spec_reader.spec_reader import SpecReader, SpecReaderParseError, SpecReaderLookupError
 
@@ -131,46 +133,59 @@ class Part3Reader(SpecReader):
         last_tag_id = None
         for row in rows:
             columns = self._findall(row, ['td'])
-            tag_name = self._find_text(columns[0])
-            level = tag_name.count('>', 0, 2)
-            tag_name = tag_name[level:]
-            if level > current_level:
-                sequence_description = {}
-                current_descriptions[-1][last_tag_id]['items'] = sequence_description
-                current_descriptions.append(sequence_description)
-            elif level < current_level:
-                current_descriptions.pop()
-            current_level = level
+            tag_name, current_level = self._get_tag_name_and_level(
+                columns[0], current_descriptions, current_level, last_tag_id)
             if len(columns) == 4:
-                tag_id = self._find_text(columns[1])
-                tag_type = self._find_text(columns[2])
-                if tag_id:
-                    current_descriptions[-1][tag_id] = {
-                        'name': tag_name,
-                        'type': tag_type,
-                    }
-                    if self._condition_parser and tag_type in ('1C', '2C'):
-                        current_descriptions[-1][tag_id]['cond'] = self._condition_parser.parse(
-                            self._find_all_text(columns[3]))
-
-                    last_tag_id = tag_id
+                last_tag_id = self._handle_regular_attribute(
+                    columns, current_descriptions, last_tag_id, tag_name)
             elif tag_name.startswith('Include'):
-                include_node = self._find(columns[0], ['para', 'emphasis', 'xref'])
-                if include_node is None:
-                    # todo: functional group macros or similar
-                    continue
-                include_ref = include_node.attrib['linkend']
-                ref_node = self._get_ref_node(include_ref)
-                if ref_node is None:
-                    raise SpecReaderLookupError('Failed to lookup include reference ' + include_ref)
-                ref_description = self._parse_module_description(ref_node)
-                # it is allowed to have no attributes (example: Raw Data)
-                if ref_description is not None:
-                    current_descriptions[-1].update(ref_description)
+                self._handle_included_attributes(columns, current_descriptions)
             else:
                 # todo: other entries
                 pass
         return current_descriptions[0]
+
+    def _handle_included_attributes(self, columns, current_descriptions):
+        include_node = self._find(columns[0], ['para', 'emphasis', 'xref'])
+        if include_node is None:
+            # todo: functional group macros or similar
+            return
+        include_ref = include_node.attrib['linkend']
+        ref_node = self._get_ref_node(include_ref)
+        if ref_node is None:
+            raise SpecReaderLookupError('Failed to lookup include reference ' + include_ref)
+        ref_description = self._parse_module_description(ref_node)
+        # it is allowed to have no attributes (example: Raw Data)
+        if ref_description is not None:
+            current_descriptions[-1].update(ref_description)
+
+    def _handle_regular_attribute(self, columns, current_descriptions, last_tag_id, tag_name):
+        tag_id = self._find_text(columns[1])
+        tag_type = self._find_text(columns[2])
+        if tag_id:
+            current_descriptions[-1][tag_id] = {
+                'name': tag_name,
+                'type': tag_type,
+            }
+            if self._condition_parser and tag_type in ('1C', '2C'):
+                current_descriptions[-1][tag_id]['cond'] = self._condition_parser.parse(
+                    self._find_all_text(columns[3]))
+
+            last_tag_id = tag_id
+        return last_tag_id
+
+    def _get_tag_name_and_level(self, column, current_descriptions, current_level, last_tag_id):
+        tag_name = self._find_text(column)
+        start_chars = next(groupby(tag_name))
+        level = len(list(start_chars[1])) if start_chars[0] == '>' else 0
+        tag_name = tag_name[level:]
+        if level > current_level:
+            sequence_description = {}
+            current_descriptions[-1][last_tag_id]['items'] = sequence_description
+            current_descriptions.append(sequence_description)
+        elif level < current_level:
+            current_descriptions.pop()
+        return tag_name, level
 
     def _get_iod_modules(self, iod_node):
         module_table_sections = self._find_sections_with_title_endings(iod_node, (' Module Table',))

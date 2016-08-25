@@ -5,6 +5,7 @@
 * basic/enhanced, more? additional attributes
 * handle functional groups
 * handle other SOP classes not in the table (presentation states etc.)
+* better handling of includes to avoid duplicates in json
 
 #### Parse module conditions
  * handle required pixel type
