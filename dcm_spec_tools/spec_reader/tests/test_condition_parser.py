@@ -2,8 +2,8 @@ import json
 import os
 import unittest
 
-from tools.spec_reader.condition_parser import ConditionParser
-from tools.tests.test_utils import json_fixture_path
+from dcm_spec_tools.spec_reader.condition_parser import ConditionParser
+from dcm_spec_tools.tests.test_utils import json_fixture_path
 
 
 class ConditionParserTest(unittest.TestCase):

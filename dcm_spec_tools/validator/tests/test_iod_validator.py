@@ -5,8 +5,8 @@ import unittest
 
 from pydicom.dataset import Dataset
 
-from tools.tests.test_utils import json_fixture_path
-from tools.validator.iod_validator import IODValidator
+from dcm_spec_tools.tests.test_utils import json_fixture_path
+from dcm_spec_tools.validator.iod_validator import IODValidator
 
 
 class IODValidatorTest(unittest.TestCase):

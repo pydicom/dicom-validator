@@ -2,10 +2,10 @@ import argparse
 
 from pydicom import filereader
 
-from tools.spec_reader.part6_reader import Part6Reader
-from tools.spec_reader.part3_reader import Part3Reader
-from tools.spec_reader.part4_reader import Part4Reader
-from tools.validator.iod_validator import IODValidator
+from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
+from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
+from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
+from dcm_spec_tools.validator.iod_validator import IODValidator
 
 
 def main():

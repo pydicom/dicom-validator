@@ -4,8 +4,8 @@ The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 """
 from itertools import groupby
 
-from tools.spec_reader.condition_parser import ConditionParser
-from tools.spec_reader.spec_reader import SpecReader, SpecReaderParseError, SpecReaderLookupError
+from dcm_spec_tools.spec_reader.condition_parser import ConditionParser
+from dcm_spec_tools.spec_reader.spec_reader import SpecReader, SpecReaderParseError, SpecReaderLookupError
 
 
 class Part3Reader(SpecReader):

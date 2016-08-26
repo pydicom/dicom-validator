@@ -7,9 +7,8 @@ except ImportError:
 extra = {}
 
 setup(
-    name="dcm_spec_tools",
-    packages=['dcm_spec.tools',
-              'dcm_spec.util'],
+    name="dcm-spec-tools",
+    packages=['dcm_spec_tools.spec_reader', 'dcm_spec_tools.validator'],
     include_package_data=True,
     version="0.0.1",
     install_requires=['pydicom'],

@@ -3,9 +3,9 @@ import unittest
 
 import pyfakefs.fake_filesystem_unittest
 
-from tools.spec_reader.part4_reader import Part4Reader
-from tools.spec_reader.spec_reader import SpecReaderLookupError, SpecReaderParseError
-from tools.tests.test_utils import spec_fixture_path
+from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
+from dcm_spec_tools.spec_reader.spec_reader import SpecReaderLookupError, SpecReaderParseError
+from dcm_spec_tools.tests.test_utils import spec_fixture_path
 
 
 class Part4ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):

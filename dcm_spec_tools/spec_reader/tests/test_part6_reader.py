@@ -3,8 +3,8 @@ import unittest
 
 import pyfakefs.fake_filesystem_unittest
 
-from tools.spec_reader.part6_reader import Part6Reader
-from tools.tests.test_utils import spec_fixture_path
+from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
+from dcm_spec_tools.tests.test_utils import spec_fixture_path
 
 
 class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
