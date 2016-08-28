@@ -15,10 +15,10 @@ class IODValidatorTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(), 'iod_info.json')) as f:
-            cls.iod_specs = json.load(f)
-        with open(os.path.join(json_fixture_path(), 'module_info.json')) as f:
-            cls.module_specs = json.load(f)
+        with open(os.path.join(json_fixture_path(), 'iod_info.json')) as info_file:
+            cls.iod_specs = json.load(info_file)
+        with open(os.path.join(json_fixture_path(), 'module_info.json')) as info_file:
+            cls.module_specs = json.load(info_file)
 
     def setUp(self):
         super(IODValidatorTest, self).setUp()
@@ -29,8 +29,8 @@ class IODValidatorTest(unittest.TestCase):
         """ Create a DICOM data set with the given attributes """
         tags = tags or {}
         data_set = Dataset()
-        for tagName, value in tags.items():
-            setattr(data_set, tagName, value)
+        for tag_name, value in tags.items():
+            setattr(data_set, tag_name, value)
         data_set.file_meta = Dataset()
         data_set.is_implicit_VR = False
         data_set.is_little_endian = True

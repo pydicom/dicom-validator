@@ -16,16 +16,16 @@ def get_chapter(revision, chapter, destination):
         url = base_url + '/{0}/source/docbook/part{1:02}/part{1:02}.xml'.format(revision, chapter)
         try:
             urlretrieve(url, os.path.join(destination, 'part{:02}.xml'.format(chapter)))
-        except BaseException as e:
-            print(u'Failed to download {}: {}'.format(url, str(e)))
+        except BaseException as exception:
+            print(u'Failed to download {}: {}'.format(url, str(exception)))
 
 
 def validate_chapter(chapter):
     try:
-        ch = int(chapter)
+        chapter = int(chapter)
     except ValueError:
         return False
-    if ch < 0 or ch > 20:
+    if chapter < 0 or chapter > 20:
         return False
     return True
 

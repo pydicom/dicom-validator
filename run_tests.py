@@ -2,7 +2,12 @@
 import sys
 import unittest
 
-if __name__ == '__main__':
+
+def run_tests():
     test_suite = unittest.TestLoader().discover('dcm_spec_tools')
     result = unittest.TextTestRunner(verbosity=2).run(test_suite)
-    sys.exit(0 if result.wasSuccessful() else 1)
+    return result.wasSuccessful()
+
+
+if __name__ == '__main__':
+    sys.exit(0 if run_tests() else 1)

@@ -12,8 +12,8 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(spec_fixture_path(), 'part06.xml'), 'rb') as f:
-            cls.doc_contents = f.read()
+        with open(os.path.join(spec_fixture_path(), 'part06.xml'), 'rb') as spec_file:
+            cls.doc_contents = spec_file.read()
 
     def setUp(self):
         super(Part6ReaderTest, self).setUp()

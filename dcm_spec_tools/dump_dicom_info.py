@@ -19,8 +19,8 @@ def print_dataelement(_, dataelement):
         print('No dictionary entry found for {}'.format(tag_id))
     else:
         print('{} {:35} {} {:4} {} [{}]'.format(tag_id,
-                                              description['name'][:35], description['vr'],
-                                              description['vm'], description['prop'], dataelement.value))
+                                                description['name'][:35], description['vr'],
+                                                description['vm'], description['prop'], dataelement.value))
 
 
 def main():

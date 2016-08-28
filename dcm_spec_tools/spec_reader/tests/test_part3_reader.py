@@ -13,8 +13,8 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(spec_fixture_path(), 'part03.xml'), 'rb') as f:
-            cls.doc_contents = f.read()
+        with open(os.path.join(spec_fixture_path(), 'part03.xml'), 'rb') as spec_file:
+            cls.doc_contents = spec_file.read()
 
     def setUp(self):
         super(ReadPart3Test, self).setUp()
@@ -46,14 +46,7 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
         reader = Part3Reader(spec_path)
         self.assertRaises(SpecReaderParseError, reader.iod_description, 'A.6')
 
-    def test_number_and_chapter_of_iods(self):
-        iods = self.reader._get_iod_nodes()
-        self.assertEqual(4, len(iods))
-        self.assertTrue('A.3' in iods)
-        self.assertFalse('A.38' in iods)
-        self.assertTrue('A.38.1' in iods)
-
-    def test_lookup_sop_class_by_chapter(self):
+    def test_lookup_sop_class(self):
         self.assertRaises(SpecReaderLookupError, self.reader.iod_description, 'A.0')
         description = self.reader.iod_description(chapter='A.3')
         self.assertIsNotNone(description)
@@ -85,7 +78,7 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual('Clinical Trial Site Name', description['(0012,0031)']['name'])
         self.assertEqual('2', description['(0012,0031)']['type'])
 
-    def test_sequence_in_module_description(self):
+    def test_sequence_inside_module_description(self):
         description = self.reader.module_description('C.7.2.3')
         self.assertEqual(3, len(description))
         self.assertIn('(0012,0083)', description)

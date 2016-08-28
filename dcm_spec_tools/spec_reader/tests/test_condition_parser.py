@@ -11,8 +11,8 @@ class ConditionParserTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(), 'dict_info.json')) as f:
-            cls.dict_info = json.load(f)
+        with open(os.path.join(json_fixture_path(), 'dict_info.json')) as info_file:
+            cls.dict_info = json.load(info_file)
 
     def setUp(self):
         super(ConditionParserTest, self).setUp()
