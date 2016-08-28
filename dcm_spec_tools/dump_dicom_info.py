@@ -12,7 +12,7 @@ from spec_reader.part6_reader import Part6Reader
 DATA_DEFINITIONS = {}
 
 
-def print_dataelement(_, dataelement):
+def print_dataelement(dummy_dataset, dataelement):
     tag_id = '({:04X},{:04X})'.format(dataelement.tag.group, dataelement.tag.element)
     description = DATA_DEFINITIONS.get(tag_id)
     if description is None:
