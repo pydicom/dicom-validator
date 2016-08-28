@@ -1,6 +1,3 @@
 test-warnings: true
 strictness: high
 max-line-length: 120
-pylint:
-  options:
-    good-names=setUp,setUpClass
