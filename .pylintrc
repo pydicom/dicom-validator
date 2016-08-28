@@ -1,3 +1,7 @@
+[MESSAGES CONTROL]
+# disable check C0111 for doc strings
+disable=C0111
+
 [FORMAT]
 max-line-length=120
 
