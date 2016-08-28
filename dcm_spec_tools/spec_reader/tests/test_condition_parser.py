@@ -127,6 +127,12 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('=', result['op'])
         self.assertEqual(['01'], result['values'])
 
+    def test_value_of(self):
+        result = self.parser.parse('Required if the value of Context Group Extension Flag (0008,010B) is "Y".')
+        self.assertEqual('MN', result['type'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['Y'], result['values'])
+
     def test_value_more_than(self):
         result = self.parser.parse('Required if Data Point Rows (0028,9001) has a value of more than 1.')
         self.assertEqual('MN', result['type'])

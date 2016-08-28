@@ -5,7 +5,8 @@ from collections import OrderedDict
 class ConditionParser(object):
     """Parses a condition string defining if a module or tag shall be present in the data set."""
 
-    tag_expression = re.compile(r'([a-zA-Z \-]+)(\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?( Value \d)?')
+    tag_expression = re.compile(
+        r'(the value of )?(?P<name>[a-zA-Z \-]+)(?P<id>\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?( Value (?P<index>\d))?')
 
     def __init__(self, dict_info):
         self._dict_info = dict_info
@@ -33,7 +34,7 @@ class ConditionParser(object):
 
     def _parse_tag_expression(self, condition):
         result = {'type': 'U'}
-        if not condition or condition[0].islower():
+        if not condition:
             return result
         operators = OrderedDict([
             ('is greater than', '>'),
@@ -74,10 +75,10 @@ class ConditionParser(object):
     def _parse_tag(self, tag_string):
         match = self.tag_expression.match(tag_string.strip())
         if match:
-            value_index = 0 if match.group(3) is None else int(match.group(3)[-1]) - 1
-            if match.group(2) is not None:
-                return match.group(2), value_index
-            tag_name = match.group(1).strip()
+            value_index = 0 if match.group('index') is None else int(match.group('index')) - 1
+            if match.group('id') is not None:
+                return match.group('id'), value_index
+            tag_name = match.group('name').strip()
             for tag_id, entry in self._dict_info.items():
                 if entry['name'] == tag_name:
                     return tag_id, value_index

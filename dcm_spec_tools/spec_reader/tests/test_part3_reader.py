@@ -97,15 +97,20 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual('1C', sequence_description['(0012,0020)']['type'])
 
     def test_referenced_macro(self):
+        # module has 2 directly included attributes and 21 attribute in referenced table
         description = self.reader.module_description('C.7.6.3')
-        self.assertEqual(23, len(description))
+        self.assertEqual(3, len(description))
         self.assertIn('(0028,7FE0)', description)
+        self.assertIn('include', description)
+        self.assertIn('C.7-11b', description['include'])
+        description = self.reader.module_description('C.7-11b')
+        self.assertEqual(21, len(description))
         self.assertIn('(7FE0,0010)', description)
 
     def test_module_descriptions(self):
         descriptions = self.reader.module_descriptions()
-        # modules from 3 classes (20/23/26) with overlapping common modules
-        self.assertEqual(42, len(descriptions))
+        # 42 modules from 3 classes (20/23/26) with overlapping common modules + 27 referenced macros
+        self.assertEqual(69, len(descriptions))
 
 
 if __name__ == '__main__':

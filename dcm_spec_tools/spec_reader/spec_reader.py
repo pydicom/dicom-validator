@@ -62,12 +62,6 @@ class SpecReader(object):
         search_string = '/'.join([self.docbook_ns + element for element in elements])
         return node.findall(search_string)
 
-    def _get_ref_node(self, ref):
-        element, label = ref.split('_')
-        if element == 'sect':
-            element = 'section'
-        return self._get_doc_tree().find('.//{}{}[@label="{}"]'.format(self.docbook_ns, element, label))
-
     def _find_text(self, node):
         try:
             para_node = self._find(node, ['para'])

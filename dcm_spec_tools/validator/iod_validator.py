@@ -40,7 +40,7 @@ class IODValidator(object):
     def _validate_module(self, module):
         errors = {}
         usage = module['use']
-        module_info = self._module_info[module['ref']]
+        module_info = self._get_module_info(module['ref'])
 
         allowed = True
         if usage == 'M':
@@ -132,3 +132,15 @@ class IODValidator(object):
         if operator == '<':
             return tag_value < values[0]
         return False
+
+    def _get_module_info(self, module_ref):
+        return self._expanded_module_info(self._module_info[module_ref])
+
+    def _expanded_module_info(self, module_info):
+        if 'include' in module_info:
+            for ref in module_info['include']:
+                module_info.update(self._get_module_info(ref))
+            del module_info['include']
+        if 'items' in module_info:
+            module_info['items'] = self._expanded_module_info(module_info['items'])
+        return module_info

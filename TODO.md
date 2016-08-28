@@ -1,15 +1,13 @@
 ## Reader
 
 #### Module definition tables from part 3
-* code sequence includes
+* handle functional groups :soon: 
 * basic/enhanced, more? additional attributes
-* handle functional groups
 * handle other SOP classes not in the table (presentation states etc.)
-* better handling of includes to avoid duplicates in json
 
 #### Parse module conditions
- * handle required pixel type
- * handle functional group macros present
+ * handle required pixel type :soon:
+ * handle functional group macros present :soon:
 
 #### Parse attribute description
 * add number of allowed sequences items (1 vs 1-n)
@@ -18,7 +16,7 @@
 #### Parse attribute conditions
 * collect all used styles for tests :o:
 * extend module condition parser for all styles
-    * compound conditions
+    * compound conditions :soon:
     * compound conditions where not all parts can be checked
 * add special handling for code value related tags
 
@@ -47,6 +45,10 @@
 * get input from json files (instead of DICOM spec)
 * verbosity :question:
 * optional additional config files that replace part of the spec
+
+#### Dump
+* show sequence contents w/o help from pydicom
+* add mapping of UIDs to output
 
 ## Miscellaneous
 * make smaller test data for part 3

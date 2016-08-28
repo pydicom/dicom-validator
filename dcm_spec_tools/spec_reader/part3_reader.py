@@ -151,13 +151,15 @@ class Part3Reader(SpecReader):
             # todo: functional group macros or similar
             return
         include_ref = include_node.attrib['linkend']
-        ref_node = self._get_ref_node(include_ref)
-        if ref_node is None:
-            raise SpecReaderLookupError('Failed to lookup include reference ' + include_ref)
-        ref_description = self._parse_module_description(ref_node)
-        # it is allowed to have no attributes (example: Raw Data)
-        if ref_description is not None:
-            current_descriptions[-1].update(ref_description)
+        element, label = self._get_ref_element_and_label(include_ref)
+        if label not in self._module_descriptions:
+            ref_node = self._get_ref_node(element, label)
+            if ref_node is None:
+                raise SpecReaderLookupError('Failed to lookup include reference ' + include_ref)
+            # it is allowed to have no attributes (example: Raw Data)
+            ref_description = self._parse_module_description(ref_node) or {}
+            self._module_descriptions[label] = ref_description
+        current_descriptions[-1].setdefault('include', []).append(label)
 
     def _handle_regular_attribute(self, columns, current_descriptions, last_tag_id, tag_name):
         tag_id = self._find_text(columns[1])
@@ -168,14 +170,30 @@ class Part3Reader(SpecReader):
                 'type': tag_type,
             }
             if self._condition_parser and tag_type in ('1C', '2C'):
+                # cond = self._find_all_text(columns[3])
+                # index = cond.find('Required if ')
+                # if index >= 0:
+                #     current_descriptions[-1][tag_id]['desc'] = cond[index:]
                 current_descriptions[-1][tag_id]['cond'] = self._condition_parser.parse(
                     self._find_all_text(columns[3]))
 
             last_tag_id = tag_id
         return last_tag_id
 
+    def _get_ref_node(self, element, label):
+        return self._get_doc_tree().find('.//{}{}[@label="{}"]'.format(self.docbook_ns, element, label))
+
+    @staticmethod
+    def _get_ref_element_and_label(ref):
+        element, label = ref.split('_')
+        if element == 'sect':
+            element = 'section'
+        return element, label
+
     def _get_tag_name_and_level(self, column, current_descriptions, current_level, last_tag_id):
         tag_name = self._find_text(column)
+        if not tag_name:
+            return '', 0
         start_chars = next(groupby(tag_name))
         level = len(list(start_chars[1])) if start_chars[0] == '>' else 0
         tag_name = tag_name[level:]
