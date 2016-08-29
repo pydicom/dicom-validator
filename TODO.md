@@ -11,20 +11,21 @@
 
 #### Parse attribute description
 * add number of allowed sequences items (1 vs 1-n)
+* add restriction for number of items where available
 * allowed enum values
 
 #### Parse attribute conditions
-* collect all used styles for tests :o:
+* collect all used styles for tests :on:
 * extend module condition parser for all styles
     * compound conditions :soon:
     * compound conditions where not all parts can be checked
-* add special handling for code value related tags
+* check for condition who need special handling
 
 ## Validator
 
 #### IOD Validator
 * module checks
-    * check condition for conditional modules :o:
+    * check condition for conditional modules :on:
     * check optional modules for consistence
 * check tags
     * check condition for 1C/2C attributes - test missing

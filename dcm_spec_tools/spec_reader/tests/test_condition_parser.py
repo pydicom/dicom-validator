@@ -51,6 +51,15 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('=', result['op'])
         self.assertEqual(['GATED', 'GATED TOMO', 'RECON GATED TOMO'], result['values'])
 
+    def test_comma_before_value(self):
+        result = self.parser.parse('Required if Series Type (0054,1000), Value 2 is REPROJECTION.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0054,1000)', result['tag'])
+        self.assertEqual(1, result['index'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['REPROJECTION'], result['values'])
+
     def test_may_be_present_otherwise(self):
         result = self.parser.parse('C - Required if Image Type (0008,0008) Value 1 equals ORIGINAL.'
                                    ' May be present otherwise.')
@@ -148,3 +157,21 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('(0008,0016)', result['tag'])
         self.assertEqual('!=', result['op'])
         self.assertEqual(['1.2.840.10008.5.1.4.1.1.4.4'], result['values'])
+
+    def test_uncheckable_tag_condition(self):
+        result = self.parser.parse('"Required if Numeric Value (0040,A30A) has insufficient '
+                                   'precision to represent the value as a string.')
+        self.assertEqual('U', result['type'])
+        self.assertNotIn('tag', result)
+
+    def test_present_with_value(self):
+        result = self.parser.parse('Required if Selector Attribute VR (0072,0050) is present and the value is AS.')
+        self.assertEqual('MN', result['type'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['AS'], result['values'])
+
+    def test_other_than(self):
+        result = self.parser.parse('Required if Decay Correction (0054,1102) is other than NONE.')
+        self.assertEqual('MN', result['type'])
+        self.assertEqual('!=', result['op'])
+        self.assertEqual(['NONE'], result['values'])
