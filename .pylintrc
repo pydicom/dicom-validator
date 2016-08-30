@@ -8,6 +8,6 @@ max-line-length=120
 [BASIC]
 good-names=setUp,setUpClass
 
-# allow max function name length 40 instead of 30 (helpful for tests)
-method-rgx=[a-z_][a-z0-9_]{2,40}$
+# allow max method name length 40 instead of 30 (helpful for tests)
+# method-rgx=[a-z_][a-z0-9_]{2,40}$
 
