@@ -175,3 +175,39 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('MN', result['type'])
         self.assertEqual('!=', result['op'])
         self.assertEqual(['NONE'], result['values'])
+
+    def test_and_condition(self):
+        result = self.parser.parse('Required if Series Type (0054,1000), Value 1 is GATED and '
+                                   'Beat Rejection Flag (0018,1080) is Y.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(2, len(result['and']))
+        result1 = result['and'][0]
+        self.assertEqual('(0054,1000)', result1['tag'])
+        self.assertEqual('=', result1['op'])
+        self.assertEqual(['GATED'], result1['values'])
+        result2 = result['and'][1]
+        self.assertEqual('(0018,1080)', result2['tag'])
+        self.assertEqual('=', result2['op'])
+        self.assertEqual(['Y'], result2['values'])
+
+    def test_ignore_unverifyable_and_condition(self):
+        result = self.parser.parse('Required if Delivery Type (300A,00CE) is CONTINUATION and '
+                                   'one or more channels of any Application Setup are omitted.')
+        self.assertEqual('MN', result['type'])
+        self.assertNotIn('and', result)
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['CONTINUATION'], result['values'])
+
+    def test_and_without_value(self):
+        result = self.parser.parse('Required if Recorded Channel Sequence (3008,0130) is sent and '
+                                   'Brachy Treatment Type (300A,0202) is not MANUAL or PDR.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        result1 = result['and'][0]
+        self.assertEqual('(3008,0130)', result1['tag'])
+        self.assertEqual('+', result1['op'])
+        result2 = result['and'][1]
+        self.assertEqual('(300A,0202)', result2['tag'])
+        self.assertEqual('!=', result2['op'])
+        self.assertEqual(['MANUAL', 'PDR'], result2['values'])

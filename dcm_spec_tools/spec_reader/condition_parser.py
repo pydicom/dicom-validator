@@ -5,7 +5,7 @@ from collections import OrderedDict
 class ConditionParser(object):
     """Parses the description of type C modules and type 1C and 2C attributes.
        Creates a structured representation (dict) of the condition(s) in the description provided that:
-       - the condition is related to the value, absence or presence of one or more tags in the dataset
+       - the condition is related to the value, absence or presence of one or more tags in the data set
        - the condition is related only to the data set itself
        All other conditions (including parsable conditions which reference other data sets) are ignored.
     """
@@ -30,8 +30,15 @@ class ConditionParser(object):
         ('is not present', '-'),
         ('is absent', '-'),
         ('is not', '!='),
-        ('is', '=')]
-    )
+        ('is', '=')
+    ])
+
+    logical_ops = OrderedDict([
+        ('and if', 'and'),
+        ('and', 'and'),
+        ('or if', 'or'),
+        ('or', 'or')
+    ])
 
     def __init__(self, dict_info):
         self._dict_info = dict_info
@@ -54,13 +61,14 @@ class ConditionParser(object):
             index = condition.lower().find(prefix)
             if index >= 0:
                 condition = condition[len(prefix) + index:]
-                return self._parse_tag_expression(condition)
+                return self._parse_tag_expressions(condition)
         return {'type': 'U'}
 
     def _parse_tag_expression(self, condition):
         result = {'type': 'U'}
+        rest = None
         if not condition:
-            return result
+            return result, rest
         operator_text = None
         op_offset = None
         for op in self.operators:
@@ -69,16 +77,19 @@ class ConditionParser(object):
                 op_offset = offset
                 operator_text = op
         if operator_text is None:
-            return result
+            return result, rest
         tag, value_index = self._parse_tag(condition[:op_offset])
         if tag is not None:
+            rest = condition[op_offset + len(operator_text):]
             result['op'] = self.operators[operator_text]
             result['tag'] = tag
             result['index'] = value_index
             if self.operators[operator_text] in ('=', '!=', '>', '<'):
-                result['values'] = self._parse_tag_values(condition[op_offset + len(operator_text):])
+                result['values'], rest = self._parse_tag_values(rest)
+            else:
+                rest = rest.strip()
             result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
-        return result
+        return result, rest
 
     def _parse_tag(self, tag_string):
         match = self.tag_expression.match(tag_string.strip())
@@ -94,7 +105,7 @@ class ConditionParser(object):
 
     @staticmethod
     def _parse_tag_values(value_string):
-        value_string = ConditionParser.extract_value_string(value_string)
+        value_string, rest = ConditionParser.extract_value_string(value_string)
         values = value_string.split(', ')
         tag_values = []
         for value in values:
@@ -107,16 +118,18 @@ class ConditionParser(object):
                 tag_values.append(value[3:])
             else:
                 tag_values.append(value)
-        return tag_values
+        return tag_values, rest
 
     @staticmethod
     def extract_value_string(value_string):
         # remove stuff that breaks parser
         value_string = value_string.replace('(Legacy Converted)', '')
         start_index = 0
+        rest = None
         while True:
             end_index = -1
-            for end_char in (';', '.'):
+            # todo: handle or
+            for end_char in (';', '.', 'and '):
                 char_index = value_string.find(end_char, start_index)
                 if end_index < 0 or 0 <= char_index < end_index:
                     end_index = char_index
@@ -127,6 +140,25 @@ class ConditionParser(object):
                 start_index = value_string.find('"', apo_index + 1)
             else:
                 if end_index > 0:
+                    rest = value_string[end_index:].strip()
                     value_string = value_string[:end_index]
                 break
-        return value_string
+        return value_string, rest
+
+    def _parse_tag_expressions(self, condition):
+        result, rest = self._parse_tag_expression(condition)
+        if rest is not None:
+            logical_op = None
+            for op in self.logical_ops:
+                if rest.startswith(op + ' '):
+                    logical_op = self.logical_ops[op]
+                    condition = rest[len(op) + 1:]
+                    break
+            if logical_op is not None:
+                next_result = self._parse_tag_expressions(condition)
+                if next_result['type'] != 'U':
+                    del next_result['type']
+                    new_result = {logical_op: [result, next_result], 'type': result['type']}
+                    del result['type']
+                    result = new_result
+        return result
