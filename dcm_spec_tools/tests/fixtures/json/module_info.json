@@ -352,26 +352,14 @@
     }, 
     "(0040,A161)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0040,A30A)", 
-        "type": "MU", 
-        "values": [
-          "ion to represent the value as a string"
-        ]
+        "type": "U"
       }, 
       "name": "Floating Point Value", 
       "type": "1C"
     }, 
     "(0040,A162)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0040,A30A)", 
-        "type": "MU", 
-        "values": [
-          "ion to represent a rational value as a string"
-        ]
+        "type": "U"
       }, 
       "name": "Rational Numerator Value", 
       "type": "1C"
@@ -557,13 +545,7 @@
     }, 
     "(0040,E021)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0040,E022)", 
-        "type": "MN", 
-        "values": [
-          "e"
-        ]
+        "type": "U"
       }, 
       "items": {
         "(0008,0054)": {
@@ -576,13 +558,7 @@
     }, 
     "(0040,E022)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0040,E021)", 
-        "type": "MN", 
-        "values": [
-          "e"
-        ]
+        "type": "U"
       }, 
       "items": {
         "(0088,0130)": {
@@ -599,13 +575,7 @@
     }, 
     "(0040,E023)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0040,E021)", 
-        "type": "MN", 
-        "values": [
-          "e"
-        ]
+        "type": "U"
       }, 
       "items": {
         "(0040,E010)": {
@@ -618,13 +588,7 @@
     }, 
     "(0040,E024)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0040,E021)", 
-        "type": "MN", 
-        "values": [
-          "e"
-        ]
+        "type": "U"
       }, 
       "items": {
         "(0040,E030)": {
@@ -641,13 +605,7 @@
     }, 
     "(0040,E025)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0040,E021)", 
-        "type": "MN", 
-        "values": [
-          "e"
-        ]
+        "type": "U"
       }, 
       "items": {
         "(0008,1190)": {
@@ -846,10 +804,7 @@
     }, 
     "(0008,0102)": {
       "cond": {
-        "index": 0, 
-        "op": "+", 
-        "tag": "(0008,0100)", 
-        "type": "MU"
+        "type": "U"
       }, 
       "name": "Coding Scheme Designator", 
       "type": "1C"
@@ -2034,9 +1989,18 @@
             }, 
             "(0012,0063)": {
               "cond": {
-                "index": 0, 
-                "op": "+", 
-                "tag": "(0012,0062)", 
+                "and": [
+                  {
+                    "index": 0, 
+                    "op": "+", 
+                    "tag": "(0012,0062)"
+                  }, 
+                  {
+                    "index": 0, 
+                    "op": "-", 
+                    "tag": "(0012,0064)"
+                  }
+                ], 
                 "type": "MU"
               }, 
               "name": "De-identification Method", 
@@ -2044,9 +2008,18 @@
             }, 
             "(0012,0064)": {
               "cond": {
-                "index": 0, 
-                "op": "+", 
-                "tag": "(0012,0062)", 
+                "and": [
+                  {
+                    "index": 0, 
+                    "op": "+", 
+                    "tag": "(0012,0062)"
+                  }, 
+                  {
+                    "index": 0, 
+                    "op": "-", 
+                    "tag": "(0012,0063)"
+                  }
+                ], 
                 "type": "MU"
               }, 
               "items": {
@@ -2996,39 +2969,21 @@
         }, 
         "(0040,A121)": {
           "cond": {
-            "index": 0, 
-            "op": "=", 
-            "tag": "(0040,A043)", 
-            "type": "MN", 
-            "values": [
-              "a date"
-            ]
+            "type": "U"
           }, 
           "name": "Date", 
           "type": "1C"
         }, 
         "(0040,A122)": {
           "cond": {
-            "index": 0, 
-            "op": "=", 
-            "tag": "(0040,A043)", 
-            "type": "MN", 
-            "values": [
-              "a time"
-            ]
+            "type": "U"
           }, 
           "name": "Time", 
           "type": "1C"
         }, 
         "(0040,A123)": {
           "cond": {
-            "index": 0, 
-            "op": "=", 
-            "tag": "(0040,A043)", 
-            "type": "MN", 
-            "values": [
-              "a person name"
-            ]
+            "type": "U"
           }, 
           "name": "Person Name", 
           "type": "1C"
@@ -3042,39 +2997,21 @@
         }, 
         "(0040,A160)": {
           "cond": {
-            "index": 0, 
-            "op": "=", 
-            "tag": "(0040,A121)", 
-            "type": "MN", 
-            "values": [
-              "e"
-            ]
+            "type": "U"
           }, 
           "name": "Text Value", 
           "type": "1C"
         }, 
         "(0040,A161)": {
           "cond": {
-            "index": 0, 
-            "op": "=", 
-            "tag": "(0040,A30A)", 
-            "type": "MU", 
-            "values": [
-              "ion to represent the value as a string"
-            ]
+            "type": "U"
           }, 
           "name": "Floating Point Value", 
           "type": "1C"
         }, 
         "(0040,A162)": {
           "cond": {
-            "index": 0, 
-            "op": "=", 
-            "tag": "(0040,A30A)", 
-            "type": "MU", 
-            "values": [
-              "ion to represent a rational value as a string"
-            ]
+            "type": "U"
           }, 
           "name": "Rational Numerator Value", 
           "type": "1C"
@@ -3103,15 +3040,7 @@
         }, 
         "(0040,A30A)": {
           "cond": {
-            "index": 0, 
-            "op": "=", 
-            "tag": "(0040,A043)", 
-            "type": "MN", 
-            "values": [
-              "a set of one", 
-              "more integers", 
-              "real numbers"
-            ]
+            "type": "U"
           }, 
           "name": "Numeric Value", 
           "type": "1C"
@@ -3218,10 +3147,7 @@
     }, 
     "(0040,9211)": {
       "cond": {
-        "index": 0, 
-        "op": "+", 
-        "tag": "(7FE0,0010)", 
-        "type": "MN"
+        "type": "U"
       }, 
       "name": "Real World Value Last Value Mapped", 
       "type": "1C"
@@ -3258,10 +3184,7 @@
     }, 
     "(0040,9216)": {
       "cond": {
-        "index": 0, 
-        "op": "+", 
-        "tag": "(7FE0,0010)", 
-        "type": "MN"
+        "type": "U"
       }, 
       "name": "Real World Value First Value Mapped", 
       "type": "1C"
@@ -3277,20 +3200,14 @@
     }, 
     "(0040,9224)": {
       "cond": {
-        "index": 0, 
-        "op": "-", 
-        "tag": "(7FE0,0008)", 
-        "type": "MN"
+        "type": "U"
       }, 
       "name": "Real World Value Intercept", 
       "type": "1C"
     }, 
     "(0040,9225)": {
       "cond": {
-        "index": 0, 
-        "op": "-", 
-        "tag": "(7FE0,0008)", 
-        "type": "MN"
+        "type": "U"
       }, 
       "name": "Real World Value Slope", 
       "type": "1C"
@@ -3376,58 +3293,106 @@
     }, 
     "(0018,1081)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MN", 
-        "values": [
-          "ORIGINAL", 
-          "MIXED and Cardiac Synchronization Technique (0018,9037) equals PROSPECTIVE", 
-          "RETROSPECTIVE"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0018,9037)", 
+            "values": [
+              "PROSPECTIVE", 
+              "RETROSPECTIVE"
+            ]
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "Low R-R Value", 
       "type": "2C"
     }, 
     "(0018,1082)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MN", 
-        "values": [
-          "ORIGINAL", 
-          "MIXED and Cardiac Synchronization Technique (0018,9037) equals PROSPECTIVE", 
-          "RETROSPECTIVE"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0018,9037)", 
+            "values": [
+              "PROSPECTIVE", 
+              "RETROSPECTIVE"
+            ]
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "High R-R Value", 
       "type": "2C"
     }, 
     "(0018,1083)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MN", 
-        "values": [
-          "ORIGINAL", 
-          "MIXED and Cardiac Synchronization Technique (0018,9037) equals other than NONE"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "!=", 
+            "tag": "(0018,9037)", 
+            "values": [
+              "NONE"
+            ]
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "Intervals Acquired", 
       "type": "2C"
     }, 
     "(0018,1084)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MN", 
-        "values": [
-          "ORIGINAL", 
-          "MIXED and Cardiac Synchronization Technique (0018,9037) equals other than NONE"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "!=", 
+            "tag": "(0018,9037)", 
+            "values": [
+              "NONE"
+            ]
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "Intervals Rejected", 
       "type": "2C"
@@ -3452,43 +3417,79 @@
     }, 
     "(0018,9070)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MN", 
-        "values": [
-          "ORIGINAL", 
-          "MIXED and Cardiac Synchronization Technique (0018,9037) equals other than NONE"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "!=", 
+            "tag": "(0018,9037)", 
+            "values": [
+              "NONE"
+            ]
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "Cardiac RR Interval Specified", 
       "type": "1C"
     }, 
     "(0018,9085)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MN", 
-        "values": [
-          "ORIGINAL", 
-          "MIXED and Cardiac Synchronization Technique (0018,9037) equals other than NONE"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "!=", 
+            "tag": "(0018,9037)", 
+            "values": [
+              "NONE"
+            ]
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "Cardiac Signal Source", 
       "type": "1C"
     }, 
     "(0018,9169)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MN", 
-        "values": [
-          "ORIGINAL", 
-          "MIXED and Cardiac Synchronization Technique (0018,9037) equals PROSPECTIVE", 
-          "RETROSPECTIVE"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0018,9037)", 
+            "values": [
+              "PROSPECTIVE", 
+              "RETROSPECTIVE"
+            ]
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "Cardiac Beat Rejection Technique", 
       "type": "1C"
@@ -3511,14 +3512,26 @@
     }, 
     "(0018,9171)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MN", 
-        "values": [
-          "ORIGINAL", 
-          "MIXED and Respiratory Motion Compensation Technique (0018,9170) equals other than NONE"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "!=", 
+            "tag": "(0018,9170)", 
+            "values": [
+              "NONE"
+            ]
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "Respiratory Signal Source", 
       "type": "1C"
@@ -3532,16 +3545,28 @@
     }, 
     "(0020,9256)": {
       "cond": {
-        "index": 0, 
-        "op": "!=", 
-        "tag": "(0018,9170)", 
-        "type": "MU", 
-        "values": [
-          "NONE", 
-          "REALTIME", 
-          "BREATH_HOLD and if Image Type (0008,0008) Value 1 is ORIGINAL", 
-          "MIXED"
-        ]
+        "and": [
+          {
+            "index": 0, 
+            "op": "!=", 
+            "tag": "(0018,9170)", 
+            "values": [
+              "NONE", 
+              "REALTIME", 
+              "BREATH_HOLD"
+            ]
+          }, 
+          {
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0008,0008)", 
+            "values": [
+              "ORIGINAL", 
+              "MIXED"
+            ]
+          }
+        ], 
+        "type": "MU"
       }, 
       "name": "Respiratory Trigger Delay Threshold", 
       "type": "1C"
@@ -3988,15 +4013,7 @@
     }, 
     "(0008,002A)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MU", 
-        "values": [
-          "frame is ORIGINAL", 
-          "MIXED and SOP Class UID is not \"1.2.840.10008.5.1.4.1.1.2.2\"", 
-          "may be present otherwise"
-        ]
+        "type": "U"
       }, 
       "name": "Acquisition DateTime", 
       "type": "1C"
@@ -4077,15 +4094,7 @@
     }, 
     "(0018,9073)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,0008)", 
-        "type": "MU", 
-        "values": [
-          "frame is ORIGINAL", 
-          "MIXED and SOP Class UID is not \"1.2.840.10008.5.1.4.1.1.2.2\"", 
-          "may be present otherwise"
-        ]
+        "type": "U"
       }, 
       "name": "Acquisition Duration", 
       "type": "1C"
@@ -4353,15 +4362,7 @@
     }, 
     "(0018,9353)": {
       "cond": {
-        "index": 0, 
-        "op": "=", 
-        "tag": "(0008,9215)", 
-        "type": "MU", 
-        "values": [
-          "(113097", 
-          "DCM", 
-          "\"Multi-energy proportional weighting\") . May be present otherwise"
-        ]
+        "type": "U"
       }, 
       "name": "Energy Weighting Factor", 
       "type": "1C"
@@ -4398,15 +4399,7 @@
         }, 
         "(0018,9353)": {
           "cond": {
-            "index": 0, 
-            "op": "=", 
-            "tag": "(0008,9215)", 
-            "type": "MU", 
-            "values": [
-              "(113097", 
-              "DCM", 
-              "\"Multi-energy proportional weighting\") . May be present otherwise"
-            ]
+            "type": "U"
           }, 
           "name": "Energy Weighting Factor", 
           "type": "1C"

@@ -1,6 +1,10 @@
 import logging
 
 
+class InvalidParameterError(Exception):
+    pass
+
+
 class IODValidator(object):
     def __init__(self, dataset, iod_info, module_info):
         self._dataset = dataset
@@ -87,6 +91,17 @@ class IODValidator(object):
     def _object_is_required_or_allowed(self, condition):
         if condition['type'] == 'U':
             return True, True
+        if 'and' in condition:
+            required = all(self._object_is_required(cond) for cond in condition['and'])
+        elif 'or' in condition:
+            required = any(self._object_is_required(cond) for cond in condition['or'])
+        else:
+            required = self._object_is_required(condition)
+        if required:
+            return True, True
+        return False, condition['type'] == 'MU'
+
+    def _object_is_required(self, condition):
         tag_id = self._tag_id(condition['tag'])
         tag_value = None
         condition_fulfilled = tag_id in self._dataset
@@ -102,9 +117,7 @@ class IODValidator(object):
                 tag_value = tag.value
             if tag_value is not None:
                 condition_fulfilled = self._tag_matches(tag_value, condition['op'], condition['values'])
-        if condition_fulfilled:
-            return True, True
-        return False, condition['type'] == 'MU'
+        return condition_fulfilled
 
     def _has_module(self, module_info):
         for tag_id_string, attribute in module_info.items():

@@ -142,6 +142,54 @@ class IODValidatorTest(unittest.TestCase):
         self.assertNotIn('(0020,0052)', result['not allowed'])
         self.assertIn('(0018,106A)', result['not allowed'])
 
+    def test_and_condition_not_met(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'ImageType': 'SECONDARY',
+            'CardiacSynchronizationTechnique': 'OTHER',
+            'HighRRValue': '123'    # 0018,1082
+        })
+        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        result = validator.validate()
+
+        # Both Low R-R Value and High R-R Value are not needed but allowed
+        self.assertNotIn('(0018,1081)', result['missing'])  # Low R-R Value
+        self.assertNotIn('(0018,1082)', result['missing'])  # High R-R Value
+
+    def test_only_one_and_condition_met(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'ImageType': 'PRIMARY',
+            'CardiacSynchronizationTechnique': 'OTHER',
+            'HighRRValue': '123'    # 0018,1082
+        })
+        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        result = validator.validate()
+
+        # Both Low R-R Value and High R-R Value are not needed but allowed
+        self.assertNotIn('(0018,1081)', result['missing'])  # Low R-R Value
+        self.assertNotIn('(0018,1082)', result['missing'])  # High R-R Value
+
+    def test_and_condition_met(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'ImageType': 'MIXED',
+            'CardiacSynchronizationTechnique': 'PROSPECTIVE',
+            'HighRRValue': '123'    # 0018,1082
+        })
+        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        result = validator.validate()
+
+        # Both Low R-R Value and High R-R Value are needed
+        self.assertIn('(0018,1081)', result['missing'])     # Low R-R Value
+        self.assertNotIn('(0018,1082)', result['missing'])  # High R-R Value
+
 
 if __name__ == '__main__':
     unittest.main()

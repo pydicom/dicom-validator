@@ -6,11 +6,8 @@
         "use": "M"
       }, 
       "Cardiac Synchronization": {
-        "cond": {
-          "type": "U"
-        }, 
         "ref": "C.7.6.18.1", 
-        "use": "C - Required if cardiac synchronization was applied."
+        "use": "M"
       }, 
       "Clinical Trial Series": {
         "ref": "C.7.3.2", 
