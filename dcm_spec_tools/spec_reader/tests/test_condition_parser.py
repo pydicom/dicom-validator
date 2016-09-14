@@ -7,6 +7,7 @@ from dcm_spec_tools.tests.test_utils import json_fixture_path
 
 
 class ConditionParserTest(unittest.TestCase):
+    """Tests ConditionParser by testing different kinds of condition strings as taken from DICOM standard."""
     dict_info = None
 
     @classmethod

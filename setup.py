@@ -10,18 +10,18 @@ setup(
     name="dcm-spec-tools",
     packages=['dcm_spec_tools.spec_reader', 'dcm_spec_tools.validator'],
     include_package_data=True,
-    version="0.0.1",
+    version="0.0.2",
     install_requires=['pydicom'],
-    description="Python DICOM tools using inout from DICOM specs in docbook format",
+    description="Python DICOM tools using input from DICOM specs in docbook format",
     author="mrbean-bremen",
-    author_email="hanse-mrbean@gmail.com",
+    author_email="hansemrbean@googlemail.com",
     url="http://github.com/mrbean-bremen/dcm_spec_tools",
     keywords="dicom python",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Intended Audience :: Developers",
         "Intended Audience :: Healthcare Industry",
-        "Development Status :: 1 - Planning",
+        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Console",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
@@ -34,7 +34,7 @@ setup(
     ],
     long_description="""
     Toy project for getting information from the DICOM standard
-    and using this information in various tools.
+    and using this information in command line tools.
     Aims to be usable with various versions of the DICOM standard.
     """,
     **extra

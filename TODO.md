@@ -26,11 +26,11 @@
     * check optional modules for consistence
 * check tags
     * check condition for 1C/2C attributes
-        * compound conditions
         * tests for different types
     * unsupported tags
     * functional groups
     * repeating groups (60xx)
+* add modules requiring missing attributes to result
 * allow additional user input specs (fixed name)
 
 #### Other 
@@ -42,7 +42,8 @@
 #### Validator
 * allow several files / directories
 * output options (xml:question:)
-* get input from json files (instead of DICOM spec) :soon:
+* add tag names to output
+* add modules requiring missing attributes to output
 * verbosity :question:
 * optional additional config files that replace part of the spec
 
