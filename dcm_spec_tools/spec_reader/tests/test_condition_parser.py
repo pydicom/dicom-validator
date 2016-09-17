@@ -212,3 +212,34 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('(300A,0202)', result2['tag'])
         self.assertEqual('!=', result2['op'])
         self.assertEqual(['MANUAL', 'PDR'], result2['values'])
+
+    def test_multiple_tag_absence(self):
+        result = self.parser.parse('Required if DICOM Media Retrieval Sequence (0040,E022), '
+                                   'WADO Retrieval Sequence (0040,E023), WADO-RS Retrieval Sequence (0040,E025)'
+                                   ' and XDS Retrieval Sequence (0040,E024) are not present. May be present otherwise.')
+        self.assertEqual('MU', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(4, len(result['and']))
+        for result_part in result['and']:
+            self.assertEqual('-', result_part['op'])
+
+    def test_multiple_tag_presence(self):
+        result = self.parser.parse('Required if Selector Attribute (0072,0026) and '
+                                   'Filter-by Operator (0072,0406) are present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(2, len(result['and']))
+        for result_part in result['and']:
+            self.assertEqual('+', result_part['op'])
+
+    def test_mixed_and_or_tag_presence(self):
+        result = self.parser.parse('Required if Selector Attribute (0072,0026) or Filter-by Category (0072,0402), '
+                                   'and Filter-by Operator (0072,0406) are present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(2, len(result['and']))
+        self.assertIn('or', result['and'][0])
+        self.assertEqual(2, len(result['and'][0]['or']))
+        for result_part in result['and'][0]['or']:
+            self.assertEqual('+', result_part['op'])
+        self.assertEqual('+', result['and'][1]['op'])

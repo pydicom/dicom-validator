@@ -30,7 +30,9 @@ class ConditionParser(object):
         ('is not present', '-'),
         ('is absent', '-'),
         ('is not', '!='),
-        ('is', '=')
+        ('is', '='),
+        ('are not present', '*-'),
+        ('are present', '*+')
     ])
 
     logical_ops = OrderedDict([
@@ -78,17 +80,22 @@ class ConditionParser(object):
                 operator_text = op
         if operator_text is None:
             return result, rest
-        tag, value_index = self._parse_tag(condition[:op_offset])
-        if tag is not None:
+        operator = self.operators[operator_text]
+        if operator.startswith('*'):
+            result.update(self._parse_tags(condition[:op_offset], operator[1:]))
+        else:
+            tag, value_index = self._parse_tag(condition[:op_offset])
+            if tag is None:
+                return result, rest
             rest = condition[op_offset + len(operator_text):]
-            result['op'] = self.operators[operator_text]
+            result['op'] = operator
             result['tag'] = tag
             result['index'] = value_index
             if self.operators[operator_text] in ('=', '!=', '>', '<'):
                 result['values'], rest = self._parse_tag_values(rest)
             else:
                 rest = rest.strip()
-            result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
+        result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
         return result, rest
 
     def _parse_tag(self, tag_string):
@@ -161,4 +168,39 @@ class ConditionParser(object):
                     new_result = {logical_op: [result, next_result], 'type': result['type']}
                     del result['type']
                     result = new_result
+        return result
+
+    def _parse_tags(self, condition, operator):
+        # this handles only a few cases that are actually found
+        result = {}
+        if ', and ' in condition:
+            and_conditions = condition.split(', and ')
+            result['and'] = [
+                self._parse_tags(and_conditions[0], operator),
+                self._parse_tags(and_conditions[1], operator)
+            ]
+        elif ', or ' in condition:
+            or_conditions = condition.split(', or ')
+            result['or'] = [
+                self._parse_tags(or_conditions[0], operator),
+                self._parse_tags(or_conditions[1], operator)
+            ]
+        elif ' and ' in condition:
+            condition = condition.replace(' and ', ', ')
+            result['and'] = []
+            for tag_string in condition.split(', '):
+                tag, index = self._parse_tag(tag_string)
+                if tag is not None:
+                    result['and'].append({'tag': tag, 'index': index, 'op': operator})
+        elif ' or ' in condition:
+            condition = condition.replace(' or ', ', ')
+            result['or'] = []
+            for tag_string in condition.split(', '):
+                tag, index = self._parse_tag(tag_string)
+                if tag is not None:
+                    result['or'].append({'tag': tag, 'index': index, 'op': operator})
+        else:
+            tag, index = self._parse_tag(condition)
+            if tag is not None:
+                result.update({'tag': tag, 'index': index, 'op': operator})
         return result
