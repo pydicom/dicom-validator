@@ -31,8 +31,8 @@ class ConditionParser(object):
         ('is absent', '-'),
         ('is not', '!='),
         ('is', '='),
-        ('are not present', '*-'),
-        ('are present', '*+')
+        ('are not present', '-'),
+        ('are present', '+')
     ])
 
     logical_ops = OrderedDict([
@@ -67,10 +67,6 @@ class ConditionParser(object):
         return {'type': 'U'}
 
     def _parse_tag_expression(self, condition):
-        result = {'type': 'U'}
-        rest = None
-        if not condition:
-            return result, rest
         operator_text = None
         op_offset = None
         for operator in self.operators:
@@ -79,22 +75,16 @@ class ConditionParser(object):
                 op_offset = offset
                 operator_text = operator
         if operator_text is None:
-            return result, rest
+            return {'type': 'U'}, None
         operator = self.operators[operator_text]
-        if operator.startswith('*'):
-            result.update(self._parse_tags(condition[:op_offset], operator[1:]))
+        rest = condition[op_offset + len(operator_text):]
+        result = self._parse_tags(condition[:op_offset], operator)
+        if not result:
+            return {'type': 'U'}, None
+        if self.operators[operator_text] in ('=', '!=', '>', '<'):
+            result['values'], rest = self._parse_tag_values(rest)
         else:
-            tag, value_index = self._parse_tag(condition[:op_offset])
-            if tag is None:
-                return result, rest
-            rest = condition[op_offset + len(operator_text):]
-            result['op'] = operator
-            result['tag'] = tag
-            result['index'] = value_index
-            if self.operators[operator_text] in ('=', '!=', '>', '<'):
-                result['values'], rest = self._parse_tag_values(rest)
-            else:
-                rest = rest.strip()
+            rest = rest.strip()
         result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
         return result, rest
 
@@ -155,6 +145,8 @@ class ConditionParser(object):
     def _parse_tag_expressions(self, condition):
         result, rest = self._parse_tag_expression(condition)
         if rest is not None:
+            if rest.startswith(', '):
+                rest = rest[2:]
             logical_op = None
             for operator in self.logical_ops:
                 if rest.startswith(operator + ' '):
@@ -180,8 +172,6 @@ class ConditionParser(object):
             return self._parse_multiple_tags(condition, operator, 'and')
         if ' or ' in condition:
             return self._parse_multiple_tags(condition, operator, 'or')
-        if ', ' in condition:
-            return
         tag, index = self._parse_tag(condition)
         if tag is not None:
             return {'tag': tag, 'index': index, 'op': operator}
@@ -191,7 +181,7 @@ class ConditionParser(object):
         split_string = ', {} '.format(logical_op)
         conditions = condition.split(split_string)
         result0 = self._parse_tags(conditions[0], operator)
-        if result0 is None:
+        if not result0:
             result = self._parse_tags(condition.replace(split_string, split_string.replace(',', '')), operator)
         else:
             result = {

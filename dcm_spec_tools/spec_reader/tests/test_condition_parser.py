@@ -254,3 +254,25 @@ class ConditionParserTest(unittest.TestCase):
         for result_part in result['and'][0]['or']:
             self.assertEqual('+', result_part['op'])
         self.assertEqual('+', result['and'][1]['op'])
+
+    def test_multi_tag_in_second_condition(self):
+        result = self.parser.parse('Required if Temporal Range Type (0040,A130) is present, '
+                                   'and if Referenced Time Offsets (0040,A138) and '
+                                   'Referenced DateTime (0040,A13A) are not present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(2, len(result['and']))
+        self.assertIn('and', result['and'][1])
+        self.assertEqual(2, len(result['and'][1]['and']))
+        for result_part in result['and'][1]['and']:
+            self.assertEqual('-', result_part['op'])
+        self.assertEqual('+', result['and'][0]['op'])
+
+    def test_is_present_with_multiple_tags(self):
+        result = self.parser.parse('Required if Bounding Box Top Left Hand Corner (0070,0010) '
+                                   'or Bounding Box Bottom Right Hand Corner (0070,0011) is present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('or', result)
+        self.assertEqual(2, len(result['or']))
+        for result_part in result['or']:
+            self.assertEqual('+', result_part['op'])
