@@ -11,5 +11,5 @@ install:
 
 script: ./run_tests.py
 
-after-success:
+after_success:
   - coveralls
