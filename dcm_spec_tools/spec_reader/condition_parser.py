@@ -73,11 +73,11 @@ class ConditionParser(object):
             return result, rest
         operator_text = None
         op_offset = None
-        for op in self.operators:
-            offset = condition.find(op)
+        for operator in self.operators:
+            offset = condition.find(operator)
             if offset > 0 and (op_offset is None or offset < op_offset):
                 op_offset = offset
-                operator_text = op
+                operator_text = operator
         if operator_text is None:
             return result, rest
         operator = self.operators[operator_text]
@@ -156,10 +156,10 @@ class ConditionParser(object):
         result, rest = self._parse_tag_expression(condition)
         if rest is not None:
             logical_op = None
-            for op in self.logical_ops:
-                if rest.startswith(op + ' '):
-                    logical_op = self.logical_ops[op]
-                    condition = rest[len(op) + 1:]
+            for operator in self.logical_ops:
+                if rest.startswith(operator + ' '):
+                    logical_op = self.logical_ops[operator]
+                    condition = rest[len(operator) + 1:]
                     break
             if logical_op is not None:
                 next_result = self._parse_tag_expressions(condition)
@@ -172,35 +172,43 @@ class ConditionParser(object):
 
     def _parse_tags(self, condition, operator):
         # this handles only a few cases that are actually found
-        result = {}
         if ', and ' in condition:
-            and_conditions = condition.split(', and ')
-            result['and'] = [
-                self._parse_tags(and_conditions[0], operator),
-                self._parse_tags(and_conditions[1], operator)
-            ]
-        elif ', or ' in condition:
-            or_conditions = condition.split(', or ')
-            result['or'] = [
-                self._parse_tags(or_conditions[0], operator),
-                self._parse_tags(or_conditions[1], operator)
-            ]
-        elif ' and ' in condition:
-            condition = condition.replace(' and ', ', ')
-            result['and'] = []
-            for tag_string in condition.split(', '):
-                tag, index = self._parse_tag(tag_string)
-                if tag is not None:
-                    result['and'].append({'tag': tag, 'index': index, 'op': operator})
-        elif ' or ' in condition:
-            condition = condition.replace(' or ', ', ')
-            result['or'] = []
-            for tag_string in condition.split(', '):
-                tag, index = self._parse_tag(tag_string)
-                if tag is not None:
-                    result['or'].append({'tag': tag, 'index': index, 'op': operator})
+            return self._parse_tag_composition(condition, operator, 'and')
+        if ', or ' in condition:
+            return self._parse_tag_composition(condition, operator, 'or')
+        if ' and ' in condition:
+            return self._parse_multiple_tags(condition, operator, 'and')
+        if ' or ' in condition:
+            return self._parse_multiple_tags(condition, operator, 'or')
+        if ', ' in condition:
+            return
+        tag, index = self._parse_tag(condition)
+        if tag is not None:
+            return {'tag': tag, 'index': index, 'op': operator}
+        return {}
+
+    def _parse_tag_composition(self, condition, operator, logical_op):
+        split_string = ', {} '.format(logical_op)
+        conditions = condition.split(split_string)
+        result0 = self._parse_tags(conditions[0], operator)
+        if result0 is None:
+            result = self._parse_tags(condition.replace(split_string, split_string.replace(',', '')), operator)
         else:
-            tag, index = self._parse_tag(condition)
+            result = {
+                logical_op: [
+                    result0,
+                    self._parse_tags(conditions[1], operator)
+                ]
+            }
+        return result
+
+    def _parse_multiple_tags(self, condition, operator, logical_op):
+        condition = condition.replace(' {} '.format(logical_op), ', ')
+        result = {
+            logical_op: []
+        }
+        for tag_string in condition.split(', '):
+            tag, index = self._parse_tag(tag_string)
             if tag is not None:
-                result.update({'tag': tag, 'index': index, 'op': operator})
+                result[logical_op].append({'tag': tag, 'index': index, 'op': operator})
         return result

@@ -223,6 +223,17 @@ class ConditionParserTest(unittest.TestCase):
         for result_part in result['and']:
             self.assertEqual('-', result_part['op'])
 
+    def test_multiple_tag_absence_with_comma(self):
+        result = self.parser.parse('Required if DICOM Retrieval Sequence (0040,E021), '
+                                   'WADO Retrieval Sequence (0040,E023), '
+                                   'and WADO-RS Retrieval Sequence (0040,E025) '
+                                   'and XDS Retrieval Sequence (0040,E024) are not present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(4, len(result['and']))
+        for result_part in result['and']:
+            self.assertEqual('-', result_part['op'])
+
     def test_multiple_tag_presence(self):
         result = self.parser.parse('Required if Selector Attribute (0072,0026) and '
                                    'Filter-by Operator (0072,0406) are present.')
