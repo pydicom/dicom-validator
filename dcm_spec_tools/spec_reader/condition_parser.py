@@ -78,13 +78,13 @@ class ConditionParser(object):
             return {'type': 'U'}, None
         operator = self.operators[operator_text]
         rest = condition[op_offset + len(operator_text):]
-        result = self._parse_tags(condition[:op_offset], operator)
+        if self.operators[operator_text] in ('=', '!=', '>', '<'):
+            values, rest = self._parse_tag_values(rest)
+        else:
+            values, rest = None, rest.strip()
+        result = self._parse_tags(condition[:op_offset], operator, values)
         if not result:
             return {'type': 'U'}, None
-        if self.operators[operator_text] in ('=', '!=', '>', '<'):
-            result['values'], rest = self._parse_tag_values(rest)
-        else:
-            rest = rest.strip()
         result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
         return result, rest
 
@@ -162,43 +162,49 @@ class ConditionParser(object):
                     result = new_result
         return result
 
-    def _parse_tags(self, condition, operator):
+    def _parse_tags(self, condition, operator, values):
         # this handles only a few cases that are actually found
         if ', and ' in condition:
-            return self._parse_tag_composition(condition, operator, 'and')
+            return self._parse_tag_composition(condition, operator, values, 'and')
         if ', or ' in condition:
-            return self._parse_tag_composition(condition, operator, 'or')
+            return self._parse_tag_composition(condition, operator, values, 'or')
         if ' and ' in condition:
-            return self._parse_multiple_tags(condition, operator, 'and')
+            return self._parse_multiple_tags(condition, operator, values, 'and')
         if ' or ' in condition:
-            return self._parse_multiple_tags(condition, operator, 'or')
-        tag, index = self._parse_tag(condition)
-        if tag is not None:
-            return {'tag': tag, 'index': index, 'op': operator}
-        return {}
+            return self._parse_multiple_tags(condition, operator, values, 'or')
+        return self._result_from_tag_string(condition, operator, values)
 
-    def _parse_tag_composition(self, condition, operator, logical_op):
+    def _parse_tag_composition(self, condition, operator, values, logical_op):
         split_string = ', {} '.format(logical_op)
         conditions = condition.split(split_string)
-        result0 = self._parse_tags(conditions[0], operator)
+        result0 = self._parse_tags(conditions[0], operator, values)
         if not result0:
-            result = self._parse_tags(condition.replace(split_string, split_string.replace(',', '')), operator)
+            result = self._parse_tags(condition.replace(
+                split_string, split_string.replace(',', '')), operator, values)
         else:
             result = {
                 logical_op: [
                     result0,
-                    self._parse_tags(conditions[1], operator)
+                    self._parse_tags(conditions[1], operator, values)
                 ]
             }
         return result
 
-    def _parse_multiple_tags(self, condition, operator, logical_op):
+    def _parse_multiple_tags(self, condition, operator, values, logical_op):
         condition = condition.replace(' {} '.format(logical_op), ', ')
         result = {
             logical_op: []
         }
         for tag_string in condition.split(', '):
-            tag, index = self._parse_tag(tag_string)
-            if tag is not None:
-                result[logical_op].append({'tag': tag, 'index': index, 'op': operator})
+            tag_result = self._result_from_tag_string(tag_string, operator, values)
+            if tag_result:
+                result[logical_op].append(tag_result)
         return result
+
+    def _result_from_tag_string(self, tag_string, operator, values):
+        tag, index = self._parse_tag(tag_string)
+        if tag is not None:
+            result = {'tag': tag, 'index': index, 'op': operator}
+            if values:
+                result['values'] = values
+            return result

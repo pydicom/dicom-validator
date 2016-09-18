@@ -276,3 +276,17 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual(2, len(result['or']))
         for result_part in result['or']:
             self.assertEqual('+', result_part['op'])
+
+    def test_multiple_tags_with_value(self):
+        result = self.parser.parse('Required if the value of Image Box Layout Type (0072,0304) is TILED, '
+                                   'and the value of Image Box Tile Horizontal Dimension (0072,0306) or '
+                                   'Image Box Tile Vertical Dimension (0072,0308) is greater than 1.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(2, len(result['and']))
+        self.assertIn('or', result['and'][1])
+        self.assertEqual(2, len(result['and'][1]['or']))
+        for result_part in result['and'][1]['or']:
+            self.assertEqual('>', result_part['op'])
+            self.assertIn('values', result_part)
+            self.assertEqual('1', result_part['values'][0])
