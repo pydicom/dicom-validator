@@ -192,6 +192,10 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('=', result2['op'])
         self.assertEqual(['Y'], result2['values'])
 
+    def test_ignore_condition_without_tag(self):
+        result = self.parser.parse('Required if present and consistent in the contributing SOP Instances. ')
+        self.assertEqual('U', result['type'])
+
     def test_ignore_unverifyable_and_condition(self):
         result = self.parser.parse('Required if Delivery Type (300A,00CE) is CONTINUATION and '
                                    'one or more channels of any Application Setup are omitted.')
@@ -290,3 +294,14 @@ class ConditionParserTest(unittest.TestCase):
             self.assertEqual('>', result_part['op'])
             self.assertIn('values', result_part)
             self.assertEqual('1', result_part['values'][0])
+
+    def test_ispresent_with_value(self):
+        result = self.parser.parse('Required if Patient Identity Removed (0012,0062) is present and '
+                                   'has a value of YES and '
+                                   'De-identification Method Code Sequence (0012,0064) is not present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(2, len(result['and']))
+        self.assertEqual('=', result['and'][0]['op'])
+        self.assertEqual('YES', result['and'][0]['values'][0])
+        self.assertEqual('-', result['and'][1]['op'])

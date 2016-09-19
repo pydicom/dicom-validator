@@ -24,6 +24,7 @@ class ConditionParser(object):
         ('equals', '='),
         ('is other than', '!='),
         ('is present and the value is', '='),
+        ('is present and has a value of', '='),
         ('is present', '+'),
         ('is sent', '+'),
         ('is not sent', '-'),
@@ -199,7 +200,7 @@ class ConditionParser(object):
             tag_result = self._result_from_tag_string(tag_string, operator, values)
             if tag_result:
                 result[logical_op].append(tag_result)
-        return result
+        return result if result[logical_op] else {}
 
     def _result_from_tag_string(self, tag_string, operator, values):
         tag, index = self._parse_tag(tag_string)
