@@ -14,26 +14,26 @@ class ConditionParser(object):
         r'(the value of )?(?P<name>[a-zA-Z \-]+)(?P<id>\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?(,? Value (?P<index>\d))?$')
 
     operators = OrderedDict([
-        ('is greater than', '>'),
-        ('is present and equals', '='),
-        ('value is', '='),
-        ('has a value of more than', '>'),
-        ('has a value of', '='),
-        ('=', '='),
-        ('equals other than', '!='),
-        ('equals', '='),
-        ('is other than', '!='),
-        ('is present and the value is', '='),
-        ('is present and has a value of', '='),
-        ('is present', '+'),
-        ('is sent', '+'),
-        ('is not sent', '-'),
-        ('is not present', '-'),
-        ('is absent', '-'),
-        ('is not', '!='),
-        ('is', '='),
-        ('are not present', '-'),
-        ('are present', '+')
+        (' is greater than ', '>'),
+        (' is present and equals ', '='),
+        (' value is ', '='),
+        (' has a value of more than ', '>'),
+        (' has a value of ', '='),
+        (' = ', '='),
+        (' equals other than ', '!='),
+        (' equals ', '='),
+        (' is other than ', '!='),
+        (' is present and the value is ', '='),
+        (' is present and has a value of ', '='),
+        (' is present', '+'),
+        (' is sent', '+'),
+        (' is not sent', '-'),
+        (' is not present', '-'),
+        (' is absent', '-'),
+        (' is not ', '!='),
+        (' is ', '='),
+        (' are not present', '-'),
+        (' are present', '+')
     ])
 
     logical_ops = OrderedDict([
@@ -134,7 +134,7 @@ class ConditionParser(object):
             apo_index = value_string.find('"', start_index)
             if end_index < 0:
                 break
-            if 0 < apo_index < end_index:
+            if 0 <= apo_index < end_index:
                 start_index = value_string.find('"', apo_index + 1)
             else:
                 if end_index > 0:

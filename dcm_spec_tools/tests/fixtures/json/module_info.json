@@ -1532,7 +1532,14 @@
         }, 
         "(0020,9172)": {
           "cond": {
-            "type": "U"
+            "and": [
+              {
+                "index": 0, 
+                "op": "-", 
+                "tag": "(0020,9172)"
+              }
+            ], 
+            "type": "MN"
           }, 
           "items": {
             "include": [
@@ -2512,14 +2519,27 @@
       "items": {
         "(0012,0020)": {
           "cond": {
-            "type": "U"
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0012,0084)", 
+            "type": "MN", 
+            "values": [
+              "NAMED_PROTOCOL"
+            ]
           }, 
           "name": "Clinical Trial Protocol ID", 
           "type": "1C"
         }, 
         "(0012,0084)": {
           "cond": {
-            "type": "U"
+            "index": 0, 
+            "op": "=", 
+            "tag": "(0012,0085)", 
+            "type": "MN", 
+            "values": [
+              "YES", 
+              "WITHDRAWN"
+            ]
           }, 
           "name": "Distribution Type", 
           "type": "1C"
@@ -3143,25 +3163,7 @@
         }, 
         "(0040,A160)": {
           "cond": {
-            "and": [
-              {
-                "index": 0, 
-                "op": "=", 
-                "tag": "(0040,A121)", 
-                "values": [
-                  "e"
-                ]
-              }, 
-              {
-                "index": 0, 
-                "op": "=", 
-                "tag": "(0040,A122)", 
-                "values": [
-                  "e"
-                ]
-              }
-            ], 
-            "type": "MN"
+            "type": "U"
           }, 
           "name": "Text Value", 
           "type": "1C"

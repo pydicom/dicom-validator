@@ -19,11 +19,67 @@ class ConditionParserTest(unittest.TestCase):
         super(ConditionParserTest, self).setUp()
         self.parser = ConditionParser(self.dict_info)
 
-    def test_invalid_condition(self):
+
+class SimpleConditionParserTest(ConditionParserTest):
+    def test_ignore_invalid_condition(self):
         result = self.parser.parse('')
         self.assertNotIn('tag', result)
         self.assertEqual('U', result['type'])
 
+    def test_ignore_uncheckable_tag_condition(self):
+        result = self.parser.parse('"Required if Numeric Value (0040,A30A) has insufficient '
+                                   'precision to represent the value as a string.')
+        self.assertEqual('U', result['type'])
+        self.assertNotIn('tag', result)
+
+    def test_ignore_condition_without_tag(self):
+        result = self.parser.parse('Required if present and consistent in the contributing SOP Instances. ')
+        self.assertEqual('U', result['type'])
+
+    def test_not_present(self):
+        result = self.parser.parse('Required if VOI LUT Sequence (0028,3010) is not present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0028,3010)', result['tag'])
+        self.assertEqual('-', result['op'])
+        self.assertNotIn('values', result)
+
+    def test_operator_in_tag(self):
+        result = self.parser.parse('Required if Fractional Channel Display Scale (003A,0247) is not present')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(003A,0247)', result['tag'])
+        self.assertEqual('-', result['op'])
+        self.assertNotIn('values', result)
+
+    def test_is_present(self):
+        result = self.parser.parse('Required if Bounding Box Top Left Hand Corner (0070,0010) is present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0070,0010)', result['tag'])
+        self.assertEqual('+', result['op'])
+        self.assertNotIn('values', result)
+
+    def test_not_sent(self):
+        result = self.parser.parse('Required if Anatomic Region Modifier Sequence (0008,2220) is not sent. ')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0008,2220)', result['tag'])
+        self.assertEqual('-', result['op'])
+        self.assertNotIn('values', result)
+
+    def test_shall_be_condition_with_absent_tag(self):
+        result = self.parser.parse('Some Stuff. Shall be present if Clinical Trial Subject Reading ID '
+                                   '(0012,0042) is absent. May be present otherwise.')
+        self.assertEqual('MU', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0012,0042)', result['tag'])
+        self.assertEqual(0, result['index'])
+        self.assertEqual('-', result['op'])
+        self.assertNotIn('values', result)
+
+
+class ValueConditionParserTest(ConditionParserTest):
     def test_equality_tag(self):
         result = self.parser.parse('C - Required if Modality (0008,0060) = IVUS')
         self.assertEqual('MN', result['type'])
@@ -90,16 +146,6 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('=', result['op'])
         self.assertEqual(['Frame Time (0018,1063)', 'Frame Time Vector (0018,1065)'], result['values'])
 
-    def test_shall_be_condition_with_absent_tag(self):
-        result = self.parser.parse('Some Stuff. Shall be present if Clinical Trial Subject Reading ID '
-                                   '(0012,0042) is absent. May be present otherwise.')
-        self.assertEqual('MU', result['type'])
-        self.assertIn('tag', result)
-        self.assertEqual('(0012,0042)', result['tag'])
-        self.assertEqual(0, result['index'])
-        self.assertEqual('-', result['op'])
-        self.assertNotIn('values', result)
-
     def test_has_a_value_of(self):
         result = self.parser.parse('Required if Pixel Presentation (0008,9205) has a value of TRUE_COLOR.')
         self.assertEqual('MN', result['type'])
@@ -107,30 +153,6 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('(0008,9205)', result['tag'])
         self.assertEqual('=', result['op'])
         self.assertEqual(['TRUE_COLOR'], result['values'])
-
-    def test_not_present(self):
-        result = self.parser.parse('Required if VOI LUT Sequence (0028,3010) is not present.')
-        self.assertEqual('MN', result['type'])
-        self.assertIn('tag', result)
-        self.assertEqual('(0028,3010)', result['tag'])
-        self.assertEqual('-', result['op'])
-        self.assertNotIn('values', result)
-
-    def test_is_present(self):
-        result = self.parser.parse('Required if Bounding Box Top Left Hand Corner (0070,0010) is present.')
-        self.assertEqual('MN', result['type'])
-        self.assertIn('tag', result)
-        self.assertEqual('(0070,0010)', result['tag'])
-        self.assertEqual('+', result['op'])
-        self.assertNotIn('values', result)
-
-    def test_not_sent(self):
-        result = self.parser.parse('Required if Anatomic Region Modifier Sequence (0008,2220) is not sent. ')
-        self.assertEqual('MN', result['type'])
-        self.assertIn('tag', result)
-        self.assertEqual('(0008,2220)', result['tag'])
-        self.assertEqual('-', result['op'])
-        self.assertNotIn('values', result)
 
     def test_remove_apostrophes(self):
         result = self.parser.parse('Required if Lossy Image Compression (0028,2110) is "01".')
@@ -159,12 +181,6 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('!=', result['op'])
         self.assertEqual(['1.2.840.10008.5.1.4.1.1.4.4'], result['values'])
 
-    def test_uncheckable_tag_condition(self):
-        result = self.parser.parse('"Required if Numeric Value (0040,A30A) has insufficient '
-                                   'precision to represent the value as a string.')
-        self.assertEqual('U', result['type'])
-        self.assertNotIn('tag', result)
-
     def test_present_with_value(self):
         result = self.parser.parse('Required if Selector Attribute VR (0072,0050) is present and the value is AS.')
         self.assertEqual('MN', result['type'])
@@ -177,6 +193,8 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('!=', result['op'])
         self.assertEqual(['NONE'], result['values'])
 
+
+class CompositeConditionParserTest(ConditionParserTest):
     def test_and_condition(self):
         result = self.parser.parse('Required if Series Type (0054,1000), Value 1 is GATED and '
                                    'Beat Rejection Flag (0018,1080) is Y.')
@@ -191,10 +209,6 @@ class ConditionParserTest(unittest.TestCase):
         self.assertEqual('(0018,1080)', result2['tag'])
         self.assertEqual('=', result2['op'])
         self.assertEqual(['Y'], result2['values'])
-
-    def test_ignore_condition_without_tag(self):
-        result = self.parser.parse('Required if present and consistent in the contributing SOP Instances. ')
-        self.assertEqual('U', result['type'])
 
     def test_ignore_unverifyable_and_condition(self):
         result = self.parser.parse('Required if Delivery Type (300A,00CE) is CONTINUATION and '
