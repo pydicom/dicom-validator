@@ -107,16 +107,19 @@ class ConditionParser(object):
         values = value_string.split(', ')
         tag_values = []
         for value in values:
-            value = value.strip()
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1].strip()
             if ' or ' in value:
                 tag_values.extend(value.split(' or '))
             elif value.startswith('or '):
                 tag_values.append(value[3:])
             else:
                 tag_values.append(value)
-        return tag_values, rest
+        values = []
+        for value in tag_values:
+            value = value.strip()
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1].strip()
+            values.append(value)
+        return values, rest
 
     @staticmethod
     def extract_value_string(value_string):
@@ -135,7 +138,7 @@ class ConditionParser(object):
             if end_index < 0:
                 break
             if 0 <= apo_index < end_index:
-                start_index = value_string.find('"', apo_index + 1)
+                start_index = value_string.find('"', apo_index + 1) + 1
             else:
                 if end_index > 0:
                     rest = value_string[end_index:].strip()

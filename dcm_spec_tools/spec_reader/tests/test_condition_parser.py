@@ -27,7 +27,7 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('U', result['type'])
 
     def test_ignore_uncheckable_tag_condition(self):
-        result = self.parser.parse('"Required if Numeric Value (0040,A30A) has insufficient '
+        result = self.parser.parse('Required if Numeric Value (0040,A30A) has insufficient '
                                    'precision to represent the value as a string.')
         self.assertEqual('U', result['type'])
         self.assertNotIn('tag', result)
@@ -158,6 +158,12 @@ class ValueConditionParserTest(ConditionParserTest):
         result = self.parser.parse('Required if Lossy Image Compression (0028,2110) is "01".')
         self.assertEqual('=', result['op'])
         self.assertEqual(['01'], result['values'])
+
+    def test_remove_apostrophes_from_uids(self):
+        result = self.parser.parse('Required if SOP Class UID (0008,0016) equals "1.2.840.10008.5.1.4.1.1.12.1.1" '
+                                   'or "1.2.840.10008.5.1.4.1.1.12.2.1". May be present otherwise.')
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['1.2.840.10008.5.1.4.1.1.12.1.1', '1.2.840.10008.5.1.4.1.1.12.2.1'], result['values'])
 
     def test_value_of(self):
         result = self.parser.parse('Required if the value of Context Group Extension Flag (0008,010B) is "Y".')
