@@ -20,7 +20,7 @@ class ConditionParserTest(unittest.TestCase):
         self.parser = ConditionParser(self.dict_info)
 
 
-class SimpleConditionParserTest(ConditionParserTest):
+class InvalidConditionParserTest(ConditionParserTest):
     def test_ignore_invalid_condition(self):
         result = self.parser.parse('')
         self.assertNotIn('tag', result)
@@ -36,6 +36,8 @@ class SimpleConditionParserTest(ConditionParserTest):
         result = self.parser.parse('Required if present and consistent in the contributing SOP Instances. ')
         self.assertEqual('U', result['type'])
 
+
+class SimpleConditionParserTest(ConditionParserTest):
     def test_not_present(self):
         result = self.parser.parse('Required if VOI LUT Sequence (0028,3010) is not present.')
         self.assertEqual('MN', result['type'])
@@ -154,6 +156,15 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('=', result['op'])
         self.assertEqual(['TRUE_COLOR'], result['values'])
 
+    def test_is_with_colon(self):
+        result = self.parser.parse('Required if Image Type (0008,0008) Value 3 is: WHOLE BODY or STATIC.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0008,0008)', result['tag'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(2, result['index'])
+        self.assertEqual(['WHOLE BODY', 'STATIC'], result['values'])
+
     def test_remove_apostrophes(self):
         result = self.parser.parse('Required if Lossy Image Compression (0028,2110) is "01".')
         self.assertEqual('=', result['op'])
@@ -198,6 +209,38 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result['type'])
         self.assertEqual('!=', result['op'])
         self.assertEqual(['NONE'], result['values'])
+
+    def test_not_equal_to(self):
+        result = self.parser.parse('Required if Planes in Acquisition (0018,9410) is not equal to UNDEFINED.')
+        self.assertEqual('MN', result['type'])
+        self.assertEqual('!=', result['op'])
+        self.assertEqual(['UNDEFINED'], result['values'])
+
+    def test_present_with_value_of(self):
+        result = self.parser.parse('Required if Partial View (0028,1350) is present with a value of YES.')
+        self.assertEqual('MN', result['type'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['YES'], result['values'])
+
+
+class NotMandatoryConditionParserTest(ConditionParserTest):
+    def test_default(self):
+        result = self.parser.parse('Required if Image Type (0008,0008) Value 1 is ORIGINAL. May be present otherwise.')
+        self.assertEqual('MU', result['type'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['ORIGINAL'], result['values'])
+
+    def test_comma_instead_of_dot(self):
+        result = self.parser.parse('Required if Absolute Channel Display Scale (003A,0248) is not present, '
+                                   'may be present otherwise.')
+        self.assertEqual('MU', result['type'])
+        self.assertEqual('-', result['op'])
+
+    def test_missing_dot(self):
+        result = self.parser.parse('Required if Image Type (0008,0008) Value 1 is ORIGINAL May be present otherwise.')
+        self.assertEqual('MU', result['type'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['ORIGINAL'], result['values'])
 
 
 class CompositeConditionParserTest(ConditionParserTest):

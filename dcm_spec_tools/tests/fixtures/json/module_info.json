@@ -4367,8 +4367,7 @@
         "tag": "(0008,0016)", 
         "type": "MU", 
         "values": [
-          "1.2.840.10008.5.1.4.1.1.2.2", 
-          "may be present otherwise"
+          "1.2.840.10008.5.1.4.1.1.2.2"
         ]
       }, 
       "name": "Content Qualification", 
@@ -4416,8 +4415,7 @@
         "tag": "(0008,0016)", 
         "type": "MU", 
         "values": [
-          "1.2.840.10008.5.1.4.1.1.2.2", 
-          "may be present otherwise"
+          "1.2.840.10008.5.1.4.1.1.2.2"
         ]
       }, 
       "name": "Burned In Annotation", 
@@ -4434,7 +4432,7 @@
         "tag": "(0008,0016)", 
         "type": "MU", 
         "values": [
-          "\"1.2.840.10008.5.1.4.1.1.2.2\" . May be present otherwise"
+          "1.2.840.10008.5.1.4.1.1.2.2"
         ]
       }, 
       "name": "Lossy Image Compression", 

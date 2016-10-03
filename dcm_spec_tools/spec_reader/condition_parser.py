@@ -16,6 +16,7 @@ class ConditionParser(object):
     operators = OrderedDict([
         (' is greater than ', '>'),
         (' is present and equals ', '='),
+        (' is present with a value of ', '='),
         (' value is ', '='),
         (' has a value of more than ', '>'),
         (' has a value of ', '='),
@@ -30,8 +31,10 @@ class ConditionParser(object):
         (' is not sent', '-'),
         (' is not present', '-'),
         (' is absent', '-'),
+        (' is not equal to ', '!='),
         (' is not ', '!='),
         (' is ', '='),
+        (' is: ', '='),
         (' are not present', '-'),
         (' are present', '+')
     ])
@@ -64,6 +67,7 @@ class ConditionParser(object):
             index = condition.lower().find(prefix)
             if index >= 0:
                 condition = condition[len(prefix) + index:]
+                condition = self._fix_condition(condition)
                 return self._parse_tag_expressions(condition)
         return {'type': 'U'}
 
@@ -212,3 +216,12 @@ class ConditionParser(object):
             if values:
                 result['values'] = values
             return result
+
+    def _fix_condition(self, condition):
+        index = condition.lower().find(' may be present otherwise')
+        if index > 0:
+            if condition[index - 1] == ',':
+                condition = condition[:index - 1] + '.' + condition[index:]
+            elif condition[index - 1] != '.':
+                condition = condition[:index] + '.' + condition[index:]
+        return condition

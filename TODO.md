@@ -26,6 +26,8 @@
     * check optional modules for consistence
 * check tags
     * check condition for 1C/2C attributes
+        * condition for "may be present otherwise"
+        * several "Required" statements
         * tests for different types
     * unsupported tags
     * functional groups
