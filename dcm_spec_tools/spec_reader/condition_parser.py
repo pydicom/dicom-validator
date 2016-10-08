@@ -11,7 +11,8 @@ class ConditionParser(object):
     """
 
     tag_expression = re.compile(
-        r'(the value of )?(?P<name>[a-zA-Z \-]+)(?P<id>\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?(,? Value (?P<index>\d))?$')
+        r'(the value of )?(?P<name>[a-zA-Z1-9 \'\-]+)'
+        r'(?P<id>\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?(,? Value (?P<index>\d))?$')
 
     operators = OrderedDict([
         (' is greater than ', '>'),
@@ -19,6 +20,7 @@ class ConditionParser(object):
         (' is present with a value of ', '='),
         (' value is ', '='),
         (' has a value of more than ', '>'),
+        (' has a value greater than ', '>'),
         (' has a value of ', '='),
         (' = ', '='),
         (' equals other than ', '!='),
@@ -26,6 +28,7 @@ class ConditionParser(object):
         (' is other than ', '!='),
         (' is present and the value is ', '='),
         (' is present and has a value of ', '='),
+        (' is present and has a value', '++'),
         (' is present', '+'),
         (' is sent', '+'),
         (' is not sent', '-'),

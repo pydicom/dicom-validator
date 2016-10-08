@@ -62,6 +62,22 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('+', result['op'])
         self.assertNotIn('values', result)
 
+    def test_is_present_with_value(self):
+        result = self.parser.parse('Required if Responsible Person is present and has a value.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0010,2297)', result['tag'])
+        self.assertEqual('++', result['op'])
+        self.assertNotIn('values', result)
+
+    def test_is_present_tag_name_with_digit(self):
+        result = self.parser.parse('Required if 3D Mating Point (0068,64C0) is present.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0068,64C0)', result['tag'])
+        self.assertEqual('+', result['op'])
+        self.assertNotIn('values', result)
+
     def test_not_sent(self):
         result = self.parser.parse('Required if Anatomic Region Modifier Sequence (0008,2220) is not sent. ')
         self.assertEqual('MN', result['type'])
@@ -134,6 +150,15 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result['type'])
         self.assertIn('tag', result)
         self.assertEqual('(0028,0008)', result['tag'])
+        self.assertEqual(0, result['index'])
+        self.assertEqual('>', result['op'])
+        self.assertEqual(['1'], result['values'])
+
+    def test_value_greater_than_operator(self):
+        result = self.parser.parse('Required if Samples per Pixel (0028,0002) has a value greater than 1')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('tag', result)
+        self.assertEqual('(0028,0002)', result['tag'])
         self.assertEqual(0, result['index'])
         self.assertEqual('>', result['op'])
         self.assertEqual(['1'], result['values'])
@@ -280,6 +305,18 @@ class CompositeConditionParserTest(ConditionParserTest):
         self.assertEqual('!=', result2['op'])
         self.assertEqual(['MANUAL', 'PDR'], result2['values'])
 
+    def test_either_or_tag_presence(self):
+        result = self.parser.parse("Required if either Patient's Birth Date in Alternative Calendar (0010,0033) "
+                                   "or Patient's Alternative Death Date in Calendar (0010,0034) is present.")
+        self.assertEqual('MN', result['type'])
+        self.assertIn('or', result)
+        result1 = result['or'][0]
+        self.assertEqual('(0010,0033)', result1['tag'])
+        self.assertEqual('+', result1['op'])
+        result2 = result['or'][1]
+        self.assertEqual('(0010,0034)', result2['tag'])
+        self.assertEqual('+', result2['op'])
+
     def test_multiple_tag_absence(self):
         result = self.parser.parse('Required if DICOM Media Retrieval Sequence (0040,E022), '
                                    'WADO Retrieval Sequence (0040,E023), WADO-RS Retrieval Sequence (0040,E025)'
@@ -368,3 +405,21 @@ class CompositeConditionParserTest(ConditionParserTest):
         self.assertEqual('=', result['and'][0]['op'])
         self.assertEqual('YES', result['and'][0]['values'][0])
         self.assertEqual('-', result['and'][1]['op'])
+
+
+class ComplicatedConditionParserTest(ConditionParserTest):
+    def disabled_test_ispresent_with_value(self):
+        result = self.parser.parse('Required if Graphic Data (0070,0022) is "closed", '
+                                   'that is Graphic Type (0070,0023) is CIRCLE or ELLIPSE, '
+                                   'or Graphic Type (0070,0023) is POLYLINE or INTERPOLATED '
+                                   'and the first data point is the same as the last data point.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('or', result)
+        self.assertEqual(3, len(result['or']))
+        self.assertEqual('=', result['or'][0]['op'])
+        self.assertEqual(['closed'], result['or'][0]['values'])
+        self.assertEqual('=', result['or'][1]['op'])
+        self.assertEqual(['CIRCLE', 'ELLIPSE'], result['or'][1]['values'])
+        self.assertEqual('=', result['or'][2]['op'])
+        self.assertEqual(['POLYLINE', 'INTERPOLATED'], result['or'][2]['values'])
+

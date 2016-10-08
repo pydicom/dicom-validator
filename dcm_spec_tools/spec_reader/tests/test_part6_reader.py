@@ -35,7 +35,7 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     def test_data_elements(self):
         elements = self.reader.data_elements()
-        self.assertEqual(7, len(elements))
+        self.assertEqual(8, len(elements))
 
     def test_sop_class_uids(self):
         sop_class_uids = self.reader.sop_class_uids()

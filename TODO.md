@@ -27,6 +27,7 @@
 * check tags
     * check condition for 1C/2C attributes
         * condition for "may be present otherwise"
+        * condition for "may be present if..."
         * several "Required" statements
         * tests for different types
     * unsupported tags
@@ -42,11 +43,15 @@
 ## Tools
 
 #### Validator
+* handle presence/presence with value/absence conditions :soon:
 * allow several files / directories
-* output options (xml:question:)
 * add tag names to output
+* output options
+    * option to document each checked IOD
+    * option to show non-parsable conditions
+    * xml output :question:
 * add modules requiring missing attributes to output
-* verbosity :question:
+* verbosity
 * optional additional config files that replace part of the spec
 
 #### Dump

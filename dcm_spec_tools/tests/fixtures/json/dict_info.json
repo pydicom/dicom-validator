@@ -35,6 +35,12 @@
     "vm": "1", 
     "vr": "CS"
   }, 
+  "(0010,2297)": {
+    "name": "Responsible Person", 
+    "prop": "", 
+    "vm": "1", 
+    "vr": "PN"
+  }, 
   "(0028,0008)": {
     "name": "Number of Frames", 
     "prop": "", 

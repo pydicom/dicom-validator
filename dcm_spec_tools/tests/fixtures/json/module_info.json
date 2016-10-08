@@ -1781,7 +1781,13 @@
     }, 
     "(0028,0006)": {
       "cond": {
-        "type": "U"
+        "index": 0, 
+        "op": ">", 
+        "tag": "(0028,0002)", 
+        "type": "MN", 
+        "values": [
+          "1"
+        ]
       }, 
       "name": "Planar Configuration", 
       "type": "1C"
@@ -1970,7 +1976,19 @@
     }, 
     "(0010,0035)": {
       "cond": {
-        "type": "U"
+        "or": [
+          {
+            "index": 0, 
+            "op": "+", 
+            "tag": "(0010,0033)"
+          }, 
+          {
+            "index": 0, 
+            "op": "+", 
+            "tag": "(0010,0034)"
+          }
+        ], 
+        "type": "MN"
       }, 
       "name": "Patient's Alternative Calendar", 
       "type": "1C"
@@ -2100,7 +2118,10 @@
             }, 
             "(0010,2298)": {
               "cond": {
-                "type": "U"
+                "index": 0, 
+                "op": "++", 
+                "tag": "(0010,2297)", 
+                "type": "MN"
               }, 
               "name": "Responsible Person Role", 
               "type": "1C"

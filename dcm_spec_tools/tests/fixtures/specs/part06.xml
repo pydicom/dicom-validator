@@ -185,6 +185,26 @@
         </tr>
         <tr valign="top">
           <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_c7c5469e-1e97-44e8-ac0d-7045505fb8b6">(0010,2297)</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_bf0ebefd-df64-44a0-8c1a-9df1a6826823">Responsible Person</para>
+          </td>
+          <td align="left" colspan="1" rowspan="1">
+            <para xml:id="para_3b4a7ae4-8d33-4013-be8e-3b96398d7953">Responsible​Person</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_e20aef88-0bee-4837-a200-22092d924070">PN</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_6617178f-cd68-43fc-bc67-e0e2611b87ab">1</para>
+          </td>
+          <td align="center" colspan="1" rowspan="1">
+            <para xml:id="para_3d0dba62-3061-4f74-9142-342f85ecd754"/>
+          </td>
+        </tr>
+        <tr valign="top">
+          <td align="center" colspan="1" rowspan="1">
             <para xml:id="para_4d114d50-1542-402c-a71a-8812e0221943">(0028,0008)</para>
           </td>
           <td align="left" colspan="1" rowspan="1">
