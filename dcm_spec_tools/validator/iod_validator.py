@@ -91,21 +91,29 @@ class IODValidator(object):
     def _object_is_required_or_allowed(self, condition):
         if condition['type'] == 'U':
             return True, True
-        if 'and' in condition:
-            required = all(self._object_is_required(cond) for cond in condition['and'])
-        elif 'or' in condition:
-            required = any(self._object_is_required(cond) for cond in condition['or'])
-        else:
-            required = self._object_is_required(condition)
+        required = self._composite_object_is_required(condition)
         if required:
             return True, True
         return False, condition['type'] == 'MU'
 
+    def _composite_object_is_required(self, condition):
+        if 'and' in condition:
+            required = all(self._composite_object_is_required(cond) for cond in condition['and'])
+        elif 'or' in condition:
+            required = any(self._composite_object_is_required(cond) for cond in condition['or'])
+        else:
+            required = self._object_is_required(condition)
+        return required
+
     def _object_is_required(self, condition):
         tag_id = self._tag_id(condition['tag'])
         tag_value = None
-        condition_fulfilled = tag_id in self._dataset
-        if condition_fulfilled:
+        op = condition['op']
+        if op == '+':
+            return tag_id in self._dataset
+        elif op == '-':
+            return tag_id not in self._dataset
+        elif tag_id in self._dataset:
             tag = self._dataset[tag_id]
             index = condition['index']
             if index > 0:
@@ -115,9 +123,12 @@ class IODValidator(object):
                 tag_value = tag.value[0]
             else:
                 tag_value = tag.value
-            if tag_value is not None:
-                condition_fulfilled = self._tag_matches(tag_value, condition['op'], condition['values'])
-        return condition_fulfilled
+            if tag_value is None:
+                return False
+            if op == '++':
+                return True
+            return self._tag_matches(tag_value, op, condition['values'])
+        return False
 
     def _has_module(self, module_info):
         for tag_id_string, attribute in module_info.items():

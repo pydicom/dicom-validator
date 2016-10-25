@@ -8,6 +8,14 @@ class ConditionParser(object):
        - the condition is related to the value, absence or presence of one or more tags in the data set
        - the condition is related only to the data set itself
        All other conditions (including parsable conditions which reference other data sets) are ignored.
+       The following operators are used for conditions:
+       '+' - required if the given tag is present
+       '++' - required if the given tag is present and has a value
+       '-' - required if the given tag is absent
+       '=' - required if the given tag has one of the given values
+       '!=' - required if the given tag does not have one of the given values
+       '>' - required if the given tag value is greater than the given value
+       '<' - required if the given tag value is less than the given value
     """
 
     tag_expression = re.compile(
