@@ -43,7 +43,6 @@
 ## Tools
 
 #### Validator
-* handle presence/presence with value/absence conditions :soon:
 * allow several files / directories
 * add tag names to output
 * output options

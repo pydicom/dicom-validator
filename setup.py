@@ -17,6 +17,14 @@ setup(
     author_email="hansemrbean@googlemail.com",
     url="http://github.com/mrbean-bremen/dcm_spec_tools",
     keywords="dicom python",
+    entry_points={
+        'console_scripts': [
+            'validate_iods=dcm_spec_tools.validate_iods:main',
+            'get_dcm_specs=dcm_spec_tools.get_dcm_specs:main',
+            'write_dcm_specs=dcm_spec_tools.write_dcm_specs:main',
+            'dump_dcm_info=dcm_spec_tools.dump_dcm_info:main'
+        ]
+    },
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Intended Audience :: Developers",
