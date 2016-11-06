@@ -215,6 +215,31 @@ class IODValidatorTest(unittest.TestCase):
 
         self.assertNotIn('(0028,0120)', result['missing'])  # Pixel Padding Value
 
+    def test_greater_condition_met(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'SamplesPerPixel': 3
+        })
+        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        result = validator.validate()
+
+        self.assertIn('(0028,0006)', result['missing'])  # Planar configuration
+
+    def test_greater_condition_not_met(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'SamplesPerPixel': 3,
+            'PlanarConfiguration': '1'
+        })
+        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        result = validator.validate()
+
+        self.assertNotIn('(0028,0006)', result['missing'])  # Planar configuration
+
 
 if __name__ == '__main__':
     unittest.main()

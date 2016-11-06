@@ -149,6 +149,7 @@ class IODValidator(object):
 
     @staticmethod
     def _tag_matches(tag_value, operator, values):
+        values = [type(tag_value)(value) for value in values]
         if operator == '=':
             return tag_value in values
         if operator == '>':
