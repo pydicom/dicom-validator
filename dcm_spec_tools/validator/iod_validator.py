@@ -44,7 +44,8 @@ class IODValidator(object):
     def _validate_sop_class(self, sop_class_uid):
         iod_info = self._iod_info[sop_class_uid]
         self.logger.info('Checking SOP class "%s"', sop_class_uid)
-        for module in iod_info['modules'].values():
+        for module_name, module in iod_info['modules'].items():
+            self.logger.debug('Checking module "%s"', module_name)
             self.add_errors(self._validate_module(module))
 
     def _validate_module(self, module):
@@ -66,11 +67,15 @@ class IODValidator(object):
         if not allowed and has_module:
             for tag_id_string, attribute in module_info.items():
                 if self._tag_id(tag_id_string) in self._dataset:
+                    self.logger.debug('not allowed: %s - %s',
+                                      tag_id_string, self._dict_info[tag_id_string]['name'])
                     errors.setdefault('not allowed', []).append(tag_id_string)
         else:
             for tag_id_string, attribute in module_info.items():
                 result = self._validate_attribute(self._tag_id(tag_id_string), attribute)
                 if result is not None:
+                    self.logger.debug('%s: %s - %s', result,
+                                      tag_id_string, self._dict_info[tag_id_string]['name'])
                     errors.setdefault(result, []).append(tag_id_string)
         return errors
 

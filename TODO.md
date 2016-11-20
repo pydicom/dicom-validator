@@ -44,7 +44,6 @@
 
 #### Validator
 * allow several files / directories
-* add tag names to output
 * output options
     * option to document each checked IOD
     * option to show non-parsable conditions

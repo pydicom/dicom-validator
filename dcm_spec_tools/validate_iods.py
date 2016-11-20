@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 import os
 
 from pydicom import filereader
@@ -19,6 +20,8 @@ def main():
                         default='./DICOM')
     parser.add_argument('--json-path', '-json',
                         help='Path with the DICOM specs in JSON format')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='Outputs diagnostic information')
     args = parser.parse_args()
     if args.json_path:
         with open(os.path.join(args.json_path, 'dict_info.json')) as info_file:
@@ -37,7 +40,8 @@ def main():
         module_info = part3reader.module_descriptions()
 
     data_set = filereader.read_file(args.dicomfile, stop_before_pixels=True, force=True)
-    return len(IODValidator(data_set, iod_info, module_info, dict_info).validate())
+    log_level = logging.DEBUG if args.verbose else logging.INFO
+    return len(IODValidator(data_set, iod_info, module_info, dict_info, log_level).validate())
 
 
 if __name__ == '__main__':
