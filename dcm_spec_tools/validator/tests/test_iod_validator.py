@@ -10,8 +10,11 @@ from dcm_spec_tools.validator.iod_validator import IODValidator
 
 
 class IODValidatorTest(unittest.TestCase):
-    """Tests IODValidator. Note: some of the fixture data are not consistent with the DICOM Standard."""
+    """Tests IODValidator.
+    Note: some of the fixture data are not consistent with the DICOM Standard.
+    """
     iod_specs = None
+    module_specs = None
 
     @classmethod
     def setUpClass(cls):
@@ -23,6 +26,9 @@ class IODValidatorTest(unittest.TestCase):
     def setUp(self):
         super(IODValidatorTest, self).setUp()
         logging.disable(logging.CRITICAL)
+
+    def validator(self, data_set):
+        return IODValidator(data_set, self.iod_specs, self.module_specs, None, logging.ERROR)
 
     @staticmethod
     def new_data_set(tags):
@@ -38,7 +44,7 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_empty_dataset(self):
         data_set = self.new_data_set(tags={})
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
         self.assertIn('fatal', result)
 
@@ -46,7 +52,7 @@ class IODValidatorTest(unittest.TestCase):
         data_set = self.new_data_set({
             'SOPClassUID': '1.2.3'
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
         self.assertIn('fatal', result)
 
@@ -56,7 +62,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientsName': 'XXX',
             'PatientID': 'ZZZ',
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertNotIn('fatal', result)
@@ -75,7 +81,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientsName': '',
             'Modality': None
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertNotIn('fatal', result)
@@ -94,7 +100,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientsName': 'XXX',
             'PatientID': 'ZZZ'
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         # Frame Of Reference UID Is and Synchronization Trigger set
@@ -108,7 +114,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientsName': 'XXX',
             'PatientID': 'ZZZ'
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertIn('(0020,0052)', result['missing'])
@@ -120,7 +126,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientsName': 'XXX',
             'PatientID': 'ZZZ'
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertNotIn('(0020,0052)', result['missing'])
@@ -134,7 +140,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientsName': 'XXX',
             'PatientID': 'ZZZ'
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         # Frame Of Reference is allowed, Synchronization Trigger not
@@ -151,7 +157,7 @@ class IODValidatorTest(unittest.TestCase):
             'CardiacSynchronizationTechnique': 'OTHER',
             'HighRRValue': '123'    # 0018,1082
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         # Both Low R-R Value and High R-R Value are not needed but allowed
@@ -167,7 +173,7 @@ class IODValidatorTest(unittest.TestCase):
             'CardiacSynchronizationTechnique': 'OTHER',
             'HighRRValue': '123'    # 0018,1082
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         # Both Low R-R Value and High R-R Value are not needed but allowed
@@ -183,7 +189,7 @@ class IODValidatorTest(unittest.TestCase):
             'CardiacSynchronizationTechnique': 'PROSPECTIVE',
             'HighRRValue': '123'    # 0018,1082
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         # Both Low R-R Value and High R-R Value are needed
@@ -198,7 +204,7 @@ class IODValidatorTest(unittest.TestCase):
             'PixelPaddingRangeLimit': '10',
             'PixelDataProviderURL': 'http://dataprovider'
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertIn('(0028,0120)', result['missing'])  # Pixel Padding Value
@@ -210,7 +216,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientID': 'ZZZ',
             'PixelPaddingRangeLimit': '10',
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertNotIn('(0028,0120)', result['missing'])  # Pixel Padding Value
@@ -222,7 +228,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientID': 'ZZZ',
             'SamplesPerPixel': 3
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertIn('(0028,0006)', result['missing'])  # Planar configuration
@@ -235,7 +241,7 @@ class IODValidatorTest(unittest.TestCase):
             'SamplesPerPixel': 3,
             'PlanarConfiguration': '1'
         })
-        validator = IODValidator(data_set, self.iod_specs, self.module_specs)
+        validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertNotIn('(0028,0006)', result['missing'])  # Planar configuration

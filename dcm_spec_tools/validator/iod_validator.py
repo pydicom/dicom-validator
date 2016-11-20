@@ -8,7 +8,7 @@ class InvalidParameterError(Exception):
 
 
 class IODValidator(object):
-    def __init__(self, dataset, iod_info, module_info, dict_info, log_level=logging.INFO):
+    def __init__(self, dataset, iod_info, module_info, dict_info=None, log_level=logging.INFO):
         self._dataset = dataset
         self._iod_info = iod_info
         self._module_info = module_info
@@ -34,7 +34,8 @@ class IODValidator(object):
             for error, tag_ids in self.errors.items():
                 self.logger.warning('Tag(s) %s:', error)
                 for tag_id in tag_ids:
-                    self.logger.warning('%s - %s', tag_id, self._dict_info[tag_id]['name'])
+                    self.logger.warning('%s - %s', tag_id,
+                                        self._dict_info[tag_id]['name'] if self._dict_info else '')
         return self.errors
 
     def add_errors(self, errors):
@@ -67,15 +68,17 @@ class IODValidator(object):
         if not allowed and has_module:
             for tag_id_string, attribute in module_info.items():
                 if self._tag_id(tag_id_string) in self._dataset:
-                    self.logger.debug('not allowed: %s - %s',
-                                      tag_id_string, self._dict_info[tag_id_string]['name'])
+                    self.logger.debug('not allowed: %s - %s', tag_id_string,
+                                      self._dict_info[tag_id_string][
+                                          'name'] if self._dict_info else '')
                     errors.setdefault('not allowed', []).append(tag_id_string)
         else:
             for tag_id_string, attribute in module_info.items():
                 result = self._validate_attribute(self._tag_id(tag_id_string), attribute)
                 if result is not None:
-                    self.logger.debug('%s: %s - %s', result,
-                                      tag_id_string, self._dict_info[tag_id_string]['name'])
+                    self.logger.debug('%s: %s - %s', result, tag_id_string,
+                                      self._dict_info[tag_id_string][
+                                          'name'] if self._dict_info else '')
                     errors.setdefault(result, []).append(tag_id_string)
         return errors
 
