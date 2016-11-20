@@ -1,17 +1,22 @@
 import logging
 
+import sys
+
 
 class InvalidParameterError(Exception):
     pass
 
 
 class IODValidator(object):
-    def __init__(self, dataset, iod_info, module_info):
+    def __init__(self, dataset, iod_info, module_info, dict_info, log_level=logging.INFO):
         self._dataset = dataset
         self._iod_info = iod_info
         self._module_info = module_info
+        self._dict_info = dict_info
         self.errors = {}
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.level = log_level
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
     def validate(self):
         self.errors = {}
@@ -20,7 +25,7 @@ class IODValidator(object):
         else:
             sop_class_uid = self._dataset.SOPClassUID
             if sop_class_uid not in self._iod_info:
-                self.errors['fatal'] = ['Unknown SOPClassUID']
+                self.errors['fatal'] = ['Unknown SOPClassUID: ' + sop_class_uid]
             else:
                 self._validate_sop_class(sop_class_uid)
         if 'fatal' in self.errors:
@@ -29,7 +34,7 @@ class IODValidator(object):
             for error, tag_ids in self.errors.items():
                 self.logger.warning('Tag(s) %s:', error)
                 for tag_id in tag_ids:
-                    self.logger.warning(tag_id)
+                    self.logger.warning('%s - %s', tag_id, self._dict_info[tag_id]['name'])
         return self.errors
 
     def add_errors(self, errors):
@@ -38,6 +43,7 @@ class IODValidator(object):
 
     def _validate_sop_class(self, sop_class_uid):
         iod_info = self._iod_info[sop_class_uid]
+        self.logger.info('Checking SOP class "%s"', sop_class_uid)
         for module in iod_info['modules'].values():
             self.add_errors(self._validate_module(module))
 
