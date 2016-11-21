@@ -74,6 +74,8 @@ class IODValidatorTest(unittest.TestCase):
         self.assertIn('(0010,0040)', result['missing'])  # PatientsSex
         # Clinical Trial Sponsor Name -> type 1, but module usage U
         self.assertNotIn('(0012,0010)', result['missing'])
+        # Patient Breed Description -> type 2C, but no parsable condition
+        self.assertNotIn('(0010,2292)', result['missing'])
 
     def test_empty_tags(self):
         data_set = self.new_data_set({

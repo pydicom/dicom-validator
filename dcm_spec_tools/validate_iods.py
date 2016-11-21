@@ -3,18 +3,17 @@ import json
 import logging
 import os
 
-from pydicom import filereader
-
 from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
 from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
 from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
-from dcm_spec_tools.validator.iod_validator import IODValidator
+from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
 
 
 def main():
     parser = argparse.ArgumentParser(
         description='Validates DICOM file IODs')
-    parser.add_argument('dicomfile', help='Path of DICOM file to validate')
+    parser.add_argument('dicomfiles', help='Path(s) of DICOM files or directories to validate',
+                        nargs='+')
     parser.add_argument('--standard-path', '-src',
                         help='Path with the DICOM specs in docbook format',
                         default='./DICOM')
@@ -39,9 +38,9 @@ def main():
                     for chapter in iod_per_chapter_info if chapter in chapter_info}
         module_info = part3reader.module_descriptions()
 
-    data_set = filereader.read_file(args.dicomfile, stop_before_pixels=True, force=True)
     log_level = logging.DEBUG if args.verbose else logging.INFO
-    return len(IODValidator(data_set, iod_info, module_info, dict_info, log_level).validate())
+    validator = DicomFileValidator(iod_info, module_info, dict_info, log_level)
+    return sum(validator.validate(dicom_path) for dicom_path in args.dicomfiles)
 
 
 if __name__ == '__main__':

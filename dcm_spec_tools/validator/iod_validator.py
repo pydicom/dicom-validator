@@ -16,7 +16,8 @@ class IODValidator(object):
         self.errors = {}
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.level = log_level
-        self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        if not self.logger.handlers:
+            self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
     def validate(self):
         self.errors = {}
@@ -29,7 +30,7 @@ class IODValidator(object):
             else:
                 self._validate_sop_class(sop_class_uid)
         if 'fatal' in self.errors:
-            self.logger.error('%s - aborting', self.errors['fatal'])
+            self.logger.error('%s - aborting', self.errors['fatal'][0])
         else:
             for error, tag_ids in self.errors.items():
                 self.logger.warning('Tag(s) %s:', error)
@@ -84,6 +85,9 @@ class IODValidator(object):
 
     def _validate_attribute(self, tag_id, attribute):
         attribute_type = attribute['type']
+        # ignore image data and larger tags for now - we don't read them
+        if tag_id >= 0x7FE00010:
+            return
         has_tag = tag_id in self._dataset
         value_required = attribute_type in ('1', '1C')
         if attribute_type in ('1', '2'):
@@ -104,7 +108,7 @@ class IODValidator(object):
 
     def _object_is_required_or_allowed(self, condition):
         if condition['type'] == 'U':
-            return True, True
+            return False, True
         required = self._composite_object_is_required(condition)
         if required:
             return True, True
