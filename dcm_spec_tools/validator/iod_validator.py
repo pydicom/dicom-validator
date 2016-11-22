@@ -126,10 +126,10 @@ class IODValidator(object):
     def _object_is_required(self, condition):
         tag_id = self._tag_id(condition['tag'])
         tag_value = None
-        op = condition['op']
-        if op == '+':
+        operator = condition['op']
+        if operator == '+':
             return tag_id in self._dataset
-        elif op == '-':
+        elif operator == '-':
             return tag_id not in self._dataset
         elif tag_id in self._dataset:
             tag = self._dataset[tag_id]
@@ -143,9 +143,9 @@ class IODValidator(object):
                 tag_value = tag.value
             if tag_value is None:
                 return False
-            if op == '++':
+            if operator == '++':
                 return True
-            return self._tag_matches(tag_value, op, condition['values'])
+            return self._tag_matches(tag_value, operator, condition['values'])
         return False
 
     def _has_module(self, module_info):

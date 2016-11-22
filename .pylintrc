@@ -6,7 +6,7 @@ disable=C0111
 max-line-length=120
 
 [BASIC]
-good-names=setUp,setUpClass
+good-names=i,j,k,ex,_,setUp,setUpClass
 
 # allow longer test method length
 method-rgx=([a-z_][a-z0-9_]{2,30})|test_([a-z_][a-z0-9_]{2,40})$

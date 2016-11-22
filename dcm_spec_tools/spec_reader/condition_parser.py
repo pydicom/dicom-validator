@@ -228,7 +228,8 @@ class ConditionParser(object):
                 result['values'] = values
             return result
 
-    def _fix_condition(self, condition):
+    @staticmethod
+    def _fix_condition(condition):
         index = condition.lower().find(' may be present otherwise')
         if index > 0:
             if condition[index - 1] == ',':

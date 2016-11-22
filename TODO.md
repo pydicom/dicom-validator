@@ -46,7 +46,6 @@
 * output options
     * option to document each checked IOD
     * option to show non-parsable conditions
-    * xml output :question:
 * add modules requiring missing attributes to output
 * verbosity :on:
 * optional additional config files that replace part of the spec
@@ -54,6 +53,3 @@
 #### Dump
 * show sequence contents w/o help from pydicom
 * add mapping of UIDs to output
-
-## Miscellaneous
-* make smaller test data for part 3

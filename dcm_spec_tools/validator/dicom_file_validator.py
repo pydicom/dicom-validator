@@ -34,7 +34,7 @@ class DicomFileValidator(object):
         return error_nr
 
     def validate_file(self, file_path):
-        self.logger.info('\nProcessing DICOM file "%s', file_path)
+        self.logger.info('\nProcessing DICOM file "%s"', file_path)
         data_set = filereader.read_file(file_path, stop_before_pixels=True, force=True)
         return len(IODValidator(data_set, self._iod_info, self._module_info, self._dict_info,
                                 self.logger.level).validate())

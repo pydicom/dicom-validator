@@ -228,6 +228,8 @@ class Part3Reader(SpecReader):
                 modules[name]['use'] = self._find_text(columns[name_index + 2])
                 if self._condition_parser is not None and modules[name]['use'].startswith('C - '):
                     modules[name]['cond'] = self._condition_parser.parse(modules[name]['use'])
+                else:
+                    modules[name]['use'] = modules[name]['use'][0]
                 row_span -= 1
         return modules
 
