@@ -1,10 +1,22 @@
 #!/usr/bin/env python
+
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
 extra = {}
+
+try:
+    import pypandoc
+
+    long_description = pypandoc.convert('README.md', 'rst')
+except ImportError:
+    long_description = """
+    Toy project for getting information from the DICOM standard
+    and using this information in command line tools.
+    Aims to be usable with various versions of the DICOM standard.
+    """
 
 setup(
     name="dcm-spec-tools",
@@ -41,10 +53,6 @@ setup(
         "Operating System :: Microsoft :: Windows",
         "Topic :: Scientific/Engineering :: Medical Science Apps.",
     ],
-    long_description="""
-    Toy project for getting information from the DICOM standard
-    and using this information in command line tools.
-    Aims to be usable with various versions of the DICOM standard.
-    """,
+    long_description=long_description,
     **extra
 )
