@@ -3,6 +3,8 @@ import os
 
 import sys
 from pydicom import filereader
+from pydicom.errors import InvalidDicomError
+
 from validator.iod_validator import IODValidator
 
 
@@ -17,24 +19,31 @@ class DicomFileValidator(object):
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
     def validate(self, path):
-        error_nr = 0
+        errors = {}
         if not os.path.exists(path):
+            errors.update({path: {'fatal': 'File missing'}})
             self.logger.warning('\n"%s" does not exist - skipping', path)
         else:
             if os.path.isdir(path):
-                error_nr += self.validate_dir(path)
+                errors.update(self.validate_dir(path))
             else:
-                error_nr += self.validate_file(path)
-        return error_nr
+                errors.update(self.validate_file(path))
+        return errors
 
     def validate_dir(self, dir_path):
-        error_nr = 0
+        errors = {}
         for root, _, names in os.walk(dir_path):
-            error_nr += sum(self.validate(os.path.join(root, name)) for name in names)
-        return error_nr
+            for name in names:
+                errors.update(self.validate(os.path.join(root, name)))
+        return errors
 
     def validate_file(self, file_path):
         self.logger.info('\nProcessing DICOM file "%s"', file_path)
-        data_set = filereader.read_file(file_path, stop_before_pixels=True, force=True)
-        return len(IODValidator(data_set, self._iod_info, self._module_info, self._dict_info,
-                                self.logger.level).validate())
+        try:
+            data_set = filereader.read_file(file_path, stop_before_pixels=True)
+        except InvalidDicomError:
+            return { file_path: {'fatal': 'Invalid DICOM file'}}
+        return {
+            file_path: IODValidator(data_set, self._iod_info, self._module_info, self._dict_info,
+                                    self.logger.level).validate()
+        }

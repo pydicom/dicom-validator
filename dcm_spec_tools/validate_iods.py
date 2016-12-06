@@ -40,7 +40,7 @@ def main():
 
     log_level = logging.DEBUG if args.verbose else logging.INFO
     validator = DicomFileValidator(iod_info, module_info, dict_info, log_level)
-    return sum(validator.validate(dicom_path) for dicom_path in args.dicomfiles)
+    return sum(len(validator.validate(dicom_path)) for dicom_path in args.dicomfiles)
 
 
 if __name__ == '__main__':

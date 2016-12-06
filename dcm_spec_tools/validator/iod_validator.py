@@ -22,11 +22,11 @@ class IODValidator(object):
     def validate(self):
         self.errors = {}
         if 'SOPClassUID' not in self._dataset:
-            self.errors['fatal'] = ['Missing SOPClassUID']
+            self.errors['fatal'] = 'Missing SOPClassUID'
         else:
             sop_class_uid = self._dataset.SOPClassUID
             if sop_class_uid not in self._iod_info:
-                self.errors['fatal'] = ['Unknown SOPClassUID: ' + sop_class_uid]
+                self.errors['fatal'] = 'Unknown SOPClassUID: ' + sop_class_uid
             else:
                 self._validate_sop_class(sop_class_uid)
         if 'fatal' in self.errors:
