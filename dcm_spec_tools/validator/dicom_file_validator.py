@@ -9,7 +9,7 @@ from validator.iod_validator import IODValidator
 
 
 class DicomFileValidator(object):
-    def __init__(self, iod_info, module_info, dict_info, log_level=logging.INFO):
+    def __init__(self, iod_info, module_info, dict_info=None, log_level=logging.INFO):
         self._module_info = module_info
         self._iod_info = iod_info
         self._dict_info = dict_info
@@ -42,7 +42,7 @@ class DicomFileValidator(object):
         try:
             data_set = filereader.read_file(file_path, stop_before_pixels=True)
         except InvalidDicomError:
-            return { file_path: {'fatal': 'Invalid DICOM file'}}
+            return {file_path: {'fatal': 'Invalid DICOM file'}}
         return {
             file_path: IODValidator(data_set, self._iod_info, self._module_info, self._dict_info,
                                     self.logger.level).validate()

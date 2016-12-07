@@ -16,6 +16,7 @@ class ConditionParser(object):
        '!=' - required if the given tag does not have one of the given values
        '>' - required if the given tag value is greater than the given value
        '<' - required if the given tag value is less than the given value
+       '=>' - required if the given tag points to one of the given tags
     """
 
     tag_expression = re.compile(
@@ -47,7 +48,8 @@ class ConditionParser(object):
         (' is ', '='),
         (' is: ', '='),
         (' are not present', '-'),
-        (' are present', '+')
+        (' are present', '+'),
+        (' points to ', '=>')
     ])
 
     logical_ops = OrderedDict([
@@ -96,6 +98,12 @@ class ConditionParser(object):
         rest = condition[op_offset + len(operator_text):]
         if self.operators[operator_text] in ('=', '!=', '>', '<'):
             values, rest = self._parse_tag_values(rest)
+        elif self.operators[operator_text] == '=>':
+            value_string, rest = self.extract_value_string(rest)
+            tag, _ = self._parse_tag(value_string)
+            if tag is None:
+                return {'type': 'U'}, None
+            values, rest = [ tag ], rest
         else:
             values, rest = None, rest.strip()
         result = self._parse_tags(condition[:op_offset], operator, values)

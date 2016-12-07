@@ -13,12 +13,9 @@ from tests.test_utils import json_fixture_path
 class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
     iod_info = None
     module_info = None
-    dict_info = None
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(), 'dict_info.json')) as info_file:
-            cls.dict_info = json.load(info_file)
         with open(os.path.join(json_fixture_path(), 'iod_info.json')) as info_file:
             cls.iod_info = json.load(info_file)
         with open(os.path.join(json_fixture_path(), 'module_info.json')) as info_file:
@@ -28,9 +25,10 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
         super(DicomFileValidatorTest, self).setUp()
         self.setUpPyfakefs()
         logging.disable(logging.CRITICAL)
-        self.validator = DicomFileValidator(self.iod_info, self.module_info, self.dict_info)
+        self.validator = DicomFileValidator(self.iod_info, self.module_info)
 
-    def create_metadata(self):
+    @staticmethod
+    def create_metadata():
         metadata = Dataset()
         metadata.MediaStorageSOPClassUID = '1.2.840.10008.5.1.4.1.1.7'
         metadata.MediaStorageSOPInstanceUID = '1.2.3'
@@ -38,7 +36,7 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
         metadata.ImplementationClassUID = '1.3.6.1.4.1.5962.2'
         return metadata
 
-    def assertFatalError(self, filename, error_string):
+    def assert_fatal_error(self, filename, error_string):
         error_dict = self.validator.validate(filename)
         self.assertEqual(1, len(error_dict))
         name = list(error_dict.keys())[0]
@@ -47,24 +45,24 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual({'fatal': error_string}, errors)
 
     def test_non_existing_file(self):
-        self.assertFatalError('non_existing', error_string='File missing')
+        self.assert_fatal_error('non_existing', error_string='File missing')
 
     def test_invalid_file(self):
         self.fs.CreateFile('test', contents='invalid')
-        self.assertFatalError('test', error_string='Invalid DICOM file')
+        self.assert_fatal_error('test', error_string='Invalid DICOM file')
 
     def test_missing_sop_class(self):
         filename = 'test.dcm'
         file_dataset = FileDataset(filename, Dataset(), file_meta=self.create_metadata())
         write_file(filename, file_dataset, write_like_original=False)
-        self.assertFatalError(filename, 'Missing SOPClassUID')
+        self.assert_fatal_error(filename, 'Missing SOPClassUID')
 
     def test_unknown_sop_class(self):
         dataset = Dataset()
         dataset.SOPClassUID = 'Unknown'
         file_dataset = FileDataset('test', dataset, file_meta=self.create_metadata())
         write_file('test', file_dataset, write_like_original=False)
-        self.assertFatalError('test', 'Unknown SOPClassUID: Unknown')
+        self.assert_fatal_error('test', 'Unknown SOPClassUID: Unknown')
 
     def test_validate_dir(self):
         self.fs.CreateDirectory(os.path.join('foo', 'bar', 'baz'))
@@ -77,3 +75,13 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.fs.CreateFile(os.path.join('foo1', '6.dcm'))
 
         self.assertEqual(5, len(self.validator.validate('foo')))
+
+    def test_non_fatal_errors(self):
+        dataset = Dataset()
+        dataset.SOPClassUID = '1.2.840.10008.5.1.4.1.1.2'  # CT Image Storage
+        file_dataset = FileDataset('test', dataset, file_meta=self.create_metadata())
+        write_file('test', file_dataset, write_like_original=False)
+        error_dict = self.validator.validate('test')
+        self.assertEqual(1, len(error_dict))
+        errors = error_dict['test']
+        self.assertNotIn('fatal', errors)

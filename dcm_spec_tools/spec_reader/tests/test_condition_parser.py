@@ -247,6 +247,13 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('=', result['op'])
         self.assertEqual(['YES'], result['values'])
 
+    def test_points_to_tag(self):
+        result = self.parser.parse('Required if Frame Increment Pointer (0028,0009) points to '
+                                   'Frame Label Vector (0018,2002).')
+        self.assertEqual('MN', result['type'])
+        self.assertEqual('=>', result['op'])
+        self.assertEqual(['(0018,2002)'], result['values'])
+
 
 class NotMandatoryConditionParserTest(ConditionParserTest):
     def test_default(self):
