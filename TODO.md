@@ -42,12 +42,16 @@
 
 ## Tools
 
+#### GetSpecs
+* get specs and write Json in one tool :on:
+* make subdirs for editions, get edition of `current` before downloading
+
 #### Validator
-* output options
-    * option to document each checked IOD
-    * option to show non-parsable conditions
-* add modules requiring missing attributes to output
-* verbosity :on:
+* verbosity levels :on:
+    * warning level: show only missing / unexpected attributes
+    * info level: show checked modules where errors occur
+    * info level: show failed condition (create from json)
+    * debug level: show each checked module
 * optional additional config files that replace part of the spec
 
 #### Dump

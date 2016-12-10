@@ -9,8 +9,6 @@ import os
 
 from pydicom import filereader
 
-from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
-
 
 class DataElementDumper(object):
     dict_info = None
@@ -30,7 +28,8 @@ class DataElementDumper(object):
         else:
             print('{} {:35} {} {:4} {} [{}]'.format(tag_id,
                                                     description['name'][:35], description['vr'],
-                                                    description['vm'], description['prop'], dataelement.value))
+                                                    description['vm'], description['prop'],
+                                                    dataelement.value))
 
 
 def main():
@@ -38,16 +37,12 @@ def main():
         description='Dumps DICOM information dictionary from DICOM file using PS3.6')
     parser.add_argument('dicomfile', help='Path of DICOM file to parse')
     parser.add_argument('--standard-path', '-src',
-                        help='Path with the DICOM specs in docbook format',
-                        default='./DICOM')
-    parser.add_argument('--json-path', '-json',
-                        help='Path with the DICOM specs in JSON format')
+                        help='Path with the DICOM specs in docbook and json format',
+                        default=os.path.join(os.path.expanduser("~"), 'dcm-spec-tools'))
     args = parser.parse_args()
-    if args.json_path:
-        with open(os.path.join(args.json_path, 'dict_info.json')) as info_file:
-            dict_info = json.load(info_file)
-    else:
-        dict_info = Part6Reader(args.standard_path).data_elements()
+    json_path = os.path.join(parser.parse_args(), 'json')
+    with open(os.path.join(json_path, 'dict_info.json')) as info_file:
+        dict_info = json.load(info_file)
 
     dataset = filereader.read_file(args.dicomfile, stop_before_pixels=True, force=True)
     DataElementDumper(dict_info).print_dataset(dataset)

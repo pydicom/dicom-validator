@@ -3,9 +3,6 @@ import json
 import logging
 import os
 
-from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
-from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
-from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
 from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
 
 
@@ -15,28 +12,18 @@ def main():
     parser.add_argument('dicomfiles', help='Path(s) of DICOM files or directories to validate',
                         nargs='+')
     parser.add_argument('--standard-path', '-src',
-                        help='Path with the DICOM specs in docbook format',
-                        default='./DICOM')
-    parser.add_argument('--json-path', '-json',
-                        help='Path with the DICOM specs in JSON format')
+                        help='Path with the DICOM specs in docbook and json format',
+                        default=os.path.join(os.path.expanduser("~"), 'dcm-spec-tools'))
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='Outputs diagnostic information')
     args = parser.parse_args()
-    if args.json_path:
-        with open(os.path.join(args.json_path, 'dict_info.json')) as info_file:
-            dict_info = json.load(info_file)
-        with open(os.path.join(args.json_path, 'iod_info.json')) as info_file:
-            iod_info = json.load(info_file)
-        with open(os.path.join(args.json_path, 'module_info.json')) as info_file:
-            module_info = json.load(info_file)
-    else:
-        dict_info = Part6Reader(args.standard_path).data_elements()
-        part3reader = Part3Reader(args.standard_path, dict_info)
-        iod_per_chapter_info = part3reader.iod_descriptions()
-        chapter_info = Part4Reader(args.standard_path).iod_chapters()
-        iod_info = {chapter_info[chapter]: iod_per_chapter_info[chapter]
-                    for chapter in iod_per_chapter_info if chapter in chapter_info}
-        module_info = part3reader.module_descriptions()
+    json_path = os.path.join(parser.parse_args(), 'json')
+    with open(os.path.join(json_path, 'dict_info.json')) as info_file:
+        dict_info = json.load(info_file)
+    with open(os.path.join(json_path, 'iod_info.json')) as info_file:
+        iod_info = json.load(info_file)
+    with open(os.path.join(json_path, 'module_info.json')) as info_file:
+        module_info = json.load(info_file)
 
     log_level = logging.DEBUG if args.verbose else logging.INFO
     validator = DicomFileValidator(iod_info, module_info, dict_info, log_level)

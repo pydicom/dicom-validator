@@ -103,13 +103,14 @@ class ConditionParser(object):
             tag, _ = self._parse_tag(value_string)
             if tag is None:
                 return {'type': 'U'}, None
-            values, rest = [ tag ], rest
+            values, rest = [tag], rest
         else:
             values, rest = None, rest.strip()
         result = self._parse_tags(condition[:op_offset], operator, values)
         if not result:
             return {'type': 'U'}, None
-        result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
+        result['type'] = 'MU' if 'may be present otherwise' in condition[
+                                                               op_offset:].lower() else 'MN'
         return result, rest
 
     def _parse_tag(self, tag_string):

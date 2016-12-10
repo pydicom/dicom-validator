@@ -1,50 +1,50 @@
 {
   "(0008,0001)": {
-    "name": "Length to End", 
-    "prop": "RET", 
-    "vm": "1", 
+    "name": "Length to End",
+    "prop": "RET",
+    "vm": "1",
     "vr": "UL"
-  }, 
+  },
   "(0008,0005)": {
-    "name": "Specific Character Set", 
-    "prop": "", 
-    "vm": "1-n", 
+    "name": "Specific Character Set",
+    "prop": "",
+    "vm": "1-n",
     "vr": "CS"
-  }, 
+  },
   "(0008,0006)": {
-    "name": "Language Code Sequence", 
-    "prop": "", 
-    "vm": "1", 
+    "name": "Language Code Sequence",
+    "prop": "",
+    "vm": "1",
     "vr": "SQ"
-  }, 
+  },
   "(0008,0008)": {
-    "name": "Image Type", 
-    "prop": "", 
-    "vm": "2-n", 
+    "name": "Image Type",
+    "prop": "",
+    "vm": "2-n",
     "vr": "CS"
-  }, 
+  },
   "(0008,0016)": {
-    "name": "SOP Class UID", 
-    "prop": "", 
-    "vm": "1", 
+    "name": "SOP Class UID",
+    "prop": "",
+    "vm": "1",
     "vr": "UI"
-  }, 
+  },
   "(0008,0060)": {
-    "name": "Modality", 
-    "prop": "", 
-    "vm": "1", 
+    "name": "Modality",
+    "prop": "",
+    "vm": "1",
     "vr": "CS"
-  }, 
+  },
   "(0010,2297)": {
-    "name": "Responsible Person", 
-    "prop": "", 
-    "vm": "1", 
+    "name": "Responsible Person",
+    "prop": "",
+    "vm": "1",
     "vr": "PN"
-  }, 
+  },
   "(0028,0008)": {
-    "name": "Number of Frames", 
-    "prop": "", 
-    "vm": "1", 
+    "name": "Number of Frames",
+    "prop": "",
+    "vm": "1",
     "vr": "IS"
   }
 }
