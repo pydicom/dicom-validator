@@ -18,7 +18,7 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
     def setUp(self):
         super(Part6ReaderTest, self).setUp()
         self.setUpPyfakefs()
-        spec_path = os.path.join('dicom', 'specs')
+        spec_path = os.path.join('dicom', 'docbook')
         part6_path = os.path.join(spec_path, 'part06.xml')
         self.fs.CreateFile(part6_path, contents=self.doc_contents)
         self.reader = Part6Reader(spec_path)

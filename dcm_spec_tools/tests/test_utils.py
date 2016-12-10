@@ -6,7 +6,7 @@ def fixture_path():
 
 
 def spec_fixture_path():
-    return os.path.join(fixture_path(), 'specs')
+    return os.path.join(fixture_path(), 'docbook')
 
 
 def json_fixture_path():
