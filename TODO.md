@@ -43,8 +43,6 @@
 ## Tools
 
 #### GetSpecs
-* get specs and write Json in one tool :on:
-* make subdirs for editions, get edition of `current` before downloading
 
 #### Validator
 * verbosity levels :on:
@@ -53,6 +51,7 @@
     * info level: show failed condition (create from json)
     * debug level: show each checked module
 * optional additional config files that replace part of the spec
+* test converting all available docbook versions :on:
 
 #### Dump
 * show sequence contents w/o help from pydicom

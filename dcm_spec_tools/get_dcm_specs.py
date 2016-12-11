@@ -2,6 +2,8 @@ import argparse
 import json
 import os
 
+from spec_reader.edition_reader import EditionReader
+
 try:
     from urllib import urlretrieve
 except ImportError:
@@ -11,64 +13,68 @@ from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
 from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
 from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
 
-BASE_URL = 'http://dicom.nema.org/medical/dicom'
+BASE_URL = 'http://dicom.nema.org/medical/dicom/'
 
 
 def get_chapter(revision, chapter, destination):
-    if not validate_chapter(chapter):
-        print(u'Invalid chapter number: ' + chapter)
-        return False
-    else:
-        file_path = os.path.join(destination, 'part{:02}.xml'.format(chapter))
-        if os.path.exists(file_path):
+    file_path = os.path.join(destination, 'part{:02}.xml'.format(chapter))
+    if os.path.exists(file_path):
+        if revision:
             print('Chapter {} already present, skipping download'.format(chapter))
-            return True
-        url = BASE_URL + '/{0}/source/docbook/part{1:02}/part{1:02}.xml'.format(revision, chapter)
-        try:
-            print('Downloading chapter {}...'.format(chapter))
-            urlretrieve(url, file_path)
-            return True
-        except BaseException as exception:
-            print(u'Failed to download {}: {}'.format(url, str(exception)))
-            if os.path.exists(file_path):
-                try:
-                    os.remove(file_path)
-                except OSError:
-                    print('Failed to remove incomplete file {}.'.format(file_path))
-            return False
-
-
-def validate_chapter(chapter):
+        return True
+    elif not revision:
+        print('Chapter {} not present at {}.'.format(chapter, file_path))
+        return False
+    url = BASE_URL + '{0}/source/docbook/part{1:02}/part{1:02}.xml'.format(revision, chapter)
     try:
-        chapter = int(chapter)
-    except ValueError:
+        print('Downloading chapter {}...'.format(chapter))
+        urlretrieve(url, file_path)
+        return True
+    except BaseException as exception:
+        print(u'Failed to download {}: {}'.format(url, str(exception)))
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except OSError:
+                print('Failed to remove incomplete file {}.'.format(file_path))
         return False
-    if chapter < 0 or chapter > 20:
-        return False
-    return True
 
 
 def main():
     parser = argparse.ArgumentParser(
         description='Get DICOM standard docbook XML files and converts parts to JSON')
     parser.add_argument('--destination', '-d',
-                        help='Base file path to write to',
+                        help='Base file path to write_to_json to',
                         default=os.path.join(os.path.expanduser("~"), 'dcm-spec-tools'))
     parser.add_argument('--revision', '-r',
-                        help='Standard revision (e.g. 2014a, 2016c',
+                        help='Standard revision (e.g. "2014c"), year of revision, or "current"',
                         default='current')
     args = parser.parse_args()
 
-    docbook_path = os.path.join(args.destination, 'docbook')
+    destination = args.destination
+    if not os.path.exists(destination):
+        os.makedirs(destination)
+
+    revision = None
+    # none revision is used if an existing path points to the specs
+    if args.revision != 'none':
+        edition_reader = EditionReader(url=BASE_URL, path=args.destination)
+        revision = edition_reader.get_edition(args.revision)
+        if not revision:
+            print('DICOM revision {} not found - exiting.'.format(args.revision))
+            return 1
+        destination = os.path.join(destination, revision)
+
+    docbook_path = os.path.join(destination, 'docbook')
     if not os.path.exists(docbook_path):
         os.makedirs(docbook_path)
-    json_path = os.path.join(args.destination, 'json')
+    json_path = os.path.join(destination, 'json')
     if not os.path.exists(json_path):
         os.makedirs(json_path)
 
     # download the docbook files
     for chapter in [3, 4, 6]:
-        if not get_chapter(revision=args.revision, chapter=chapter, destination=docbook_path):
+        if not get_chapter(revision=revision, chapter=chapter, destination=docbook_path):
             return 1
 
     # create the json files
@@ -92,6 +98,7 @@ def main():
     print('Done!')
 
     return 0
+
 
 if __name__ == '__main__':
     exit(main())
