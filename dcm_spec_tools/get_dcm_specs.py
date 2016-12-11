@@ -13,8 +13,6 @@ from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
 from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
 from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
 
-BASE_URL = 'http://dicom.nema.org/medical/dicom/'
-
 
 def get_chapter(revision, chapter, destination):
     file_path = os.path.join(destination, 'part{:02}.xml'.format(chapter))
@@ -25,7 +23,7 @@ def get_chapter(revision, chapter, destination):
     elif not revision:
         print('Chapter {} not present at {}.'.format(chapter, file_path))
         return False
-    url = BASE_URL + '{0}/source/docbook/part{1:02}/part{1:02}.xml'.format(revision, chapter)
+    url = '{0}{1}/source/docbook/part{2:02}/part{2:02}.xml'.format(EditionReader.base_url, revision, chapter)
     try:
         print('Downloading chapter {}...'.format(chapter))
         urlretrieve(url, file_path)
@@ -51,19 +49,13 @@ def main():
                         default='current')
     args = parser.parse_args()
 
-    destination = args.destination
-    if not os.path.exists(destination):
-        os.makedirs(destination)
+    if not os.path.exists(args.destination):
+        os.makedirs(args.destination)
 
-    revision = None
-    # none revision is used if an existing path points to the specs
-    if args.revision != 'none':
-        edition_reader = EditionReader(url=BASE_URL, path=args.destination)
-        revision = edition_reader.get_edition(args.revision)
-        if not revision:
-            print('DICOM revision {} not found - exiting.'.format(args.revision))
-            return 1
-        destination = os.path.join(destination, revision)
+    revision, destination = EditionReader.get_revision(args.revision, args.destination)
+    if destination is None:
+        print('DICOM revision {} not found - exiting.'.format(args.revision))
+        return 1
 
     docbook_path = os.path.join(destination, 'docbook')
     if not os.path.exists(docbook_path):

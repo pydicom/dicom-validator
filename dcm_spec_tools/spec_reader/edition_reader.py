@@ -38,11 +38,11 @@ class EditionParser(html_parser.HTMLParser):
 
 
 class EditionReader(object):
+    base_url = 'http://dicom.nema.org/medical/dicom/'
     html_filename = 'editions.html'
     json_filename = 'editions.json'
 
-    def __init__(self, url, path):
-        self.url = url
+    def __init__(self, path):
         self.path = path
         self.logger = logging.getLogger()
 
@@ -55,7 +55,7 @@ class EditionReader(object):
             self.logger.warning(u'Failed to get DICOM read_from_html: {}'.format(str(exception)))
 
     def retrieve(self, html_path):
-        urlretrieve(self.url, html_path)
+        urlretrieve(self.base_url, html_path)
 
     def get_editions(self):
         editions_path = os.path.join(self.path, self.json_filename)
@@ -100,3 +100,14 @@ class EditionReader(object):
                     return edition
         if revision == 'current':
             return editions[-1]
+
+    @classmethod
+    def get_revision(cls, revision, base_path):
+        # none revision is used if an existing path points to the specs
+        if revision != 'none':
+            edition_reader = cls(path=base_path)
+            revision = edition_reader.get_edition(revision)
+            if revision:
+                return revision, os.path.join(base_path, revision)
+            return None, None
+        return None, base_path
