@@ -20,7 +20,7 @@ class EditionParser(html_parser.HTMLParser):
     edition_re = re.compile(r'\d\d\d\d[a-h]')
 
     def __init__(self):
-        super(EditionParser, self).__init__()
+        html_parser.HTMLParser.__init__(self)
         self._in_anchor = False
         self.editions = []
 
