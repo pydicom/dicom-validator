@@ -174,6 +174,8 @@ class IODValidator(object):
             return tag_value > values[0]
         if operator == '<':
             return tag_value < values[0]
+        if operator == '=>':
+            return tag_value in values
         return False
 
     def _get_module_info(self, module_ref):

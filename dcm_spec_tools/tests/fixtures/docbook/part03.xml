@@ -16812,10 +16812,10 @@
                     <para xml:id="para_0edfc094-0b23-440f-a820-5690d526d954">(0018,1086)</para>
                   </td>
                   <td align="center" colspan="1" rowspan="1">
-                    <para xml:id="para_61ee1f09-4866-44d3-9dd2-934c791274b6">3</para>
+                    <para xml:id="para_61ee1f09-4866-44d3-9dd2-934c791274b6">1C</para>
                   </td>
                   <td align="left" colspan="1" rowspan="1">
-                    <para xml:id="para_bf028462-ba29-40b2-8cc3-312c50ee5da3">Number of beats prescribed to be skipped after each detected arrhythmia.</para>
+                    <para xml:id="para_bf028462-ba29-40b2-8cc3-312c50ee5da3">Number of beats prescribed to be skipped after each detected arrhythmia. Required if Frame Increment Pointer (0028,0009) points to Frame Time Vector (0018,1065).</para>
                   </td>
                 </tr>
                 <tr valign="top">

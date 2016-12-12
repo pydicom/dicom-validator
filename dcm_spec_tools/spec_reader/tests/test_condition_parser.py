@@ -252,7 +252,7 @@ class ValueConditionParserTest(ConditionParserTest):
                                    'Frame Label Vector (0018,2002).')
         self.assertEqual('MN', result['type'])
         self.assertEqual('=>', result['op'])
-        self.assertEqual(['(0018,2002)'], result['values'])
+        self.assertEqual(['1581058'], result['values'])
 
 
 class NotMandatoryConditionParserTest(ConditionParserTest):

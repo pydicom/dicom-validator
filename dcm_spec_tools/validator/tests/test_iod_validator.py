@@ -157,7 +157,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientID': 'ZZZ',
             'ImageType': 'SECONDARY',
             'CardiacSynchronizationTechnique': 'OTHER',
-            'HighRRValue': '123'    # 0018,1082
+            'HighRRValue': '123'  # 0018,1082
         })
         validator = self.validator(data_set)
         result = validator.validate()
@@ -173,7 +173,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientID': 'ZZZ',
             'ImageType': 'PRIMARY',
             'CardiacSynchronizationTechnique': 'OTHER',
-            'HighRRValue': '123'    # 0018,1082
+            'HighRRValue': '123'  # 0018,1082
         })
         validator = self.validator(data_set)
         result = validator.validate()
@@ -189,13 +189,13 @@ class IODValidatorTest(unittest.TestCase):
             'PatientID': 'ZZZ',
             'ImageType': 'MIXED',
             'CardiacSynchronizationTechnique': 'PROSPECTIVE',
-            'HighRRValue': '123'    # 0018,1082
+            'HighRRValue': '123'  # 0018,1082
         })
         validator = self.validator(data_set)
         result = validator.validate()
 
         # Both Low R-R Value and High R-R Value are needed
-        self.assertIn('(0018,1081)', result['missing'])     # Low R-R Value
+        self.assertIn('(0018,1081)', result['missing'])  # Low R-R Value
         self.assertNotIn('(0018,1082)', result['missing'])  # High R-R Value
 
     def test_presence_condition_met(self):
@@ -240,13 +240,36 @@ class IODValidatorTest(unittest.TestCase):
             'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
             'PatientsName': 'XXX',
             'PatientID': 'ZZZ',
-            'SamplesPerPixel': 3,
-            'PlanarConfiguration': '1'
+            'SamplesPerPixel': 1
         })
         validator = self.validator(data_set)
         result = validator.validate()
 
         self.assertNotIn('(0028,0006)', result['missing'])  # Planar configuration
+
+    def test_points_to_condition_met(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'FrameIncrementPointer': 0x00181065
+        })
+        validator = self.validator(data_set)
+        result = validator.validate()
+
+        self.assertIn('(0018,1086)', result['missing'])  # Skip beats
+
+    def test_points_to_condition_not_met(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'FrameIncrementPointer': 0x00181055
+        })
+        validator = self.validator(data_set)
+        result = validator.validate()
+
+        self.assertNotIn('(0018,1086)', result['missing'])  # Skip beats
 
 
 if __name__ == '__main__':
