@@ -46,7 +46,7 @@ def main():
                         default='current')
     args = parser.parse_args()
 
-    revision, base_path = EditionReader.get_revision(args.revision, args.standard_path)
+    _, base_path = EditionReader.get_revision(args.revision, args.standard_path)
     if base_path is None:
         print('DICOM revision {} not found - use get_dcm_specs to download it.'.format(args.revision))
         return 1

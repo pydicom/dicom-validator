@@ -7,7 +7,7 @@ from pydicom import write_file
 from pydicom.dataset import Dataset, FileDataset
 
 from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
-from tests.test_utils import json_fixture_path
+from dcm_spec_tools.tests.test_utils import json_fixture_path
 
 
 class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):

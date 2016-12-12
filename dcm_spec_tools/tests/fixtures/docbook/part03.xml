@@ -3113,9 +3113,7 @@
                 <para xml:id="para_99f6501a-80db-47ee-a9c8-1fb2d7b48bec">Patient</para>
               </td>
               <td align="left" colspan="1" rowspan="1">
-                <para xml:id="para_4e3e8104-1463-4f8f-822c-d57964e4e66d">
-                  <xref linkend="sect_C.7.1.1" xrefstyle="select: labelnumber"/>
-                </para>
+                <xref linkend="sect_C.7.1.1" xrefstyle="select: labelnumber"/>
               </td>
               <td align="left" colspan="1" rowspan="1">
                 <para xml:id="para_86814e25-0623-44ad-8d14-cdafdcc05046">M</para>

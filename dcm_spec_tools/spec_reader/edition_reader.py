@@ -52,7 +52,7 @@ class EditionReader(object):
             self.retrieve(os.path.join(self.path, self.html_filename))
             self.write_to_json()
         except BaseException as exception:
-            self.logger.warning(u'Failed to get DICOM read_from_html: {}'.format(str(exception)))
+            self.logger.warning(u'Failed to get DICOM read_from_html: %s', str(exception))
 
     def retrieve(self, html_path):
         urlretrieve(self.base_url, html_path)

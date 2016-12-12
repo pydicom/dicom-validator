@@ -199,8 +199,12 @@ class Part3Reader(SpecReader):
         tag_name = tag_name[level:]
         if level > current_level:
             sequence_description = {}
-            current_descriptions[-1][last_tag_id]['items'] = sequence_description
-            current_descriptions.append(sequence_description)
+            try:
+                current_descriptions[-1][last_tag_id]['items'] = sequence_description
+                current_descriptions.append(sequence_description)
+            except KeyError:
+                # silently ignore error in older specs
+                pass
         elif level < current_level:
             current_descriptions.pop()
         return tag_name, level
@@ -218,7 +222,6 @@ class Part3Reader(SpecReader):
                     row_span = int(columns[0].attrib['rowspan'])
                 name = self._find_text(columns[name_index])
                 modules[name] = {}
-                ref_section = None
                 try:
                     ref_section = self._find(columns[name_index + 1], ['para', 'xref']).attrib['linkend'].split('_')[1]
                 except AttributeError:

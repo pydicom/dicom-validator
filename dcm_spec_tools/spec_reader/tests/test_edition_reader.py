@@ -91,6 +91,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual('2015e', reader.get_edition('current'))
 
     def test_get_none_revision(self):
+        # pylint: disable=no-member
         revision, path = MemoryEditionReader.get_revision('none', '/foo/bar')
         self.assertIsNone(revision)
         self.assertEqual('/foo/bar', path)
@@ -99,6 +100,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         base_path = 'base'
         json_path = os.path.join(base_path, EditionReader.json_filename)
         self.fs.CreateFile(json_path, contents='["2014a", "2014c", "2015a"]')
+        # pylint: disable=no-member
         revision, path = MemoryEditionReader.get_revision('2014', base_path)
         self.assertEqual('2014c', revision)
         self.assertEqual(os.path.join(base_path, '2014c'), path)
@@ -107,6 +109,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         base_path = '/foo/bar'
         json_path = os.path.join(base_path, EditionReader.json_filename)
         self.fs.CreateFile(json_path, contents='["2014a", "2014c", "2015a"]')
+        # pylint: disable=no-member
         revision, path = MemoryEditionReader.get_revision('2016', base_path)
         self.assertIsNone(revision)
         self.assertIsNone(path)
