@@ -37,6 +37,17 @@ class Part4ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         iod_chapter = self.reader.iod_chapter(sop_class_uid='1.2.840.10008.5.1.4.1.1.2')
         self.assertEqual('A.3', iod_chapter)
 
+    def test_uids_for_chapter(self):
+        iod_chapters = self.reader.iod_chapters()
+        self.assertIn('A.3', iod_chapters)
+        self.assertEqual(1, len(iod_chapters['A.3']))
+        self.assertIn('A.26', iod_chapters)
+        self.assertIn('1.2.840.10008.5.1.4.1.1.2', iod_chapters['A.3'])
+        self.assertIn('A.26', iod_chapters)
+        self.assertEqual(2, len(iod_chapters['A.26']))
+        self.assertIn('1.2.840.10008.5.1.4.1.1.1.1', iod_chapters['A.26'])
+        self.assertIn('1.2.840.10008.5.1.4.1.1.1.1.1', iod_chapters['A.26'])
+
 
 if __name__ == '__main__':
     unittest.main()

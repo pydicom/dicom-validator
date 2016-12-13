@@ -75,6 +75,34 @@
         <tbody>
           <tr valign="top">
             <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_3d7e1150-da2d-4926-896d-c638fbcf674e">Digital X-Ray Image Storage - For Presentation</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_f84eb40a-04a2-4029-a9c3-2532b0dee008">1.2.840.10008.5.1.4.1.1.1.1</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_7bf5bd6f-fd05-44fd-8d13-9900de2647e7">
+                <olink targetdoc="PS3.3" targetptr="sect_A.26" xrefstyle="select: title"/>
+              </para>
+              <para xml:id="para_06c885b6-b78c-4ed6-a899-31cf0a305ee0">(see <xref linkend="sect_B.5.1.1" xrefstyle="select: label"/>)</para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_4463cd58-7910-4947-b3bd-b0908f8dd0b1">Digital X-Ray Image Storage - For Processing</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_0d23e107-ef88-447a-8097-fb021e71a922">1.2.840.10008.5.1.4.1.1.1.1.1</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_50e7d3a3-346a-42e0-a6ef-5cd4d7bfd34e">
+                <olink targetdoc="PS3.3" targetptr="sect_A.26" xrefstyle="select: title"/>
+              </para>
+              <para xml:id="para_23cfcb8e-1013-443b-9afd-1ba5f2776a9c">(see <xref linkend="sect_B.5.1.1" xrefstyle="select: label"/>)</para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
               <para xml:id="para_b36d51e9-9fd3-4593-a9b0-6332de3c743d">CT Image Storage</para>
             </td>
             <td align="left" colspan="1" rowspan="1">

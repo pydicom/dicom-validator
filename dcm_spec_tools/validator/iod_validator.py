@@ -30,7 +30,7 @@ class IODValidator(object):
             else:
                 self._validate_sop_class(sop_class_uid)
         if 'fatal' in self.errors:
-            self.logger.error('%s - aborting', self.errors['fatal'][0])
+            self.logger.error('%s - aborting', self.errors['fatal'])
         else:
             for error, tag_ids in self.errors.items():
                 self.logger.warning('Tag(s) %s:', error)

@@ -78,8 +78,11 @@ def main():
 
     iod_info = part3reader.iod_descriptions()
     chapter_info = part4reader.iod_chapters()
-    definition = {chapter_info[chapter]: iod_info[chapter]
-                  for chapter in iod_info if chapter in chapter_info}
+    definition = {}
+    for chapter in iod_info:
+        if chapter in chapter_info:
+            for uid in chapter_info[chapter]:
+                definition[uid] = iod_info[chapter]
 
     with open(os.path.join(json_path, 'iod_info.json'), 'w') as info_file:
         info_file.write(json.dumps(definition, sort_keys=True, indent=2))

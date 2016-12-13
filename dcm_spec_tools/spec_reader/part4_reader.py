@@ -12,7 +12,7 @@ class Part4Reader(SpecReader):
         super(Part4Reader, self).__init__(spec_dir)
         self.part_nr = 4
         self._sop_class_uids = {}  # SOP Class UID --> chapter
-        self._chapters = {}  # chapter --> SOP Class UID
+        self._chapters = {}  # chapter --> SOP Class UID list
 
     def iod_chapter(self, sop_class_uid):
         """Return the chapter in part 3 for the given SOP Class."""
@@ -43,7 +43,7 @@ class Part4Reader(SpecReader):
                 if target_node is not None:
                     chapter = target_node.attrib['targetptr'].split('_')[1]
                     self._sop_class_uids[uid] = chapter
-                    self._chapters[chapter] = uid
+                    self._chapters.setdefault(chapter, []).append(uid)
         self._patch_incorrect_values()
 
     def _patch_incorrect_values(self):
