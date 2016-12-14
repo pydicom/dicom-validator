@@ -210,7 +210,7 @@ class Part3Reader(SpecReader):
         return tag_name, level
 
     def _get_iod_modules(self, iod_node):
-        module_table_sections = self._find_sections_with_title_endings(iod_node, (' Module Table',))
+        module_table_sections = self._find_sections_with_title_endings(iod_node, (' Module Table', ' IOD Modules'))
         modules = {}
         if len(module_table_sections) == 1:
             module_rows = self._findall(module_table_sections[0], ['table', 'tbody', 'tr'])

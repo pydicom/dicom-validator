@@ -7,6 +7,22 @@ from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
 from spec_reader.edition_reader import EditionReader
 
 
+def validate(args, base_path):
+    json_path = os.path.join(base_path, 'json')
+    with open(os.path.join(json_path, 'dict_info.json')) as info_file:
+        dict_info = json.load(info_file)
+    with open(os.path.join(json_path, 'iod_info.json')) as info_file:
+        iod_info = json.load(info_file)
+    with open(os.path.join(json_path, 'module_info.json')) as info_file:
+        module_info = json.load(info_file)
+    log_level = logging.DEBUG if args.verbose else logging.INFO
+    validator = DicomFileValidator(iod_info, module_info, dict_info, log_level)
+    error_nr = 0
+    for dicom_path in args.dicomfiles:
+        error_nr += sum(len(error) for error in list(validator.validate(dicom_path).values()))
+    return error_nr
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Validates DICOM file IODs')
@@ -27,20 +43,7 @@ def main():
         print('DICOM revision {} not found - use get_dcm_specs to download it.'.format(args.revision))
         return 1
 
-    json_path = os.path.join(base_path, 'json')
-    with open(os.path.join(json_path, 'dict_info.json')) as info_file:
-        dict_info = json.load(info_file)
-    with open(os.path.join(json_path, 'iod_info.json')) as info_file:
-        iod_info = json.load(info_file)
-    with open(os.path.join(json_path, 'module_info.json')) as info_file:
-        module_info = json.load(info_file)
-
-    log_level = logging.DEBUG if args.verbose else logging.INFO
-    validator = DicomFileValidator(iod_info, module_info, dict_info, log_level)
-    error_nr = 0
-    for dicom_path in args.dicomfiles:
-        error_nr += sum(len(error) for error in list(validator.validate(dicom_path).values()))
-    return error_nr # sum(len(validator.validate(dicom_path)) for dicom_path in args.dicomfiles)
+    return validate(args, base_path)
 
 
 if __name__ == '__main__':
