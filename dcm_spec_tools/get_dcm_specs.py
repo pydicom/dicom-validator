@@ -38,6 +38,28 @@ def get_chapter(revision, chapter, destination):
         return False
 
 
+def create_json_files(docbook_path, json_path):
+    print('Creating JSON excerpts from docbook files...')
+    part6reader = Part6Reader(docbook_path)
+    dict_info = part6reader.data_elements()
+    part3reader = Part3Reader(docbook_path, dict_info)
+    part4reader = Part4Reader(docbook_path)
+    iod_info = part3reader.iod_descriptions()
+    chapter_info = part4reader.iod_chapters()
+    definition = {}
+    for chapter in iod_info:
+        if chapter in chapter_info:
+            for uid in chapter_info[chapter]:
+                definition[uid] = iod_info[chapter]
+    with open(os.path.join(json_path, 'iod_info.json'), 'w') as info_file:
+        info_file.write(json.dumps(definition, sort_keys=True, indent=2))
+    with open(os.path.join(json_path, 'module_info.json'), 'w') as info_file:
+        info_file.write(json.dumps(part3reader.module_descriptions(), sort_keys=True, indent=2))
+    with open(os.path.join(json_path, 'dict_info.json'), 'w') as info_file:
+        info_file.write(json.dumps(dict_info, sort_keys=True, indent=2))
+    print('Done!')
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Get DICOM standard docbook XML files and converts parts to JSON')
@@ -69,29 +91,7 @@ def main():
         if not get_chapter(revision=revision, chapter=chapter, destination=docbook_path):
             return 1
 
-    # create the json files
-    print('Creating JSON excerpts from docbook files...')
-    part6reader = Part6Reader(docbook_path)
-    dict_info = part6reader.data_elements()
-    part3reader = Part3Reader(docbook_path, dict_info)
-    part4reader = Part4Reader(docbook_path)
-
-    iod_info = part3reader.iod_descriptions()
-    chapter_info = part4reader.iod_chapters()
-    definition = {}
-    for chapter in iod_info:
-        if chapter in chapter_info:
-            for uid in chapter_info[chapter]:
-                definition[uid] = iod_info[chapter]
-
-    with open(os.path.join(json_path, 'iod_info.json'), 'w') as info_file:
-        info_file.write(json.dumps(definition, sort_keys=True, indent=2))
-    with open(os.path.join(json_path, 'module_info.json'), 'w') as info_file:
-        info_file.write(json.dumps(part3reader.module_descriptions(), sort_keys=True, indent=2))
-    with open(os.path.join(json_path, 'dict_info.json'), 'w') as info_file:
-        info_file.write(json.dumps(dict_info, sort_keys=True, indent=2))
-    print('Done!')
-
+    create_json_files(docbook_path, json_path)
     return 0
 
 

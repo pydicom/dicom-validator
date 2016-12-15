@@ -19,6 +19,7 @@ class Part3Reader(SpecReader):
         self._iod_descriptions = {}
         self._iod_nodes = {}
         self._module_descriptions = {}
+        self._current_ref = None
         if dict_info is not None:
             self._condition_parser = ConditionParser(self._dict_info)
 
@@ -98,11 +99,16 @@ class Part3Reader(SpecReader):
                 ' Information Object Definition',
                 ' Information Objection Definition'  # account for known typo
             )
+
+            iod_sub_nodes = []
+            nodes_with_subnodes = []
             for iod_node in all_iod_nodes:
-                iod_sub_notes = self._find_sections_with_title_endings(iod_node, iod_def_endings)
-                if iod_sub_notes:
-                    all_iod_nodes.remove(iod_node)
-                    all_iod_nodes.extend(iod_sub_notes)
+                sub_nodes = self._find_sections_with_title_endings(iod_node, iod_def_endings)
+                if sub_nodes:
+                    nodes_with_subnodes.append(iod_node)
+                    iod_sub_nodes.extend(sub_nodes)
+            all_iod_nodes = [node for node in all_iod_nodes if node not in nodes_with_subnodes]
+            all_iod_nodes.extend(iod_sub_nodes)
             self._iod_nodes = {node.attrib['label']: node for node in all_iod_nodes}
         return self._iod_nodes
 
@@ -151,6 +157,11 @@ class Part3Reader(SpecReader):
             # todo: functional group macros or similar
             return
         include_ref = include_node.attrib['linkend']
+        if include_ref == self._current_ref:
+            print('Self reference in', include_ref, ' - ignoring.')
+            self._current_ref = None
+            return
+        self._current_ref = include_ref
         element, label = self._get_ref_element_and_label(include_ref)
         if label not in self._module_descriptions:
             ref_node = self._get_ref_node(element, label)
@@ -160,6 +171,7 @@ class Part3Reader(SpecReader):
             ref_description = self._parse_module_description(ref_node) or {}
             self._module_descriptions[label] = ref_description
         current_descriptions[-1].setdefault('include', []).append(label)
+        self._current_ref = None
 
     def _handle_regular_attribute(self, columns, current_descriptions, last_tag_id, tag_name):
         tag_id = self._find_text(columns[1])
@@ -211,6 +223,8 @@ class Part3Reader(SpecReader):
 
     def _get_iod_modules(self, iod_node):
         module_table_sections = self._find_sections_with_title_endings(iod_node, (' Module Table', ' IOD Modules'))
+        if not module_table_sections:
+            module_table_sections = self._find_sections_with_title_endings(iod_node, ('IOD Entity-Relationship Model',))
         modules = {}
         if len(module_table_sections) == 1:
             module_rows = self._findall(module_table_sections[0], ['table', 'tbody', 'tr'])
@@ -219,7 +233,10 @@ class Part3Reader(SpecReader):
                 columns = self._findall(row, ['td'])
                 name_index = 0 if row_span > 0 else 1
                 if row_span == 0:
-                    row_span = int(columns[0].attrib['rowspan'])
+                    if 'rowspan' in columns[0].attrib:
+                        row_span = int(columns[0].attrib['rowspan'])
+                    else:
+                        row_span = 1
                 name = self._find_text(columns[name_index])
                 modules[name] = {}
                 try:
