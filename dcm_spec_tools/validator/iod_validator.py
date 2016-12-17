@@ -26,7 +26,7 @@ class IODValidator(object):
         else:
             sop_class_uid = self._dataset.SOPClassUID
             if sop_class_uid not in self._iod_info:
-                self.errors['fatal'] = 'Unknown SOPClassUID: ' + sop_class_uid
+                self.errors['fatal'] = 'Unknown SOPClassUID (probably retired): ' + sop_class_uid
             else:
                 self._validate_sop_class(sop_class_uid)
         if 'fatal' in self.errors:

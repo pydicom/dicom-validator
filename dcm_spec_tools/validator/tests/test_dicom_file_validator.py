@@ -62,7 +62,7 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
         dataset.SOPClassUID = 'Unknown'
         file_dataset = FileDataset('test', dataset, file_meta=self.create_metadata())
         write_file('test', file_dataset, write_like_original=False)
-        self.assert_fatal_error('test', 'Unknown SOPClassUID: Unknown')
+        self.assert_fatal_error('test', 'Unknown SOPClassUID (probably retired): Unknown')
 
     def test_validate_dir(self):
         self.fs.CreateDirectory(os.path.join('foo', 'bar', 'baz'))

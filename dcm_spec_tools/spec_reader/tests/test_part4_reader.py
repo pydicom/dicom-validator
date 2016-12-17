@@ -53,6 +53,5 @@ class Part4ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual('A.8.1', iod_chapter)
 
 
-
 if __name__ == '__main__':
     unittest.main()

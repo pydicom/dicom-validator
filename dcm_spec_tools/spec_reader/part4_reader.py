@@ -50,5 +50,5 @@ class Part4Reader(SpecReader):
         sc_sop_class_uid = '1.2.840.10008.5.1.4.1.1.7'
         if self._sop_class_uids.get(sc_sop_class_uid, '') == 'A.8':
             self._sop_class_uids[sc_sop_class_uid] = 'A.8.1'
-            self._chapters['A.8.1'] = sc_sop_class_uid
+            self._chapters['A.8.1'] = [sc_sop_class_uid]
             del self._chapters['A.8']
