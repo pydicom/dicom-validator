@@ -89,6 +89,32 @@
           </tr>
           <tr valign="top">
             <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_d457aa36-c718-4fa4-b8ec-ef7fd4bd6c06">Secondary Capture Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_827cf4ec-25b0-4dcd-987c-c07acd8aaa88">1.2.840.10008.5.1.4.1.1.7</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_f3fd5250-7dff-4711-a520-e21284af51d5">
+                <olink targetdoc="PS3.3" targetptr="sect_A.8" xrefstyle="select: title"/>
+              </para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_c525684e-a407-4d66-9543-bd253fac918c">Multi-frame Single Bit Secondary Capture Image Storage</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_df501bd1-4f37-4f42-b62c-59ac15804392">1.2.840.10008.5.1.4.1.1.7.1</para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_ba1a8b1b-b659-4edd-b746-f4c0b010a177">
+                <olink targetdoc="PS3.3" targetptr="sect_A.8.2" xrefstyle="select: title"/>
+              </para>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td align="left" colspan="1" rowspan="1">
               <para xml:id="para_4463cd58-7910-4947-b3bd-b0908f8dd0b1">Digital X-Ray Image Storage - For Processing</para>
             </td>
             <td align="left" colspan="1" rowspan="1">

@@ -2813,6 +2813,17 @@
             </td>
           </tr>
           <tr valign="top">
+            <td align="left" colspan="3" rowspan="1">
+              <para xml:id="para_59d6f4bf-a1e3-4c7a-bd58-5889b64ce38f">
+                <emphasis role="italic">&gt;&gt;Include <xref linkend="table_10-18" xrefstyle="select: label quotedtitle"/>
+</emphasis>
+              </para>
+            </td>
+            <td align="left" colspan="1" rowspan="1">
+              <para xml:id="para_62265648-6d18-4df1-891e-735f755443cf"/>
+            </td>
+          </tr>
+          <tr valign="top">
             <td align="left" colspan="1" rowspan="1">
               <para xml:id="para_40a1a958-8925-424d-93b5-2d39468d9392">&gt;Assigning Jurisdiction Code Sequence</para>
             </td>
@@ -3204,10 +3215,10 @@
               </td>
             </tr>
             <tr valign="top">
-              <td align="left" colspan="1" rowspan="1">
+              <td align="left" colspan="1">
                 <para xml:id="para_6e98e6c1-c0b0-4630-9b3e-1e959eacc74c">Frame of Reference</para>
               </td>
-              <td align="left" colspan="1" rowspan="1">
+              <td align="left" colspan="1">
                 <para xml:id="para_b6d4bf8d-7eff-4396-9b9f-9280cfde32c8">Frame of Reference</para>
               </td>
               <td align="left" colspan="1" rowspan="1">
@@ -3899,7 +3910,7 @@
                 </td>
               </tr>
               <tr valign="top">
-                <td align="left" colspan="1" rowspan="1">
+                <td align="left" colspan="1">
                   <para xml:id="para_4679bb67-e581-4bac-aeb1-f5d3d6bfc35f">CT Series</para>
                 </td>
                 <td align="left" colspan="1" rowspan="1">

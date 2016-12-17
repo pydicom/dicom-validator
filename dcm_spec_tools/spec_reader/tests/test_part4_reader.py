@@ -48,6 +48,11 @@ class Part4ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertIn('1.2.840.10008.5.1.4.1.1.1.1', iod_chapters['A.26'])
         self.assertIn('1.2.840.10008.5.1.4.1.1.1.1.1', iod_chapters['A.26'])
 
+    def test_secondary_capture_fix(self):
+        iod_chapter = self.reader.iod_chapter(sop_class_uid='1.2.840.10008.5.1.4.1.1.7')
+        self.assertEqual('A.8.1', iod_chapter)
+
+
 
 if __name__ == '__main__':
     unittest.main()

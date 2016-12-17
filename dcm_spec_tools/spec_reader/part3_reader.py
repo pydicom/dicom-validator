@@ -2,6 +2,7 @@
 Chapter3Reader collects DICOM Information Object Definition information for specific Storage SOP Classes.
 The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 """
+import logging
 from itertools import groupby
 
 from dcm_spec_tools.spec_reader.condition_parser import ConditionParser
@@ -19,7 +20,8 @@ class Part3Reader(SpecReader):
         self._iod_descriptions = {}
         self._iod_nodes = {}
         self._module_descriptions = {}
-        self._current_ref = None
+        self._current_refs = []
+        self.logger = logging.getLogger()
         if dict_info is not None:
             self._condition_parser = ConditionParser(self._dict_info)
 
@@ -157,11 +159,10 @@ class Part3Reader(SpecReader):
             # todo: functional group macros or similar
             return
         include_ref = include_node.attrib['linkend']
-        if include_ref == self._current_ref:
-            print('Self reference in', include_ref, ' - ignoring.')
-            self._current_ref = None
+        if self._current_refs and include_ref == self._current_refs[-1]:
+            self.logger.warning('Self reference in %s  - ignoring.', include_ref)
             return
-        self._current_ref = include_ref
+        self._current_refs.append(include_ref)
         element, label = self._get_ref_element_and_label(include_ref)
         if label not in self._module_descriptions:
             ref_node = self._get_ref_node(element, label)
@@ -171,7 +172,7 @@ class Part3Reader(SpecReader):
             ref_description = self._parse_module_description(ref_node) or {}
             self._module_descriptions[label] = ref_description
         current_descriptions[-1].setdefault('include', []).append(label)
-        self._current_ref = None
+        self._current_refs.pop()
 
     def _handle_regular_attribute(self, columns, current_descriptions, last_tag_id, tag_name):
         tag_id = self._find_text(columns[1])
@@ -245,7 +246,7 @@ class Part3Reader(SpecReader):
                     try:
                         ref_section = self._find(columns[name_index + 1], ['xref']).attrib['linkend'].split('_')[1]
                     except AttributeError:
-                        print('Failed to read module table for', name)
+                        self.logger.warning('Failed to read module table for %s', name)
                         continue
                 modules[name]['ref'] = ref_section
                 # make sure the module description is loaded
