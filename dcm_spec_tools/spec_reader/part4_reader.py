@@ -38,7 +38,7 @@ class Part4Reader(SpecReader):
         for row_node in row_nodes:
             column_nodes = self._findall(row_node, ['td'])
             if len(column_nodes) == 3:
-                uid = self.cleaned_uid(self._find_text(column_nodes[1]))
+                uid = self.cleaned_value(self._find_text(column_nodes[1]))
                 target_node = self._find(column_nodes[2], ['para', 'olink'])
                 if target_node is not None:
                     chapter = target_node.attrib['targetptr'].split('_')[1]

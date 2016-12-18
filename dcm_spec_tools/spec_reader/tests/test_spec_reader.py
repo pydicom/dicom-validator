@@ -29,7 +29,7 @@ class ReadSpecTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     def test_cleaned_uid(self):
         self.assertEqual('1.2.840.10008.5.1.4.1.1.88.72',
-                         SpecReader.cleaned_uid(u'1.2.840.10008.5.\u200b1.\u200b4.\u200b1.\u200b1.\u200b88.\u200b72'))
+                         SpecReader.cleaned_value(u'1.2.840.10008.5.\u200b1.\u200b4.\u200b1.\u200b1.\u200b88.\u200b72'))
 
 
 if __name__ == '__main__':

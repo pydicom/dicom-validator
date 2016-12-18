@@ -43,9 +43,11 @@
 ## Tools
 
 #### GetSpecs
+* store retired IODs
 
 #### Validator
 * verbosity levels :on:
+    * error level: invalid DICOM errors only
     * warning level: show only missing / unexpected attributes
     * info level: show checked modules where errors occur
     * info level: show failed condition (create from json)
@@ -53,5 +55,5 @@
 * optional additional config files that replace part of the spec
 
 #### Dump
-* show sequence contents w/o help from pydicom
-* add mapping of UIDs to output
+* add tag length
+* add image tag

@@ -49,6 +49,14 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertIn('1.2.840.10008.1.2.4.80', xfer_syntax_uids)
         self.assertEqual('JPEG-LS Lossless Image Compression', xfer_syntax_uids['1.2.840.10008.1.2.4.80'])
 
+    def test_all_uids(self):
+        uids = self.reader.all_uids()
+        self.assertEqual(2, len(uids))
+        self.assertIn('Transfer Syntax', uids)
+        self.assertIn('SOP Class', uids)
+        uid_nr = sum([len(uid_dict) for uid_dict in uids.values()])
+        self.assertEqual(5, uid_nr)
+
     def test_sop_class_name(self):
         self.assertEqual('Enhanced US Volume Storage', self.reader.sop_class_name('1.2.840.10008.5.1.4.1.1.6.2'))
 

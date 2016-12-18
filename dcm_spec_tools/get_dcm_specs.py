@@ -57,6 +57,8 @@ def create_json_files(docbook_path, json_path):
         info_file.write(json.dumps(part3reader.module_descriptions(), sort_keys=True, indent=2))
     with open(os.path.join(json_path, 'dict_info.json'), 'w') as info_file:
         info_file.write(json.dumps(dict_info, sort_keys=True, indent=2))
+    with open(os.path.join(json_path, 'uid_info.json'), 'w') as info_file:
+        info_file.write(json.dumps(part6reader.all_uids(), sort_keys=True, indent=2))
     print('Done!')
 
 

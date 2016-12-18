@@ -64,6 +64,10 @@ class Part6Reader(SpecReader):
         """Return a dict of UID values (keys) and names for the given UID type."""
         return self._get_uids().get(uid_type, {})
 
+    def all_uids(self):
+        """Return a dict of UID types with UID value/name dicts for the given UID type as value."""
+        return self._get_uids()
+
     def sop_class_uids(self):
         """Return a dict of SOP Class UID values (keys) and names."""
         return self.uids('SOP Class')
@@ -95,6 +99,6 @@ class Part6Reader(SpecReader):
                         uid_type = uid_attributes[2]
                         # in PS3.6 xml there are multiple zero width (U+200B) spaces inside the UIDs
                         # we remove them hoping this is the only such problem
-                        uid_value = self.cleaned_uid(uid_attributes[0])
-                        self._uids.setdefault(uid_type, {})[uid_value] = uid_attributes[1]
+                        uid_value = self.cleaned_value(uid_attributes[0])
+                        self._uids.setdefault(uid_type, {})[uid_value] = self.cleaned_value(uid_attributes[1])
         return self._uids

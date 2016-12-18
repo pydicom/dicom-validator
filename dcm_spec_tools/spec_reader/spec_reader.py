@@ -71,8 +71,8 @@ class SpecReader(object):
             return ''
 
     @staticmethod
-    def cleaned_uid(uid):
-        return uid.replace(u'\u200B', '')
+    def cleaned_value(value):
+        return value.replace(u'\u200B', '')
 
     @staticmethod
     def _find_all_text(node):

@@ -1,6 +1,5 @@
 """
 Dumps tag information from a DICOM file using information in PS3.6.
-For testing the dictionary only - there are better tools for this.
 """
 
 import argparse
@@ -14,12 +13,30 @@ from spec_reader.edition_reader import EditionReader
 
 class DataElementDumper(object):
     dict_info = None
+    uid_info = {}
+    level = 0
 
-    def __init__(self, dict_info):
+    def __init__(self, dict_info, uid_info):
         self.__class__.dict_info = dict_info
+        for uid_dict in uid_info.values():
+            self.__class__.uid_info.update(uid_dict)
 
     def print_dataset(self, dataset):
         dataset.walk(self.print_dataelement)
+
+    @staticmethod
+    def print_element(tag_id, description, value):
+        if isinstance(value, list):
+            value = '\\'.join([str(element) for element in value])
+        indent = 2 * DataElementDumper.level
+        format_string = '{{}}{{}} {{:{}}} {{}} {{:4}} {{}} [{{}}]'.format(40 - indent)
+        print(format_string.format(' ' * indent,
+                                   tag_id,
+                                   description['name'][:40 - indent],
+                                   description['vr'],
+                                   description['vm'],
+                                   description['prop'],
+                                   value))
 
     @staticmethod
     def print_dataelement(dummy_dataset, dataelement):
@@ -28,10 +45,29 @@ class DataElementDumper(object):
         if description is None:
             print('No dictionary entry found for {}'.format(tag_id))
         else:
-            print('{} {:35} {} {:4} {} [{}]'.format(tag_id,
-                                                    description['name'][:35], description['vr'],
-                                                    description['vm'], description['prop'],
-                                                    dataelement.value))
+            value = dataelement.value
+            if description['vr'] == 'UI':
+                # do not rely on pydicom here - we want to use the currently loaded DICOM spec
+                value = repr(value)[1:-1]
+                value = DataElementDumper.uid_info.get(value, value)
+            if description['vr'] == 'SQ':
+                DataElementDumper.print_element(tag_id, description,
+                                                'Sequence with {} item(s)'.format(len(value)))
+                DataElementDumper.level += 1
+                DataElementDumper.print_sequence(dataelement)
+                DataElementDumper.level -= 1
+            else:
+                DataElementDumper.print_element(tag_id, description, value)
+
+    @staticmethod
+    def print_sequence(sequence):
+        indent = 2 * DataElementDumper.level
+        format_string = '{{}}Item {{:<{}}} [Dataset with {{}} element(s)]'.format(56 - indent)
+        for i, dataset in enumerate(sequence):
+            print(format_string.format(' ' * indent, i + 1, len(dataset)))
+            DataElementDumper.level += 1
+            dataset.walk(DataElementDumper.print_dataelement)
+            DataElementDumper.level -= 1
 
 
 def main():
@@ -54,9 +90,11 @@ def main():
     json_path = os.path.join(base_path, 'json')
     with open(os.path.join(json_path, 'dict_info.json')) as info_file:
         dict_info = json.load(info_file)
+    with open(os.path.join(json_path, 'uid_info.json')) as info_file:
+        uid_info = json.load(info_file)
 
     dataset = filereader.read_file(args.dicomfile, stop_before_pixels=True, force=True)
-    DataElementDumper(dict_info).print_dataset(dataset)
+    DataElementDumper(dict_info, uid_info).print_dataset(dataset)
 
     return 0
 
