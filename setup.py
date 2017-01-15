@@ -20,9 +20,9 @@ except ImportError:
 
 setup(
     name="dcm-spec-tools",
-    packages=['dcm_spec_tools.spec_reader', 'dcm_spec_tools.validator'],
+    packages=['dcm_spec_tools'],
     include_package_data=True,
-    version="0.1.0",
+    version="0.1.1",
     install_requires=['pydicom'],
     description="Python DICOM tools using input from DICOM specs in docbook format",
     author="mrbean-bremen",

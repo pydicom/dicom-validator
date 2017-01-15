@@ -6,12 +6,15 @@ the DICOM standard in docbook format as provided by [ACR NEMA](http://medical.ne
 Use `get_dcm_specs` to download DICOM specs of the wanted version from the official site.  
 This converts the relevant parts to json files for usage by the tools.
 
-Currently available tools:
-* `validate_iods` checks DICOM files for correct attributes for the given SOP class.
+
+Currently available tools:  
+* `validate_iods` checks DICOM files for correct attributes for the given SOP class.  
 * `dump_dcm_info` outputs the DICOM tag IDs and values of a given DICOM file.
 
-Installation:
-`pip install dcm-spec-tools`
+
+Installation:  
+`pip install dcm-spec-tools`  
+
 Use the `--help` option for each script do get usage info.
 
 Note that this is still in an early stage of development.

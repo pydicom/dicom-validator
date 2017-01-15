@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 
-from spec_reader.edition_reader import EditionReader
+from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
 try:
     from urllib import urlretrieve

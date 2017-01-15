@@ -3,8 +3,13 @@ import logging
 import os
 
 import pyfakefs.fake_filesystem_unittest
-from pydicom import write_file
-from pydicom.dataset import Dataset, FileDataset
+
+try:
+    from pydicom import write_file
+    from pydicom.dataset import Dataset, FileDataset
+except ImportError:
+    from dicom import write_file
+    from dicom.dataset import Dataset, FileDataset
 
 from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
 from dcm_spec_tools.tests.test_utils import json_fixture_path

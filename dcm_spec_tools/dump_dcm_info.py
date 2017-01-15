@@ -6,9 +6,13 @@ import argparse
 import json
 import os
 
-from pydicom import filereader
+try:
+    from pydicom import filereader
+except ImportError:
+    from dicom import filereader
 
-from spec_reader.edition_reader import EditionReader
+
+from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
 
 class DataElementDumper(object):

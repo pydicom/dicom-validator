@@ -4,7 +4,7 @@ import logging
 import os
 
 from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
-from spec_reader.edition_reader import EditionReader
+from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
 
 def validate(args, base_path):
