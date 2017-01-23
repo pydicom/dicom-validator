@@ -113,3 +113,17 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         revision, path = MemoryEditionReader.get_revision('2016', base_path)
         self.assertIsNone(revision)
         self.assertIsNone(path)
+
+    def test_is_current(self):
+        reader = MemoryEditionReader(self.base_path, '<html>'
+                                                     '<a ref="foo">2014a</a>'
+                                                     '<a ref="foo">2014c</a>'
+                                                     '<a ref="foo">2015a</a>'
+                                                     '<a ref="foo">2015e</a>')
+        self.assertTrue(reader.is_current('2015e'))
+        self.assertTrue(reader.is_current('2015'))
+        self.assertFalse(reader.is_current('2015a'))
+        self.assertFalse(reader.is_current('2015f'))
+        self.assertFalse(reader.is_current('2014'))
+        self.assertFalse(reader.is_current('2016'))
+        self.assertTrue(reader.is_current('current'))

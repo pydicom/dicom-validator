@@ -14,18 +14,19 @@ from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
 from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
 
 
-def get_chapter(revision, chapter, destination):
+def get_chapter(revision, chapter, destination, is_current):
     file_path = os.path.join(destination, 'part{:02}.xml'.format(chapter))
     if os.path.exists(file_path):
         if revision:
-            print('Chapter {} already present, skipping download'.format(chapter))
+            print('DICOM spec {} PS3.{} already present, skipping download'.format(revision, chapter))
         return True
     elif not revision:
         print('Chapter {} not present at {}.'.format(chapter, file_path))
         return False
-    url = '{0}{1}/source/docbook/part{2:02}/part{2:02}.xml'.format(EditionReader.base_url, revision, chapter)
+    revision_dir = 'current' if is_current else revision
+    url = '{0}{1}/source/docbook/part{2:02}/part{2:02}.xml'.format(EditionReader.base_url, revision_dir, chapter)
     try:
-        print('Downloading chapter {}...'.format(chapter))
+        print('Downloading DICOM spec {} PS3.{}...'.format(revision, chapter))
         urlretrieve(url, file_path)
         return True
     except BaseException as exception:
@@ -76,11 +77,13 @@ def main():
     if not os.path.exists(args.destination):
         os.makedirs(args.destination)
 
-    revision, destination = EditionReader.get_revision(args.revision, args.destination)
-    if destination is None:
+    edition_reader = EditionReader(args.destination)
+    revision = edition_reader.get_edition(args.revision)
+    if revision is None:
         print('DICOM revision {} not found - exiting.'.format(args.revision))
         return 1
 
+    destination = os.path.join(args.destination, revision)
     docbook_path = os.path.join(destination, 'docbook')
     if not os.path.exists(docbook_path):
         os.makedirs(docbook_path)
@@ -90,7 +93,8 @@ def main():
 
     # download the docbook files
     for chapter in [3, 4, 6]:
-        if not get_chapter(revision=revision, chapter=chapter, destination=docbook_path):
+        if not get_chapter(revision=revision, chapter=chapter, destination=docbook_path,
+                           is_current=edition_reader.is_current(revision)):
             return 1
 
     create_json_files(docbook_path, json_path)

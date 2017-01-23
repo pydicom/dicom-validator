@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import os
+import sys
 
 import re
 
@@ -45,6 +46,8 @@ class EditionReader(object):
     def __init__(self, path):
         self.path = path
         self.logger = logging.getLogger()
+        if not self.logger.handlers:
+            self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
     def update_edition(self):
         try:
@@ -100,6 +103,19 @@ class EditionReader(object):
                     return edition
         if revision == 'current':
             return editions[-1]
+
+    def is_current(self, revision):
+        """Get the edition matching the revision or None.
+        The revision can be the edition name, the year of the edition, or 'current'.
+        """
+        editions = sorted(self.get_editions())
+        if revision in editions:
+            return revision == editions[-1]
+        if len(revision) == 4:
+            return editions[-1].startswith(revision)
+        if revision == 'current':
+            return True
+        return False
 
     @classmethod
     def get_revision(cls, revision, base_path):

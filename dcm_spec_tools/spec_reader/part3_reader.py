@@ -5,6 +5,8 @@ The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 import logging
 from itertools import groupby
 
+import sys
+
 from dcm_spec_tools.spec_reader.condition_parser import ConditionParser
 from dcm_spec_tools.spec_reader.spec_reader import SpecReader, SpecReaderParseError, SpecReaderLookupError
 
@@ -22,6 +24,8 @@ class Part3Reader(SpecReader):
         self._module_descriptions = {}
         self._current_refs = []
         self.logger = logging.getLogger()
+        if not self.logger.handlers:
+            self.logger.addHandler(logging.StreamHandler(sys.stdout))
         if dict_info is not None:
             self._condition_parser = ConditionParser(self._dict_info)
 
