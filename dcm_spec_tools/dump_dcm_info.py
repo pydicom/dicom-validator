@@ -30,7 +30,9 @@ class DataElementDumper(object):
 
     @staticmethod
     def print_element(tag_id, description, value):
+        vm = 1 if value else 0
         if isinstance(value, list):
+            vm = len(value)
             value = '\\'.join([str(element) for element in value])
         indent = 2 * DataElementDumper.level
         format_string = '{{}}{{}} {{:{}}} {{}} {{:4}} {{}} [{{}}]'.format(40 - indent)
@@ -38,7 +40,7 @@ class DataElementDumper(object):
                                    tag_id,
                                    description['name'][:40 - indent],
                                    description['vr'],
-                                   description['vm'],
+                                   vm,
                                    description['prop'],
                                    value))
 
