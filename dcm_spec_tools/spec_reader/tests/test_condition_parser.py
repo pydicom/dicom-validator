@@ -430,3 +430,21 @@ class ComplicatedConditionParserTest(ConditionParserTest):
         self.assertEqual('=', result['or'][2]['op'])
         self.assertEqual(['POLYLINE', 'INTERPOLATED'], result['or'][2]['values'])
 
+    def test_other_condition(self):
+        result = self.parser.parse('Required if 3D Point Coordinates (0068,6590) is not present and '
+                                   'HPGL Document Sequence (0068,62C0) is present. '
+                                   'May be present if 3D Point Coordinates (0068,6590) is present and '
+                                   'HPGL Document Sequence (0068,62C0) is present.')
+        self.assertEqual('MC', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(2, len(result['and']))
+        self.assertEqual('-', result['and'][0]['op'])
+        self.assertEqual('+', result['and'][1]['op'])
+        self.assertIn('other_cond', result)
+        other_cond = result['other_cond']
+        self.assertIn('and', other_cond)
+        self.assertEqual(2, len(other_cond['and']))
+        self.assertEqual('+', other_cond['and'][0]['op'])
+        self.assertEqual('(0068,6590)', other_cond['and'][0]['tag'])
+        self.assertEqual('+', other_cond['and'][1]['op'])
+        self.assertEqual('(0068,62C0)', other_cond['and'][1]['tag'])

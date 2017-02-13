@@ -109,8 +109,15 @@ class ConditionParser(object):
         result = self._parse_tags(condition[:op_offset], operator, values)
         if not result:
             return {'type': 'U'}, None
+
         result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
         return result, rest
+
+    def _get_other_condition(self, condition_string):
+        for condition_marker in ['may be present otherwise if ', 'may be present if ']:
+            index = condition_string.lower().find(condition_marker)
+            if index >= 0:
+                return self._parse_tag_expressions(condition_string[index + len(condition_marker):])
 
     @staticmethod
     def _tag_id(tag_id_string):
@@ -174,7 +181,7 @@ class ConditionParser(object):
                 break
         return value_string, rest
 
-    def _parse_tag_expressions(self, condition):
+    def _parse_tag_expressions(self, condition, nested=False):
         result, rest = self._parse_tag_expression(condition)
         if rest is not None:
             if rest.startswith(', '):
@@ -186,12 +193,18 @@ class ConditionParser(object):
                     condition = rest[len(operator) + 1:]
                     break
             if logical_op is not None:
-                next_result = self._parse_tag_expressions(condition)
+                next_result = self._parse_tag_expressions(condition, nested=True)
                 if next_result['type'] != 'U':
                     del next_result['type']
                     new_result = {logical_op: [result, next_result], 'type': result['type']}
                     del result['type']
                     result = new_result
+        if not nested and rest is not None:
+            other_cond = self._get_other_condition(rest)
+            if other_cond is not None and other_cond['type'] != 'U':
+                result['type'] = 'MC'
+                result['other_cond'] = other_cond
+                print(other_cond)
         return result
 
     def _parse_tags(self, condition, operator, values):
