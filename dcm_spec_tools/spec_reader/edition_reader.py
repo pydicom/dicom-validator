@@ -108,6 +108,8 @@ class EditionReader(object):
         """Get the edition matching the revision or None.
         The revision can be the edition name, the year of the edition, or 'current'.
         """
+        if revision is None:
+            return True
         editions = sorted(self.get_editions())
         if revision in editions:
             return revision == editions[-1]
@@ -117,13 +119,11 @@ class EditionReader(object):
             return True
         return False
 
-    @classmethod
-    def get_revision(cls, revision, base_path):
+    def get_revision(self, revision):
         # none revision is used if an existing path points to the specs
         if revision != 'none':
-            edition_reader = cls(path=base_path)
-            revision = edition_reader.get_edition(revision)
+            revision = self.get_edition(revision)
             if revision:
-                return revision, os.path.join(base_path, revision)
+                return revision, os.path.join(self.path, revision)
             return None, None
-        return None, base_path
+        return None, self.path

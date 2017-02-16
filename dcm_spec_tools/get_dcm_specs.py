@@ -78,12 +78,11 @@ def main():
         os.makedirs(args.destination)
 
     edition_reader = EditionReader(args.destination)
-    revision = edition_reader.get_edition(args.revision)
-    if revision is None:
+    revision, destination = edition_reader.get_revision(args.revision)
+    if destination is None:
         print('DICOM revision {} not found - exiting.'.format(args.revision))
         return 1
 
-    destination = os.path.join(args.destination, revision)
     docbook_path = os.path.join(destination, 'docbook')
     if not os.path.exists(docbook_path):
         os.makedirs(docbook_path)

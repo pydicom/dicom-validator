@@ -3616,7 +3616,29 @@
             ]
           }
         ],
-        "type": "MN"
+        "other_cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "DERIVED"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0018,9037)",
+              "values": [
+                "PROSPECTIVE",
+                "RETROSPECTIVE"
+              ]
+            }
+          ],
+          "type": "MN"
+        },
+        "type": "MC"
       },
       "name": "Low R-R Value",
       "type": "2C"
@@ -3643,7 +3665,29 @@
             ]
           }
         ],
-        "type": "MN"
+        "other_cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "DERIVED"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0018,9037)",
+              "values": [
+                "PROSPECTIVE",
+                "RETROSPECTIVE"
+              ]
+            }
+          ],
+          "type": "MN"
+        },
+        "type": "MC"
       },
       "name": "High R-R Value",
       "type": "2C"
@@ -3669,7 +3713,28 @@
             ]
           }
         ],
-        "type": "MN"
+        "other_cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "DERIVED"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "!=",
+              "tag": "(0018,9037)",
+              "values": [
+                "NONE"
+              ]
+            }
+          ],
+          "type": "MN"
+        },
+        "type": "MC"
       },
       "name": "Intervals Acquired",
       "type": "2C"
@@ -3695,7 +3760,28 @@
             ]
           }
         ],
-        "type": "MN"
+        "other_cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "DERIVED"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "!=",
+              "tag": "(0018,9037)",
+              "values": [
+                "NONE"
+              ]
+            }
+          ],
+          "type": "MN"
+        },
+        "type": "MC"
       },
       "name": "Intervals Rejected",
       "type": "2C"
@@ -3748,7 +3834,28 @@
             ]
           }
         ],
-        "type": "MN"
+        "other_cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "DERIVED"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "!=",
+              "tag": "(0018,9037)",
+              "values": [
+                "NONE"
+              ]
+            }
+          ],
+          "type": "MN"
+        },
+        "type": "MC"
       },
       "name": "Cardiac RR Interval Specified",
       "type": "1C"
@@ -3774,7 +3881,28 @@
             ]
           }
         ],
-        "type": "MN"
+        "other_cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "DERIVED"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "!=",
+              "tag": "(0018,9037)",
+              "values": [
+                "NONE"
+              ]
+            }
+          ],
+          "type": "MN"
+        },
+        "type": "MC"
       },
       "name": "Cardiac Signal Source",
       "type": "1C"
@@ -3801,7 +3929,29 @@
             ]
           }
         ],
-        "type": "MN"
+        "other_cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "DERIVED"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0018,9037)",
+              "values": [
+                "PROSPECTIVE",
+                "RETROSPECTIVE"
+              ]
+            }
+          ],
+          "type": "MN"
+        },
+        "type": "MC"
       },
       "name": "Cardiac Beat Rejection Technique",
       "type": "1C"
@@ -3843,7 +3993,16 @@
             ]
           }
         ],
-        "type": "MN"
+        "other_cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0008,0008)",
+          "type": "MN",
+          "values": [
+            "DERIVED"
+          ]
+        },
+        "type": "MC"
       },
       "name": "Respiratory Signal Source",
       "type": "1C"

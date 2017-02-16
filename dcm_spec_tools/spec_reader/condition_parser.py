@@ -204,7 +204,6 @@ class ConditionParser(object):
             if other_cond is not None and other_cond['type'] != 'U':
                 result['type'] = 'MC'
                 result['other_cond'] = other_cond
-                print(other_cond)
         return result
 
     def _parse_tags(self, condition, operator, values):

@@ -91,26 +91,26 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual('2015e', reader.get_edition('current'))
 
     def test_get_none_revision(self):
-        # pylint: disable=no-member
-        revision, path = MemoryEditionReader.get_revision('none', '/foo/bar')
+        reader = MemoryEditionReader('/foo/bar', '')
+        revision, path = reader.get_revision('none')
         self.assertIsNone(revision)
         self.assertEqual('/foo/bar', path)
 
     def test_get_revision_existing(self):
         base_path = 'base'
+        reader = MemoryEditionReader(base_path, '')
         json_path = os.path.join(base_path, EditionReader.json_filename)
         self.fs.CreateFile(json_path, contents='["2014a", "2014c", "2015a"]')
-        # pylint: disable=no-member
-        revision, path = MemoryEditionReader.get_revision('2014', base_path)
+        revision, path = reader.get_revision('2014')
         self.assertEqual('2014c', revision)
         self.assertEqual(os.path.join(base_path, '2014c'), path)
 
     def test_get_revision_nonexisting(self):
         base_path = '/foo/bar'
+        reader = MemoryEditionReader(base_path, '')
         json_path = os.path.join(base_path, EditionReader.json_filename)
         self.fs.CreateFile(json_path, contents='["2014a", "2014c", "2015a"]')
-        # pylint: disable=no-member
-        revision, path = MemoryEditionReader.get_revision('2016', base_path)
+        revision, path = reader.get_revision('2016')
         self.assertIsNone(revision)
         self.assertIsNone(path)
 
@@ -127,3 +127,4 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertFalse(reader.is_current('2014'))
         self.assertFalse(reader.is_current('2016'))
         self.assertTrue(reader.is_current('current'))
+        self.assertTrue(reader.is_current(None))

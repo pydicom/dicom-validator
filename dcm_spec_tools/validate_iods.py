@@ -38,12 +38,13 @@ def main():
                         help='Outputs diagnostic information')
     args = parser.parse_args()
 
-    _, base_path = EditionReader.get_revision(args.revision, args.standard_path)
-    if base_path is None:
+    edition_reader = EditionReader(args.standard_path)
+    _, destination = edition_reader.get_revision(args.revision)
+    if destination is None:
         print('DICOM revision {} not found - use get_dcm_specs to download it.'.format(args.revision))
         return 1
 
-    return validate(args, base_path)
+    return validate(args, destination)
 
 
 if __name__ == '__main__':

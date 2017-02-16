@@ -88,12 +88,13 @@ def main():
                         default='current')
     args = parser.parse_args()
 
-    _, base_path = EditionReader.get_revision(args.revision, args.standard_path)
-    if base_path is None:
+    edition_reader = EditionReader(args.standard_path)
+    _, destination = edition_reader.get_revision(args.revision)
+    if destination is None:
         print('DICOM revision {} not found - use get_dcm_specs to download it.'.format(args.revision))
         return 1
 
-    json_path = os.path.join(base_path, 'json')
+    json_path = os.path.join(destination, 'json')
     with open(os.path.join(json_path, 'dict_info.json')) as info_file:
         dict_info = json.load(info_file)
     with open(os.path.join(json_path, 'uid_info.json')) as info_file:
