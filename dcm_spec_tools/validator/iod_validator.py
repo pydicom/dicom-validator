@@ -112,7 +112,9 @@ class IODValidator(object):
         required = self._composite_object_is_required(condition)
         if required:
             return True, True
-        return False, condition['type'] == 'MU'
+        allowed = (condition['type'] == 'MU' or condition['type'] == 'MC' and
+                   self._composite_object_is_required(condition['other_cond']))
+        return False, allowed
 
     def _composite_object_is_required(self, condition):
         if 'and' in condition:
@@ -170,6 +172,8 @@ class IODValidator(object):
         values = [type(tag_value)(value) for value in values]
         if operator == '=':
             return tag_value in values
+        if operator == '!=':
+            return tag_value not in values
         if operator == '>':
             return tag_value > values[0]
         if operator == '<':

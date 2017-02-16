@@ -274,6 +274,60 @@ class IODValidatorTest(unittest.TestCase):
 
         self.assertNotIn('(0018,1086)', result['missing'])  # Skip beats
 
+    def test_condition_for_not_required_tag_cond1_fulfilled(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'ImageType': 'ORIGINAL',
+            'CardiacSynchronizationTechnique': 'ANY'
+        })
+        validator = self.validator(data_set)
+        result = validator.validate()
+
+        self.assertIn('(0018,9085)', result['missing'])  # Cardiac signal source
+
+    def test_condition_for_not_required_tag_no_cond_fulfilled(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'ImageType': 'ORIGINAL',
+            'CardiacSynchronizationTechnique': 'NONE',
+            'CardiacSignalSource': 'ECG'
+        })
+        validator = self.validator(data_set)
+        result = validator.validate()
+
+        self.assertIn('(0018,9085)', result['not allowed'])  # Cardiac signal source
+
+    def test_condition_for_not_required_tag_cond2_fulfilled_present(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'ImageType': 'DERIVED',
+            'CardiacSynchronizationTechnique': 'ANY',
+            'CardiacSignalSource': 'ECG'
+        })
+        validator = self.validator(data_set)
+        result = validator.validate()
+
+        self.assertFalse('not allowed' in result and '(0018,9085)' in result['not allowed'])  # Cardiac signal source
+
+    def test_condition_for_not_required_tag_cond2_fulfilled_not_present(self):
+        data_set = self.new_data_set({
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'PatientsName': 'XXX',
+            'PatientID': 'ZZZ',
+            'ImageType': 'DERIVED',
+            'CardiacSynchronizationTechnique': 'ANY'
+        })
+        validator = self.validator(data_set)
+        result = validator.validate()
+
+        self.assertNotIn('(0018,9085)', result['missing'])  # Cardiac signal source
+
 
 if __name__ == '__main__':
     unittest.main()
