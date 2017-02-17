@@ -3662,26 +3662,23 @@
     },
     "(0018,1081)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL"
+              "ORIGINAL",
+              "MIXED"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "=",
-                "tag": "(0018,9037)",
-                "values": [
-                  "PROSPECTIVE",
-                  "RETROSPECTIVE"
-                ]
-              }
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9037)",
+            "values": [
+              "PROSPECTIVE",
+              "RETROSPECTIVE"
             ]
           }
         ],
@@ -3714,26 +3711,23 @@
     },
     "(0018,1082)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL"
+              "ORIGINAL",
+              "MIXED"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "=",
-                "tag": "(0018,9037)",
-                "values": [
-                  "PROSPECTIVE",
-                  "RETROSPECTIVE"
-                ]
-              }
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9037)",
+            "values": [
+              "PROSPECTIVE",
+              "RETROSPECTIVE"
             ]
           }
         ],
@@ -3766,25 +3760,22 @@
     },
     "(0018,1083)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL"
+              "ORIGINAL",
+              "MIXED"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "!=",
-                "tag": "(0018,9037)",
-                "values": [
-                  "NONE"
-                ]
-              }
+            "index": 0,
+            "op": "!=",
+            "tag": "(0018,9037)",
+            "values": [
+              "NONE"
             ]
           }
         ],
@@ -3816,25 +3807,22 @@
     },
     "(0018,1084)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL"
+              "ORIGINAL",
+              "MIXED"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "!=",
-                "tag": "(0018,9037)",
-                "values": [
-                  "NONE"
-                ]
-              }
+            "index": 0,
+            "op": "!=",
+            "tag": "(0018,9037)",
+            "values": [
+              "NONE"
             ]
           }
         ],
@@ -3893,25 +3881,22 @@
     },
     "(0018,9070)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL"
+              "ORIGINAL",
+              "MIXED"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "!=",
-                "tag": "(0018,9037)",
-                "values": [
-                  "NONE"
-                ]
-              }
+            "index": 0,
+            "op": "!=",
+            "tag": "(0018,9037)",
+            "values": [
+              "NONE"
             ]
           }
         ],
@@ -3943,25 +3928,22 @@
     },
     "(0018,9085)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL"
+              "ORIGINAL",
+              "MIXED"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "!=",
-                "tag": "(0018,9037)",
-                "values": [
-                  "NONE"
-                ]
-              }
+            "index": 0,
+            "op": "!=",
+            "tag": "(0018,9037)",
+            "values": [
+              "NONE"
             ]
           }
         ],
@@ -3993,26 +3975,23 @@
     },
     "(0018,9169)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL"
+              "ORIGINAL",
+              "MIXED"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "=",
-                "tag": "(0018,9037)",
-                "values": [
-                  "PROSPECTIVE",
-                  "RETROSPECTIVE"
-                ]
-              }
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9037)",
+            "values": [
+              "PROSPECTIVE",
+              "RETROSPECTIVE"
             ]
           }
         ],
@@ -4061,25 +4040,22 @@
     },
     "(0018,9171)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL"
+              "ORIGINAL",
+              "MIXED"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "!=",
-                "tag": "(0018,9170)",
-                "values": [
-                  "NONE"
-                ]
-              }
+            "index": 0,
+            "op": "!=",
+            "tag": "(0018,9170)",
+            "values": [
+              "NONE"
             ]
           }
         ],
@@ -4106,27 +4082,24 @@
     },
     "(0020,9256)": {
       "cond": {
-        "or": [
+        "and": [
           {
             "index": 0,
             "op": "!=",
             "tag": "(0018,9170)",
             "values": [
               "NONE",
-              "REALTIME"
+              "REALTIME",
+              "BREATH_HOLD"
             ]
           },
           {
-            "and": [
-              {
-                "index": 0,
-                "op": "=",
-                "tag": "(0008,0008)",
-                "values": [
-                  "ORIGINAL",
-                  "MIXED"
-                ]
-              }
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0008)",
+            "values": [
+              "ORIGINAL",
+              "MIXED"
             ]
           }
         ],
@@ -5197,7 +5170,8 @@
           "BRACHY",
           "FRACTION_SESSION",
           "BEAM_SESSION",
-          "BRACHY_SESSION"
+          "BRACHY_SESSION",
+          "CONTROL_POINT"
         ]
       },
       "items": {
