@@ -32,6 +32,7 @@ class ConditionParser(object):
         (' has a value greater than ', '>'),
         (' has a value of ', '='),
         (' = ', '='),
+        (' at the image level equals ', '='),
         (' equals other than ', '!='),
         (' equals ', '='),
         (' is other than ', '!='),
@@ -136,9 +137,8 @@ class ConditionParser(object):
                     return tag_id, value_index
         return None, None
 
-    @staticmethod
-    def _parse_tag_values(value_string):
-        value_string, rest = ConditionParser.extract_value_string(value_string)
+    def _parse_tag_values(self, value_string):
+        value_string, rest = self.extract_value_string(value_string)
         values = value_string.split(', ')
         tag_values = []
         for value in values:
@@ -156,8 +156,7 @@ class ConditionParser(object):
             values.append(value)
         return values, rest
 
-    @staticmethod
-    def extract_value_string(value_string):
+    def extract_value_string(self, value_string):
         # remove stuff that breaks parser
         value_string = value_string.replace('(Legacy Converted)', '')
         start_index = 0
@@ -165,7 +164,7 @@ class ConditionParser(object):
         while True:
             end_index = -1
             # todo: handle or
-            for end_char in (';', '.', 'and '):
+            for end_char in (';', '.', 'and ', ', or ', ' or '):
                 char_index = value_string.find(end_char, start_index)
                 if end_index < 0 or 0 <= char_index < end_index:
                     end_index = char_index
@@ -174,10 +173,16 @@ class ConditionParser(object):
                 break
             if 0 <= apo_index < end_index:
                 start_index = value_string.find('"', apo_index + 1) + 1
-            else:
-                if end_index > 0:
-                    rest = value_string[end_index:].strip()
-                    value_string = value_string[:end_index]
+                continue
+            if end_index > 0:
+                if value_string.find(' or ') in [end_index, end_index + 1]:
+                    # differentiate between several values and several conditions - check if the rest is a condition
+                    or_cond = self._parse_tag_expressions(value_string[3:])
+                    if or_cond['type'] == 'U':
+                        start_index = end_index + 4
+                        continue
+                rest = value_string[end_index:].strip()
+                value_string = value_string[:end_index]
                 break
         return value_string, rest
 

@@ -181,6 +181,13 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('=', result['op'])
         self.assertEqual(['TRUE_COLOR'], result['values'])
 
+    def test_at_the_image_level_equals(self):
+        result = self.parser.parse('"Required if Pixel Presentation (0008,9205) at the image level '
+                                   'equals COLOR or MIXED.')
+        self.assertEqual('MN', result['type'])
+        self.assertEqual('=', result['op'])
+        self.assertEqual(['COLOR', 'MIXED'], result['values'])
+
     def test_is_with_colon(self):
         result = self.parser.parse('Required if Image Type (0008,0008) Value 3 is: WHOLE BODY or STATIC.')
         self.assertEqual('MN', result['type'])
@@ -412,6 +419,28 @@ class CompositeConditionParserTest(ConditionParserTest):
         self.assertEqual('=', result['and'][0]['op'])
         self.assertEqual('YES', result['and'][0]['values'][0])
         self.assertEqual('-', result['and'][1]['op'])
+
+    def test_or_condition_with_space(self):
+        result = self.parser.parse('"Required if Photometric Interpretation (0028,0004) has a value of PALETTE COLOR '
+                                   'or Pixel Presentation (0008,9205) equals COLOR or MIXED.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('or', result)
+        self.assertEqual(2, len(result['or']))
+        self.assertEqual('=', result['or'][0]['op'])
+        self.assertEqual('PALETTE COLOR', result['or'][0]['values'][0])
+        self.assertEqual('=', result['or'][1]['op'])
+        self.assertEqual(['COLOR', 'MIXED'], result['or'][1]['values'])
+
+    def test_or_condition_with_comma(self):
+        result = self.parser.parse('"Required if Photometric Interpretation (0028,0004) has a value of PALETTE COLOR, '
+                                   'or Pixel Presentation (0008,9205) equals COLOR or MIXED.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('or', result)
+        self.assertEqual(2, len(result['or']))
+        self.assertEqual('=', result['or'][0]['op'])
+        self.assertEqual('PALETTE COLOR', result['or'][0]['values'][0])
+        self.assertEqual('=', result['or'][1]['op'])
+        self.assertEqual(['COLOR', 'MIXED'], result['or'][1]['values'])
 
 
 class ComplicatedConditionParserTest(ConditionParserTest):

@@ -1833,90 +1833,156 @@
     },
     "(0028,1101)": {
       "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "PALETTE COLOR",
-          "Pixel Presentation (0008,9205) at the image level equals COLOR",
-          "MIXED"
-        ]
+        "or": [
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,0004)",
+            "values": [
+              "PALETTE COLOR"
+            ]
+          },
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,9205)",
+            "values": [
+              "COLOR",
+              "MIXED"
+            ]
+          }
+        ],
+        "type": "MN"
       },
       "name": "Red Palette Color Lookup Table Descriptor",
       "type": "1C"
     },
     "(0028,1102)": {
       "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "PALETTE COLOR",
-          "Pixel Presentation (0008,9205) at the image level equals COLOR",
-          "MIXED"
-        ]
+        "or": [
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,0004)",
+            "values": [
+              "PALETTE COLOR"
+            ]
+          },
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,9205)",
+            "values": [
+              "COLOR",
+              "MIXED"
+            ]
+          }
+        ],
+        "type": "MN"
       },
       "name": "Green Palette Color Lookup Table Descriptor",
       "type": "1C"
     },
     "(0028,1103)": {
       "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "PALETTE COLOR",
-          "Pixel Presentation (0008,9205) at the image level equals COLOR",
-          "MIXED"
-        ]
+        "or": [
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,0004)",
+            "values": [
+              "PALETTE COLOR"
+            ]
+          },
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,9205)",
+            "values": [
+              "COLOR",
+              "MIXED"
+            ]
+          }
+        ],
+        "type": "MN"
       },
       "name": "Blue Palette Color Lookup Table Descriptor",
       "type": "1C"
     },
     "(0028,1201)": {
       "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "PALETTE COLOR",
-          "Pixel Presentation (0008,9205) at the image level equals COLOR",
-          "MIXED"
-        ]
+        "or": [
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,0004)",
+            "values": [
+              "PALETTE COLOR"
+            ]
+          },
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,9205)",
+            "values": [
+              "COLOR",
+              "MIXED"
+            ]
+          }
+        ],
+        "type": "MN"
       },
       "name": "Red Palette Color Lookup Table Data",
       "type": "1C"
     },
     "(0028,1202)": {
       "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "PALETTE COLOR",
-          "Pixel Presentation (0008,9205) at the image level equals COLOR",
-          "MIXED"
-        ]
+        "or": [
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,0004)",
+            "values": [
+              "PALETTE COLOR"
+            ]
+          },
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,9205)",
+            "values": [
+              "COLOR",
+              "MIXED"
+            ]
+          }
+        ],
+        "type": "MN"
       },
       "name": "Green Palette Color Lookup Table Data",
       "type": "1C"
     },
     "(0028,1203)": {
       "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "PALETTE COLOR",
-          "Pixel Presentation (0008,9205) at the image level equals COLOR",
-          "MIXED"
-        ]
+        "or": [
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,0004)",
+            "values": [
+              "PALETTE COLOR"
+            ]
+          },
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,9205)",
+            "values": [
+              "COLOR",
+              "MIXED"
+            ]
+          }
+        ],
+        "type": "MN"
       },
       "name": "Blue Palette Color Lookup Table Data",
       "type": "1C"
@@ -3596,23 +3662,26 @@
     },
     "(0018,1081)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL",
-              "MIXED"
+              "ORIGINAL"
             ]
           },
           {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9037)",
-            "values": [
-              "PROSPECTIVE",
-              "RETROSPECTIVE"
+            "and": [
+              {
+                "index": 0,
+                "op": "=",
+                "tag": "(0018,9037)",
+                "values": [
+                  "PROSPECTIVE",
+                  "RETROSPECTIVE"
+                ]
+              }
             ]
           }
         ],
@@ -3645,23 +3714,26 @@
     },
     "(0018,1082)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL",
-              "MIXED"
+              "ORIGINAL"
             ]
           },
           {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9037)",
-            "values": [
-              "PROSPECTIVE",
-              "RETROSPECTIVE"
+            "and": [
+              {
+                "index": 0,
+                "op": "=",
+                "tag": "(0018,9037)",
+                "values": [
+                  "PROSPECTIVE",
+                  "RETROSPECTIVE"
+                ]
+              }
             ]
           }
         ],
@@ -3694,22 +3766,25 @@
     },
     "(0018,1083)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL",
-              "MIXED"
+              "ORIGINAL"
             ]
           },
           {
-            "index": 0,
-            "op": "!=",
-            "tag": "(0018,9037)",
-            "values": [
-              "NONE"
+            "and": [
+              {
+                "index": 0,
+                "op": "!=",
+                "tag": "(0018,9037)",
+                "values": [
+                  "NONE"
+                ]
+              }
             ]
           }
         ],
@@ -3741,22 +3816,25 @@
     },
     "(0018,1084)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL",
-              "MIXED"
+              "ORIGINAL"
             ]
           },
           {
-            "index": 0,
-            "op": "!=",
-            "tag": "(0018,9037)",
-            "values": [
-              "NONE"
+            "and": [
+              {
+                "index": 0,
+                "op": "!=",
+                "tag": "(0018,9037)",
+                "values": [
+                  "NONE"
+                ]
+              }
             ]
           }
         ],
@@ -3815,22 +3893,25 @@
     },
     "(0018,9070)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL",
-              "MIXED"
+              "ORIGINAL"
             ]
           },
           {
-            "index": 0,
-            "op": "!=",
-            "tag": "(0018,9037)",
-            "values": [
-              "NONE"
+            "and": [
+              {
+                "index": 0,
+                "op": "!=",
+                "tag": "(0018,9037)",
+                "values": [
+                  "NONE"
+                ]
+              }
             ]
           }
         ],
@@ -3862,22 +3943,25 @@
     },
     "(0018,9085)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL",
-              "MIXED"
+              "ORIGINAL"
             ]
           },
           {
-            "index": 0,
-            "op": "!=",
-            "tag": "(0018,9037)",
-            "values": [
-              "NONE"
+            "and": [
+              {
+                "index": 0,
+                "op": "!=",
+                "tag": "(0018,9037)",
+                "values": [
+                  "NONE"
+                ]
+              }
             ]
           }
         ],
@@ -3909,23 +3993,26 @@
     },
     "(0018,9169)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL",
-              "MIXED"
+              "ORIGINAL"
             ]
           },
           {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9037)",
-            "values": [
-              "PROSPECTIVE",
-              "RETROSPECTIVE"
+            "and": [
+              {
+                "index": 0,
+                "op": "=",
+                "tag": "(0018,9037)",
+                "values": [
+                  "PROSPECTIVE",
+                  "RETROSPECTIVE"
+                ]
+              }
             ]
           }
         ],
@@ -3974,22 +4061,25 @@
     },
     "(0018,9171)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "=",
             "tag": "(0008,0008)",
             "values": [
-              "ORIGINAL",
-              "MIXED"
+              "ORIGINAL"
             ]
           },
           {
-            "index": 0,
-            "op": "!=",
-            "tag": "(0018,9170)",
-            "values": [
-              "NONE"
+            "and": [
+              {
+                "index": 0,
+                "op": "!=",
+                "tag": "(0018,9170)",
+                "values": [
+                  "NONE"
+                ]
+              }
             ]
           }
         ],
@@ -4016,24 +4106,27 @@
     },
     "(0020,9256)": {
       "cond": {
-        "and": [
+        "or": [
           {
             "index": 0,
             "op": "!=",
             "tag": "(0018,9170)",
             "values": [
               "NONE",
-              "REALTIME",
-              "BREATH_HOLD"
+              "REALTIME"
             ]
           },
           {
-            "index": 0,
-            "op": "=",
-            "tag": "(0008,0008)",
-            "values": [
-              "ORIGINAL",
-              "MIXED"
+            "and": [
+              {
+                "index": 0,
+                "op": "=",
+                "tag": "(0008,0008)",
+                "values": [
+                  "ORIGINAL",
+                  "MIXED"
+                ]
+              }
             ]
           }
         ],
@@ -5104,8 +5197,7 @@
           "BRACHY",
           "FRACTION_SESSION",
           "BEAM_SESSION",
-          "BRACHY_SESSION",
-          "CONTROL_POINT"
+          "BRACHY_SESSION"
         ]
       },
       "items": {
