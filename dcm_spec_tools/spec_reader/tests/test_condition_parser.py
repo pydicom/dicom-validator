@@ -319,6 +319,17 @@ class CompositeConditionParserTest(ConditionParserTest):
         self.assertEqual('!=', result2['op'])
         self.assertEqual(['MANUAL', 'PDR'], result2['values'])
 
+    def test_and_with_multiple_values(self):
+        result = self.parser.parse('Required if Image Type (0008,0008) Value 1 is ORIGINAL or MIXED '
+                                   'and Respiratory Motion Compensation Technique (0018,9170) equals other than NONE.')
+        self.assertEqual('MN', result['type'])
+        self.assertIn('and', result)
+        self.assertEqual(2, len(result['and']))
+        self.assertEqual('=', result['and'][0]['op'])
+        self.assertEqual(['ORIGINAL', 'MIXED'], result['and'][0]['values'])
+        self.assertEqual('!=', result['and'][1]['op'])
+        self.assertEqual(['NONE'], result['and'][1]['values'])
+
     def test_either_or_tag_presence(self):
         result = self.parser.parse("Required if either Patient's Birth Date in Alternative Calendar (0010,0033) "
                                    "or Patient's Alternative Death Date in Calendar (0010,0034) is present.")

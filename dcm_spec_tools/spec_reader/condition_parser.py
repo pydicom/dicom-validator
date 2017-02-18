@@ -177,7 +177,7 @@ class ConditionParser(object):
             if end_index > 0:
                 if value_string.find(' or ') in [end_index, end_index + 1]:
                     # differentiate between several values and several conditions - check if the rest is a condition
-                    or_cond = self._parse_tag_expressions(value_string[3:])
+                    or_cond = self._parse_tag_expressions(value_string[end_index + 3:])
                     if or_cond['type'] == 'U':
                         start_index = end_index + 4
                         continue
@@ -248,7 +248,7 @@ class ConditionParser(object):
             tag_result = self._result_from_tag_string(tag_string, operator, values)
             if tag_result:
                 result[logical_op].append(tag_result)
-        return result if result[logical_op] else {}
+        return result if result[logical_op] and len(result[logical_op]) > 1 else {}
 
     def _result_from_tag_string(self, tag_string, operator, values):
         tag, index = self._parse_tag(tag_string)
