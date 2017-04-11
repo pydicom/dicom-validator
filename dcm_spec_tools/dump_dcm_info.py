@@ -11,7 +11,6 @@ try:
 except ImportError:
     from dicom import filereader
 
-
 from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
 
@@ -29,7 +28,7 @@ class DataElementDumper(object):
         dataset.walk(self.print_dataelement)
 
     @staticmethod
-    def print_element(tag_id, description, value):
+    def print_element(tag_id, name, vr, prop, value):
         vm = 1 if value else 0
         if isinstance(value, list):
             vm = len(value)
@@ -38,10 +37,10 @@ class DataElementDumper(object):
         format_string = '{{}}{{}} {{:{}}} {{}} {{:4}} {{}} [{{}}]'.format(40 - indent)
         print(format_string.format(' ' * indent,
                                    tag_id,
-                                   description['name'][:40 - indent],
-                                   description['vr'],
+                                   name[:40 - indent],
+                                   vr,
                                    vm,
-                                   description['prop'],
+                                   prop,
                                    value))
 
     @staticmethod
@@ -49,21 +48,26 @@ class DataElementDumper(object):
         tag_id = '({:04X},{:04X})'.format(dataelement.tag.group, dataelement.tag.element)
         description = DataElementDumper.dict_info.get(tag_id)
         if description is None:
-            print('No dictionary entry found for {}'.format(tag_id))
+            name = '[Unknown]'
+            vr = dataelement.VR
+            prop = ''
         else:
-            value = dataelement.value
-            if description['vr'] == 'UI':
-                # do not rely on pydicom here - we want to use the currently loaded DICOM spec
-                value = repr(value)[1:-1]
-                value = DataElementDumper.uid_info.get(value, value)
-            if description['vr'] == 'SQ':
-                DataElementDumper.print_element(tag_id, description,
-                                                'Sequence with {} item(s)'.format(len(value)))
-                DataElementDumper.level += 1
-                DataElementDumper.print_sequence(dataelement)
-                DataElementDumper.level -= 1
-            else:
-                DataElementDumper.print_element(tag_id, description, value)
+            vr = description['vr']
+            name = description['name']
+            prop = description['prop']
+        value = dataelement.value
+        if vr == 'UI':
+            # do not rely on pydicom here - we want to use the currently loaded DICOM spec
+            value = repr(value)[1:-1]
+            value = DataElementDumper.uid_info.get(value, value)
+        if vr == 'SQ':
+            DataElementDumper.print_element(tag_id, name, vr, prop,
+                                            'Sequence with {} item(s)'.format(len(value)))
+            DataElementDumper.level += 1
+            DataElementDumper.print_sequence(dataelement)
+            DataElementDumper.level -= 1
+        else:
+            DataElementDumper.print_element(tag_id, name, vr, prop, value)
 
     @staticmethod
     def print_sequence(sequence):
