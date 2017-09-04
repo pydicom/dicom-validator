@@ -6,9 +6,9 @@ import sys
 
 import re
 
-from spec_reader.part3_reader import Part3Reader
-from spec_reader.part4_reader import Part4Reader
-from spec_reader.part6_reader import Part6Reader
+from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
+from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
+from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
 
 try:
     from urllib import urlretrieve

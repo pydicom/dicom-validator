@@ -11,3 +11,6 @@ dist/
 
 # PyCharm IDE files
 .idea/
+
+# Tox environments
+.tox/
