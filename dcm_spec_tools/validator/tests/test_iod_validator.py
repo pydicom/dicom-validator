@@ -3,6 +3,8 @@ import logging
 import os
 import unittest
 
+from spec_reader.edition_reader import EditionReader
+
 try:
     from pydicom.dataset import Dataset
 except ImportError:
@@ -21,9 +23,9 @@ class IODValidatorTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(), 'iod_info.json')) as info_file:
+        with open(os.path.join(json_fixture_path(), EditionReader.iod_info_json)) as info_file:
             cls.iod_specs = json.load(info_file)
-        with open(os.path.join(json_fixture_path(), 'module_info.json')) as info_file:
+        with open(os.path.join(json_fixture_path(), EditionReader.module_info_json)) as info_file:
             cls.module_specs = json.load(info_file)
 
     def setUp(self):

@@ -4,6 +4,8 @@ import os
 
 import pyfakefs.fake_filesystem_unittest
 
+from spec_reader.edition_reader import EditionReader
+
 try:
     from pydicom import write_file
     from pydicom.dataset import Dataset, FileDataset
@@ -21,9 +23,9 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(), 'iod_info.json')) as info_file:
+        with open(os.path.join(json_fixture_path(), EditionReader.iod_info_json)) as info_file:
             cls.iod_info = json.load(info_file)
-        with open(os.path.join(json_fixture_path(), 'module_info.json')) as info_file:
+        with open(os.path.join(json_fixture_path(), EditionReader.module_info_json)) as info_file:
             cls.module_info = json.load(info_file)
 
     def setUp(self):

@@ -9,11 +9,11 @@ from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
 def validate(args, base_path):
     json_path = os.path.join(base_path, 'json')
-    with open(os.path.join(json_path, 'dict_info.json')) as info_file:
+    with open(os.path.join(json_path, EditionReader.dict_info_json)) as info_file:
         dict_info = json.load(info_file)
-    with open(os.path.join(json_path, 'iod_info.json')) as info_file:
+    with open(os.path.join(json_path, EditionReader.iod_info_json)) as info_file:
         iod_info = json.load(info_file)
-    with open(os.path.join(json_path, 'module_info.json')) as info_file:
+    with open(os.path.join(json_path, EditionReader.module_info_json)) as info_file:
         module_info = json.load(info_file)
     log_level = logging.DEBUG if args.verbose else logging.INFO
     validator = DicomFileValidator(iod_info, module_info, dict_info, log_level)
@@ -39,9 +39,9 @@ def main():
     args = parser.parse_args()
 
     edition_reader = EditionReader(args.standard_path)
-    _, destination = edition_reader.get_revision(args.revision)
+    destination = edition_reader.get_revision(args.revision)
     if destination is None:
-        print('DICOM revision {} not found - use get_dcm_specs to download it.'.format(args.revision))
+        print('Failed to get DICOM edition - aborting'.format(args.revision))
         return 1
 
     return validate(args, destination)

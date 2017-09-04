@@ -93,15 +93,15 @@ def main():
     args = parser.parse_args()
 
     edition_reader = EditionReader(args.standard_path)
-    _, destination = edition_reader.get_revision(args.revision)
+    destination = edition_reader.get_revision(args.revision)
     if destination is None:
-        print('DICOM revision {} not found - use get_dcm_specs to download it.'.format(args.revision))
+        print('Failed to get DICOM edition - aborting'.format(args.revision))
         return 1
 
     json_path = os.path.join(destination, 'json')
-    with open(os.path.join(json_path, 'dict_info.json')) as info_file:
+    with open(os.path.join(json_path, edition_reader.dict_info_json)) as info_file:
         dict_info = json.load(info_file)
-    with open(os.path.join(json_path, 'uid_info.json')) as info_file:
+    with open(os.path.join(json_path, edition_reader.uid_info_json)) as info_file:
         uid_info = json.load(info_file)
 
     dataset = filereader.read_file(args.dicomfile, stop_before_pixels=True, force=True)

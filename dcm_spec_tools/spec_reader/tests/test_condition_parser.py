@@ -4,6 +4,7 @@ import unittest
 
 from dcm_spec_tools.spec_reader.condition_parser import ConditionParser
 from dcm_spec_tools.tests.test_utils import json_fixture_path
+from spec_reader.edition_reader import EditionReader
 
 
 class ConditionParserTest(unittest.TestCase):
@@ -12,7 +13,7 @@ class ConditionParserTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(), 'dict_info.json')) as info_file:
+        with open(os.path.join(json_fixture_path(), EditionReader.dict_info_json)) as info_file:
             cls.dict_info = json.load(info_file)
 
     def setUp(self):

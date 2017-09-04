@@ -6,6 +6,10 @@ import sys
 
 import re
 
+from spec_reader.part3_reader import Part3Reader
+from spec_reader.part4_reader import Part4Reader
+from spec_reader.part6_reader import Part6Reader
+
 try:
     from urllib import urlretrieve
 except ImportError:
@@ -42,6 +46,10 @@ class EditionReader(object):
     base_url = 'http://dicom.nema.org/medical/dicom/'
     html_filename = 'editions.html'
     json_filename = 'editions.json'
+    iod_info_json = 'iod_info.json'
+    module_info_json = 'module_info.json'
+    dict_info_json = 'dict_info.json'
+    uid_info_json = 'uid_info.json'
 
     def __init__(self, path):
         self.path = path
@@ -55,7 +63,8 @@ class EditionReader(object):
             self.retrieve(os.path.join(self.path, self.html_filename))
             self.write_to_json()
         except BaseException as exception:
-            self.logger.warning(u'Failed to get DICOM read_from_html: %s', str(exception))
+            self.logger.warning(u'Failed to get DICOM read_from_html: %s',
+                                str(exception))
 
     def retrieve(self, html_path):
         urlretrieve(self.base_url, html_path)
@@ -65,7 +74,8 @@ class EditionReader(object):
         update = True
         if os.path.exists(editions_path):
             today = datetime.datetime.today()
-            modified_date = datetime.datetime.fromtimestamp(os.path.getmtime(editions_path))
+            modified_date = datetime.datetime.fromtimestamp(
+                os.path.getmtime(editions_path))
             # no need to update the edition dir more than once a month
             update = (today - modified_date).days > 30
         if update:
@@ -119,7 +129,7 @@ class EditionReader(object):
             return True
         return False
 
-    def get_revision(self, revision):
+    def check_revision(self, revision):
         # none revision is used if an existing path points to the specs
         if revision != 'none':
             revision = self.get_edition(revision)
@@ -127,3 +137,88 @@ class EditionReader(object):
                 return revision, os.path.join(self.path, revision)
             return None, None
         return None, self.path
+
+    def get_chapter(self, revision, chapter, destination, is_current):
+        file_path = os.path.join(destination, 'part{:02}.xml'.format(chapter))
+        if os.path.exists(file_path):
+            return True
+        elif not revision:
+            print('Chapter {} not present at {}.'.format(chapter, file_path))
+            return False
+        revision_dir = 'current' if is_current else revision
+        url = '{0}{1}/source/docbook/part{2:02}/part{2:02}.xml'.format(
+            self.base_url, revision_dir, chapter)
+        try:
+            print('Downloading DICOM spec {} PS3.{}...'.format(revision,
+                                                               chapter))
+            urlretrieve(url, file_path)
+            return True
+        except BaseException as exception:
+            print(u'Failed to download {}: {}'.format(url, str(exception)))
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                except OSError:
+                    print('Failed to remove incomplete file {}.'.format(
+                        file_path))
+            return False
+
+    @classmethod
+    def json_files_exist(cls, json_path):
+        for filename in (cls.dict_info_json, cls.module_info_json,
+            cls.iod_info_json, cls.uid_info_json):
+            if not os.path.exists(os.path.join(json_path, filename)):
+                return False
+        return True
+
+    @classmethod
+    def create_json_files(cls, docbook_path, json_path):
+        print('Creating JSON excerpts from docbook files...')
+        part6reader = Part6Reader(docbook_path)
+        dict_info = part6reader.data_elements()
+        part3reader = Part3Reader(docbook_path, dict_info)
+        part4reader = Part4Reader(docbook_path)
+        iod_info = part3reader.iod_descriptions()
+        chapter_info = part4reader.iod_chapters()
+        definition = {}
+        for chapter in iod_info:
+            if chapter in chapter_info:
+                for uid in chapter_info[chapter]:
+                    definition[uid] = iod_info[chapter]
+        with open(os.path.join(json_path, cls.iod_info_json), 'w') as info_file:
+            info_file.write(json.dumps(definition, sort_keys=True, indent=2))
+        with open(os.path.join(json_path, cls.module_info_json),
+                  'w') as info_file:
+            info_file.write(
+                json.dumps(part3reader.module_descriptions(), sort_keys=True,
+                           indent=2))
+        with open(os.path.join(json_path, cls.dict_info_json), 'w') as info_file:
+            info_file.write(json.dumps(dict_info, sort_keys=True, indent=2))
+        with open(os.path.join(json_path, cls.uid_info_json), 'w') as info_file:
+            info_file.write(
+                json.dumps(part6reader.all_uids(), sort_keys=True, indent=2))
+        print('Done!')
+
+    def get_revision(self, revision):
+        revision, destination = self.check_revision(revision)
+        if destination is None:
+            print('DICOM revision {} not found.'.format(revision))
+            return
+
+        docbook_path = os.path.join(destination, 'docbook')
+        if not os.path.exists(docbook_path):
+            os.makedirs(docbook_path)
+        json_path = os.path.join(destination, 'json')
+        if not os.path.exists(json_path):
+            os.makedirs(json_path)
+
+        # download the docbook files
+        for chapter in [3, 4, 6]:
+            if not self.get_chapter(revision=revision, chapter=chapter,
+                                    destination=docbook_path,
+                                    is_current=self.is_current(revision)):
+                return
+
+        if not self.json_files_exist(json_path):
+            self.create_json_files(docbook_path, json_path)
+        return destination

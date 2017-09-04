@@ -90,27 +90,27 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
                                                      '<a ref="foo">2015e</a>')
         self.assertEqual('2015e', reader.get_edition('current'))
 
-    def test_get_none_revision(self):
+    def test_check_none_revision(self):
         reader = MemoryEditionReader('/foo/bar', '')
-        revision, path = reader.get_revision('none')
+        revision, path = reader.check_revision('none')
         self.assertIsNone(revision)
         self.assertEqual('/foo/bar', path)
 
-    def test_get_revision_existing(self):
+    def test_check_revision_existing(self):
         base_path = 'base'
         reader = MemoryEditionReader(base_path, '')
         json_path = os.path.join(base_path, EditionReader.json_filename)
         self.fs.CreateFile(json_path, contents='["2014a", "2014c", "2015a"]')
-        revision, path = reader.get_revision('2014')
+        revision, path = reader.check_revision('2014')
         self.assertEqual('2014c', revision)
         self.assertEqual(os.path.join(base_path, '2014c'), path)
 
-    def test_get_revision_nonexisting(self):
+    def test_check_revision_nonexisting(self):
         base_path = '/foo/bar'
         reader = MemoryEditionReader(base_path, '')
         json_path = os.path.join(base_path, EditionReader.json_filename)
         self.fs.CreateFile(json_path, contents='["2014a", "2014c", "2015a"]')
-        revision, path = reader.get_revision('2016')
+        revision, path = reader.check_revision('2016')
         self.assertIsNone(revision)
         self.assertIsNone(path)
 

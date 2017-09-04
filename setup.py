@@ -22,7 +22,7 @@ setup(
     name="dcm-spec-tools",
     packages=['dcm_spec_tools'],
     include_package_data=True,
-    version="0.1.4",
+    version="0.2.0",
     install_requires=['pydicom'],
     description="Python DICOM tools using input from DICOM specs in docbook format",
     author="mrbean-bremen",
@@ -32,7 +32,6 @@ setup(
     entry_points={
         'console_scripts': [
             'validate_iods=dcm_spec_tools.validate_iods:main',
-            'get_dcm_specs=dcm_spec_tools.get_dcm_specs:main',
             'dump_dcm_info=dcm_spec_tools.dump_dcm_info:main'
         ]
     },

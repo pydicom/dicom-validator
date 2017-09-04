@@ -3,10 +3,6 @@
 *dcm-spec-tools* is planned to be a collection of simple pure python command line tools which get the input from 
 the DICOM standard in docbook format as provided by [ACR NEMA](http://medical.nema.org/).
 
-Use `get_dcm_specs` to download DICOM specs of the wanted version from the official site.  
-This converts the relevant parts to json files for usage by the tools.
-
-
 Currently available tools:  
 * `validate_iods` checks DICOM files for correct attributes for the given SOP class.  
 * `dump_dcm_info` outputs the DICOM tag IDs and values of a given DICOM file.
