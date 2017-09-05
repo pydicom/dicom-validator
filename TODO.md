@@ -40,9 +40,6 @@
 
 ## Tools
 
-#### GetSpecs
-* store retired IODs
-
 #### Validator
 * verbosity levels :on:
     * error level: invalid DICOM errors only

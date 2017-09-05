@@ -95,7 +95,7 @@ def main():
     edition_reader = EditionReader(args.standard_path)
     destination = edition_reader.get_revision(args.revision)
     if destination is None:
-        print('Failed to get DICOM edition - aborting'.format(args.revision))
+        print('Failed to get DICOM edition {} - aborting'.format(args.revision))
         return 1
 
     json_path = os.path.join(destination, 'json')

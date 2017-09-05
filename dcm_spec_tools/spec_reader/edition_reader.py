@@ -166,7 +166,7 @@ class EditionReader(object):
     @classmethod
     def json_files_exist(cls, json_path):
         for filename in (cls.dict_info_json, cls.module_info_json,
-            cls.iod_info_json, cls.uid_info_json):
+                         cls.iod_info_json, cls.uid_info_json):
             if not os.path.exists(os.path.join(json_path, filename)):
                 return False
         return True
