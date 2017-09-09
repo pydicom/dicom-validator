@@ -1,22 +1,27 @@
 import re
 from collections import OrderedDict
 
+from dcm_spec_tools.spec_reader.condition import Condition
+
 
 class ConditionParser(object):
     """Parses the description of type C modules and type 1C and 2C attributes.
-       Creates a structured representation (dict) of the condition(s) in the description provided that:
-       - the condition is related to the value, absence or presence of one or more tags in the data set
-       - the condition is related only to the data set itself
-       All other conditions (including parsable conditions which reference other data sets) are ignored.
-       The following operators are used for conditions:
-       '+' - required if the given tag is present
-       '++' - required if the given tag is present and has a value
-       '-' - required if the given tag is absent
-       '=' - required if the given tag has one of the given values
-       '!=' - required if the given tag does not have one of the given values
-       '>' - required if the given tag value is greater than the given value
-       '<' - required if the given tag value is less than the given value
-       '=>' - required if the given tag points to one of the given tags
+    Creates a Condition object representing the condition(s) in the
+    description provided that:
+    - the condition is related to the value, absence or presence of one
+        or more tags in the data set
+    - the condition is related only to the data set itself
+    All other conditions (including parsable conditions which reference
+    other data sets) are ignored.
+    The following operators are used for conditions:
+    '+' - required if the given tag is present
+    '++' - required if the given tag is present and has a value
+    '-' - required if the given tag is absent
+    '=' - required if the given tag has one of the given values
+    '!=' - required if the given tag does not have one of the given values
+    '>' - required if the given tag value is greater than the given value
+    '<' - required if the given tag value is less than the given value
+    '=>' - required if the given tag points to one of the given tags
     """
 
     tag_expression = re.compile(
@@ -64,17 +69,8 @@ class ConditionParser(object):
         self._dict_info = dict_info
 
     def parse(self, condition):
-        """Parse the given condition string and return a dict with the required attributes.
-
-        The return value is a dict with the entries:
-        'type': the type of the related object (tag or module) regarding its existence; possible values:
-            'U': user defined, e.g. both existence or non-existence of the related object is considered legal
-            'MN': the object is mandatory if the condition is fulfilled, otherwise not
-            'MU': the object is mandatory if the condition is fulfilled, otherwise is user defined
-        'tag': (optional) the ID of the required tag in the form '(####,####)'
-        'index': (optional) the index of the tag for multi-valued tags, if given
-        'values': (optional) a list of values the tag shall have if the condition is fulfilled
-        'op': (optional) the comparison operation used ('=', '<', '>') for the value(s)
+        """Parse the given condition string and return a Condition object
+         with the required attributes.
         """
         condition_prefixes = ('required if ', 'shall be present if ')
         for prefix in condition_prefixes:
@@ -83,7 +79,7 @@ class ConditionParser(object):
                 condition = condition[len(prefix) + index:]
                 condition = self._fix_condition(condition)
                 return self._parse_tag_expressions(condition)
-        return {'type': 'U'}
+        return Condition(ctype='U')
 
     def _parse_tag_expression(self, condition):
         operator_text = None
@@ -94,7 +90,7 @@ class ConditionParser(object):
                 op_offset = offset
                 operator_text = operator
         if operator_text is None:
-            return {'type': 'U'}, None
+            return Condition(ctype='U'), None
         operator = self.operators[operator_text]
         rest = condition[op_offset + len(operator_text):]
         if self.operators[operator_text] in ('=', '!=', '>', '<'):
@@ -103,22 +99,27 @@ class ConditionParser(object):
             value_string, rest = self.extract_value_string(rest)
             tag, _ = self._parse_tag(value_string)
             if tag is None:
-                return {'type': 'U'}, None
+                return Condition(ctype='U'), None
             values, rest = [str(self._tag_id(tag))], rest
         else:
             values, rest = None, rest.strip()
         result = self._parse_tags(condition[:op_offset], operator, values)
         if not result:
-            return {'type': 'U'}, None
+            return Condition(ctype='U'), None
 
-        result['type'] = 'MU' if 'may be present otherwise' in condition[op_offset:].lower() else 'MN'
+        result.type = ('MU' if 'may be present otherwise'
+                               in condition[op_offset:].lower() else 'MN')
         return result, rest
 
     def _get_other_condition(self, condition_string):
-        for condition_marker in ['may be present otherwise if ', 'may be present if ']:
+        other_cond_texts = [
+            'may be present otherwise if ', 'may be present if '
+        ]
+        for condition_marker in other_cond_texts:
             index = condition_string.lower().find(condition_marker)
             if index >= 0:
-                return self._parse_tag_expressions(condition_string[index + len(condition_marker):])
+                return self._parse_tag_expressions(
+                    condition_string[index + len(condition_marker):])
 
     @staticmethod
     def _tag_id(tag_id_string):
@@ -178,7 +179,7 @@ class ConditionParser(object):
                 if value_string.find(' or ') in [end_index, end_index + 1]:
                     # differentiate between several values and several conditions - check if the rest is a condition
                     or_cond = self._parse_tag_expressions(value_string[end_index + 3:])
-                    if or_cond['type'] == 'U':
+                    if or_cond.type == 'U':
                         start_index = end_index + 4
                         continue
                 rest = value_string[end_index:].strip()
@@ -199,28 +200,35 @@ class ConditionParser(object):
                     break
             if logical_op is not None:
                 next_result = self._parse_tag_expressions(condition, nested=True)
-                if next_result['type'] != 'U':
-                    del next_result['type']
-                    new_result = {logical_op: [result, next_result], 'type': result['type']}
-                    del result['type']
+                if next_result.type != 'U':
+                    next_result.type = None
+                    new_result = Condition(ctype=result.type)
+                    cond_list = self._condition_list(logical_op, new_result)
+                    cond_list.append(result)
+                    cond_list.append(next_result)
+                    result.type = None
                     result = new_result
         if not nested and rest is not None:
             other_cond = self._get_other_condition(rest)
-            if other_cond is not None and other_cond['type'] != 'U':
-                result['type'] = 'MC'
-                result['other_cond'] = other_cond
+            if other_cond is not None and other_cond.type != 'U':
+                result.type = 'MC'
+                result.other_condition = other_cond
         return result
 
     def _parse_tags(self, condition, operator, values):
         # this handles only a few cases that are actually found
         if ', and ' in condition:
-            return self._parse_tag_composition(condition, operator, values, 'and')
+            return self._parse_tag_composition(
+                condition, operator, values, 'and')
         if ', or ' in condition:
-            return self._parse_tag_composition(condition, operator, values, 'or')
+            return self._parse_tag_composition(
+                condition, operator, values, 'or')
         if ' and ' in condition:
-            return self._parse_multiple_tags(condition, operator, values, 'and')
+            return self._parse_multiple_tags(
+                condition, operator, values, 'and')
         if ' or ' in condition:
-            return self._parse_multiple_tags(condition, operator, values, 'or')
+            return self._parse_multiple_tags(
+                condition, operator, values, 'or')
         return self._result_from_tag_string(condition, operator, values)
 
     def _parse_tag_composition(self, condition, operator, values, logical_op):
@@ -231,31 +239,34 @@ class ConditionParser(object):
             result = self._parse_tags(condition.replace(
                 split_string, split_string.replace(',', '')), operator, values)
         else:
-            result = {
-                logical_op: [
-                    result0,
-                    self._parse_tags(conditions[1], operator, values)
-                ]
-            }
+            result = Condition()
+            cond_list = self._condition_list(logical_op, result)
+            cond_list.append(result0)
+            cond_list.append(self._parse_tags(conditions[1], operator, values))
         return result
 
     def _parse_multiple_tags(self, condition, operator, values, logical_op):
         condition = condition.replace(' {} '.format(logical_op), ', ')
-        result = {
-            logical_op: []
-        }
+        result = Condition()
+        cond_list = self._condition_list(logical_op, result)
         for tag_string in condition.split(', '):
             tag_result = self._result_from_tag_string(tag_string, operator, values)
             if tag_result:
-                result[logical_op].append(tag_result)
-        return result if result[logical_op] and len(result[logical_op]) > 1 else {}
+                cond_list.append(tag_result)
+        if len(cond_list) > 1:
+            return result
+
+    def _condition_list(self, logical_op, result):
+        cond_list = (result.and_conditions if logical_op == 'and'
+                     else result.or_conditions)
+        return cond_list
 
     def _result_from_tag_string(self, tag_string, operator, values):
         tag, index = self._parse_tag(tag_string)
         if tag is not None:
-            result = {'tag': tag, 'index': index, 'op': operator}
+            result = Condition(tag=tag, index=index, operator=operator)
             if values:
-                result['values'] = values
+                result.values = values
             return result
 
     @staticmethod

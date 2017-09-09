@@ -134,3 +134,33 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         json_string = condition.write()
         test_condition()
+
+    def test_other_condition(self):
+        json_string = '''{
+            "index": 0,
+            "op": "=",
+            "other_cond": {
+              "index": 0,
+              "op": "+",
+              "tag": "(0072,0704)",
+              "type": "MN"
+            },
+            "tag": "(0072,0704)",
+            "type": "MC",
+            "values": [
+              "PALETTE"
+            ]
+          }'''
+
+        def test_condition():
+            condition = self.check_condition(
+                json_string, cond_type='MC', op='=',
+                tag='(0072,0704)', values=['PALETTE'])
+            self.check_sub_condition(
+                condition.other_condition, op='+', tag='(0072,0704)')
+            self.assertEqual('MN', condition.other_condition.type)
+            return condition
+
+        condition = test_condition()
+        json_string = condition.write()
+        test_condition()

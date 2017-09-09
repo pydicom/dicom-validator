@@ -2,15 +2,37 @@ import json
 
 
 class Condition(object):
-    def __init__(self, type=None, operator=None, tag=None, index=0,
+    """ Represents a condition for the presence of a specific tag.
+
+    Attributes:
+        type: the type of the related object (tag or module) regarding its
+            existence; possible values:
+            'U': user defined, e.g. both existence or non-existence
+                of the related object is considered legal
+            'MN': the object is mandatory if the condition is fulfilled,
+                otherwise not
+            'MU': the object is mandatory if the condition is fulfilled,
+                otherwise is user defined
+        tag: the ID of the required tag in the form '(####,####)' or None
+        index: the index of the tag for multi-valued tags or 0
+        values: a list of values the tag shall have if the condition
+            is fulfilled, or None
+        operator: the comparison operation used ('=', '<', '>') for the
+            value(s), or None
+
+    """
+
+    def __init__(self, ctype=None, operator=None, tag=None, index=0,
                  values=None):
-        self.type = type
+
+        self.type = ctype
         self.operator = operator
         self.tag = tag
         self.index = index
         self.values = values
         self.and_conditions = []
         self.or_conditions = []
+        self.other_condition = None
 
     def read(self, json_string):
         condition_dict = json.loads(json_string)
@@ -28,7 +50,14 @@ class Condition(object):
         condition.and_conditions = [
             cls.read_condition(cond) for cond in and_list]
         or_list = condition_dict.get('or', [])
-        condition.or_conditions = [cls.read_condition(cond) for cond in or_list]
+        condition.or_conditions = [
+            cls.read_condition(cond) for cond in or_list
+        ]
+        if 'other_cond' in condition_dict:
+            condition.other_condition = cls.read_condition(
+                condition_dict['other_cond'])
+            condition.other_condition.type = condition_dict['other_cond'].get(
+                'type')
         return condition
 
     def write(self):
@@ -54,4 +83,7 @@ class Condition(object):
             result['or'] = []
             for or_condition in condition.or_conditions:
                 result['or'].append(cls.write_condition(or_condition))
+        if condition.other_condition:
+            result['other_cond'] = json.loads(
+                condition.other_condition.write())
         return result
