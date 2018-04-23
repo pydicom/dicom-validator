@@ -9,6 +9,7 @@ import re
 from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
 from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
 from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
+from dcm_spec_tools.spec_reader.serializer import DefinitionEncoder
 
 try:
     from urllib import urlretrieve
@@ -67,6 +68,8 @@ class EditionReader(object):
                                 str(exception))
 
     def retrieve(self, html_path):
+        if not os.path.exists(os.path.dirname(html_path)):
+            os.makedirs(os.path.dirname(html_path))
         urlretrieve(self.base_url, html_path)
 
     def get_editions(self):
@@ -172,6 +175,11 @@ class EditionReader(object):
         return True
 
     @classmethod
+    def dump_description(cls, description):
+        return json.dumps(description, sort_keys=True,
+                          indent=2, cls=DefinitionEncoder)
+
+    @classmethod
     def create_json_files(cls, docbook_path, json_path):
         print('Creating JSON excerpts from docbook files...')
         part6reader = Part6Reader(docbook_path)
@@ -186,17 +194,15 @@ class EditionReader(object):
                 for uid in chapter_info[chapter]:
                     definition[uid] = iod_info[chapter]
         with open(os.path.join(json_path, cls.iod_info_json), 'w') as info_file:
-            info_file.write(json.dumps(definition, sort_keys=True, indent=2))
+            info_file.write(cls.dump_description(definition))
         with open(os.path.join(json_path, cls.module_info_json),
                   'w') as info_file:
             info_file.write(
-                json.dumps(part3reader.module_descriptions(), sort_keys=True,
-                           indent=2))
+                cls.dump_description(part3reader.module_descriptions()))
         with open(os.path.join(json_path, cls.dict_info_json), 'w') as info_file:
-            info_file.write(json.dumps(dict_info, sort_keys=True, indent=2))
+            info_file.write(cls.dump_description(dict_info))
         with open(os.path.join(json_path, cls.uid_info_json), 'w') as info_file:
-            info_file.write(
-                json.dumps(part6reader.all_uids(), sort_keys=True, indent=2))
+            info_file.write(cls.dump_description(part6reader.all_uids()))
         print('Done!')
 
     def get_revision(self, revision):

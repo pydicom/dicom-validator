@@ -164,7 +164,7 @@ class Part3Reader(SpecReader):
             return
         include_ref = include_node.attrib['linkend']
         if self._current_refs and include_ref == self._current_refs[-1]:
-            self.logger.warning('Self reference in %s  - ignoring.', include_ref)
+            self.logger.debug('Self reference in %s  - ignoring.', include_ref)
             return
         self._current_refs.append(include_ref)
         element, label = self._get_ref_element_and_label(include_ref)

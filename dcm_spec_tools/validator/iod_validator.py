@@ -1,3 +1,4 @@
+import json
 import logging
 
 import sys
@@ -107,6 +108,8 @@ class IODValidator(object):
             return 'not allowed'
 
     def _object_is_required_or_allowed(self, condition):
+        if isinstance(condition, str):
+            condition = json.loads(condition)
         if condition['type'] == 'U':
             return False, True
         required = self._composite_object_is_required(condition)
