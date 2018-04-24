@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 import os
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup, find_packages
 
 extra = {}
 
@@ -15,9 +12,9 @@ with open(os.path.join(basepath, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="dcm-spec-tools",
-    packages=['dcm_spec_tools'],
+    packages=find_packages(),
     include_package_data=True,
-    version="0.2.1",
+    version="0.2.2",
     install_requires=['pydicom'],
     description="Python DICOM tools using input from DICOM specs in docbook format",
     author="mrbean-bremen",
