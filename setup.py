@@ -3,10 +3,10 @@ import os
 
 from setuptools import setup, find_packages
 
-extra = {}
+EXTRA = {}
 
-basepath = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(basepath, 'README.md'), encoding='utf-8') as f:
+BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(BASE_PATH, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
@@ -14,7 +14,7 @@ setup(
     name="dcm-spec-tools",
     packages=find_packages(),
     include_package_data=True,
-    version="0.2.2",
+    version="0.3.0",
     install_requires=['pydicom'],
     description="Python DICOM tools using input from DICOM specs in docbook format",
     author="mrbean-bremen",
@@ -45,5 +45,5 @@ setup(
     ],
     long_description=long_description,
     long_description_content_type='text/markdown',
-    **extra
+    **EXTRA
 )
