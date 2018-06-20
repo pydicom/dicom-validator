@@ -1,2 +1,2 @@
-git+git://github.com/darcymason/pydicom@master
+pydicom>=1.1.0
 pyfakefs

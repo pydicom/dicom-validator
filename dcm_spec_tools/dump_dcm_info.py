@@ -6,10 +6,7 @@ import argparse
 import json
 import os
 
-try:
-    from pydicom import filereader
-except ImportError:
-    from dicom import filereader
+from pydicom import filereader
 
 from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 

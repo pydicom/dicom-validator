@@ -1,14 +1,9 @@
 import logging
 import os
-
 import sys
 
-try:
-    from pydicom import filereader
-    from pydicom.errors import InvalidDicomError
-except ImportError:
-    from dicom import filereader
-    from dicom.errors import InvalidDicomError
+from pydicom import filereader
+from pydicom.errors import InvalidDicomError
 
 from dcm_spec_tools.validator.iod_validator import IODValidator
 
