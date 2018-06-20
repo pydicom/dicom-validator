@@ -42,7 +42,6 @@
 
 #### Validator
 * verbosity levels :on:
-    * error level: invalid DICOM errors only
     * warning level: show only missing / unexpected attributes
     * info level: show checked modules where errors occur
     * info level: show failed condition (create from json)

@@ -9,7 +9,8 @@ class InvalidParameterError(Exception):
 
 
 class IODValidator(object):
-    def __init__(self, dataset, iod_info, module_info, dict_info=None, log_level=logging.INFO):
+    def __init__(self, dataset, iod_info, module_info, dict_info=None,
+                 log_level=logging.INFO):
         self._dataset = dataset
         self._iod_info = iod_info
         self._module_info = module_info
@@ -34,7 +35,8 @@ class IODValidator(object):
             self.logger.error('%s - aborting', self.errors['fatal'])
         else:
             for error, tag_ids in self.errors.items():
-                self.logger.warning('Tag(s) %s:', error)
+                tag_string = 'Tags' if len(tag_ids)  > 1 else 'Tag'
+                self.logger.warning('\n%s %s:', tag_string, error)
                 for tag_id in tag_ids:
                     self.logger.warning('%s - %s', tag_id,
                                         self._dict_info[tag_id]['name'] if self._dict_info else '')
@@ -46,7 +48,8 @@ class IODValidator(object):
 
     def _validate_sop_class(self, sop_class_uid):
         iod_info = self._iod_info[sop_class_uid]
-        self.logger.info('Checking SOP class "%s"', sop_class_uid)
+        self.logger.info('Checking SOP class "%s" (%s)', sop_class_uid,
+                         iod_info['title'])
         for module_name, module in iod_info['modules'].items():
             self.logger.debug('Checking module "%s"', module_name)
             self.add_errors(self._validate_module(module))
@@ -59,10 +62,14 @@ class IODValidator(object):
         allowed = True
         if usage == 'M':
             required = True
+            self.logger.debug('  Module is required')
         elif usage == 'U':
             required = False
+            self.logger.debug('  Module is optional')
         else:
             required, allowed = self._object_is_required_or_allowed(module['cond'])
+            msg = 'required' if required else 'optional' if allowed else 'not allowed'
+            self.logger.debug('  Module is %s due to condition: ', msg)
         has_module = self._has_module(module_info)
         if not required and not has_module:
             return errors
