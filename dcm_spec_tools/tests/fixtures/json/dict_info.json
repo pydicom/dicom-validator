@@ -46,5 +46,65 @@
     "prop": "",
     "vm": "1",
     "vr": "IS"
+  },
+  "(0018,1065)": {
+    "name": "Frame Time Vector",
+    "prop": "",
+    "vm": "1-n",
+    "vr": "DS"
+  },
+  "(0028,0009)": {
+    "name": "Frame Increment Pointer",
+    "prop": "",
+    "vm": "1-n",
+    "vr": "AT"
+  },
+  "(0040,4072)": {
+    "name": "STOW-RS Storage Sequence",
+    "prop": "",
+    "vm": "1",
+    "vr": "SQ"
+  },
+  "(0040,4073)": {
+    "name": "Storage URL",
+    "prop": "",
+    "vm": "1",
+    "vr": "UR"
+  },
+  "(0040,4074)": {
+    "name": "XDS Storage Sequence",
+    "prop": "",
+    "vm": "1",
+    "vr": "SQ"
+  },
+  "(0040,E022)": {
+    "name": "DICOM Media Retrieval Sequence",
+    "prop": "",
+    "vm": "1",
+    "vr": "SQ"
+  },
+  "(0040,E023)": {
+    "name": "WADO Retrieval Sequence",
+    "prop": "",
+    "vm": "1",
+    "vr": "SQ"
+  },
+  "(0040,E025)": {
+    "name": "WADO-RS Retrieval Sequence",
+    "prop": "",
+    "vm": "1",
+    "vr": "SQ"
+  },
+  "(3004,000A)": {
+    "name": "Dose Summation Type",
+    "prop": "",
+    "vm": "1",
+    "vr": "CS"
+  },
+  "(7FE0,0010)": {
+    "name": "Pixel Data",
+    "prop": "",
+    "vm": "1",
+    "vr": "OB or OW"
   }
 }

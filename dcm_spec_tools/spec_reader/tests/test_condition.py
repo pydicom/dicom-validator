@@ -1,9 +1,22 @@
+import json
 import unittest
 
+import os
+
 from dcm_spec_tools.spec_reader.condition import Condition
+from dcm_spec_tools.spec_reader.edition_reader import EditionReader
+from dcm_spec_tools.tests.test_utils import json_fixture_path
 
 
 class ConditionReadTest(unittest.TestCase):
+    dict_info = None
+
+    @classmethod
+    def setUpClass(cls):
+        with open(os.path.join(json_fixture_path(),
+                               EditionReader.dict_info_json)) as info_file:
+            cls.dict_info = json.load(info_file)
+
     def check_condition(self, json_string, cond_type, index=0, op=None,
                         tag=None, values=None, nr_and_cond=0, nr_or_cond=0):
         condition = Condition()
@@ -48,6 +61,72 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         json_string = condition.write()
         test_condition()
+        self.assertEqual('Dose Summation Type exists and is equal to "BEAM", '
+                         '"BEAM_SESSION" or "CONTROL_POINT"',
+                         condition.to_string(self.dict_info))
+
+    def test_greater(self):
+        json_string = '''{
+            "index": 0,
+            "op": ">",
+            "tag": "(0028,0008)",
+            "type": "MN",
+            "values": ["1"]
+        }'''
+
+        def test_condition():
+            return self.check_condition(json_string, cond_type='MN', op='>',
+                                        tag='(0028,0008)',
+                                        values=['1'])
+
+        condition = test_condition()
+        json_string = condition.write()
+        test_condition()
+        self.assertEqual('Number of Frames exists and is greater than 1',
+                         condition.to_string(self.dict_info))
+
+    def test_less(self):
+        json_string = '''{
+            "index": 0,
+            "op": "<",
+            "tag": "(0028,0008)",
+            "type": "MN",
+            "values": ["20"]
+        }'''
+
+        def test_condition():
+            return self.check_condition(json_string, cond_type='MN', op='<',
+                                        tag='(0028,0008)',
+                                        values=['20'])
+
+        condition = test_condition()
+        json_string = condition.write()
+        test_condition()
+        self.assertEqual('Number of Frames exists and is less than 20',
+                         condition.to_string(self.dict_info))
+
+    def test_points_to(self):
+        json_string = '''{
+            "index": 0,
+            "op": "=>",
+            "tag": "(0028,0009)",
+            "type": "MN",
+            "values": [
+              "1577061"
+            ]
+        }
+        '''
+
+        def test_condition():
+            return self.check_condition(json_string, cond_type='MN', op='=>',
+                                        tag='(0028,0009)',
+                                        values=['1577061'])
+
+        condition = test_condition()
+        json_string = condition.write()
+        test_condition()
+        self.assertEqual('Frame Increment Pointer points to Frame Time Vector',
+                         condition.to_string(self.dict_info))
 
     def test_exists(self):
         json_string = '''{
@@ -64,6 +143,8 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         json_string = condition.write()
         test_condition()
+        self.assertEqual('Pixel Data exists',
+                         condition.to_string(self.dict_info))
 
     def test_and_condition(self):
         json_string = '''{
@@ -104,6 +185,11 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         json_string = condition.write()
         test_condition()
+        self.assertEqual('DICOM Media Retrieval Sequence is not present and '
+                         'WADO Retrieval Sequence[1] exists and WADO-RS '
+                         'Retrieval Sequence exists and is not equal to '
+                         '"TEST"',
+                         condition.to_string(self.dict_info))
 
     def test_or_condition(self):
         json_string = '''{
@@ -134,6 +220,9 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         json_string = condition.write()
         test_condition()
+        self.assertEqual('STOW-RS Storage Sequence is not present or '
+                         'XDS Storage Sequence is not present',
+                         condition.to_string(self.dict_info))
 
     def test_other_condition(self):
         json_string = '''{

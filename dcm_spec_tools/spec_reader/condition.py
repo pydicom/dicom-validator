@@ -87,3 +87,46 @@ class Condition(object):
             result['other_cond'] = json.loads(
                 condition.other_condition.write())
         return result
+
+    def to_string(self, dict_info):
+        """Return a condition readable as part of a sentence."""
+        result = ''
+        if self.and_conditions:
+            return ' and '.join(
+                cond.to_string(dict_info) for cond in self.and_conditions)
+        if self.or_conditions:
+            return ' or '.join(
+                cond.to_string(dict_info) for cond in self.or_conditions)
+        if self.tag is not None:
+            result = dict_info[self.tag]['name']
+            if self.index:
+                result += '[{}]'.format(self.index)
+        if self.operator == '+':
+            result += ' exists'
+        elif self.operator == '++':
+            result += ' exists and has a value'
+        elif self.operator == '=>':
+            tag_value = int(self.values[0])
+            tag_string = '({:04x},{:04x})'.format(
+                tag_value // 0x10000, tag_value % 0x10000)
+            result += ' points to ' + dict_info[tag_string]['name']
+        elif self.operator == '-':
+            result += ' is not present'
+        elif self.operator == '=':
+            result += ' exists and is equal to '
+            values = ['"' + value + '"' for value in self.values]
+            if len(values) > 1:
+                result += ', '.join(values[:-1]) + ' or '
+            result += values[-1]
+        elif self.operator == '!=':
+            result += ' exists and is not equal to '
+            values = ['"' + value + '"' for value in self.values]
+            if len(values) > 1:
+                result += ', '.join(values[:-1]) + ' and '
+            result += values[-1]
+        elif self.operator == '<':
+            result += ' exists and is less than ' + self.values[0]
+        elif self.operator == '>':
+            result += ' exists and is greater than ' + self.values[0]
+        return result
+
