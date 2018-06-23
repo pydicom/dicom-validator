@@ -3,6 +3,8 @@ import logging
 
 import sys
 
+from dcm_spec_tools.spec_reader.condition import Condition
+
 
 class InvalidParameterError(Exception):
     pass
@@ -69,7 +71,10 @@ class IODValidator(object):
         else:
             required, allowed = self._object_is_required_or_allowed(module['cond'])
             msg = 'required' if required else 'optional' if allowed else 'not allowed'
-            self.logger.debug('  Module is %s due to condition: ', msg)
+            condition = Condition.read_condition(module['cond'])
+            if condition.type != 'U':
+                self.logger.debug('  Module is %s due to condition: ', msg, )
+                self.logger.debug('    %s', condition.to_string(self._dict_info) )
         has_module = self._has_module(module_info)
         if not required and not has_module:
             return errors

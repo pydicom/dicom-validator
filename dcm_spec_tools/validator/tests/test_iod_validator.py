@@ -3,7 +3,7 @@ import logging
 import os
 import unittest
 
-from spec_reader.edition_reader import EditionReader
+from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
 try:
     from pydicom.dataset import Dataset

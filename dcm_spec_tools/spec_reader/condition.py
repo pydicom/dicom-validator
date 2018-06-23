@@ -36,12 +36,12 @@ class Condition(object):
 
     def read(self, json_string):
         condition_dict = json.loads(json_string)
-        self.type = condition_dict.get('type')
         self.read_condition(condition_dict, self)
 
     @classmethod
     def read_condition(cls, condition_dict, condition=None):
         condition = condition or Condition()
+        condition.type = condition_dict.get('type')
         condition.operator = condition_dict.get('op')
         condition.tag = condition_dict.get('tag')
         condition.index = int(condition_dict.get('index', '0'))
@@ -60,10 +60,10 @@ class Condition(object):
                 'type')
         return condition
 
-    def write(self):
+    def dict(self):
         result = {'type': self.type}
         result.update(self.write_condition(self))
-        return json.dumps(result)
+        return result
 
     @classmethod
     def write_condition(cls, condition):
@@ -84,8 +84,7 @@ class Condition(object):
             for or_condition in condition.or_conditions:
                 result['or'].append(cls.write_condition(or_condition))
         if condition.other_condition:
-            result['other_cond'] = json.loads(
-                condition.other_condition.write())
+            result['other_cond'] = condition.other_condition.dict()
         return result
 
     def to_string(self, dict_info):
@@ -98,7 +97,10 @@ class Condition(object):
             return ' or '.join(
                 cond.to_string(dict_info) for cond in self.or_conditions)
         if self.tag is not None:
-            result = dict_info[self.tag]['name']
+            if dict_info and self.tag in dict_info:
+                result = dict_info[self.tag]['name']
+            else:
+                result = self.tag
             if self.index:
                 result += '[{}]'.format(self.index)
         if self.operator == '+':
@@ -113,20 +115,20 @@ class Condition(object):
         elif self.operator == '-':
             result += ' is not present'
         elif self.operator == '=':
-            result += ' exists and is equal to '
+            result += ' is equal to '
             values = ['"' + value + '"' for value in self.values]
             if len(values) > 1:
                 result += ', '.join(values[:-1]) + ' or '
             result += values[-1]
         elif self.operator == '!=':
-            result += ' exists and is not equal to '
+            result += ' is not equal to '
             values = ['"' + value + '"' for value in self.values]
             if len(values) > 1:
                 result += ', '.join(values[:-1]) + ' and '
             result += values[-1]
         elif self.operator == '<':
-            result += ' exists and is less than ' + self.values[0]
+            result += ' is less than ' + self.values[0]
         elif self.operator == '>':
-            result += ' exists and is greater than ' + self.values[0]
+            result += ' is greater than ' + self.values[0]
         return result
 
