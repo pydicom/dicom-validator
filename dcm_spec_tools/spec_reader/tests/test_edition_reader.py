@@ -27,7 +27,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         super(EditionReaderTest, self).setUp()
         self.setUpPyfakefs()
         self.base_path = os.path.join('user', 'dcm-spec-tools')
-        self.fs.CreateDirectory(self.base_path)
+        self.fs.create_dir(self.base_path)
         logging.disable(logging.CRITICAL)
 
     def test_empty_html(self):
@@ -55,7 +55,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     def test_keep_old_version(self):
         json_path = os.path.join(self.base_path, EditionReader.json_filename)
-        self.fs.CreateFile(json_path, contents='["2014a", "2014c"]')
+        self.fs.create_file(json_path, contents='["2014a", "2014c"]')
         file_time = time.time() - 29 * 24 * 60 * 60.0
         os.utime(json_path, (file_time, file_time))
         reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
@@ -63,7 +63,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     def test_replace_old_version(self):
         json_path = os.path.join(self.base_path, EditionReader.json_filename)
-        self.fs.CreateFile(json_path, contents='["2014a", "2014c"]')
+        self.fs.create_file(json_path, contents='["2014a", "2014c"]')
         file_time = time.time() - 31 * 24 * 60 * 60.0
         os.utime(json_path, (file_time, file_time))
         reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
@@ -101,7 +101,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         base_path = 'base'
         reader = MemoryEditionReader(base_path, '')
         json_path = os.path.join(base_path, EditionReader.json_filename)
-        self.fs.CreateFile(json_path, contents='["2014a", "2014c", "2015a"]')
+        self.fs.create_file(json_path, contents='["2014a", "2014c", "2015a"]')
         revision, path = reader.check_revision('2014')
         self.assertEqual('2014c', revision)
         self.assertEqual(os.path.join(base_path, '2014c'), path)
@@ -110,7 +110,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         base_path = '/foo/bar'
         reader = MemoryEditionReader(base_path, '')
         json_path = os.path.join(base_path, EditionReader.json_filename)
-        self.fs.CreateFile(json_path, contents='["2014a", "2014c", "2015a"]')
+        self.fs.create_file(json_path, contents='["2014a", "2014c", "2015a"]')
         revision, path = reader.check_revision('2016')
         self.assertIsNone(revision)
         self.assertIsNone(path)
@@ -131,8 +131,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertTrue(reader.is_current(None))
 
     def test_is_current_version(self):
-        base_path = '/foo/bar'
-        json_path = os.path.join(base_path, EditionReader.json_filename)
+        json_path = os.path.join(self.base_path, EditionReader.json_filename)
         self.assertFalse(EditionReader.is_current_version(json_path))
         version_path = os.path.join(json_path, 'version')
         self.fs.create_file(version_path, contents='0.2.1')
@@ -142,9 +141,40 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertTrue(EditionReader.is_current_version(json_path))
 
     def test_write_current_version(self):
-        base_path = '/foo/bar'
-        json_path = os.path.join(base_path, EditionReader.json_filename)
+        json_path = os.path.join(self.base_path, EditionReader.json_filename)
         self.fs.create_dir(json_path)
         self.assertFalse(EditionReader.is_current_version(json_path))
         EditionReader.write_current_version(json_path)
         self.assertTrue(EditionReader.is_current_version(json_path))
+
+    def test_recreate_json_if_needed(self):
+        self.create_json_files_called = 0
+
+        def create_json_files(cls, docbook_path, json_path):
+            self.create_json_files_called += 1
+            for name in ('dict_info.json', 'iod_info.json',
+                         'module_info.json', 'uid_info.json'):
+                path = os.path.join(json_path, name)
+                if not os.path.exists(path):
+                    self.fs.create_file(path)
+
+        docbook_path = os.path.join(self.base_path, '2014a', 'docbook')
+        for chapter_name in ('part03.xml', 'part04.xml', 'part06.xml'):
+            self.fs.create_file(os.path.join(docbook_path, chapter_name))
+        orig_create_json_files = MemoryEditionReader.create_json_files
+        try:
+            MemoryEditionReader.create_json_files = create_json_files
+            reader = MemoryEditionReader(self.base_path, '')
+            json_path = os.path.join(self.base_path,
+                                     EditionReader.json_filename)
+            self.fs.create_file(json_path, contents='["2014a", "2014c", "2015a"]')
+            reader.get_revision("2014a")
+            self.assertEqual(1, self.create_json_files_called)
+            reader.get_revision("2014a")
+            self.assertEqual(2, self.create_json_files_called)
+            json_path = os.path.join(self.base_path, '2014a', 'json')
+            EditionReader.write_current_version(json_path)
+            reader.get_revision("2014a")
+            self.assertEqual(2, self.create_json_files_called)
+        finally:
+            MemoryEditionReader.create_json_files = orig_create_json_files

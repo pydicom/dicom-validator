@@ -18,13 +18,13 @@ class ReadSpecTest(pyfakefs.fake_filesystem_unittest.TestCase):
     def test_missing_doc_files(self):
         spec_path = '/var/dicom/specs'
         os.makedirs(spec_path)
-        self.fs.CreateFile(os.path.join('notadoc.xml'))
+        self.fs.create_file(os.path.join('notadoc.xml'))
         self.assertRaises(SpecReaderFileError, SpecReader, spec_path)
 
     def test_existing_doc_files(self):
         spec_path = '/var/dicom/specs'
         os.makedirs(spec_path)
-        self.fs.CreateFile(os.path.join(spec_path, 'part03.xml'))
+        self.fs.create_file(os.path.join(spec_path, 'part03.xml'))
         self.assertTrue(SpecReader(spec_path))
 
     def test_cleaned_uid(self):

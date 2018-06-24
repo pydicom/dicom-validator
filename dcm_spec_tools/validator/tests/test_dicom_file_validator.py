@@ -49,7 +49,7 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assert_fatal_error('non_existing', error_string='File missing')
 
     def test_invalid_file(self):
-        self.fs.CreateFile('test', contents='invalid')
+        self.fs.create_file('test', contents='invalid')
         self.assert_fatal_error('test', error_string='Invalid DICOM file')
 
     def test_missing_sop_class(self):
@@ -66,14 +66,14 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assert_fatal_error('test', 'Unknown SOPClassUID (probably retired): Unknown')
 
     def test_validate_dir(self):
-        self.fs.CreateDirectory(os.path.join('foo', 'bar', 'baz'))
-        self.fs.CreateDirectory(os.path.join('foo', 'baz'))
-        self.fs.CreateFile(os.path.join('foo', '1.dcm'))
-        self.fs.CreateFile(os.path.join('foo', 'bar', '2.dcm'))
-        self.fs.CreateFile(os.path.join('foo', 'bar', '3.dcm'))
-        self.fs.CreateFile(os.path.join('foo', 'bar', 'baz', '4.dcm'))
-        self.fs.CreateFile(os.path.join('foo', 'baz', '5.dcm'))
-        self.fs.CreateFile(os.path.join('foo1', '6.dcm'))
+        self.fs.create_dir(os.path.join('foo', 'bar', 'baz'))
+        self.fs.create_dir(os.path.join('foo', 'baz'))
+        self.fs.create_file(os.path.join('foo', '1.dcm'))
+        self.fs.create_file(os.path.join('foo', 'bar', '2.dcm'))
+        self.fs.create_file(os.path.join('foo', 'bar', '3.dcm'))
+        self.fs.create_file(os.path.join('foo', 'bar', 'baz', '4.dcm'))
+        self.fs.create_file(os.path.join('foo', 'baz', '5.dcm'))
+        self.fs.create_file(os.path.join('foo1', '6.dcm'))
 
         self.assertEqual(5, len(self.validator.validate('foo')))
 

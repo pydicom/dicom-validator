@@ -21,13 +21,13 @@ class Part4ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.setUpPyfakefs()
         spec_path = os.path.join('dicom', 'specs')
         part4_path = os.path.join(spec_path, 'part04.xml')
-        self.fs.CreateFile(part4_path, contents=self.doc_contents)
+        self.fs.create_file(part4_path, contents=self.doc_contents)
         self.reader = Part4Reader(spec_path)
 
     def test_read_incomplete_doc_file(self):
         spec_path = '/var/dicom/specs'
         os.makedirs(spec_path)
-        self.fs.CreateFile(os.path.join(spec_path, 'part04.xml'),
+        self.fs.create_file(os.path.join(spec_path, 'part04.xml'),
                            contents='<book xmlns="http://docbook.org/ns/docbook">\n</book>')
         reader = Part4Reader(spec_path)
         self.assertRaises(SpecReaderParseError, reader.iod_chapter, '1.2.840.10008.5.1.4.1.1.2')

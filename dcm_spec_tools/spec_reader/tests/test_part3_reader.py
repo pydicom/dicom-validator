@@ -21,27 +21,27 @@ class ReadPart3Test(pyfakefs.fake_filesystem_unittest.TestCase):
         self.setUpPyfakefs()
         spec_path = os.path.join('dicom', 'specs')
         part3_path = os.path.join(spec_path, 'part03.xml')
-        self.fs.CreateFile(part3_path, contents=self.doc_contents)
+        self.fs.create_file(part3_path, contents=self.doc_contents)
         self.reader = Part3Reader(spec_path)
 
     def test_read_empty_doc_file(self):
         spec_path = '/var/dicom/specs'
         os.makedirs(spec_path)
-        self.fs.CreateFile(os.path.join(spec_path, 'part03.xml'))
+        self.fs.create_file(os.path.join(spec_path, 'part03.xml'))
         spec_reader = Part3Reader(spec_path)
         self.assertRaises(SpecReaderFileError, spec_reader.iod_description, 'A.16')
 
     def test_read_invalid_doc_file(self):
         spec_path = '/var/dicom/specs'
         os.makedirs(spec_path)
-        self.fs.CreateFile(os.path.join(spec_path, 'part03.xml'), contents='Not an xml')
+        self.fs.create_file(os.path.join(spec_path, 'part03.xml'), contents='Not an xml')
         spec_reader = Part3Reader(spec_path)
         self.assertRaises(SpecReaderFileError, spec_reader.iod_description, 'A.6')
 
     def test_read_incomplete_doc_file(self):
         spec_path = '/var/dicom/specs'
         os.makedirs(spec_path)
-        self.fs.CreateFile(os.path.join(spec_path, 'part03.xml'),
+        self.fs.create_file(os.path.join(spec_path, 'part03.xml'),
                            contents='<book xmlns="http://docbook.org/ns/docbook">\n</book>')
         reader = Part3Reader(spec_path)
         self.assertRaises(SpecReaderParseError, reader.iod_description, 'A.6')
