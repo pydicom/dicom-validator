@@ -53,28 +53,23 @@ class IODValidator(object):
         self.logger.info('Checking SOP class "%s" (%s)', sop_class_uid,
                          iod_info['title'])
         for module_name, module in iod_info['modules'].items():
-            self.logger.debug('Checking module "%s"', module_name)
-            self.add_errors(self._validate_module(module))
+            self.add_errors(self._validate_module(module, module_name))
 
-    def _validate_module(self, module):
+    def _validate_module(self, module, module_name):
         errors = {}
         usage = module['use']
         module_info = self._get_module_info(module['ref'])
+        condition = module['cond'] if 'cond' in module else None
 
         allowed = True
         if usage == 'M':
             required = True
-            self.logger.debug('  Module is required')
         elif usage == 'U':
             required = False
-            self.logger.debug('  Module is optional')
         else:
-            required, allowed = self._object_is_required_or_allowed(module['cond'])
-            msg = 'required' if required else 'optional' if allowed else 'not allowed'
-            condition = Condition.read_condition(module['cond'])
-            if condition.type != 'U':
-                self.logger.debug('  Module is %s due to condition: ', msg, )
-                self.logger.debug('    %s', condition.to_string(self._dict_info) )
+            required, allowed = self._object_is_required_or_allowed(condition)
+        self._log_module_required(module_name, required, allowed, condition)
+
         has_module = self._has_module(module_info)
         if not required and not has_module:
             return errors
@@ -95,6 +90,18 @@ class IODValidator(object):
                                           'name'] if self._dict_info else '')
                     errors.setdefault(result, []).append(tag_id_string)
         return errors
+
+    def _log_module_required(self, module_name, required, allowed,
+                             condition_dict):
+        msg = 'Module "' + module_name + '" is '
+        msg += ('required' if required
+                else 'optional' if allowed else 'not allowed')
+        if condition_dict:
+            condition = Condition.read_condition(condition_dict)
+            if condition.type != 'U':
+                msg += ' due to condition:\n  '
+                msg += condition.to_string(self._dict_info)
+        self.logger.debug(msg)
 
     def _validate_attribute(self, tag_id, attribute):
         attribute_type = attribute['type']

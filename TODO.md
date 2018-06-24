@@ -45,7 +45,6 @@
     * warning level: show only missing / unexpected attributes
     * info level: show checked modules where errors occur
     * info level: show failed condition (create from json)
-    * debug level: show each checked module
 * optional additional config files that replace part of the spec
 
 #### Dump
