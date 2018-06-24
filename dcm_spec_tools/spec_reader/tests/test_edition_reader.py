@@ -1,10 +1,11 @@
 import logging
 import os
-
-import pyfakefs.fake_filesystem_unittest
 import time
 
-from spec_reader.edition_reader import EditionReader
+import pyfakefs.fake_filesystem_unittest
+
+from dcm_spec_tools import __version__
+from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
 
 class MemoryEditionReader(EditionReader):
@@ -128,3 +129,22 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertFalse(reader.is_current('2016'))
         self.assertTrue(reader.is_current('current'))
         self.assertTrue(reader.is_current(None))
+
+    def test_is_current_version(self):
+        base_path = '/foo/bar'
+        json_path = os.path.join(base_path, EditionReader.json_filename)
+        self.assertFalse(EditionReader.is_current_version(json_path))
+        version_path = os.path.join(json_path, 'version')
+        self.fs.create_file(version_path, contents='0.2.1')
+        self.assertFalse(EditionReader.is_current_version(json_path))
+        os.remove(version_path)
+        self.fs.create_file(version_path, contents=__version__)
+        self.assertTrue(EditionReader.is_current_version(json_path))
+
+    def test_write_current_version(self):
+        base_path = '/foo/bar'
+        json_path = os.path.join(base_path, EditionReader.json_filename)
+        self.fs.create_dir(json_path)
+        self.assertFalse(EditionReader.is_current_version(json_path))
+        EditionReader.write_current_version(json_path)
+        self.assertTrue(EditionReader.is_current_version(json_path))

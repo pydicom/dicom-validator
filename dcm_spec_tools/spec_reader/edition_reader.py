@@ -2,10 +2,10 @@ import datetime
 import json
 import logging
 import os
+import re
 import sys
 
-import re
-
+from dcm_spec_tools import __version__
 from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
 from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
 from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
@@ -193,16 +193,20 @@ class EditionReader(object):
             if chapter in chapter_info:
                 for uid in chapter_info[chapter]:
                     definition[uid] = iod_info[chapter]
-        with open(os.path.join(json_path, cls.iod_info_json), 'w') as info_file:
+        with open(os.path.join(json_path, cls.iod_info_json),
+                  'w') as info_file:
             info_file.write(cls.dump_description(definition))
         with open(os.path.join(json_path, cls.module_info_json),
                   'w') as info_file:
             info_file.write(
                 cls.dump_description(part3reader.module_descriptions()))
-        with open(os.path.join(json_path, cls.dict_info_json), 'w') as info_file:
+        with open(os.path.join(json_path, cls.dict_info_json),
+                  'w') as info_file:
             info_file.write(cls.dump_description(dict_info))
-        with open(os.path.join(json_path, cls.uid_info_json), 'w') as info_file:
+        with open(os.path.join(json_path, cls.uid_info_json),
+                  'w') as info_file:
             info_file.write(cls.dump_description(part6reader.all_uids()))
+        cls.write_current_version(json_path)
         print('Done!')
 
     def get_revision(self, revision):
@@ -225,6 +229,21 @@ class EditionReader(object):
                                     is_current=self.is_current(revision)):
                 return
 
-        if not self.json_files_exist(json_path):
+        if (not self.json_files_exist(json_path) or
+                not self.is_current_version(json_path)):
             self.create_json_files(docbook_path, json_path)
         return destination
+
+    @staticmethod
+    def is_current_version(json_path):
+        version_path = os.path.join(json_path, 'version')
+        if not os.path.exists(version_path):
+            return False
+        with open(version_path) as f:
+            return f.read() == __version__
+
+    @staticmethod
+    def write_current_version(json_path):
+        version_path = os.path.join(json_path, 'version')
+        with open(version_path, 'w') as f:
+            f.write(__version__)

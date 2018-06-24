@@ -3,6 +3,8 @@ import os
 
 from setuptools import setup, find_packages
 
+from dcm_spec_tools import __version__
+
 EXTRA = {}
 
 BASE_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -14,7 +16,7 @@ setup(
     name="dcm-spec-tools",
     packages=find_packages(),
     include_package_data=True,
-    version="0.3.0",
+    version=__version__,
     install_requires=['pydicom'],
     description="Python DICOM tools using input from DICOM specs in docbook format",
     author="mrbean-bremen",
