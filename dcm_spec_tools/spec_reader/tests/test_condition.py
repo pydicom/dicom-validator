@@ -123,7 +123,7 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('Frame Increment Pointer points to Frame Time Vector',
+        self.assertEqual('Frame Increment Pointer points to (0018,1065) (Frame Time Vector)',
                          condition.to_string(self.dict_info))
 
     def test_exists(self):

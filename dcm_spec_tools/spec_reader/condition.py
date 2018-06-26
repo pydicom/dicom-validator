@@ -1,5 +1,7 @@
 import json
 
+from dcm_spec_tools.tag_tools import tag_name_from_id
+
 
 class Condition(object):
     """ Represents a condition for the presence of a specific tag.
@@ -109,9 +111,7 @@ class Condition(object):
             result += ' exists and has a value'
         elif self.operator == '=>':
             tag_value = int(self.values[0])
-            tag_string = '({:04x},{:04x})'.format(
-                tag_value // 0x10000, tag_value % 0x10000)
-            result += ' points to ' + dict_info[tag_string]['name']
+            result += ' points to ' + tag_name_from_id(tag_value, dict_info)
         elif self.operator == '-':
             result += ' is not present'
         elif self.operator == '=':
