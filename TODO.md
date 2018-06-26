@@ -41,10 +41,6 @@
 ## Tools
 
 #### Validator
-* verbosity levels :on:
-    * warning level: show only missing / unexpected attributes
-    * info level: show checked modules where errors occur
-    * info level: show failed condition (create from json)
 * optional additional config files that replace part of the spec
 
 #### Dump
