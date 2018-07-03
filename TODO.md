@@ -46,5 +46,4 @@
 #### Dump
 * add tag length
 * add image tag (length only)
-* add support for directory as argument (like iod_validator)
 * add some filtering options (e.g. show only certain tags)

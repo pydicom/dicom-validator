@@ -22,9 +22,10 @@ class DataElementDumper(object):
     level = 0
     max_value_len = 80
 
-    def __init__(self, dict_info, uid_info, max_value_len):
+    def __init__(self, dict_info, uid_info, max_value_len, show_image_data):
         self.__class__.dict_info = dict_info
         self.__class__.max_value_len = max_value_len
+        self.show_image_data = show_image_data
         for uid_dict in uid_info.values():
             self.__class__.uid_info.update(uid_dict)
 
@@ -93,8 +94,9 @@ class DataElementDumper(object):
 
     def dump_file(self, file_path):
         try:
-            print(file_path)
-            dataset = filereader.read_file(file_path, stop_before_pixels=True, force=True)
+            print('\n' + file_path)
+            dataset = filereader.read_file(
+                file_path, stop_before_pixels=self.show_image_data, force=True)
             self.print_dataset(dataset)
         except (InvalidDicomError, KeyError):
             print(u'{} is not a valid DICOM file - skipping.'.format(file_path))
@@ -120,6 +122,8 @@ def main():
                         help='Maximum string length of displayed values',
                         type=int,
                         default=80)
+    parser.add_argument('--show-image-data', '-id', action='store_false',
+                        help='Also show the image data tag (slower)')
     args = parser.parse_args()
 
     edition_reader = EditionReader(args.standard_path)
@@ -134,7 +138,7 @@ def main():
     with open(os.path.join(json_path, edition_reader.uid_info_json)) as info_file:
         uid_info = json.load(info_file)
 
-    dumper = DataElementDumper(dict_info, uid_info, args.max_value_len)
+    dumper = DataElementDumper(dict_info, uid_info, args.max_value_len, args.show_image_data)
     for dicom_path in args.dicomfiles:
         if not os.path.exists(dicom_path):
             print('\n"%s" does not exist - skipping', dicom_path)
