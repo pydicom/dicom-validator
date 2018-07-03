@@ -9,6 +9,7 @@ import string
 
 import sys
 from pydicom import filereader
+from pydicom.errors import InvalidDicomError
 
 from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
@@ -90,11 +91,25 @@ class DataElementDumper(object):
             dataset.walk(DataElementDumper.print_dataelement)
             DataElementDumper.level -= 1
 
+    def dump_file(self, file_path):
+        try:
+            print(file_path)
+            dataset = filereader.read_file(file_path, stop_before_pixels=True, force=True)
+            self.print_dataset(dataset)
+        except (InvalidDicomError, KeyError):
+            print(u'{} is not a valid DICOM file - skipping.'.format(file_path))
+
+    def dump_directory(self, dir_path):
+        for root, _, names in os.walk(dir_path):
+            for name in names:
+                self.dump_file(os.path.join(root, name))
+
 
 def main():
     parser = argparse.ArgumentParser(
         description='Dumps DICOM information dictionary from DICOM file using PS3.6')
-    parser.add_argument('dicomfile', help='Path of DICOM file to parse')
+    parser.add_argument('dicomfiles', help='Path(s) of DICOM files or directories to parse',
+                        nargs='+')
     parser.add_argument('--standard-path', '-src',
                         help='Path with the DICOM specs in docbook and json format',
                         default=os.path.join(os.path.expanduser("~"), 'dcm-spec-tools'))
@@ -119,8 +134,15 @@ def main():
     with open(os.path.join(json_path, edition_reader.uid_info_json)) as info_file:
         uid_info = json.load(info_file)
 
-    dataset = filereader.read_file(args.dicomfile, stop_before_pixels=True, force=True)
-    DataElementDumper(dict_info, uid_info, args.max_value_len).print_dataset(dataset)
+    dumper = DataElementDumper(dict_info, uid_info, args.max_value_len)
+    for dicom_path in args.dicomfiles:
+        if not os.path.exists(dicom_path):
+            print('\n"%s" does not exist - skipping', dicom_path)
+        else:
+            if os.path.isdir(dicom_path):
+                dumper.dump_directory(dicom_path)
+            else:
+                dumper.dump_file(dicom_path)
 
     return 0
 

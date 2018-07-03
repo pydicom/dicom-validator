@@ -44,8 +44,9 @@ dcm_dump_info
 -------------
 
 This is a very simple DICOM dump tool with (currently) no options, which uses 
-the DICOM dictionary as read from part 6 of the standard. The output looks 
-like this:
+the DICOM dictionary as read from part 6 of the standard. It prints the 
+DICOM header of the given DICOM file, or of all DICOM files recursively in a 
+given directory. The output looks like this:
 ```
 (py3_test) c:\dev\GitHub\dcm-spec-tools>dump_dcm_info "c:\dev\DICOM Data\SR\image12.dcm"
 (0005,0010) [Unknown]                                LO    1  [AEGIS_DICOM_2.00]
