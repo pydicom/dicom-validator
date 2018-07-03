@@ -45,4 +45,9 @@
 
 #### Dump
 * add tag length
-* add image tag
+* add image tag (length only)
+* add support for directory as argument (like iod_validator)
+* add some filtering options (e.g. show only certain tags)
+* binary content: 
+  * do not show as python byte strings 
+  * configure maximum number of bytes shown with a reasonable default

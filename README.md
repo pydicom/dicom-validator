@@ -49,7 +49,7 @@ like this:
 ```
 (py3_test) c:\dev\GitHub\dcm-spec-tools>dump_dcm_info "c:\dev\DICOM Data\SR\image12.dcm"
 (0005,0010) [Unknown]                                LO    1  [AEGIS_DICOM_2.00]
-(0005,1000) [Unknown]                                UN    1  [b'\x00\x05 \x08\x00\x00\x00\n  RIGHT   \x00\x05\xc1X\x00\x00\x00\x06 0.09 \x00\x05\xd1X\x00\x00\x00\x02 0']
+(0005,1000) [Unknown]                                UN    1  [\x00\x05 \x08\x00\x00\x00\n  RIGHT   \x00\x05\xc1X\x00\x00\x00\x06 0.09 \x00\x05...]
 (0008,0008) Image Type                               CS    0  []
 (0008,0016) SOP Class UID                            UI    1  [Ultrasound Image Storage (Retired)]
 (0008,0018) SOP Instance UID                         UI    1  [1.2.840.113680.3.103.775.2873347909.282313.2]
@@ -88,6 +88,7 @@ descriptions like "if the Patient is an animal")
 - the information is related to other DICOM files (e.g. referenced images)
 - the parsing failed because the condition is too complicated, unexpected, 
 or due to a bug
+- the related tags are retired and not listed in the current standard
 
 The output for a single file may look like this:
 ```

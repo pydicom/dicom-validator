@@ -5,19 +5,25 @@ Dumps tag information from a DICOM file using information in PS3.6.
 import argparse
 import json
 import os
+import string
 
+import sys
 from pydicom import filereader
 
 from dcm_spec_tools.spec_reader.edition_reader import EditionReader
+
+in_py2 = sys.version_info[0] == 2
 
 
 class DataElementDumper(object):
     dict_info = None
     uid_info = {}
     level = 0
+    max_value_len = 80
 
-    def __init__(self, dict_info, uid_info):
+    def __init__(self, dict_info, uid_info, max_value_len):
         self.__class__.dict_info = dict_info
+        self.__class__.max_value_len = max_value_len
         for uid_dict in uid_info.values():
             self.__class__.uid_info.update(uid_dict)
 
@@ -30,6 +36,14 @@ class DataElementDumper(object):
         if isinstance(value, list):
             vm = len(value)
             value = '\\'.join([str(element) for element in value])
+        if not in_py2 and isinstance(value, bytes):
+            value = str(value)[2:-1]
+        if in_py2 and isinstance(value, str):
+            value = ''.join([c if c in string.printable else r'\x{:02x}'.format(ord(c))
+                             for c in value])
+        if isinstance(value, str) and len(value) > DataElementDumper.max_value_len:
+            value = value[:DataElementDumper.max_value_len] + '...'
+
         indent = 2 * DataElementDumper.level
         format_string = '{{}}{{}} {{:{}}} {{}} {{:4}} {{}} [{{}}]'.format(40 - indent)
         print(format_string.format(' ' * indent,
@@ -87,6 +101,10 @@ def main():
     parser.add_argument('--revision', '-r',
                         help='Standard revision (e.g. "2014c"), year of revision, or "current"',
                         default='current')
+    parser.add_argument('--max-value-len', '-ml',
+                        help='Maximum string length of displayed values',
+                        type=int,
+                        default=80)
     args = parser.parse_args()
 
     edition_reader = EditionReader(args.standard_path)
@@ -102,7 +120,7 @@ def main():
         uid_info = json.load(info_file)
 
     dataset = filereader.read_file(args.dicomfile, stop_before_pixels=True, force=True)
-    DataElementDumper(dict_info, uid_info).print_dataset(dataset)
+    DataElementDumper(dict_info, uid_info, args.max_value_len).print_dataset(dataset)
 
     return 0
 
