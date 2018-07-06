@@ -74,7 +74,7 @@ c:\dev\DICOM Data\SR\image12.dcm
 
 If you want to show only specific tags, you can use the option `--show-tags`:
 ```
-(py3_test) c:\dev\GitHub\dcm-spec-tools>dump_dcm_info "c:\dev\DICOM Data\SR\image12.dcm" --showtags 0010,0010 PatientID
+(py3_test) c:\dev\GitHub\dcm-spec-tools>dump_dcm_info "c:\dev\DICOM Data\SR\image12.dcm" --show-tags 0010,0010 PatientID
 
 c:\dev\DICOM Data\SR\image12.dcm
 (0010,0010) Patient's Name                           PN    1  [NAPPER^MARGRET]
