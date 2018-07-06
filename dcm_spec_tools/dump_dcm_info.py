@@ -5,6 +5,7 @@ Dumps tag information from a DICOM file using information in PS3.6.
 import argparse
 import json
 import os
+import re
 import string
 
 import sys
@@ -17,23 +18,39 @@ in_py2 = sys.version_info[0] == 2
 
 
 class DataElementDumper(object):
-    dict_info = None
-    uid_info = {}
-    level = 0
-    max_value_len = 80
+    tag_regex = re.compile(r'(\(?[\dabcdefABCDEF]{4}), *([\dabcdefABCDEF]{4})\)?')
 
-    def __init__(self, dict_info, uid_info, max_value_len, show_image_data):
-        self.__class__.dict_info = dict_info
-        self.__class__.max_value_len = max_value_len
+    def __init__(self, dict_info, uid_info, max_value_len, show_image_data, tags):
+        self.dict_info = dict_info
+        self.max_value_len = max_value_len
+        self.level = 0
         self.show_image_data = show_image_data
+
+        self.uid_info = {}
         for uid_dict in uid_info.values():
-            self.__class__.uid_info.update(uid_dict)
+            self.uid_info.update(uid_dict)
+
+        tags = tags or []
+        self.tags = tags
+        for tag in tags:
+            match = self.tag_regex.match(tag)
+            if match:
+                self.tags.append('({},{})'.format(match.group(1), match.group(2)))
+            else:
+                matching = [tag_id for tag_id in dict_info
+                 if dict_info[tag_id]['name'].replace(" ", "") == tag]
+                if matching:
+                    self.tags.append(matching[0])
+                else:
+                    print('{} is not a valid tag expression - ignoring')
+
 
     def print_dataset(self, dataset):
-        dataset.walk(self.print_dataelement)
+        dataset.walk(lambda data_set, data_elem: self.print_dataelement(data_set, data_elem))
 
-    @staticmethod
-    def print_element(tag_id, name, vr, prop, value):
+    def print_element(self, tag_id, name, vr, prop, value):
+        if self.tags and not tag_id in self.tags:
+            return False
         vm = 1 if value else 0
         if isinstance(value, list):
             vm = len(value)
@@ -43,10 +60,10 @@ class DataElementDumper(object):
         if in_py2 and isinstance(value, str):
             value = ''.join([c if c in string.printable else r'\x{:02x}'.format(ord(c))
                              for c in value])
-        if isinstance(value, str) and len(value) > DataElementDumper.max_value_len:
-            value = value[:DataElementDumper.max_value_len] + '...'
+        if isinstance(value, str) and len(value) > self.max_value_len:
+            value = value[:self.max_value_len] + '...'
 
-        indent = 2 * DataElementDumper.level
+        indent = 2 * self.level
         format_string = '{{}}{{}} {{:{}}} {{}} {{:4}} {{}} [{{}}]'.format(40 - indent)
         print(format_string.format(' ' * indent,
                                    tag_id,
@@ -55,11 +72,11 @@ class DataElementDumper(object):
                                    vm,
                                    prop,
                                    value))
+        return True
 
-    @staticmethod
-    def print_dataelement(dummy_dataset, dataelement):
+    def print_dataelement(self, dummy_dataset, dataelement):
         tag_id = '({:04X},{:04X})'.format(dataelement.tag.group, dataelement.tag.element)
-        description = DataElementDumper.dict_info.get(tag_id)
+        description = self.dict_info.get(tag_id)
         if description is None:
             name = '[Unknown]'
             vr = dataelement.VR
@@ -72,25 +89,25 @@ class DataElementDumper(object):
         if vr == 'UI':
             # do not rely on pydicom here - we want to use the currently loaded DICOM spec
             value = repr(value)[1:-1]
-            value = DataElementDumper.uid_info.get(value, value)
+            value = self.uid_info.get(value, value)
         if vr == 'SQ':
-            DataElementDumper.print_element(tag_id, name, vr, prop,
-                                            'Sequence with {} item(s)'.format(len(value)))
-            DataElementDumper.level += 1
-            DataElementDumper.print_sequence(dataelement)
-            DataElementDumper.level -= 1
+            if self.print_element(tag_id, name, vr, prop,
+                                            'Sequence with {} item(s)'.format(len(value))):
+                self.level += 1
+                self.print_sequence(dataelement)
+                self.level -= 1
         else:
-            DataElementDumper.print_element(tag_id, name, vr, prop, value)
+            self.print_element(tag_id, name, vr, prop, value)
 
-    @staticmethod
-    def print_sequence(sequence):
-        indent = 2 * DataElementDumper.level
+    def print_sequence(self, sequence):
+        indent = 2 * self.level
         format_string = '{{}}Item {{:<{}}} [Dataset with {{}} element(s)]'.format(56 - indent)
         for i, dataset in enumerate(sequence):
             print(format_string.format(' ' * indent, i + 1, len(dataset)))
-            DataElementDumper.level += 1
-            dataset.walk(DataElementDumper.print_dataelement)
-            DataElementDumper.level -= 1
+            self.level += 1
+            dataset.walk(lambda data_set, data_elem:
+                         self.print_dataelement(data_set, data_elem))
+            self.level -= 1
 
     def dump_file(self, file_path):
         try:
@@ -122,6 +139,10 @@ def main():
                         help='Maximum string length of displayed values',
                         type=int,
                         default=80)
+    parser.add_argument('--show-tags', '-t',
+                        help='Show only output for the searched tags. Tags can be in the format'
+                             '####,#### or as the dictionary name (e.g. "PatientName").',
+                        nargs='*')
     parser.add_argument('--show-image-data', '-id', action='store_false',
                         help='Also show the image data tag (slower)')
     args = parser.parse_args()
@@ -138,7 +159,8 @@ def main():
     with open(os.path.join(json_path, edition_reader.uid_info_json)) as info_file:
         uid_info = json.load(info_file)
 
-    dumper = DataElementDumper(dict_info, uid_info, args.max_value_len, args.show_image_data)
+    dumper = DataElementDumper(dict_info, uid_info, args.max_value_len, args.show_image_data,
+                               args.show_tags)
     for dicom_path in args.dicomfiles:
         if not os.path.exists(dicom_path):
             print('\n"%s" does not exist - skipping', dicom_path)

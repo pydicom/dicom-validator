@@ -43,12 +43,14 @@ writing, standards are available from 2014a to 2018b).
 dcm_dump_info
 -------------
 
-This is a very simple DICOM dump tool with (currently) no options, which uses 
+This is a very simple DICOM dump tool, which uses 
 the DICOM dictionary as read from part 6 of the standard. It prints the 
 DICOM header of the given DICOM file, or of all DICOM files recursively in a 
 given directory. The output looks like this:
 ```
 (py3_test) c:\dev\GitHub\dcm-spec-tools>dump_dcm_info "c:\dev\DICOM Data\SR\image12.dcm"
+
+c:\dev\DICOM Data\SR\image12.dcm
 (0005,0010) [Unknown]                                LO    1  [AEGIS_DICOM_2.00]
 (0005,1000) [Unknown]                                UN    1  [\x00\x05 \x08\x00\x00\x00\n  RIGHT   \x00\x05\xc1X\x00\x00\x00\x06 0.09 \x00\x05...]
 (0008,0008) Image Type                               CS    0  []
@@ -69,6 +71,16 @@ given directory. The output looks like this:
 (0009,0010) [Unknown]                                LO    1  [AEGIS_DICOM_2.00]
 ...
 ```
+
+If you want to show only specific tags, you can use the option `--show-tags`:
+```
+(py3_test) c:\dev\GitHub\dcm-spec-tools>dump_dcm_info "c:\dev\DICOM Data\SR\image12.dcm" --showtags 0010,0010 PatientID
+
+c:\dev\DICOM Data\SR\image12.dcm
+(0010,0010) Patient's Name                           PN    1  [NAPPER^MARGRET]
+(0010,0020) Patient ID                               LO    1  [ACN000001]
+```
+
 
 validate_iods
 -------------
