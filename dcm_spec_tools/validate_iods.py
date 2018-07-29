@@ -32,7 +32,9 @@ def main():
                         help='Base path with the DICOM specs in docbook and json format',
                         default=os.path.join(os.path.expanduser("~"), 'dcm-spec-tools'))
     parser.add_argument('--revision', '-r',
-                        help='Standard revision (e.g. "2014c"), year of revision, or "current"',
+                        help='Standard revision (e.g. "2014c"), year of '
+                             'revision, "current" or "local" (latest '
+                             'locally installed)',
                         default='current')
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='Outputs diagnostic information')

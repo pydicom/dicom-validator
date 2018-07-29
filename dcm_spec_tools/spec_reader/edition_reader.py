@@ -72,15 +72,20 @@ class EditionReader(object):
             os.makedirs(os.path.dirname(html_path))
         urlretrieve(self.base_url, html_path)
 
-    def get_editions(self):
+    def get_editions(self, update=True):
         editions_path = os.path.join(self.path, self.json_filename)
-        update = True
         if os.path.exists(editions_path):
-            today = datetime.datetime.today()
-            modified_date = datetime.datetime.fromtimestamp(
-                os.path.getmtime(editions_path))
-            # no need to update the edition dir more than once a month
-            update = (today - modified_date).days > 30
+            if update:
+                today = datetime.datetime.today()
+                modified_date = datetime.datetime.fromtimestamp(
+                    os.path.getmtime(editions_path))
+                # no need to update the edition dir more than once a month
+                update = (today - modified_date).days > 30
+            else:
+                with open(editions_path) as f:
+                    update = not json.load(f)
+        else:
+            update = True
         if update:
             self.update_edition()
         if os.path.exists(editions_path):
@@ -105,16 +110,17 @@ class EditionReader(object):
 
     def get_edition(self, revision):
         """Get the edition matching the revision or None.
-        The revision can be the edition name, the year of the edition, or 'current'.
+        The revision can be the edition name, the year of the edition,
+        'current', or 'local'.
         """
-        editions = sorted(self.get_editions())
+        editions = sorted(self.get_editions(revision != 'local'))
         if revision in editions:
             return revision
         if len(revision) == 4:
             for edition in reversed(editions):
                 if edition.startswith(revision):
                     return edition
-        if revision == 'current':
+        if revision == 'current' or revision == 'local':
             return editions[-1]
 
     def is_current(self, revision):
@@ -123,7 +129,7 @@ class EditionReader(object):
         """
         if revision is None:
             return True
-        editions = sorted(self.get_editions())
+        editions = sorted(self.get_editions(revision != 'local'))
         if revision in editions:
             return revision == editions[-1]
         if len(revision) == 4:
@@ -232,6 +238,7 @@ class EditionReader(object):
         if (not self.json_files_exist(json_path) or
                 not self.is_current_version(json_path)):
             self.create_json_files(docbook_path, json_path)
+        print('Using DICOM revision {}'.format(revision))
         return destination
 
     @staticmethod

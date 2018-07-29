@@ -69,6 +69,22 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
         self.assertEqual(['2018a'], reader.get_editions())
 
+    def test_keep_local_version(self):
+        json_path = os.path.join(self.base_path, EditionReader.json_filename)
+        self.fs.create_file(json_path, contents='["2014a", "2014c"]')
+        file_time = time.time() - 31 * 24 * 60 * 60.0
+        os.utime(json_path, (file_time, file_time))
+        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
+        self.assertEqual(['2014a', '2014c'], reader.get_editions(update=False))
+
+    def test_update_if_no_local_version_exists(self):
+        json_path = os.path.join(self.base_path, EditionReader.json_filename)
+        self.fs.create_file(json_path, contents='[]')
+        file_time = time.time() - 31 * 24 * 60 * 60.0
+        os.utime(json_path, (file_time, file_time))
+        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
+        self.assertEqual(['2018a'], reader.get_editions(update=False))
+
     def test_get_existing_revision(self):
         reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2014a</A>'
                                                      '<a ref="foo">2014e</a>')

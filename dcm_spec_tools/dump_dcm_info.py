@@ -31,7 +31,7 @@ class DataElementDumper(object):
             self.uid_info.update(uid_dict)
 
         tags = tags or []
-        self.tags = tags
+        self.tags = []
         for tag in tags:
             match = self.tag_regex.match(tag)
             if match:
@@ -42,7 +42,8 @@ class DataElementDumper(object):
                 if matching:
                     self.tags.append(matching[0])
                 else:
-                    print('{} is not a valid tag expression - ignoring')
+                    print('{} is not a valid tag expression - '
+                          'ignoring'.format(tag))
 
 
     def print_dataset(self, dataset):
@@ -133,7 +134,9 @@ def main():
                         help='Path with the DICOM specs in docbook and json format',
                         default=os.path.join(os.path.expanduser("~"), 'dcm-spec-tools'))
     parser.add_argument('--revision', '-r',
-                        help='Standard revision (e.g. "2014c"), year of revision, or "current"',
+                        help='Standard revision (e.g. "2014c"), year of '
+                             'revision, "current" or "local" (latest '
+                             'locally installed)',
                         default='current')
     parser.add_argument('--max-value-len', '-ml',
                         help='Maximum string length of displayed values',
