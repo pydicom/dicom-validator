@@ -8,7 +8,7 @@ from dcm_spec_tools import __version__
 EXTRA = {}
 
 BASE_PATH = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(BASE_PATH, 'README.md'), encoding='utf-8') as f:
+with open(os.path.join(BASE_PATH, 'README.md')) as f:
     long_description = f.read()
 
 
