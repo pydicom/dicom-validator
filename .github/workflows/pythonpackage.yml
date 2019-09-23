@@ -1,0 +1,38 @@
+name: Python package
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-2016]
+        python-version: [3.5, 3.6, 3.7]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+        pip install codecov
+    - name: Run tests with coverage
+      run: |
+        if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.7' ]]
+        then
+          coverage run --branch --source=dcm_spec_tools/spec_reader,dcm_spec_tools/validator --omit=*/tests/*.py ./run_tests.py
+        else
+          ./run_tests.py
+        fi
+      shell: bash
+    - name: Upload coverage
+      run: |
+        if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.7' ]]
+        then
+          codecov
+        fi
+      shell: bash
