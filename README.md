@@ -1,5 +1,7 @@
 # dcm-spec-tools
 
+[![PyPI version](https://badge.fury.io/py/dcm-spec-tools.svg)](https://pypi.org/project/dcm-spec-tools) ![Python package](https://github.com/mrbean-bremen/dcm-spec-tools/workflows/Python%20package/badge.svg) [![Python version](https://img.shields.io/pypi/pyversions/dcm-spec-tools.svg)](https://pypi.org/project/dcm-spec-tools)
+
 *dcm-spec-tools* is planned to be a collection of simple pure python command line tools which get the input from 
 the DICOM standard in docbook format as provided by [ACR NEMA](http://medical.nema.org/).
 
