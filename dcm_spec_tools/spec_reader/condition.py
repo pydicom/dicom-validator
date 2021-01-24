@@ -131,4 +131,3 @@ class Condition(object):
         elif self.operator == '>':
             result += ' is greater than ' + self.values[0]
         return result
-

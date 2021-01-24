@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import sys
+from abc import ABC
 
 from dcm_spec_tools import __version__
 from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
@@ -11,18 +12,12 @@ from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
 from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
 from dcm_spec_tools.spec_reader.serializer import DefinitionEncoder
 
-try:
-    from urllib import urlretrieve
-except ImportError:
-    from urllib.request import urlretrieve
+from urllib.request import urlretrieve
 
-try:
-    import HTMLParser as html_parser
-except ImportError:
-    import html.parser as html_parser
+import html.parser as html_parser
 
 
-class EditionParser(html_parser.HTMLParser):
+class EditionParser(html_parser.HTMLParser, ABC):
     edition_re = re.compile(r'\d\d\d\d[a-h]')
 
     def __init__(self):
@@ -125,7 +120,8 @@ class EditionReader(object):
 
     def is_current(self, revision):
         """Get the edition matching the revision or None.
-        The revision can be the edition name, the year of the edition, or 'current'.
+        The revision can be the edition name, the year of the edition,
+        or 'current'.
         """
         if revision is None:
             return True

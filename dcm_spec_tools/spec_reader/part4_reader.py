@@ -1,8 +1,11 @@
 """
-Chapter4Reader collects SOP Class Information information for specific Storage SOP Classes.
+Chapter4Reader collects SOP Class Information information for specific
+Storage SOP Classes.
 The information is taken from PS3.4 in docbook format as provided by ACR NEMA.
 """
-from dcm_spec_tools.spec_reader.spec_reader import SpecReader, SpecReaderLookupError, SpecReaderParseError
+from dcm_spec_tools.spec_reader.spec_reader import (
+    SpecReader, SpecReaderLookupError, SpecReaderParseError
+)
 
 
 class Part4Reader(SpecReader):
@@ -21,23 +24,30 @@ class Part4Reader(SpecReader):
         try:
             return self._sop_class_uids[sop_class_uid]
         except KeyError:
-            raise SpecReaderLookupError('SOP Class {} not found'.format(sop_class_uid))
+            raise SpecReaderLookupError(
+                'SOP Class {} not found'.format(sop_class_uid))
 
     def iod_chapters(self):
-        """Return a dict of the chapter in part 3 for each SOP Class listed in table B.5."""
+        """Return a dict of the chapter in part 3 for each SOP Class
+        listed in table B.5.
+        """
         if not self._chapters:
             self._read_sop_table('B.5')
         return self._chapters
 
     def _read_sop_table(self, chapter):
         table = self._find(self._get_doc_root(),
-                           ['chapter[@label="B"]', 'section[@label="{}"]'.format(chapter), 'table', 'tbody'])
+                           ['chapter[@label="B"]',
+                            'section[@label="{}"]'.format(chapter), 'table',
+                            'tbody'])
         if table is None:
             raise SpecReaderParseError('SOP Class table in Part 4 not found')
         row_nodes = self._findall(table, ['tr'])
         for row_node in row_nodes:
             column_nodes = self._findall(row_node, ['td'])
-            if len(column_nodes) == 3:
+            if len(column_nodes) in (3, 4):
+                # columns are SOP Class Name, SOP Class UID, IOD Specification
+                # and Specialization (only since 2020c)
                 uid = self.cleaned_value(self._find_text(column_nodes[1]))
                 target_node = self._find(column_nodes[2], ['para', 'olink'])
                 if target_node is not None:

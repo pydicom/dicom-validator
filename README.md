@@ -38,7 +38,7 @@ it if found.
 
 It is also possible to use older versions of the standard via a command line 
 option, provided they are still available for download (at the time of 
-writing, standards are available from 2014a to 2018b).
+writing, standards are available since 2014a).
 
 dcm_dump_info
 -------------

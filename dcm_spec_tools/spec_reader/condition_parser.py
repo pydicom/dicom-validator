@@ -129,7 +129,8 @@ class ConditionParser(object):
     def _parse_tag(self, tag_string):
         match = self.tag_expression.match(tag_string.strip())
         if match:
-            value_index = 0 if match.group('index') is None else int(match.group('index')) - 1
+            value_index = (0 if match.group('index') is None
+                           else int(match.group('index')) - 1)
             if match.group('id') is not None:
                 return match.group('id'), value_index
             tag_name = match.group('name').strip()
@@ -177,8 +178,10 @@ class ConditionParser(object):
                 continue
             if end_index > 0:
                 if value_string.find(' or ') in [end_index, end_index + 1]:
-                    # differentiate between several values and several conditions - check if the rest is a condition
-                    or_cond = self._parse_tag_expressions(value_string[end_index + 3:])
+                    # differentiate between several values and several
+                    # conditions - check if the rest is a condition
+                    or_cond = self._parse_tag_expressions(
+                        value_string[end_index + 3:])
                     if or_cond.type == 'U':
                         start_index = end_index + 4
                         continue
@@ -199,7 +202,8 @@ class ConditionParser(object):
                     condition = rest[len(operator) + 1:]
                     break
             if logical_op is not None:
-                next_result = self._parse_tag_expressions(condition, nested=True)
+                next_result = self._parse_tag_expressions(
+                    condition, nested=True)
                 if next_result.type != 'U':
                     next_result.type = None
                     new_result = Condition(ctype=result.type)
@@ -250,13 +254,15 @@ class ConditionParser(object):
         result = Condition()
         cond_list = self._condition_list(logical_op, result)
         for tag_string in condition.split(', '):
-            tag_result = self._result_from_tag_string(tag_string, operator, values)
+            tag_result = self._result_from_tag_string(
+                tag_string, operator, values)
             if tag_result:
                 cond_list.append(tag_result)
         if len(cond_list) > 1:
             return result
 
-    def _condition_list(self, logical_op, result):
+    @staticmethod
+    def _condition_list(logical_op, result):
         cond_list = (result.and_conditions if logical_op == 'and'
                      else result.or_conditions)
         return cond_list

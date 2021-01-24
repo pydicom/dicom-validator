@@ -1,8 +1,11 @@
 """
 Chapter6Reader collects DICOM Data Element information.
-The information is taken from DICOM dictionary (PS3.6) in docbook format as provided by ACR NEMA.
+The information is taken from DICOM dictionary (PS3.6) in docbook format
+as provided by ACR NEMA.
 """
-from dcm_spec_tools.spec_reader.spec_reader import SpecReader, SpecReaderParseError
+from dcm_spec_tools.spec_reader.spec_reader import (
+    SpecReader, SpecReaderParseError
+)
 
 
 class Part6Reader(SpecReader):
@@ -17,7 +20,8 @@ class Part6Reader(SpecReader):
     def data_elements(self):
         """Return the information about registered DICOM data elements.
 
-        The return value is a dict with the the tag ID (group/element tuple) as key.
+        The return value is a dict with the the tag ID (group/element tuple)
+        as key.
         See data_element() for the contained value.
         """
         if self._data_elements is None:
@@ -29,7 +33,8 @@ class Part6Reader(SpecReader):
 
         Arguments:
             tag_id: The tag ID as string in format (####,####)
-        The return value is a dict with the the tag ID (group/element tuple) as key.
+        The return value is a dict with the the tag ID (group/element tuple)
+        as key.
         The values of the retruned dict are dicts with the following entries:
             'name': The human readable tag name
             'vr': The tag value representation (e.g. 'PN')
@@ -43,7 +48,8 @@ class Part6Reader(SpecReader):
         table = self._find(self._get_doc_root(),
                            ['chapter[@label="6"]', 'table', 'tbody'])
         if table is None:
-            raise SpecReaderParseError('Registry of DICOM Data Elements not found in PS3.6')
+            raise SpecReaderParseError(
+                'Registry of DICOM Data Elements not found in PS3.6')
         row_nodes = self._findall(table, ['tr'])
         attrib_indexes = [1, 3, 4, 5]
         for row_node in row_nodes:
@@ -51,7 +57,8 @@ class Part6Reader(SpecReader):
             if len(column_nodes) == 6:
                 tag_id = self._find_text(column_nodes[0])
                 if tag_id:
-                    tag_attributes = [self._find_text(column_nodes[i]) for i in attrib_indexes]
+                    tag_attributes = [self._find_text(column_nodes[i])
+                                      for i in attrib_indexes]
                     if tag_attributes is not None:
                         self._data_elements[tag_id] = {
                             'name': tag_attributes[0],
@@ -61,11 +68,14 @@ class Part6Reader(SpecReader):
                         }
 
     def uids(self, uid_type):
-        """Return a dict of UID values (keys) and names for the given UID type."""
+        """Return a dict of UID values (keys) and names for the given UID type.
+        """
         return self._get_uids().get(uid_type, {})
 
     def all_uids(self):
-        """Return a dict of UID types with UID value/name dicts for the given UID type as value."""
+        """Return a dict of UID types with UID value/name dicts for the
+        given UID type as value.
+        """
         return self._get_uids()
 
     def sop_class_uids(self):
@@ -88,17 +98,24 @@ class Part6Reader(SpecReader):
             table = self._find(self._get_doc_root(),
                                ['chapter[@label="A"]', 'table', 'tbody'])
             if table is None:
-                raise SpecReaderParseError('Registry of DICOM Unique Identifiers not found in PS3.6')
+                raise SpecReaderParseError(
+                    'Registry of DICOM Unique Identifiers not found in PS3.6')
 
             row_nodes = self._findall(table, ['tr'])
             for row_node in row_nodes:
                 column_nodes = self._findall(row_node, ['td'])
-                if len(column_nodes) == 4:
-                    uid_attributes = [self._find_text(column_nodes[i]) for i in range(3)]
+                nr_columns = len(column_nodes)
+                if nr_columns in (4, 5):
+                    # columns are UID Value, UID Name, UID Keyword (only
+                    # since 2020d), UID Type and Part
+                    uid_attributes = [self._find_text(column_nodes[i])
+                                      for i in range(nr_columns - 1)]
                     if uid_attributes is not None:
-                        uid_type = uid_attributes[2]
-                        # in PS3.6 xml there are multiple zero width (U+200B) spaces inside the UIDs
+                        uid_type = uid_attributes[nr_columns - 2]
+                        # in PS3.6 xml there are multiple zero width (U+200B)
+                        # spaces inside the UIDs
                         # we remove them hoping this is the only such problem
                         uid_value = self.cleaned_value(uid_attributes[0])
-                        self._uids.setdefault(uid_type, {})[uid_value] = self.cleaned_value(uid_attributes[1])
+                        self._uids.setdefault(uid_type, {})[
+                            uid_value] = self.cleaned_value(uid_attributes[1])
         return self._uids

@@ -17,9 +17,11 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(), EditionReader.iod_info_json)) as info_file:
+        with open(os.path.join(json_fixture_path(),
+                               EditionReader.iod_info_json)) as info_file:
             cls.iod_info = json.load(info_file)
-        with open(os.path.join(json_fixture_path(), EditionReader.module_info_json)) as info_file:
+        with open(os.path.join(json_fixture_path(),
+                               EditionReader.module_info_json)) as info_file:
             cls.module_info = json.load(info_file)
 
     def setUp(self):
@@ -54,16 +56,20 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     def test_missing_sop_class(self):
         filename = 'test.dcm'
-        file_dataset = FileDataset(filename, Dataset(), file_meta=self.create_metadata())
+        file_dataset = FileDataset(filename, Dataset(),
+                                   file_meta=self.create_metadata())
         write_file(filename, file_dataset, write_like_original=False)
         self.assert_fatal_error(filename, 'Missing SOPClassUID')
 
     def test_unknown_sop_class(self):
         dataset = Dataset()
         dataset.SOPClassUID = 'Unknown'
-        file_dataset = FileDataset('test', dataset, file_meta=self.create_metadata())
+        file_dataset = FileDataset('test', dataset,
+                                   file_meta=self.create_metadata())
         write_file('test', file_dataset, write_like_original=False)
-        self.assert_fatal_error('test', 'Unknown SOPClassUID (probably retired): Unknown')
+        self.assert_fatal_error(
+            'test',
+            'Unknown SOPClassUID (probably retired): Unknown')
 
     def test_validate_dir(self):
         self.fs.create_dir(os.path.join('foo', 'bar', 'baz'))
@@ -80,7 +86,8 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
     def test_non_fatal_errors(self):
         dataset = Dataset()
         dataset.SOPClassUID = '1.2.840.10008.5.1.4.1.1.2'  # CT Image Storage
-        file_dataset = FileDataset('test', dataset, file_meta=self.create_metadata())
+        file_dataset = FileDataset('test', dataset,
+                                   file_meta=self.create_metadata())
         write_file('test', file_dataset, write_like_original=False)
         error_dict = self.validator.validate('test')
         self.assertEqual(1, len(error_dict))

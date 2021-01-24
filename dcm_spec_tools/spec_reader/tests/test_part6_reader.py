@@ -63,5 +63,6 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
     def test_sop_class_uid(self):
         self.assertEqual('1.2.840.10008.5.1.4.1.1.2', self.reader.sop_class_uid('CT Image Storage'))
 
+
 if __name__ == '__main__':
     unittest.main()

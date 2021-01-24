@@ -5,10 +5,7 @@ import unittest
 
 from dcm_spec_tools.spec_reader.edition_reader import EditionReader
 
-try:
-    from pydicom.dataset import Dataset
-except ImportError:
-    from dicom.dataset import Dataset
+from pydicom.dataset import Dataset
 
 from dcm_spec_tools.tests.test_utils import json_fixture_path
 from dcm_spec_tools.validator.iod_validator import IODValidator
@@ -23,9 +20,11 @@ class IODValidatorTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(), EditionReader.iod_info_json)) as info_file:
+        with open(os.path.join(json_fixture_path(),
+                               EditionReader.iod_info_json)) as info_file:
             cls.iod_specs = json.load(info_file)
-        with open(os.path.join(json_fixture_path(), EditionReader.module_info_json)) as info_file:
+        with open(os.path.join(json_fixture_path(),
+                               EditionReader.module_info_json)) as info_file:
             cls.module_specs = json.load(info_file)
 
     def setUp(self):
@@ -33,7 +32,8 @@ class IODValidatorTest(unittest.TestCase):
         logging.disable(logging.CRITICAL)
 
     def validator(self, data_set):
-        return IODValidator(data_set, self.iod_specs, self.module_specs, None, logging.ERROR)
+        return IODValidator(data_set, self.iod_specs, self.module_specs, None,
+                            logging.ERROR)
 
     @staticmethod
     def new_data_set(tags):
@@ -66,7 +66,8 @@ class IODValidatorTest(unittest.TestCase):
         if not module_name in messages:
             return False
         for message in messages[module_name]:
-            if message.startswith('Tag {} is {}'.format(tag_id_string, error_kind)):
+            if message.startswith(
+                    'Tag {} is {}'.format(tag_id_string, error_kind)):
                 return True
         return False
 
@@ -83,13 +84,17 @@ class IODValidatorTest(unittest.TestCase):
         self.assertIn('CT Image', result)
 
         # PatientName is set
-        self.assertFalse(self.has_tag_error(result, 'Patient', '(0010,0010)', 'missing'))
+        self.assertFalse(
+            self.has_tag_error(result, 'Patient', '(0010,0010)', 'missing'))
         # PatientSex - type 2, missing
-        self.assertTrue(self.has_tag_error(result, 'Patient', '(0010,0040)', 'missing'))
+        self.assertTrue(
+            self.has_tag_error(result, 'Patient', '(0010,0040)', 'missing'))
         # Clinical Trial Sponsor Name -> type 1, but module usage U
-        self.assertFalse(self.has_tag_error(result, 'Patient', '(0012,0010)', 'missing'))
+        self.assertFalse(
+            self.has_tag_error(result, 'Patient', '(0012,0010)', 'missing'))
         # Patient Breed Description -> type 2C, but no parsable condition
-        self.assertFalse(self.has_tag_error(result, 'Patient', '(0010,2292)', 'missing'))
+        self.assertFalse(
+            self.has_tag_error(result, 'Patient', '(0010,2292)', 'missing'))
 
     def test_empty_tags(self):
         data_set = self.new_data_set({
@@ -103,13 +108,16 @@ class IODValidatorTest(unittest.TestCase):
         self.assertNotIn('fatal', result)
         self.assertIn('CT Image', result)
         # Modality - type 1, present but empty
-        self.assertTrue(self.has_tag_error(result, 'Patient', '(0010,0040)', 'missing'))
+        self.assertTrue(
+            self.has_tag_error(result, 'Patient', '(0010,0040)', 'missing'))
         # PatientName - type 2, empty tag is allowed
-        self.assertFalse(self.has_tag_error(result, 'Patient', '(0010,0010)', 'missing'))
+        self.assertFalse(
+            self.has_tag_error(result, 'Patient', '(0010,0010)', 'missing'))
 
     def test_fulfilled_condition_existing_tag(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'CArmPositionerTabletopRelationship': 'YES',
             'SynchronizationTrigger': 'SET',
             'FrameOfReferenceUID': '1.2.3.4.5.6.7.8',
@@ -120,14 +128,16 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         # Frame Of Reference UID Is and Synchronization Trigger set
-        self.assertFalse(self.has_tag_error(result, 'Enhanced X-Ray Angiographic Image',
-                                            '(0020,0052)', 'missing'))
+        self.assertFalse(
+            self.has_tag_error(result, 'Enhanced X-Ray Angiographic Image',
+                               '(0020,0052)', 'missing'))
         self.assertFalse(self.has_tag_error(result, 'Synchronization',
                                             '(0018,106A)', 'missing'))
 
     def test_fulfilled_condition_missing_tag(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'CArmPositionerTabletopRelationship': 'YES',
             'PatientName': 'XXX',
             'PatientID': 'ZZZ'
@@ -142,7 +152,8 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_condition_not_met_no_tag(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ'
         })
@@ -156,7 +167,8 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_condition_not_met_existing_tag(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'FrameOfReferenceUID': '1.2.3.4.5.6.7.8',
             'SynchronizationTrigger': 'SET',
             'PatientName': 'XXX',
@@ -175,7 +187,8 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_and_condition_not_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'ImageType': 'SECONDARY',
@@ -193,7 +206,8 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_only_one_and_condition_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'ImageType': 'PRIMARY',
@@ -211,7 +225,8 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_and_condition_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'ImageType': 'MIXED',
@@ -229,7 +244,8 @@ class IODValidatorTest(unittest.TestCase):
 
     def test_presence_condition_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'PixelPaddingRangeLimit': '10',
@@ -239,11 +255,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertTrue(self.has_tag_error(result, 'General Equipment',
-                                           '(0028,0120)', 'missing'))  # Pixel Padding Value
+                                           '(0028,0120)',
+                                           'missing'))  # Pixel Padding Value
 
     def test_presence_condition_not_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'PixelPaddingRangeLimit': '10',
@@ -252,11 +270,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertFalse(self.has_tag_error(result, 'General Equipment',
-                                            '(0028,0120)', 'missing'))  # Pixel Padding Value
+                                            '(0028,0120)',
+                                            'missing'))  # Pixel Padding Value
 
     def test_greater_condition_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'SamplesPerPixel': 3
@@ -265,11 +285,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertTrue(self.has_tag_error(result, 'Image Pixel',
-                                           '(0028,0006)', 'missing'))  # Planar configuration
+                                           '(0028,0006)',
+                                           'missing'))  # Planar configuration
 
     def test_greater_condition_not_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'SamplesPerPixel': 1
@@ -278,11 +300,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertFalse(self.has_tag_error(result, 'Image Pixel',
-                                            '(0028,0006)', 'missing'))  # Planar configuration
+                                            '(0028,0006)',
+                                            'missing'))  # Planar configuration
 
     def test_points_to_condition_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'FrameIncrementPointer': 0x00181065
@@ -291,11 +315,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertTrue(self.has_tag_error(result, 'Cardiac Synchronization',
-                                           '(0018,1086)', 'missing'))  # Skip beats
+                                           '(0018,1086)',
+                                           'missing'))  # Skip beats
 
     def test_points_to_condition_not_met(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'FrameIncrementPointer': 0x00181055
@@ -304,11 +330,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertFalse(self.has_tag_error(result, 'Cardiac Synchronization',
-                                           '(0018,1086)', 'missing'))  # Skip beats
+                                            '(0018,1086)',
+                                            'missing'))  # Skip beats
 
     def test_condition_for_not_required_tag_cond1_fulfilled(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'ImageType': 'ORIGINAL',
@@ -318,11 +346,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertTrue(self.has_tag_error(result, 'Cardiac Synchronization',
-                                           '(0018,9085)', 'missing'))  # Cardiac signal source
+                                           '(0018,9085)',
+                                           'missing'))  # Cardiac signal source
 
     def test_condition_for_not_required_tag_no_cond_fulfilled(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'ImageType': 'ORIGINAL',
@@ -333,11 +363,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertTrue(self.has_tag_error(result, 'Cardiac Synchronization',
-                                           '(0018,9085)', 'not allowed'))  # Cardiac signal source
+                                           '(0018,9085)',
+                                           'not allowed'))  # Cardiac signal source
 
     def test_condition_for_not_required_tag_cond2_fulfilled_present(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'ImageType': 'DERIVED',
@@ -348,11 +380,13 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertFalse(self.has_tag_error(result, 'Cardiac Synchronization',
-                                            '(0018,9085)', 'not allowed'))  # Cardiac signal source
+                                            '(0018,9085)',
+                                            'not allowed'))  # Cardiac signal source
 
     def test_condition_for_not_required_tag_cond2_fulfilled_not_present(self):
         data_set = self.new_data_set({
-            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',  # Enhanced X-Ray Angiographic Image
+            'SOPClassUID': '1.2.840.10008.5.1.4.1.1.12.1.1',
+            # Enhanced X-Ray Angiographic Image
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'ImageType': 'DERIVED',
@@ -362,7 +396,8 @@ class IODValidatorTest(unittest.TestCase):
         result = validator.validate()
 
         self.assertFalse(self.has_tag_error(result, 'Cardiac Synchronization',
-                                            '(0018,9085)', 'missing'))  # Cardiac signal source
+                                            '(0018,9085)',
+                                            'missing'))  # Cardiac signal source
 
 
 if __name__ == '__main__':
