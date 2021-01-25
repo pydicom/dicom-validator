@@ -160,6 +160,8 @@ class Part3Reader(SpecReader):
         last_tag_id = None
         for row in rows:
             columns = self._findall(row, ['td'])
+            if not columns:
+                continue
             tag_name, current_level = self._get_tag_name_and_level(
                 columns[0], current_descriptions, current_level, last_tag_id)
             if len(columns) == 4:
