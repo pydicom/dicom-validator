@@ -13,7 +13,7 @@ with open(os.path.join(BASE_PATH, 'README.md')) as f:
 
 
 setup(
-    name="dcm-spec-tools",
+    name="dicom-validator",
     packages=find_packages(),
     include_package_data=True,
     version=__version__,
@@ -21,7 +21,7 @@ setup(
     description="Python DICOM tools using input from DICOM specs in docbook format",
     author="mrbean-bremen",
     author_email="hansemrbean@googlemail.com",
-    url="http://github.com/mrbean-bremen/dcm-spec-tools",
+    url="http://github.com/pydicom/dicom-validator",
     keywords="dicom python",
     entry_points={
         'console_scripts': [

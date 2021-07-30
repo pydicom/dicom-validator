@@ -30,7 +30,7 @@ def main():
                         nargs='+')
     parser.add_argument('--standard-path', '-src',
                         help='Base path with the DICOM specs in docbook and json format',
-                        default=os.path.join(os.path.expanduser("~"), 'dcm-spec-tools'))
+                        default=os.path.join(os.path.expanduser("~"), 'dicom-validator'))
     parser.add_argument('--revision', '-r',
                         help='Standard revision (e.g. "2014c"), year of '
                              'revision, "current" or "local" (latest '

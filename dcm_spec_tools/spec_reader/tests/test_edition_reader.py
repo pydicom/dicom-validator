@@ -26,7 +26,7 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
     def setUp(self):
         super(EditionReaderTest, self).setUp()
         self.setUpPyfakefs()
-        self.base_path = os.path.join('user', 'dcm-spec-tools')
+        self.base_path = os.path.join('user', 'dicom-validator')
         self.fs.create_dir(self.base_path)
         logging.disable(logging.CRITICAL)
 
