@@ -1,13 +1,16 @@
-# dcm-spec-tools
+# dicom-validator
 
-[![PyPI version](https://badge.fury.io/py/dcm-spec-tools.svg)](https://pypi.org/project/dcm-spec-tools) ![Python package](https://github.com/mrbean-bremen/dcm-spec-tools/workflows/Python%20package/badge.svg) [![Python version](https://img.shields.io/pypi/pyversions/dcm-spec-tools.svg)](https://pypi.org/project/dcm-spec-tools)
+[![PyPI version](https://badge.fury.io/py/dicom-validator.svg)](https://pypi.org/project/dicom-validator) ![Python package](https://github.com/pydicom/dicom-validator/workflows/Python%20package/badge.svg) [![Python version](https://img.shields.io/pypi/pyversions/dicom-validator.svg)](https://pypi.org/project/dicom-validator)
 
-*dcm-spec-tools* is planned to be a collection of simple pure python command line tools which get the input from 
-the DICOM standard in docbook format as provided by [ACR NEMA](http://medical.nema.org/).
+*dicom-validator* was planned to be a collection of simple pure python command line tools which get the input from 
+the DICOM standard in docbook format as provided by [ACR NEMA](http://medical.nema.org/). 
+As the only relevant tool is the validator tool, and no further tools are planned, the package has now been renamed
+from the original name *dcm-spec-tools*, and moved to the pydicom organization.
 
 Currently available tools:  
 * `validate_iods` checks DICOM files for correct attributes for the given SOP class.  
-* `dump_dcm_info` outputs the DICOM tag IDs and values of a given DICOM file.
+* `dump_dcm_info` outputs the DICOM tag IDs and values of a given DICOM file 
+  (used as a simple demonstration for access to the DICOM standard).
 
 Note that this is still in an early stage of development.
 
@@ -18,7 +21,7 @@ Installation
 ------------
 The latest version is available on pypi and can be installed via
 ```
-pip install dcm-spec-tools
+pip install dicom-validator
 ```
 
 Usage
@@ -107,7 +110,7 @@ or due to a bug
 
 The output for a single file may look like this:
 ```
-(py3_test) c:\dev\GitHub\dcm-spec-tools>validate_iods "c:\dev\DICOM Data\SR\test.dcm"
+(py3_test) c:\dev\GitHub\dicom-validator>validate_iods "c:\dev\DICOM Data\SR\test.dcm"
 
 Processing DICOM file "c:\dev\DICOM Data\SR\test.dcm"
 SOP class is "1.2.840.10008.5.1.4.1.1.88.33" (Comprehensive SR IOD)
