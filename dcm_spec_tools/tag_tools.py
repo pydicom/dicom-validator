@@ -1,6 +1,7 @@
 def tag_name_from_id_string(tag_id_string, dict_info):
     if dict_info and tag_id_string in dict_info:
-        return '{} ({})'.format(tag_id_string, dict_info[tag_id_string]['name'])
+        return '{} ({})'.format(
+            tag_id_string, dict_info[tag_id_string]['name'])
     return tag_id_string
 
 

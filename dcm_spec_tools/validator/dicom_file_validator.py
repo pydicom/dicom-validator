@@ -2,14 +2,15 @@ import logging
 import os
 import sys
 
-from pydicom import filereader
+from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
 from dcm_spec_tools.validator.iod_validator import IODValidator
 
 
 class DicomFileValidator(object):
-    def __init__(self, iod_info, module_info, dict_info=None, log_level=logging.INFO):
+    def __init__(self, iod_info, module_info, dict_info=None,
+                 log_level=logging.INFO):
         self._module_info = module_info
         self._iod_info = iod_info
         self._dict_info = dict_info
@@ -40,10 +41,11 @@ class DicomFileValidator(object):
     def validate_file(self, file_path):
         self.logger.info('\nProcessing DICOM file "%s"', file_path)
         try:
-            data_set = filereader.read_file(file_path, stop_before_pixels=True)
+            data_set = dcmread(file_path, defer_size=1024)
         except InvalidDicomError:
             return {file_path: {'fatal': 'Invalid DICOM file'}}
         return {
-            file_path: IODValidator(data_set, self._iod_info, self._module_info, self._dict_info,
+            file_path: IODValidator(data_set, self._iod_info,
+                                    self._module_info, self._dict_info,
                                     self.logger.level).validate()
         }

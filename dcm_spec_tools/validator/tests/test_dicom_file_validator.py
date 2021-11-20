@@ -1,17 +1,19 @@
 import json
 import logging
 import os
+import unittest
 
 import pyfakefs.fake_filesystem_unittest
 from pydicom import write_file
 from pydicom.dataset import Dataset, FileDataset
 
 from dcm_spec_tools.spec_reader.edition_reader import EditionReader
-from dcm_spec_tools.tests.test_utils import json_fixture_path
+from dcm_spec_tools.tests.test_utils import json_fixture_path, \
+    dicom_fixture_path
 from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
 
 
-class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
+class DicomFileValidatorTestBase(unittest.TestCase):
     iod_info = None
     module_info = None
 
@@ -25,10 +27,18 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
             cls.module_info = json.load(info_file)
 
     def setUp(self):
-        super(DicomFileValidatorTest, self).setUp()
-        self.setUpPyfakefs()
         logging.disable(logging.CRITICAL)
         self.validator = DicomFileValidator(self.iod_info, self.module_info)
+
+
+class FakeDicomFileValidatorTest(DicomFileValidatorTestBase,
+                                 pyfakefs.fake_filesystem_unittest.TestCase):
+    iod_info = None
+    module_info = None
+
+    def setUp(self):
+        super(FakeDicomFileValidatorTest, self).setUp()
+        self.setUpPyfakefs()
 
     @staticmethod
     def create_metadata():
@@ -93,3 +103,17 @@ class DicomFileValidatorTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual(1, len(error_dict))
         errors = error_dict['test']
         self.assertNotIn('fatal', errors)
+
+
+class RealDicomFileValidatorTest(DicomFileValidatorTestBase):
+
+    def test_that_pixeldata_is_read(self):
+        # regression test for #6
+        rtdose_path = os.path.join(dicom_fixture_path(), 'rtdose.dcm')
+        error_dict = self.validator.validate(rtdose_path)
+        self.assertEqual(1, len(error_dict))
+        results = error_dict[rtdose_path]
+        self.assertIn('RT Series', results)
+        self.assertIn('Tag (0008,1070) is missing', results['RT Series'])
+        # if PixelData is not read, RT Dose will show errors
+        self.assertNotIn('RT Dose', results)
