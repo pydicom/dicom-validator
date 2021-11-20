@@ -139,7 +139,7 @@ def main():
                         help='Path with the DICOM specs in docbook '
                              'and json format',
                         default=os.path.join(os.path.expanduser("~"),
-                                             'dcm-spec-tools'))
+                                             'dicom-validator'))
     parser.add_argument('--revision', '-r',
                         help='Standard revision (e.g. "2014c"), year of '
                              'revision, "current" or "local" (latest '
