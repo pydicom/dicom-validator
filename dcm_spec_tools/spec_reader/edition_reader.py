@@ -168,6 +168,24 @@ class EditionReader(object):
                         file_path))
             return False
 
+    @staticmethod
+    def load_info(json_path, info_json):
+        with open(os.path.join(json_path,
+                               info_json)) as info_file:
+            return json.load(info_file)
+
+    @classmethod
+    def load_dict_info(cls, json_path):
+        return cls.load_info(json_path, cls.dict_info_json)
+
+    @classmethod
+    def load_uid_info(cls, json_path):
+        return cls.load_info(json_path, cls.uid_info_json)
+
+    @classmethod
+    def load_module_info(cls, json_path):
+        return cls.load_info(json_path, cls.module_info_json)
+
     @classmethod
     def json_files_exist(cls, json_path):
         for filename in (cls.dict_info_json, cls.module_info_json,

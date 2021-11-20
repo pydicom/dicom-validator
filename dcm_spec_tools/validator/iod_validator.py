@@ -3,7 +3,7 @@ import logging
 import sys
 
 from dcm_spec_tools.spec_reader.condition import Condition
-from dcm_spec_tools.tag_tools import tag_name_from_id_string, tag_name_from_id
+from dcm_spec_tools.tag_tools import tag_name_from_id
 
 
 class InvalidParameterError(Exception):
@@ -30,7 +30,8 @@ class IODValidator(object):
         else:
             sop_class_uid = self._dataset.SOPClassUID
             if sop_class_uid not in self._iod_info:
-                self.errors['fatal'] = 'Unknown SOPClassUID (probably retired): ' + sop_class_uid
+                self.errors['fatal'] = (f'Unknown SOPClassUID '
+                                        f'(probably retired): {sop_class_uid}')
             else:
                 self._validate_sop_class(sop_class_uid)
         if 'fatal' in self.errors:
@@ -82,11 +83,13 @@ class IODValidator(object):
             for tag_id_string, attribute in module_info.items():
                 tag_id = self._tag_id(tag_id_string)
                 if tag_id in self._dataset:
-                    message = self._incorrect_tag_message(tag_id, 'not allowed', None)
+                    message = self._incorrect_tag_message(tag_id,
+                                                          'not allowed', None)
                     errors.setdefault(message, []).append(tag_id_string)
         else:
             for tag_id_string, attribute in module_info.items():
-                result = self._validate_attribute(self._tag_id(tag_id_string), attribute)
+                result = self._validate_attribute(self._tag_id(tag_id_string),
+                                                  attribute)
                 if result is not None:
                     errors.setdefault(result, []).append(tag_id_string)
         return errors
@@ -104,7 +107,8 @@ class IODValidator(object):
         self.logger.debug(msg)
 
     def _incorrect_tag_message(self, tag_id, error_kind, condition_dict):
-        msg = 'Tag {} is {}'.format(tag_name_from_id(tag_id, self._dict_info), error_kind)
+        msg = 'Tag {} is {}'.format(tag_name_from_id(tag_id, self._dict_info),
+                                    error_kind)
         if condition_dict:
             condition = Condition.read_condition(condition_dict)
             if condition.type != 'U':
@@ -125,7 +129,9 @@ class IODValidator(object):
         elif attribute_type in ('1C', '2C'):
             if 'cond' in attribute:
                 condition_dict = attribute['cond']
-                tag_required, tag_allowed = self._object_is_required_or_allowed(condition_dict)
+                tag_required, tag_allowed = (
+                    self._object_is_required_or_allowed(condition_dict)
+                )
             else:
                 tag_required, tag_allowed = False, True
         else:
@@ -133,7 +139,8 @@ class IODValidator(object):
         error_kind = None
         if not has_tag and tag_required:
             error_kind = 'missing'
-        elif tag_required and value_required and self._dataset[tag_id].value is None:
+        elif (tag_required and value_required and
+              self._dataset[tag_id].value is None):
             error_kind = 'empty'
         elif has_tag and not tag_allowed:
             error_kind = 'not allowed'
@@ -141,7 +148,6 @@ class IODValidator(object):
             msg = self._incorrect_tag_message(tag_id, error_kind,
                                               condition_dict)
             return msg
-
 
     def _object_is_required_or_allowed(self, condition):
         if isinstance(condition, str):
@@ -157,9 +163,11 @@ class IODValidator(object):
 
     def _composite_object_is_required(self, condition):
         if 'and' in condition:
-            required = all(self._composite_object_is_required(cond) for cond in condition['and'])
+            required = all(self._composite_object_is_required(cond)
+                           for cond in condition['and'])
         elif 'or' in condition:
-            required = any(self._composite_object_is_required(cond) for cond in condition['or'])
+            required = any(self._composite_object_is_required(cond)
+                           for cond in condition['or'])
         else:
             required = self._object_is_required(condition)
         return required
@@ -230,5 +238,6 @@ class IODValidator(object):
                 module_info.update(self._get_module_info(ref))
             del module_info['include']
         if 'items' in module_info:
-            module_info['items'] = self._expanded_module_info(module_info['items'])
+            module_info['items'] = self._expanded_module_info(
+                module_info['items'])
         return module_info

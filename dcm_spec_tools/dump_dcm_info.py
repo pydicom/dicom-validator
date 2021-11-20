@@ -3,11 +3,10 @@ Dumps tag information from a DICOM file using information in PS3.6.
 """
 
 import argparse
-import json
 import os
 import re
 
-from pydicom import filereader
+from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
 from dcm_spec_tools.spec_reader.edition_reader import EditionReader
@@ -116,7 +115,7 @@ class DataElementDumper(object):
     def dump_file(self, file_path):
         try:
             print('\n' + file_path)
-            dataset = filereader.read_file(
+            dataset = dcmread(
                 file_path, stop_before_pixels=self.show_image_data, force=True)
             self.print_dataset(dataset)
         except (InvalidDicomError, KeyError):
@@ -167,13 +166,8 @@ def main():
         return 1
 
     json_path = os.path.join(destination, 'json')
-    with open(os.path.join(json_path,
-                           edition_reader.dict_info_json)) as info_file:
-        dict_info = json.load(info_file)
-    with open(os.path.join(json_path,
-                           edition_reader.uid_info_json)) as info_file:
-        uid_info = json.load(info_file)
-
+    dict_info = EditionReader.load_dict_info(json_path)
+    uid_info = EditionReader.load_uid_info(json_path)
     dumper = DataElementDumper(dict_info, uid_info, args.max_value_len,
                                args.show_image_data,
                                args.show_tags)

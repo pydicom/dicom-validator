@@ -63,7 +63,7 @@ class IODValidatorTest(unittest.TestCase):
 
     @staticmethod
     def has_tag_error(messages, module_name, tag_id_string, error_kind):
-        if not module_name in messages:
+        if module_name not in messages:
             return False
         for message in messages[module_name]:
             if message.startswith(
@@ -249,7 +249,7 @@ class IODValidatorTest(unittest.TestCase):
             'PatientName': 'XXX',
             'PatientID': 'ZZZ',
             'PixelPaddingRangeLimit': '10',
-            'PixelDataProviderURL': 'http://dataprovider'
+            'PixelDataProviderURL': 'https://dataprovider'
         })
         validator = self.validator(data_set)
         result = validator.validate()
@@ -362,9 +362,10 @@ class IODValidatorTest(unittest.TestCase):
         validator = self.validator(data_set)
         result = validator.validate()
 
-        self.assertTrue(self.has_tag_error(result, 'Cardiac Synchronization',
-                                           '(0018,9085)',
-                                           'not allowed'))  # Cardiac signal source
+        self.assertTrue(self.has_tag_error(
+            result, 'Cardiac Synchronization',
+            '(0018,9085)',
+            'not allowed'))  # Cardiac signal source
 
     def test_condition_for_not_required_tag_cond2_fulfilled_present(self):
         data_set = self.new_data_set({
@@ -379,9 +380,10 @@ class IODValidatorTest(unittest.TestCase):
         validator = self.validator(data_set)
         result = validator.validate()
 
-        self.assertFalse(self.has_tag_error(result, 'Cardiac Synchronization',
-                                            '(0018,9085)',
-                                            'not allowed'))  # Cardiac signal source
+        self.assertFalse(self.has_tag_error(
+            result, 'Cardiac Synchronization',
+            '(0018,9085)',
+            'not allowed'))  # Cardiac signal source
 
     def test_condition_for_not_required_tag_cond2_fulfilled_not_present(self):
         data_set = self.new_data_set({
@@ -395,9 +397,10 @@ class IODValidatorTest(unittest.TestCase):
         validator = self.validator(data_set)
         result = validator.validate()
 
-        self.assertFalse(self.has_tag_error(result, 'Cardiac Synchronization',
-                                            '(0018,9085)',
-                                            'missing'))  # Cardiac signal source
+        self.assertFalse(self.has_tag_error(
+            result, 'Cardiac Synchronization',
+            '(0018,9085)',
+            'missing'))  # Cardiac signal source
 
 
 if __name__ == '__main__':

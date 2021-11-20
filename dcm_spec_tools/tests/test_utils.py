@@ -11,3 +11,7 @@ def spec_fixture_path():
 
 def json_fixture_path():
     return os.path.join(fixture_path(), 'json')
+
+
+def dicom_fixture_path():
+    return os.path.join(fixture_path(), 'dicom')
