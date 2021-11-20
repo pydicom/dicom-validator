@@ -2,12 +2,14 @@
 
 [![PyPI version](https://badge.fury.io/py/dicom-validator.svg)](https://pypi.org/project/dicom-validator) ![Python package](https://github.com/pydicom/dicom-validator/workflows/Python%20package/badge.svg) [![Python version](https://img.shields.io/pypi/pyversions/dicom-validator.svg)](https://pypi.org/project/dicom-validator)
 
-*dicom-validator* was planned to be a collection of simple pure python command line tools which get the input from 
-the DICOM standard in docbook format as provided by [ACR NEMA](http://medical.nema.org/). 
-As the only relevant tool is the validator tool, and no further tools are planned, the package has now been renamed
-from the original name *dcm-spec-tools*, and moved to the pydicom organization.
+*dicom-validator* was originally planned to be a collection of simple pure 
+python command line tools which get the input from the DICOM standard in 
+docbook format as provided by [ACR NEMA](http://medical.nema.org/). 
+As the only relevant tool is the validator tool, and no further tools are 
+planned, the package has now been renamed from the original name
+*dcm-spec-tools*, and moved to the pydicom organization.
 
-Currently available tools:  
+Available tools:  
 * `validate_iods` checks DICOM files for correct attributes for the given SOP class.  
 * `dump_dcm_info` outputs the DICOM tag IDs and values of a given DICOM file 
   (used as a simple demonstration for access to the DICOM standard).
@@ -36,10 +38,10 @@ Access to DICOM standard
 ------------------------
 
 Upon first start of a tool, part of the latest version of the DICOM standard
-in docbook format is downloaded, parsed, and the needed information saved in 
-json files. These files are then used by the tools. Periodically (once a 
-month), the tools check for a newer version of the DICOM standard and download 
-it if found.
+in docbook format (specifically, parts 3.3, 3.4 and 3.6) is downloaded, 
+parsed, and the needed information saved in json files.
+These files are then used by the tools. Periodically (once a month), the tools
+check for a newer version of the DICOM standard and download it if found.
 
 It is also possible to use older versions of the standard via a command line 
 option, provided they are still available for download (at the time of 
@@ -134,4 +136,4 @@ Tag (0040,A13A) (Referenced DateTime) is missing due to condition:
 ```
 
 *Note:* No guarantees are given for the correctness of the results. This is 
-pre-alpha software and mostly thought as a proof of concept.
+alpha-stage software and mostly thought as a proof of concept.
