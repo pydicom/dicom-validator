@@ -1,7 +1,7 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## Version 0.3.3 (unreleased)
+## [Version 0.3.3](https://pypi.python.org/pypi/dicom-validator/0.3.3) (2021-11-20)
 This is a bugfix release.
 
 ### Fixes
