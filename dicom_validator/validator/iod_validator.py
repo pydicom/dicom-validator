@@ -2,8 +2,8 @@ import json
 import logging
 import sys
 
-from dcm_spec_tools.spec_reader.condition import Condition
-from dcm_spec_tools.tag_tools import tag_name_from_id
+from dicom_validator.spec_reader.condition import Condition
+from dicom_validator.tag_tools import tag_name_from_id
 
 
 class InvalidParameterError(Exception):

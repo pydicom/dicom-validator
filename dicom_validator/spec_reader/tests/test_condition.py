@@ -3,9 +3,9 @@ import unittest
 
 import os
 
-from dcm_spec_tools.spec_reader.condition import Condition
-from dcm_spec_tools.spec_reader.edition_reader import EditionReader
-from dcm_spec_tools.tests.test_utils import json_fixture_path
+from dicom_validator.spec_reader.condition import Condition
+from dicom_validator.spec_reader.edition_reader import EditionReader
+from dicom_validator.tests.test_utils import json_fixture_path
 
 
 class ConditionReadTest(unittest.TestCase):
@@ -36,7 +36,7 @@ class ConditionReadTest(unittest.TestCase):
         self.assertEqual(nr_or_cond, len(condition.or_conditions))
 
     def test_read_type_only(self):
-        self.check_condition({ "type": "U" }, 'U')
+        self.check_condition({"type": "U"}, 'U')
 
     def test_eq(self):
         cond_dict = {
@@ -111,7 +111,7 @@ class ConditionReadTest(unittest.TestCase):
             "tag": "(0028,0009)",
             "type": "MN",
             "values": [
-              "1577061"
+                "1577061"
             ]
         }
 
@@ -123,7 +123,8 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('Frame Increment Pointer points to (0018,1065) (Frame Time Vector)',
+        self.assertEqual('Frame Increment Pointer points to '
+                         '(0018,1065) (Frame Time Vector)',
                          condition.to_string(self.dict_info))
 
     def test_exists(self):
@@ -161,24 +162,24 @@ class ConditionReadTest(unittest.TestCase):
                     "index": 0,
                     "op": "!=",
                     "tag": "(0040,E025)",
-                    "values": [ "TEST" ]
+                    "values": ["TEST"]
                 }
             ],
             "type": "MU"
         }
 
         def test_condition():
-            condition = self.check_condition(
+            cond = self.check_condition(
                 cond_dict, cond_type='MU', nr_and_cond=3)
             self.check_sub_condition(
-                condition.and_conditions[0], op='-', tag='(0040,E022)')
+                cond.and_conditions[0], op='-', tag='(0040,E022)')
             self.check_sub_condition(
-                condition.and_conditions[1], op='+', tag='(0040,E023)',
+                cond.and_conditions[1], op='+', tag='(0040,E023)',
                 index=1)
             self.check_sub_condition(
-                condition.and_conditions[2], op='!=', tag='(0040,E025)',
+                cond.and_conditions[2], op='!=', tag='(0040,E025)',
                 values=['TEST'])
-            return condition
+            return cond
 
         condition = test_condition()
         cond_dict = condition.dict()
@@ -206,13 +207,13 @@ class ConditionReadTest(unittest.TestCase):
         }
 
         def test_condition():
-            condition = self.check_condition(
+            cond = self.check_condition(
                 cond_dict, cond_type='MU', nr_or_cond=2)
             self.check_sub_condition(
-                condition.or_conditions[0], op='-', tag='(0040,4072)')
+                cond.or_conditions[0], op='-', tag='(0040,4072)')
             self.check_sub_condition(
-                condition.or_conditions[1], op='-', tag='(0040,4074)')
-            return condition
+                cond.or_conditions[1], op='-', tag='(0040,4074)')
+            return cond
 
         condition = test_condition()
         cond_dict = condition.dict()
@@ -226,26 +227,26 @@ class ConditionReadTest(unittest.TestCase):
             "index": 0,
             "op": "=",
             "other_cond": {
-              "index": 0,
-              "op": "+",
-              "tag": "(0072,0704)",
-              "type": "MN"
+                "index": 0,
+                "op": "+",
+                "tag": "(0072,0704)",
+                "type": "MN"
             },
             "tag": "(0072,0704)",
             "type": "MC",
             "values": [
-              "PALETTE"
+                "PALETTE"
             ]
-          }
+        }
 
         def test_condition():
-            condition = self.check_condition(
+            cond = self.check_condition(
                 cond_dict, cond_type='MC', op='=',
                 tag='(0072,0704)', values=['PALETTE'])
             self.check_sub_condition(
-                condition.other_condition, op='+', tag='(0072,0704)')
-            self.assertEqual('MN', condition.other_condition.type)
-            return condition
+                cond.other_condition, op='+', tag='(0072,0704)')
+            self.assertEqual('MN', cond.other_condition.type)
+            return cond
 
         condition = test_condition()
         cond_dict = condition.dict()

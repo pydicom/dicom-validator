@@ -46,4 +46,3 @@
 #### Dump
 * add tag length
 * add image tag (length only)
-* add some filtering options (e.g. show only certain tags)

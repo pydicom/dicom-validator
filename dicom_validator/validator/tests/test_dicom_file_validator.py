@@ -7,10 +7,10 @@ import pyfakefs.fake_filesystem_unittest
 from pydicom import write_file
 from pydicom.dataset import Dataset, FileDataset
 
-from dcm_spec_tools.spec_reader.edition_reader import EditionReader
-from dcm_spec_tools.tests.test_utils import json_fixture_path, \
+from dicom_validator.spec_reader.edition_reader import EditionReader
+from dicom_validator.tests.test_utils import json_fixture_path, \
     dicom_fixture_path
-from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
+from dicom_validator.validator.dicom_file_validator import DicomFileValidator
 
 
 class DicomFileValidatorTestBase(unittest.TestCase):

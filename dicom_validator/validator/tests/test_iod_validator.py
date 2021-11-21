@@ -3,12 +3,12 @@ import logging
 import os
 import unittest
 
-from dcm_spec_tools.spec_reader.edition_reader import EditionReader
+from dicom_validator.spec_reader.edition_reader import EditionReader
 
 from pydicom.dataset import Dataset
 
-from dcm_spec_tools.tests.test_utils import json_fixture_path
-from dcm_spec_tools.validator.iod_validator import IODValidator
+from dicom_validator.tests.test_utils import json_fixture_path
+from dicom_validator.validator.iod_validator import IODValidator
 
 
 class IODValidatorTest(unittest.TestCase):

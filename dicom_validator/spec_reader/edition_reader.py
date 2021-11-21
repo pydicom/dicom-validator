@@ -6,11 +6,11 @@ import re
 import sys
 from abc import ABC
 
-from dcm_spec_tools import __version__
-from dcm_spec_tools.spec_reader.part3_reader import Part3Reader
-from dcm_spec_tools.spec_reader.part4_reader import Part4Reader
-from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
-from dcm_spec_tools.spec_reader.serializer import DefinitionEncoder
+from dicom_validator import __version__
+from dicom_validator.spec_reader.part3_reader import Part3Reader
+from dicom_validator.spec_reader.part4_reader import Part4Reader
+from dicom_validator.spec_reader.part6_reader import Part6Reader
+from dicom_validator.spec_reader.serializer import DefinitionEncoder
 
 from urllib.request import urlretrieve
 
