@@ -3,8 +3,8 @@ import unittest
 
 import pyfakefs.fake_filesystem_unittest
 
-from dcm_spec_tools.spec_reader.part6_reader import Part6Reader
-from dcm_spec_tools.tests.test_utils import spec_fixture_path
+from dicom_validator.spec_reader.part6_reader import Part6Reader
+from dicom_validator.tests.test_utils import spec_fixture_path
 
 
 class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
@@ -12,7 +12,8 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(spec_fixture_path(), 'part06.xml'), 'rb') as spec_file:
+        with open(os.path.join(spec_fixture_path(), 'part06.xml'),
+                  'rb') as spec_file:
             cls.doc_contents = spec_file.read()
 
     def setUp(self):
@@ -41,13 +42,15 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         sop_class_uids = self.reader.sop_class_uids()
         self.assertEqual(3, len(sop_class_uids))
         self.assertIn('1.2.840.10008.1.1', sop_class_uids)
-        self.assertEqual('Verification SOP Class', sop_class_uids['1.2.840.10008.1.1'])
+        self.assertEqual('Verification SOP Class',
+                         sop_class_uids['1.2.840.10008.1.1'])
 
     def test_uid_type(self):
         xfer_syntax_uids = self.reader.uids('Transfer Syntax')
         self.assertEqual(2, len(xfer_syntax_uids))
         self.assertIn('1.2.840.10008.1.2.4.80', xfer_syntax_uids)
-        self.assertEqual('JPEG-LS Lossless Image Compression', xfer_syntax_uids['1.2.840.10008.1.2.4.80'])
+        self.assertEqual('JPEG-LS Lossless Image Compression',
+                         xfer_syntax_uids['1.2.840.10008.1.2.4.80'])
 
     def test_all_uids(self):
         uids = self.reader.all_uids()
@@ -58,10 +61,13 @@ class Part6ReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual(5, uid_nr)
 
     def test_sop_class_name(self):
-        self.assertEqual('Enhanced US Volume Storage', self.reader.sop_class_name('1.2.840.10008.5.1.4.1.1.6.2'))
+        self.assertEqual(
+            'Enhanced US Volume Storage',
+            self.reader.sop_class_name('1.2.840.10008.5.1.4.1.1.6.2'))
 
     def test_sop_class_uid(self):
-        self.assertEqual('1.2.840.10008.5.1.4.1.1.2', self.reader.sop_class_uid('CT Image Storage'))
+        self.assertEqual('1.2.840.10008.5.1.4.1.1.2',
+                         self.reader.sop_class_uid('CT Image Storage'))
 
 
 if __name__ == '__main__':

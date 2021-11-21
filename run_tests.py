@@ -4,7 +4,7 @@ import unittest
 
 
 def run_tests():
-    test_suite = unittest.TestLoader().discover('dcm_spec_tools')
+    test_suite = unittest.TestLoader().discover('dicom_validator')
     result = unittest.TextTestRunner(verbosity=2).run(test_suite)
     return result.wasSuccessful()
 

@@ -2,8 +2,8 @@ import argparse
 import logging
 import os
 
-from dcm_spec_tools.spec_reader.edition_reader import EditionReader
-from dcm_spec_tools.validator.dicom_file_validator import DicomFileValidator
+from dicom_validator.spec_reader.edition_reader import EditionReader
+from dicom_validator.validator.dicom_file_validator import DicomFileValidator
 
 
 def validate(args, base_path):

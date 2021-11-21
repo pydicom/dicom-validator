@@ -4,13 +4,14 @@ import time
 
 import pyfakefs.fake_filesystem_unittest
 
-from dcm_spec_tools import __version__
-from dcm_spec_tools.spec_reader.edition_reader import EditionReader
+from dicom_validator import __version__
+from dicom_validator.spec_reader.edition_reader import EditionReader
 
 
 class MemoryEditionReader(EditionReader):
-    """Mock class that gets the file contents in constructor instead of downloading them.
-    We test this class to avoid real download connections during the test.
+    """Mock class that gets the file contents in constructor instead of
+    downloading them. We test this class to avoid real download connections
+    during the test.
     """
 
     def __init__(self, path, contents=''):
@@ -30,81 +31,96 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.fs.create_dir(self.base_path)
         logging.disable(logging.CRITICAL)
 
+    def create_edition_file_over_a_month_old(self, contents):
+        json_path = os.path.join(self.base_path, EditionReader.json_filename)
+        self.fs.create_file(json_path, contents=contents)
+        file_time = time.time() - 32 * 24 * 60 * 60.0
+        os.utime(json_path, (file_time, file_time))
+
+    def create_edition_file_less_than_a_month_old(self, contents):
+        json_path = os.path.join(self.base_path, EditionReader.json_filename)
+        self.fs.create_file(json_path, contents=contents)
+        file_time = time.time() - 27 * 24 * 60 * 60.0
+        os.utime(json_path, (file_time, file_time))
+
     def test_empty_html(self):
         reader = MemoryEditionReader(self.base_path, '')
         self.assertIsNone(reader.get_editions())
-        self.assertFalse(os.path.exists(os.path.join(self.base_path, reader.json_filename)))
+        self.assertFalse(
+            os.path.exists(os.path.join(self.base_path, reader.json_filename)))
 
     def test_no_html(self):
         reader = MemoryEditionReader(self.base_path, 'Not html')
         self.assertIsNone(reader.get_editions())
-        self.assertFalse(os.path.exists(os.path.join(self.base_path, reader.json_filename)))
+        self.assertFalse(
+            os.path.exists(os.path.join(self.base_path, reader.json_filename)))
 
     def test_no_editions(self):
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/medical/dicom/2014a/">test</A><html>')
+        reader = MemoryEditionReader(
+            self.base_path,
+            '<html><A HREF="/medical/dicom/2014a/">test</A><html>')
         self.assertIsNone(reader.get_editions())
-        self.assertFalse(os.path.exists(os.path.join(self.base_path, reader.json_filename)))
+        self.assertFalse(
+            os.path.exists(os.path.join(self.base_path, reader.json_filename)))
 
     def test_valid_editions(self):
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2014a</A>'
-                                                     '2014b'
-                                                     '<a ref="foo">2015</a>'
-                                                     '<a ref="foo">2017e</a>')
+        reader = MemoryEditionReader(
+            self.base_path, '<html><A HREF="/bla/">2014a</A>'
+                            '2014b'
+                            '<a ref="foo">2015</a>'
+                            '<a ref="foo">2017e</a>')
         self.assertEqual(['2014a', '2017e'], reader.get_editions())
-        self.assertTrue(os.path.exists(os.path.join(self.base_path, reader.json_filename)))
+        self.assertTrue(
+            os.path.exists(os.path.join(self.base_path, reader.json_filename)))
 
     def test_keep_old_version(self):
-        json_path = os.path.join(self.base_path, EditionReader.json_filename)
-        self.fs.create_file(json_path, contents='["2014a", "2014c"]')
-        file_time = time.time() - 29 * 24 * 60 * 60.0
-        os.utime(json_path, (file_time, file_time))
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
+        self.create_edition_file_less_than_a_month_old('["2014a", "2014c"]')
+        reader = MemoryEditionReader(
+            self.base_path, '<html><A HREF="/bla/">2018a</A>')
         self.assertEqual(['2014a', '2014c'], reader.get_editions())
 
     def test_replace_old_version(self):
-        json_path = os.path.join(self.base_path, EditionReader.json_filename)
-        self.fs.create_file(json_path, contents='["2014a", "2014c"]')
-        file_time = time.time() - 31 * 24 * 60 * 60.0
-        os.utime(json_path, (file_time, file_time))
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
+        self.create_edition_file_over_a_month_old('["2014a", "2014c"]')
+        reader = MemoryEditionReader(
+            self.base_path, '<html><A HREF="/bla/">2018a</A>')
         self.assertEqual(['2018a'], reader.get_editions())
 
     def test_keep_local_version(self):
-        json_path = os.path.join(self.base_path, EditionReader.json_filename)
-        self.fs.create_file(json_path, contents='["2014a", "2014c"]')
-        file_time = time.time() - 31 * 24 * 60 * 60.0
-        os.utime(json_path, (file_time, file_time))
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
+        self.create_edition_file_over_a_month_old('["2014a", "2014c"]')
+        reader = MemoryEditionReader(
+            self.base_path, '<html><A HREF="/bla/">2018a</A>')
         self.assertEqual(['2014a', '2014c'], reader.get_editions(update=False))
 
     def test_update_if_no_local_version_exists(self):
-        json_path = os.path.join(self.base_path, EditionReader.json_filename)
-        self.fs.create_file(json_path, contents='[]')
-        file_time = time.time() - 31 * 24 * 60 * 60.0
-        os.utime(json_path, (file_time, file_time))
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2018a</A>')
+        self.create_edition_file_over_a_month_old('[]')
+        reader = MemoryEditionReader(
+            self.base_path, '<html><A HREF="/bla/">2018a</A>')
         self.assertEqual(['2018a'], reader.get_editions(update=False))
 
     def test_get_existing_revision(self):
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2014a</A>'
-                                                     '<a ref="foo">2014e</a>')
+        reader = MemoryEditionReader(
+            self.base_path, '<html><A HREF="/bla/">2014a</A>'
+                            '<a ref="foo">2014e</a>')
         self.assertEqual('2014a', reader.get_edition('2014a'))
 
     def test_non_existing_revision(self):
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2014a</A>'
-                                                     '<a ref="foo">2014e</a>')
+        reader = MemoryEditionReader(self.base_path,
+                                     '<html><A HREF="/bla/">2014a</A>'
+                                     '<a ref="foo">2014e</a>')
         self.assertIsNone(reader.get_edition('2015a'))
 
     def test_last_revision_in_year(self):
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2014a</A>'
-                                                     '<a ref="foo">2014c</a>'
-                                                     '<a ref="foo">2015e</a>')
+        reader = MemoryEditionReader(self.base_path,
+                                     '<html><A HREF="/bla/">2014a</A>'
+                                     '<a ref="foo">2014c</a>'
+                                     '<a ref="foo">2015e</a>')
         self.assertEqual('2014c', reader.get_edition('2014'))
 
     def test_current_revision(self):
-        reader = MemoryEditionReader(self.base_path, '<html><A HREF="/bla/">2014a</A>'
-                                                     '<a ref="foo">2014c</a>'
-                                                     '<a ref="foo">2015e</a>')
+        reader = MemoryEditionReader(self.base_path,
+                                     '<html><A HREF="/bla/">2014a</A>'
+                                     '<a ref="foo">2014c</a>'
+                                     '<a ref="foo">2015e</a>')
         self.assertEqual('2015e', reader.get_edition('current'))
 
     def test_check_none_revision(self):
@@ -183,7 +199,8 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
             reader = MemoryEditionReader(self.base_path, '')
             json_path = os.path.join(self.base_path,
                                      EditionReader.json_filename)
-            self.fs.create_file(json_path, contents='["2014a", "2014c", "2015a"]')
+            self.fs.create_file(json_path,
+                                contents='["2014a", "2014c", "2015a"]')
             reader.get_revision("2014a")
             self.assertEqual(1, self.create_json_files_called)
             reader.get_revision("2014a")

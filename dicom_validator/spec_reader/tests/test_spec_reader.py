@@ -3,7 +3,9 @@ import unittest
 
 import pyfakefs.fake_filesystem_unittest
 
-from dcm_spec_tools.spec_reader.spec_reader import SpecReader, SpecReaderFileError
+from dicom_validator.spec_reader.spec_reader import (
+    SpecReader, SpecReaderFileError
+)
 
 
 class ReadSpecTest(pyfakefs.fake_filesystem_unittest.TestCase):
@@ -28,9 +30,10 @@ class ReadSpecTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertTrue(SpecReader(spec_path))
 
     def test_cleaned_uid(self):
+        orig_value = '1.2.840.10008.5.' \
+                     '\u200b1.\u200b4.\u200b1.\u200b1.\u200b88.\u200b72'
         self.assertEqual('1.2.840.10008.5.1.4.1.1.88.72',
-                         SpecReader.cleaned_value(u'1.2.840.10008.5.\u200b1.\u200b4.\u200b1.\u200b1.\u200b88.\u200b72'))
+                         SpecReader.cleaned_value(orig_value))
 
-
-if __name__ == '__main__':
-    unittest.main()
+        if __name__ == '__main__':
+            unittest.main()

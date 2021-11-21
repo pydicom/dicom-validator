@@ -1,7 +1,7 @@
 import re
 from collections import OrderedDict
 
-from dcm_spec_tools.spec_reader.condition import Condition
+from dicom_validator.spec_reader.condition import Condition
 
 
 class ConditionParser(object):

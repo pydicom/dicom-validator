@@ -8,8 +8,8 @@ from itertools import groupby
 
 import sys
 
-from dcm_spec_tools.spec_reader.condition_parser import ConditionParser
-from dcm_spec_tools.spec_reader.spec_reader import (
+from dicom_validator.spec_reader.condition_parser import ConditionParser
+from dicom_validator.spec_reader.spec_reader import (
     SpecReader, SpecReaderParseError, SpecReaderLookupError
 )
 

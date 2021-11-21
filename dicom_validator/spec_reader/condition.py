@@ -1,6 +1,6 @@
 import json
 
-from dcm_spec_tools.tag_tools import tag_name_from_id
+from dicom_validator.tag_tools import tag_name_from_id
 
 
 class Condition(object):

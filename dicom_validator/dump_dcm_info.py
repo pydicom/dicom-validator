@@ -9,7 +9,7 @@ import re
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
-from dcm_spec_tools.spec_reader.edition_reader import EditionReader
+from dicom_validator.spec_reader.edition_reader import EditionReader
 
 
 class DataElementDumper(object):
