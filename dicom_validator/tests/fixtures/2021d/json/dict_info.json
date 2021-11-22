@@ -35,6 +35,12 @@
     "vm": "1",
     "vr": "CS"
   },
+  "(0008,1070)": {
+    "name": "Operators' Name",
+    "prop": "",
+    "vm": "1-n",
+    "vr": "PN"
+  },
   "(0010,2297)": {
     "name": "Responsible Person",
     "prop": "",

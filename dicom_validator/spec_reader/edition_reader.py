@@ -183,6 +183,10 @@ class EditionReader(object):
         return cls.load_info(json_path, cls.uid_info_json)
 
     @classmethod
+    def load_iod_info(cls, json_path):
+        return cls.load_info(json_path, cls.iod_info_json)
+
+    @classmethod
     def load_module_info(cls, json_path):
         return cls.load_info(json_path, cls.module_info_json)
 
@@ -261,7 +265,7 @@ class EditionReader(object):
         if not os.path.exists(version_path):
             return False
         with open(version_path) as f:
-            return f.read() == __version__
+            return f.read() >= __version__
 
     @staticmethod
     def write_current_version(json_path):

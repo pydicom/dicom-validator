@@ -3,6 +3,10 @@ The released versions correspond to PyPi releases.
 
 ## [Version 0.4.0] (Unreleased)
 
+### Fixes
+- fixed regression that broke the validator command line tool
+  see [#9](../../issues/9))
+
 ## [Version 0.3.3](https://pypi.python.org/pypi/dicom-validator/0.3.3) (2021-11-20)
 This is a bugfix release.
 
