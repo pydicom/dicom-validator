@@ -31,6 +31,9 @@ class IODValidatorTest(unittest.TestCase):
         super(IODValidatorTest, self).setUp()
         logging.disable(logging.CRITICAL)
 
+    def tearDown(self):
+        logging.disable(logging.DEBUG)
+
     def validator(self, data_set):
         return IODValidator(data_set, self.iod_specs, self.module_specs, None,
                             logging.ERROR)

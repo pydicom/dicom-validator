@@ -30,6 +30,9 @@ class DicomFileValidatorTestBase(unittest.TestCase):
         logging.disable(logging.CRITICAL)
         self.validator = DicomFileValidator(self.iod_info, self.module_info)
 
+    def tearDown(self):
+        logging.disable(logging.DEBUG)
+
 
 class FakeDicomFileValidatorTest(DicomFileValidatorTestBase,
                                  pyfakefs.fake_filesystem_unittest.TestCase):
