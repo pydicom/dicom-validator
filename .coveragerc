@@ -1,0 +1,5 @@
+[run]
+omit =
+    dicom_validator/tests/*
+    dicom_validator/spec_reader/tests/*
+    dicom_validator/validator/tests/*

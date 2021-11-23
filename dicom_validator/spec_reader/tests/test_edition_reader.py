@@ -31,6 +31,9 @@ class EditionReaderTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.fs.create_dir(self.base_path)
         logging.disable(logging.CRITICAL)
 
+    def tearDown(self):
+        logging.disable(logging.DEBUG)
+
     def create_edition_file_over_a_month_old(self, contents):
         json_path = os.path.join(self.base_path, EditionReader.json_filename)
         self.fs.create_file(json_path, contents=contents)
