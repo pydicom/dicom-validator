@@ -19,6 +19,7 @@ class IODValidator(object):
         self._dict_info = dict_info
         self.errors = {}
         self.logger = logging.getLogger('validator')
+        self.logger.propagate = 0
         self.logger.level = log_level
         if not self.logger.handlers:
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
