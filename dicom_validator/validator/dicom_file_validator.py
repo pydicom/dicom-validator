@@ -43,6 +43,7 @@ class DicomFileValidator(object):
         try:
             data_set = dcmread(file_path, defer_size=1024)
         except InvalidDicomError:
+            self.logger.error(f'Invalid DICOM file: {file_path}')
             return {file_path: {'fatal': 'Invalid DICOM file'}}
         return {
             file_path: IODValidator(data_set, self._iod_info,
