@@ -10,7 +10,7 @@ from dicom_validator.validator.iod_validator import IODValidator
 
 class DicomFileValidator(object):
     def __init__(self, iod_info, module_info, dict_info=None,
-                 log_level=logging.INFO):
+                 log_level=logging.INFO, force_read=False):
         self._module_info = module_info
         self._iod_info = iod_info
         self._dict_info = dict_info
@@ -18,6 +18,7 @@ class DicomFileValidator(object):
         self.logger.level = log_level
         if not self.logger.handlers:
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        self._force_read = force_read
 
     def validate(self, path):
         errors = {}
@@ -41,7 +42,7 @@ class DicomFileValidator(object):
     def validate_file(self, file_path):
         self.logger.info('\nProcessing DICOM file "%s"', file_path)
         try:
-            data_set = dcmread(file_path, defer_size=1024)
+            data_set = dcmread(file_path, defer_size=1024, force=self._force_read)
         except InvalidDicomError:
             self.logger.error(f'Invalid DICOM file: {file_path}')
             return {file_path: {'fatal': 'Invalid DICOM file'}}
