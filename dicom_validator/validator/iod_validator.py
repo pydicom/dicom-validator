@@ -77,7 +77,7 @@ class IODValidator(object):
                 self.errors[module_name] = errors
 
         if len(self._dataset_stack[-1].unexpected_tags) != 0:
-            self.errors["Root"] = self._create_unexpected_tag_errors()
+            self.errors["Root"] = self._unexpected_tag_errors()
 
     def _validate_module(self, module, module_name):
         errors = {}
@@ -109,34 +109,6 @@ class IODValidator(object):
             errors.update(self._validate_attributes(module_info, False))
         return errors
 
-    def _log_module_required(self, module_name, required, allowed,
-                             condition_dict):
-        msg = 'Module "' + module_name + '" is '
-        msg += ('required' if required
-                else 'optional' if allowed else 'not allowed')
-        if condition_dict:
-            condition = Condition.read_condition(condition_dict)
-            if condition.type != 'U':
-                msg += ' due to condition:\n  '
-                msg += condition.to_string(self._dict_info)
-        self.logger.debug(msg)
-
-    def _tag_context(self):
-        context = ""
-        for item in self._dataset_stack:
-            context += f'{item.name} > '
-        return context
-
-    def _incorrect_tag_message(self, tag_id, error_kind, condition_dict = None):
-        msg = 'In {}\nTag {} is {}'.format(
-            self._tag_context(), tag_name_from_id(tag_id, self._dict_info), error_kind)
-        if condition_dict:
-            condition = Condition.read_condition(condition_dict)
-            if condition.type != 'U':
-                msg += ' due to condition:\n  '
-                msg += condition.to_string(self._dict_info)
-        return msg
-
     def _validate_attributes(self, attributes, report_unexpected_tags):
         errors = {}
 
@@ -162,15 +134,8 @@ class IODValidator(object):
                     self._dataset_stack.pop()
 
         if report_unexpected_tags:
-            errors.update(self._create_unexpected_tag_errors())
+            errors.update(self._unexpected_tag_errors())
 
-        return errors
-
-    def _create_unexpected_tag_errors(self):
-        errors = {}
-        for tag_id in self._dataset_stack[-1].unexpected_tags:
-            message = self._incorrect_tag_message(tag_id, 'unexpected')
-            errors.setdefault(message, []).append(self._tag_id_string(tag_id))
         return errors
 
     def _validate_attribute(self, tag_id, attribute):
@@ -200,8 +165,8 @@ class IODValidator(object):
         elif has_tag and not tag_allowed:
             error_kind = 'not allowed'
         if error_kind is not None:
-            msg = self._incorrect_tag_message(tag_id, error_kind,
-                                              condition_dict)
+            msg = self._incorrect_tag_message(
+                tag_id, error_kind, self._conditon_message(condition_dict))
             return msg
 
     def _object_is_required_or_allowed(self, condition):
@@ -318,6 +283,43 @@ class IODValidator(object):
             else:
                 expanded_mod_info[k] = v
         return expanded_mod_info
+
+    def _log_module_required(self, module_name, required, allowed,
+                             condition_dict):
+        msg = 'Module "' + module_name + '" is '
+        msg += ('required' if required
+                else 'optional' if allowed else 'not allowed')
+        if condition_dict:
+            msg += self._conditon_message(condition_dict)
+        self.logger.debug(msg)
+
+    def _unexpected_tag_errors(self):
+        errors = {}
+        for tag_id in self._dataset_stack[-1].unexpected_tags:
+            message = self._incorrect_tag_message(
+                tag_id, 'unexpected', self._tag_context_message())
+            errors.setdefault(message, []).append(self._tag_id_string(tag_id))
+        return errors
+
+    def _tag_context_message(self):
+        m = ' > '.join([item.name for item in self._dataset_stack])
+        context = f"in\n  {m}"
+        return context
+
+    def _incorrect_tag_message(self, tag_id, error_kind, extra_message = ""):
+        tag_name = tag_name_from_id(tag_id, self._dict_info)
+        msg = f'Tag {tag_name} is {error_kind} {extra_message}'
+        return msg
+    
+    def _conditon_message(self, condition_dict):
+        if condition_dict is None:
+            return ""
+        msg = ""
+        condition = Condition.read_condition(condition_dict)
+        if condition.type != 'U':
+            msg += 'due to condition:\n  '
+            msg += condition.to_string(self._dict_info)
+        return msg
 
     # For debugging
     def _dump_dict_as_json(self, name, d):
