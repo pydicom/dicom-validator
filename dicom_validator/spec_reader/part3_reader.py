@@ -27,7 +27,7 @@ class Part3Reader(SpecReader):
         self._module_descriptions = {}
         self._current_refs = []
         self.logger = logging.getLogger()
-        if not self.logger.handlers:
+        if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
         if dict_info is not None:
             self._condition_parser = ConditionParser(self._dict_info)

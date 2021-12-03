@@ -16,7 +16,7 @@ class DicomFileValidator(object):
         self._dict_info = dict_info
         self.logger = logging.getLogger()
         self.logger.level = log_level
-        if not self.logger.handlers:
+        if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self._force_read = force_read
 
