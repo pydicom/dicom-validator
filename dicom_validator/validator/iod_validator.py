@@ -310,7 +310,7 @@ class IODValidator(object):
         tag_name = tag_name_from_id(tag_id, self._dict_info)
         msg = f'Tag {tag_name} is {error_kind}'
         if len(extra_message) != 0:
-            msg += extra_message
+            msg = f'{msg} {extra_message}'
         return msg
     
     def _conditon_message(self, condition_dict):
