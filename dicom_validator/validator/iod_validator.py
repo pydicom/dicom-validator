@@ -69,16 +69,18 @@ class IODValidator(object):
         self.logger.debug('Checking modules for SOP Class')
         self.logger.debug('------------------------------')
 
+        maybe_existing_modules = self._get_maybe_existing_modules(iod_info)
+        
         for module_name, module in iod_info['modules'].items():
             self._dataset_stack[-1].name = module_name
-            errors = self._validate_module(module, module_name)
+            errors = self._validate_module(module, module_name, maybe_existing_modules)
             if errors:
                 self.errors[module_name] = errors
 
         if len(self._dataset_stack[-1].unexpected_tags) != 0:
             self.errors["Root"] = self._unexpected_tag_errors()
 
-    def _validate_module(self, module, module_name):
+    def _validate_module(self, module, module_name, maybe_existing_modules):
         errors = {}
         usage = module['use']
         module_info = self._get_module_info(module['ref'])
@@ -93,19 +95,35 @@ class IODValidator(object):
             required, allowed = self._object_is_required_or_allowed(condition)
         self._log_module_required(module_name, required, allowed, condition)
 
-        has_module = self._has_module(module_info)
-        if not required and not has_module:
+        if required:
+            # Always validate required modules.
+            # If the module is missing from the dataset the validation
+            # should report it as an error.
+            errors.update(self._validate_attributes(module_info, False))
             return errors
 
-        if not allowed and has_module:
+        if module['ref'] not in maybe_existing_modules:
+            # The module is not present at all in the dataset.
+            # No validation is needed.
+            return errors
+        
+        # At this point the module is __not required__ but it __may be existing__
+        # in the dataset.
+        # Just "maybe" because multiple modules may have overlapping attributes.
+        # So, let's see if it exists "strongly" enough to be considered for further checks.
+        if not self._does_module_strongly_exist(module['ref'], maybe_existing_modules):
+            return errors
+
+        if not allowed:
             for tag_id_string, attribute in module_info.items():
                 tag_id = self._tag_id(tag_id_string)
                 if tag_id in self._dataset:
                     message = self._incorrect_tag_message(tag_id,
                                                           'not allowed')
                     errors.setdefault(message, []).append(tag_id_string)
-        else:
-            errors.update(self._validate_attributes(module_info, False))
+            return errors
+        
+        errors.update(self._validate_attributes(module_info, False))
         return errors
 
     def _validate_attributes(self, attributes, report_unexpected_tags):
@@ -216,13 +234,50 @@ class IODValidator(object):
             return self._tag_matches(tag_value, operator, condition['values'])
         return False
 
-    def _has_module(self, module_info):
-        for tag_id_string, attribute in module_info.items():
+    #
+    # Get all the modules that have at least one tag/attribute present
+    # in the dataset.
+    #
+    # We consider these as maybe-existing (or maybe-present) in the dataset.
+    # Only maybe, because a tag/attribute may belong to two different modules,
+    # and we cannot be sure which of those two modules should be considered
+    # as "existing/present" in the dataset.
+    #
+    # We return a dictionary, where the key is the module ref
+    # and the value is the list of tags present in the dataset.
+    #
+    def _get_maybe_existing_modules(self, iod_info):
+        maybe_existing_modules = {}
+        for module in iod_info['modules'].values():
+            module_info = self._get_module_info(module['ref'])
+            existing_tags = self._get_existing_tags_of_module(module_info)
+            if len(existing_tags) != 0:
+                maybe_existing_modules[module['ref']] = existing_tags
+        return maybe_existing_modules
+    
+    #
+    # Check if a maybe-existing module is strongly-existing.
+    # A module is strongly-existing if it has existing tags/attributes
+    # that are not present in any of the other maybe-existing modules.
+    #
+    @staticmethod
+    def _does_module_strongly_exist(a_module_ref, maybe_existing_modules):
+        a_tags = maybe_existing_modules[a_module_ref]
+        for b_ref, b_tags in maybe_existing_modules.items():
+            if b_ref == a_module_ref:
+                continue
+            tags_only_in_a = a_tags - (a_tags & b_tags)
+            if len(tags_only_in_a) == 0:
+                return False
+        return True
+
+    def _get_existing_tags_of_module(self, module_info):
+        existing_tag_ids = set()
+        for tag_id_string in module_info:
             tag_id = self._tag_id(tag_id_string)
-            # crude check - the attribute may belong to another module
             if tag_id in self._dataset:
-                return True
-        return False
+                existing_tag_ids.add(tag_id)
+        return existing_tag_ids
 
     def _lookup_tag(self, tag_id):
         for stack_item in reversed(self._dataset_stack):
