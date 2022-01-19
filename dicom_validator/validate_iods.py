@@ -12,7 +12,7 @@ def validate(args, base_path):
     iod_info = EditionReader.load_iod_info(json_path)
     module_info = EditionReader.load_module_info(json_path)
     log_level = logging.DEBUG if args.verbose else logging.INFO
-    validator = DicomFileValidator(iod_info, module_info, dict_info, log_level)
+    validator = DicomFileValidator(iod_info, module_info, dict_info, log_level, args.force_read)
     error_nr = 0
     for dicom_path in args.dicomfiles:
         error_nr += sum(len(error) for error in
@@ -37,6 +37,9 @@ def main(args=None):
                              'revision, "current" or "local" (latest '
                              'locally installed)',
                         default='current')
+    parser.add_argument('--force-read', action='store_true',
+                        help='Force-read DICOM files without header',
+                        default=False)
     parser.add_argument('--verbose', '-v', action='store_true',
                         help='Outputs diagnostic information')
     args = parser.parse_args(args)

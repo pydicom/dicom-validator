@@ -50,7 +50,7 @@ class EditionReader(object):
     def __init__(self, path):
         self.path = path
         self.logger = logging.getLogger()
-        if not self.logger.handlers:
+        if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
     def update_edition(self):

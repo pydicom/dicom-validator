@@ -27,7 +27,7 @@ class Part3Reader(SpecReader):
         self._module_descriptions = {}
         self._current_refs = []
         self.logger = logging.getLogger()
-        if not self.logger.handlers:
+        if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
         if dict_info is not None:
             self._condition_parser = ConditionParser(self._dict_info)
@@ -246,7 +246,9 @@ class Part3Reader(SpecReader):
                 # silently ignore error in older specs
                 pass
         elif level < current_level:
-            current_descriptions.pop()
+            # Pop off (delete) the last level_delta items.
+            level_delta = current_level - level
+            del current_descriptions[-level_delta:]
         return tag_name, level
 
     def _get_iod_modules(self, iod_node):

@@ -35,5 +35,6 @@ class ReadSpecTest(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual('1.2.840.10008.5.1.4.1.1.88.72',
                          SpecReader.cleaned_value(orig_value))
 
-        if __name__ == '__main__':
-            unittest.main()
+
+if __name__ == '__main__':
+    unittest.main()
