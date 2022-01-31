@@ -1,6 +1,6 @@
 """
 SpecReader reads information from DICOM standard files in docbook format as
-provided by ACR NEMA.
+provided by ACR-NEMA.
 """
 import os
 
@@ -23,7 +23,7 @@ class SpecReaderLookupError(SpecReaderError):
     pass
 
 
-class SpecReader(object):
+class SpecReader:
     docbook_ns = '{http://docbook.org/ns/docbook}'
 
     def __init__(self, spec_dir):
@@ -32,7 +32,7 @@ class SpecReader(object):
         document_files = os.listdir(self.spec_dir)
         if not document_files:
             raise SpecReaderFileError(
-                u'Missing docbook files in {}'.format(self.spec_dir))
+                'Missing docbook files in {}'.format(self.spec_dir))
         self._doc_trees = {}
 
     def _get_doc_tree(self):
@@ -41,14 +41,14 @@ class SpecReader(object):
             document_files = os.listdir(self.spec_dir)
             if doc_name not in document_files:
                 raise SpecReaderFileError(
-                    u'Missing docbook file {} in {}'.format(
+                    'Missing docbook file {} in {}'.format(
                         doc_name, self.spec_dir))
             try:
                 self._doc_trees[self.part_nr] = ElementTree.parse(
                     os.path.join(self.spec_dir, doc_name))
             except ElementTree.ParseError:
                 raise SpecReaderFileError(
-                    u'Parse error in docbook file {} in {}'.format(
+                    'Parse error in docbook file {} in {}'.format(
                         doc_name, self.spec_dir))
         return self._doc_trees.get(self.part_nr)
 
@@ -79,7 +79,7 @@ class SpecReader(object):
 
     @staticmethod
     def cleaned_value(value):
-        return value.replace(u'\u200B', '')
+        return value.replace('\u200B', '')
 
     @staticmethod
     def _find_all_text(node):

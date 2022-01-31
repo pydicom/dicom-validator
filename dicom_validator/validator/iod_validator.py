@@ -19,7 +19,7 @@ class InvalidParameterError(Exception):
     pass
 
 
-class IODValidator(object):
+class IODValidator:
     def __init__(self, dataset, iod_info, module_info, dict_info=None,
                  log_level=logging.INFO):
         self._dataset = dataset

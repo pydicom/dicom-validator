@@ -1,9 +1,9 @@
-import json
+from typing import Optional, List, Dict, Any
 
 from dicom_validator.tag_tools import tag_name_from_id
 
 
-class Condition(object):
+class Condition:
     """ Represents a condition for the presence of a specific tag.
 
     Attributes:
@@ -24,30 +24,29 @@ class Condition(object):
 
     """
 
-    def __init__(self, ctype=None, operator=None, tag=None, index=0,
-                 values=None):
-
+    def __init__(self, ctype: Optional[str] = None,
+                 operator: Optional[str] = None,
+                 tag: Optional[str] = None,
+                 index: int = 0,
+                 values: Optional[List[str]] = None) -> None:
         self.type = ctype
         self.operator = operator
         self.tag = tag
         self.index = index
-        self.values = values
-        self.and_conditions = []
-        self.or_conditions = []
-        self.other_condition = None
-
-    def read(self, json_string):
-        condition_dict = json.loads(json_string)
-        self.read_condition(condition_dict, self)
+        self.values = values or []
+        self.and_conditions: List[Condition] = []
+        self.or_conditions: List[Condition] = []
+        self.other_condition: Optional[Condition] = None
 
     @classmethod
-    def read_condition(cls, condition_dict, condition=None):
+    def read_condition(cls, condition_dict: Dict,
+                       condition: Optional["Condition"] = None) -> "Condition":
         condition = condition or Condition()
         condition.type = condition_dict.get('type')
         condition.operator = condition_dict.get('op')
         condition.tag = condition_dict.get('tag')
         condition.index = int(condition_dict.get('index', '0'))
-        condition.values = condition_dict.get('values')
+        condition.values = condition_dict.get('values', [])
         and_list = condition_dict.get('and', [])
         condition.and_conditions = [
             cls.read_condition(cond) for cond in and_list]
@@ -62,14 +61,14 @@ class Condition(object):
                 'type')
         return condition
 
-    def dict(self):
+    def dict(self) -> Dict[str, Any]:
         result = {'type': self.type}
         result.update(self.write_condition(self))
         return result
 
     @classmethod
-    def write_condition(cls, condition):
-        result = {}
+    def write_condition(cls, condition: "Condition") -> Dict[str, Any]:
+        result: Dict[str, Any] = {}
         if condition.operator is not None:
             result['op'] = condition.operator
         if condition.tag is not None:
@@ -85,11 +84,11 @@ class Condition(object):
             result['or'] = []
             for or_condition in condition.or_conditions:
                 result['or'].append(cls.write_condition(or_condition))
-        if condition.other_condition:
+        if condition.other_condition is not None:
             result['other_cond'] = condition.other_condition.dict()
         return result
 
-    def to_string(self, dict_info):
+    def to_string(self, dict_info: Dict) -> str:
         """Return a condition readable as part of a sentence."""
         result = ''
         if self.and_conditions:

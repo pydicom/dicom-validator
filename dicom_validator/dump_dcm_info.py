@@ -12,7 +12,7 @@ from pydicom.errors import InvalidDicomError
 from dicom_validator.spec_reader.edition_reader import EditionReader
 
 
-class DataElementDumper(object):
+class DataElementDumper:
     tag_regex = re.compile(
         r'(\(?[\dabcdefABCDEF]{4}), *([\dabcdefABCDEF]{4})\)?')
 
@@ -120,7 +120,7 @@ class DataElementDumper(object):
             self.print_dataset(dataset)
         except (InvalidDicomError, KeyError):
             print(
-                u'{} is not a valid DICOM file - skipping.'.format(file_path))
+                '{} is not a valid DICOM file - skipping.'.format(file_path))
 
     def dump_directory(self, dir_path):
         for root, _, names in os.walk(dir_path):
