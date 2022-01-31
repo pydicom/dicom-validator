@@ -31,7 +31,7 @@ class ConditionReadTest(unittest.TestCase):
         self.assertEqual(index, condition.index)
         self.assertEqual(op, condition.operator)
         self.assertEqual(tag, condition.tag)
-        self.assertEqual(values, condition.values)
+        self.assertEqual(values or [], condition.values)
         self.assertEqual(nr_and_cond, len(condition.and_conditions))
         self.assertEqual(nr_or_cond, len(condition.or_conditions))
 

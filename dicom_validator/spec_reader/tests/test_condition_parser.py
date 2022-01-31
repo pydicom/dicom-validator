@@ -51,7 +51,7 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result.type)
         self.assertEqual('(0028,3010)', result.tag)
         self.assertEqual('-', result.operator)
-        self.assertIsNone(result.values)
+        self.assertEqual([], result.values)
 
     def test_operator_in_tag(self):
         result = self.parser.parse(
@@ -60,7 +60,7 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result.type)
         self.assertEqual('(003A,0247)', result.tag)
         self.assertEqual('-', result.operator)
-        self.assertIsNone(result.values)
+        self.assertEqual([], result.values)
 
     def test_is_present(self):
         result = self.parser.parse(
@@ -69,7 +69,7 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result.type)
         self.assertEqual('(0070,0010)', result.tag)
         self.assertEqual('+', result.operator)
-        self.assertIsNone(result.values)
+        self.assertEqual([], result.values)
 
     def test_is_present_with_value(self):
         result = self.parser.parse(
@@ -77,7 +77,7 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result.type)
         self.assertEqual('(0010,2297)', result.tag)
         self.assertEqual('++', result.operator)
-        self.assertIsNone(result.values)
+        self.assertEqual([], result.values)
 
     def test_is_present_tag_name_with_digit(self):
         result = self.parser.parse(
@@ -85,7 +85,7 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result.type)
         self.assertEqual('(0068,64C0)', result.tag)
         self.assertEqual('+', result.operator)
-        self.assertIsNone(result.values)
+        self.assertEqual([], result.values)
 
     def test_not_sent(self):
         result = self.parser.parse(
@@ -94,7 +94,7 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result.type)
         self.assertEqual('(0008,2220)', result.tag)
         self.assertEqual('-', result.operator)
-        self.assertIsNone(result.values)
+        self.assertEqual([], result.values)
 
     def test_shall_be_condition_with_absent_tag(self):
         result = self.parser.parse(
@@ -104,7 +104,7 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('(0012,0042)', result.tag)
         self.assertEqual(0, result.index)
         self.assertEqual('-', result.operator)
-        self.assertIsNone(result.values)
+        self.assertEqual([], result.values)
 
 
 class ValueConditionParserTest(ConditionParserTest):
@@ -135,6 +135,17 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('=', result.operator)
         self.assertEqual(['GATED', 'GATED TOMO', 'RECON GATED TOMO'],
                          result.values)
+
+    def test_multiple_values_with_or(self):
+        result = self.parser.parse(
+            'Required if Value Type (0040,A040) is '
+            'COMPOSITE or IMAGE or WAVEFORM.'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('(0040,A040)', result.tag)
+        self.assertEqual(0, result.index)
+        self.assertEqual('=', result.operator)
+        self.assertEqual(['COMPOSITE', 'IMAGE', 'WAVEFORM'], result.values)
 
     def test_comma_before_value(self):
         result = self.parser.parse(

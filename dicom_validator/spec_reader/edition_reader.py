@@ -38,8 +38,8 @@ class EditionParser(html_parser.HTMLParser, ABC):
             self.editions.append(data)
 
 
-class EditionReader(object):
-    base_url = 'http://dicom.nema.org/medical/dicom/'
+class EditionReader:
+    base_url = 'https://dicom.nema.org/medical/dicom/'
     html_filename = 'editions.html'
     json_filename = 'editions.json'
     iod_info_json = 'iod_info.json'
@@ -59,7 +59,7 @@ class EditionReader(object):
             self.retrieve(os.path.join(self.path, self.html_filename))
             self.write_to_json()
         except BaseException as exception:
-            self.logger.warning(u'Failed to get DICOM read_from_html: %s',
+            self.logger.warning('Failed to get DICOM read_from_html: %s',
                                 str(exception))
 
     def retrieve(self, html_path):
@@ -159,7 +159,7 @@ class EditionReader(object):
             urlretrieve(url, file_path)
             return True
         except BaseException as exception:
-            print(u'Failed to download {}: {}'.format(url, str(exception)))
+            print('Failed to download {}: {}'.format(url, str(exception)))
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)

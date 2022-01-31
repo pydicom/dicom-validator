@@ -8,7 +8,7 @@ from pydicom.errors import InvalidDicomError
 from dicom_validator.validator.iod_validator import IODValidator
 
 
-class DicomFileValidator(object):
+class DicomFileValidator:
     def __init__(self, iod_info, module_info, dict_info=None,
                  log_level=logging.INFO, force_read=False):
         self._module_info = module_info
