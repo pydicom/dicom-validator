@@ -45,6 +45,7 @@ class ConditionParser:
         (' is other than ', '!='),
         (' is present and the value is ', '='),
         (' is present and has a value of ', '='),
+        (' is one of the following: ', '='),
         (' is present and has a value', '++'),
         (' is present', '+'),
         (' is sent', '+'),
@@ -62,6 +63,7 @@ class ConditionParser:
 
     logical_ops = OrderedDict([
         ('and if', 'and'),
+        ('and whose', 'and'),
         ('and', 'and'),
         ('or if', 'or'),
         ('or', 'or')
@@ -69,20 +71,28 @@ class ConditionParser:
 
     def __init__(self, dict_info: Dict) -> None:
         self._dict_info = dict_info
+        self._uid_dict_info = {}
+        for tag, info in dict_info.items():
+            if info['name'].endswith(' UID'):
+                uid_info = info.copy()
+                uid_info['name'] = uid_info['name'][:-4]
+                self._uid_dict_info[tag] = uid_info
 
     def parse(self, condition_str: str) -> Condition:
         """Parse the given condition string and return a Condition object
          with the required attributes.
         """
-        condition_prefixes = ('required if ', 'shall be present if ')
+        condition_prefixes = ('required if ', 'shall be present if ',
+                              'required for images where ')
         for prefix in condition_prefixes:
             index = condition_str.lower().find(prefix)
             if index >= 0:
                 condition_str = condition_str[len(prefix) + index:]
                 condition_str = self._fix_condition(condition_str)
                 condition = self._parse_tag_expressions(condition_str)
-                self.__class__.all_conditions[condition_str] = \
+                self.__class__.all_conditions[condition_str] = (
                     condition.to_string(self._dict_info)
+                )
                 return condition
         self.__class__.all_conditions[condition_str] = Condition(ctype='U')
         return Condition(ctype='U')
@@ -120,14 +130,13 @@ class ConditionParser:
 
     def _get_other_condition(
             self, condition_string: str) -> Optional[Condition]:
-        other_cond_texts = [
-            'may be present otherwise if ', 'may be present if '
-        ]
-        for condition_marker in other_cond_texts:
-            index = condition_string.lower().find(condition_marker)
-            if index >= 0:
-                return self._parse_tag_expressions(
-                    condition_string[index + len(condition_marker):])
+        match = re.match('.*(may be present( [a-z]+( [a-z]+)*)? if ).*',
+                         condition_string.lower())
+        if match is not None:
+            marker = match.group(1)
+            index = condition_string.lower().find(marker)
+            return self._parse_tag_expressions(
+                condition_string[index + len(marker):])
         return None
 
     @staticmethod
@@ -145,6 +154,9 @@ class ConditionParser:
                 return match.group('id'), value_index
             tag_name = match.group('name').strip()
             for tag_id, entry in self._dict_info.items():
+                if entry['name'] == tag_name:
+                    return tag_id, value_index
+            for tag_id, entry in self._uid_dict_info.items():
                 if entry['name'] == tag_name:
                     return tag_id, value_index
         return None, None
@@ -167,18 +179,20 @@ class ConditionParser:
                     next_index = index + len(or_phrase)
                     current_or = or_phrase
             if value_index > 0:
-                value = self._get_const_value(value_part[:value_index],
-                                             value_part[value_index:] + rest)
+                value, value_rest = self._get_const_value(
+                    value_part[:value_index])
                 if value is None:
                     return values, current_or + value_part + rest
                 values.append(value)
+                if value_rest:
+                    return values, current_or + value_rest + rest
                 value_part = value_part[next_index:]
                 last_or = current_or
-        value = self._get_const_value(value_part, rest)
+        value, value_rest = self._get_const_value(value_part)
         if value is None:
             return values, value_part + rest
         values.append(value)
-        return values, rest
+        return values, value_rest + rest
 
     def _split_value_part(self, value_string: str) -> Tuple[str, str]:
         value_string = value_string.strip()
@@ -208,15 +222,19 @@ class ConditionParser:
                 in_string = not in_string
         return in_string
 
-    def _get_const_value(self, value: str, rest: str) -> str:
+    def _get_const_value(self, value: str) -> Tuple[Optional[str], str]:
         value = value.strip()
         if value[0] == value[-1] == '"':
-            return value[1:-1]
+            return value[1:-1], ''
         if re.match('^[A-Z0-9_ ]+$', value) is not None:
-            return value
+            return value, ''
+        match = re.match(r'^.* \(\"([\d.]+)\"\)(.*)$', value)
+        if match is not None:
+            return match.group(1), match.group(2)
         tag, index = self._parse_tag(value)
         if tag is not None:
-            return value
+            return value, ''
+        return None, ''
 
     def _end_index_for_stop_chars(
             self, value: str, stop_chars: List[str]) -> int:

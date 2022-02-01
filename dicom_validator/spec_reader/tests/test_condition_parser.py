@@ -524,13 +524,14 @@ class ComplicatedConditionParserTest(ConditionParserTest):
         self.assertEqual(['POLYLINE', 'INTERPOLATED'],
                          result.or_conditions[2].values)
 
-    def test_other_condition(self):
+    def test_other_condition1(self):
         result = self.parser.parse(
             'Required if 3D Point Coordinates (0068,6590) is not present and '
             'HPGL Document Sequence (0068,62C0) is present. '
             'May be present if 3D Point Coordinates '
             '(0068,6590) is present and '
-            'HPGL Document Sequence (0068,62C0) is present.')
+            'HPGL Document Sequence (0068,62C0) is present.'
+        )
         self.assertEqual('MC', result.type)
         self.assertEqual(2, len(result.and_conditions))
         self.assertEqual('-', result.and_conditions[0].operator)
@@ -542,3 +543,71 @@ class ComplicatedConditionParserTest(ConditionParserTest):
         self.assertEqual('(0068,6590)', other_cond.and_conditions[0].tag)
         self.assertEqual('+', other_cond.and_conditions[1].operator)
         self.assertEqual('(0068,62C0)', other_cond.and_conditions[1].tag)
+
+    def test_other_condition2(self):
+        result = self.parser.parse(
+            'Required if Pixel Padding Range Limit (0028,0121) is present and '
+            'either Pixel Data (7FE0,0010) or Pixel Data Provider URL '
+            '(0028,7FE0) is present. May be present otherwise only if '
+            'Pixel Data (7FE0,0010) or Pixel Data Provider URL (0028,7FE0) '
+            'is present.'
+        )
+        self.assertEqual('MC', result.type)
+        self.assertEqual(2, len(result.and_conditions))
+        self.assertEqual('+', result.and_conditions[0].operator)
+        or_conditions = result.and_conditions[1].or_conditions
+        self.assertEqual(2, len(or_conditions))
+        self.assertEqual('+', or_conditions[0].operator)
+        self.assertEqual('(7FE0,0010)', or_conditions[0].tag)
+        self.assertEqual('+', or_conditions[1].operator)
+        self.assertEqual('(0028,7FE0)', or_conditions[1].tag)
+        other_cond = result.other_condition
+        self.assertIsNotNone(other_cond)
+        self.assertEqual(2, len(other_cond.or_conditions))
+        self.assertEqual('+', other_cond.or_conditions[0].operator)
+        self.assertEqual('(7FE0,0010)', other_cond.or_conditions[0].tag)
+        self.assertEqual('+', other_cond.or_conditions[1].operator)
+        self.assertEqual('(0028,7FE0)', other_cond.or_conditions[1].tag)
+
+    def test_possible_false_positive(self):
+        # the "nested" had been parsed as value
+        # (could be handled correctly at some time in the future)
+        result = self.parser.parse(
+            'Selector Attribute (0072,0026) is nested in one '
+            'or more Sequences or is absent'
+        )
+        self.assertEqual('U', result.type)
+
+    def test_sop_class_matching(self):
+        # this tests several problems: usage of SOP Class instead of
+        # SOP Class UID, usage of UID name in value, and some unusual
+        # expressions
+        result = self.parser.parse(
+            'Required for images where Patient Orientation Code Sequence '
+            '(0054,0410) is not present and whose SOP Class is one of the '
+            'following: CT ("1.2.840.10008.5.1.4.1.1.2") or MR '
+            '("1.2.840.10008.5.1.4.1.1.4") or Enhanced CT '
+            '("1.2.840.10008.5.1.4.1.1.2.1") or Enhanced MR Image '
+            '("1.2.840.10008.5.1.4.1.1.4.1") or Enhanced Color MR Image '
+            '("1.2.840.10008.5.1.4.1.1.4.3") or MR Spectroscopy '
+            '("1.2.840.10008.5.1.4.1.1.4.2") Storage SOP Classes. '
+            'May be present for other SOP Classes if Patient Orientation '
+            'Code Sequence (0054,0410) is not present. '
+        )
+        self.assertEqual('MC', result.type)
+        self.assertEqual(2, len(result.and_conditions))
+        self.assertEqual('-', result.and_conditions[0].operator)
+        self.assertEqual('(0054,0410)', result.and_conditions[0].tag)
+        self.assertEqual('=', result.and_conditions[1].operator)
+        self.assertEqual('(0008,0016)', result.and_conditions[1].tag)
+        self.assertEqual(['1.2.840.10008.5.1.4.1.1.2',
+                          '1.2.840.10008.5.1.4.1.1.4',
+                          '1.2.840.10008.5.1.4.1.1.2.1',
+                          '1.2.840.10008.5.1.4.1.1.4.1',
+                          '1.2.840.10008.5.1.4.1.1.4.3',
+                          '1.2.840.10008.5.1.4.1.1.4.2'],
+                         result.and_conditions[1].values)
+        other_cond = result.other_condition
+        self.assertIsNotNone(other_cond)
+        self.assertEqual('-', other_cond.operator)
+        self.assertEqual('(0054,0410)', other_cond.tag)
