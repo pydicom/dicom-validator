@@ -9,6 +9,9 @@ The released versions correspond to PyPi releases.
 * Condition parser: handle conditions without values,
   see [#15](../.. /issues/15)
 
+### Changes
+* Removed support for Python 3.6
+
 ## [Version 0.3.4](https://pypi.python.org/pypi/dicom-validator/0.3.3) (2021-11-22)
 Fixes a regression introduced with the last release.
 

@@ -13,14 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9, "3.10"]
-        exclude:
-          - os: macOS-latest
-            python-version: 3.6
+        python-version: [3.7, 3.8, 3.9, "3.10"]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -29,7 +26,7 @@ jobs:
         pip install -r requirements-dev.txt
     - name: Run tests with coverage
       run: |
-        if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.7' ]]
+        if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.9' ]]
         then
           python -m pytest --cov=dicom_validator --cov-config=.coveragerc dicom_validator
         else
@@ -37,6 +34,6 @@ jobs:
         fi
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
-      if: ${{ success() && matrix.python-version == 3.7 && matrix.os == 'ubuntu-latest' }}
+      if: ${{ success() && matrix.python-version == 3.9 && matrix.os == 'ubuntu-latest' }}
       with:
         name: codecov-dicom-validator
