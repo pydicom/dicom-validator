@@ -6,12 +6,14 @@ The released versions correspond to PyPi releases.
 ### Fixes
 * condition parser: multiple or expressions handled correctly
 * Condition parser: handle a few more complicated conditions
+* Condition parser: handle conditions without values,
+  see [#15](../.. /issues/15)
 
 ## [Version 0.3.4](https://pypi.python.org/pypi/dicom-validator/0.3.3) (2021-11-22)
 Fixes a regression introduced with the last release.
 
 ### Fixes
-- fixed regression that broke the validator command line tool
+- fixed regression that broke the validator command line tool,
   see [#9](../../issues/9))
 
 ## [Version 0.3.3](https://pypi.python.org/pypi/dicom-validator/0.3.3) (2021-11-20)

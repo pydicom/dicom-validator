@@ -82,8 +82,10 @@ class ConditionParser:
         """Parse the given condition string and return a Condition object
          with the required attributes.
         """
-        condition_prefixes = ('required if ', 'shall be present if ',
-                              'required for images where ')
+        condition_prefixes = (
+            'required if ', 'shall be present if ',
+            'required for images where ', 'required only if'
+        )
         for prefix in condition_prefixes:
             index = condition_str.lower().find(prefix)
             if index >= 0:
