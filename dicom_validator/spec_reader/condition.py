@@ -104,24 +104,30 @@ class Condition:
                 result = self.tag
             if self.index:
                 result += '[{}]'.format(self.index)
+        if self.operator is None:
+            return result
         if self.operator == '+':
             result += ' exists'
         elif self.operator == '++':
             result += ' exists and has a value'
+        elif self.operator == '-':
+            result += ' is not present'
         elif self.operator == '=>':
             tag_value = int(self.values[0])
             result += ' points to ' + tag_name_from_id(tag_value, dict_info)
-        elif self.operator == '-':
-            result += ' is not present'
+        elif not self.values:
+            # if no values are found here, we have some unhandled condition
+            # and ignore it for the time being
+            return result
         elif self.operator == '=':
-            result += ' is equal to '
             values = ['"' + value + '"' for value in self.values]
+            result += ' is equal to '
             if len(values) > 1:
                 result += ', '.join(values[:-1]) + ' or '
             result += values[-1]
         elif self.operator == '!=':
-            result += ' is not equal to '
             values = ['"' + value + '"' for value in self.values]
+            result += ' is not equal to '
             if len(values) > 1:
                 result += ', '.join(values[:-1]) + ' and '
             result += values[-1]
