@@ -303,13 +303,6 @@ class IODValidator:
 
     @staticmethod
     def _tag_matches(tag_value, operator, values):
-        # TODO: These fix-ups should be done in ConditionParser:
-        if "non-zero" in values:
-            operator = '!='
-            values = [ '0' ]
-        if "zero" in values:
-            values = [ '0' ]
-
         values = [type(tag_value)(value) for value in values]
         if operator == '=':
             return tag_value in values
