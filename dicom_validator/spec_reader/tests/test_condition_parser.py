@@ -353,6 +353,39 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('=>', result.operator)
         self.assertEqual(['1581058'], result.values)
 
+    def test_non_zero(self):
+        result = self.parser.parse(
+            'Required if Number of Blocks (300A,00F0) is non-zero.'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('!=', result.operator)
+        self.assertEqual(['0'], result.values)
+
+    def test_greater_than_zero(self):
+        result = self.parser.parse(
+            'Required if Number of Beams (300A,0080) is greater than zero'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('>', result.operator)
+        self.assertEqual(['0'], result.values)
+
+    def test_is_non_zero_length(self):
+        result = self.parser.parse(
+            'Required if Material ID (300A,00E1) is non-zero length.'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('!=', result.operator)
+        self.assertEqual([''], result.values)
+
+    def test_is_not_zero_length(self):
+        result = self.parser.parse(
+            'Required if value Transfer Tube Number (300A,02A2) '
+            'is not zero length.'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('!=', result.operator)
+        self.assertEqual([''], result.values)
+
 
 class NotMandatoryConditionParserTest(ConditionParserTest):
     def test_default(self):

@@ -114,6 +114,10 @@ class ConditionParser:
         rest = condition[op_offset + len(operator_text):]
         if operator in ('=', '!=', '>', '<'):
             values, rest = self._parse_tag_values(rest)
+            # fixup special values
+            if values and values[0].startswith('non-zero'):
+                operator = '!='
+                values = ['0'] if values[0] == 'non-zero' else ['']
         elif operator == '=>':
             value_string, rest = self._split_value_part(rest)
             tag, _ = self._parse_tag(value_string)
@@ -229,6 +233,12 @@ class ConditionParser:
         if value[0] == value[-1] == '"':
             return value[1:-1], ''
         if re.match('^[A-Z0-9_ ]+$', value) is not None:
+            return value, ''
+        if value == 'zero length':
+            return '', ''
+        if value == 'zero':
+            return '0', ''
+        if value in ('non-zero', 'non-zero length'):
             return value, ''
         match = re.match(r'^.* \(\"([\d.]+)\"\)(.*)$', value)
         if match is not None:

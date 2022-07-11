@@ -8,6 +8,8 @@ The released versions correspond to PyPi releases.
 * Condition parser: handle a few more complicated conditions
 * Condition parser: handle conditions without values,
   see [#15](../.. /issues/15)
+* Condition parser: fixed handling of "zero" and "non-zero" values
+  see [#17](../.. /issues/17)
 
 ### Changes
 * Removed support for Python 3.6
