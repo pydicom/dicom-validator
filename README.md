@@ -125,7 +125,7 @@ version of the standard used for parsing are not considered at all.
 - functional groups in EnhancedXXX SOP classes are not handled
 
 
-## dcm_dump_info
+## dump_dcm_info
 
 This is a very simple DICOM dump tool, which uses 
 the DICOM dictionary as read from part 6 of the standard. It prints the 
