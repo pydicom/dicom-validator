@@ -47,6 +47,12 @@
     "vm": "1",
     "vr": "PN"
   },
+  "(0018,6044)": {
+    "name": "Pixel Component Organization",
+    "prop": "",
+    "vm": "1",
+    "vr": "US"
+  },
   "(0028,0008)": {
     "name": "Number of Frames",
     "prop": "",

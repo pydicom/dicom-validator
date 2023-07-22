@@ -15,6 +15,8 @@ class Condition:
                 otherwise not
             'MU': the object is mandatory if the condition is fulfilled,
                 otherwise is user defined
+            'MC': the object is mandatory if the condition is fulfilled,
+                otherwise another condition will be checked
         tag: the ID of the required tag in the form '(####,####)' or None
         index: the index of the tag for multi-valued tags or 0
         values: a list of values the tag shall have if the condition
@@ -37,6 +39,9 @@ class Condition:
         self.and_conditions: List[Condition] = []
         self.or_conditions: List[Condition] = []
         self.other_condition: Optional[Condition] = None
+
+    def __repr__(self):
+        return f"Condition type={self.type} op='{self.operator}' tag={self.tag} values={self.values}"
 
     @classmethod
     def read_condition(cls, condition_dict: Dict,

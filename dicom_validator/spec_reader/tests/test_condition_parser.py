@@ -45,15 +45,13 @@ class InvalidConditionParserTest(ConditionParserTest):
         )
         self.assertEqual('U', result.type)
 
-    def test_handle_condition_without_value(self):
+    def test_ignore_condition_without_value(self):
         # regression test for #15
         result = self.parser.parse(
             'required if Selector Attribute (0072,0026) is nested in '
             'one or more Sequences or is absent.'
         )
-        self.assertEqual('MN', result.type)
-        self.assertEqual('(0072,0026)', result.tag)
-        self.assertEqual('=', result.operator)
+        self.assertEqual('U', result.type)
 
 
 class SimpleConditionParserTest(ConditionParserTest):
@@ -134,6 +132,14 @@ class SimpleConditionParserTest(ConditionParserTest):
         self.assertEqual('(300C,0051)', result.tag)
         self.assertEqual('-', result.operator)
         self.assertEqual([], result.values)
+
+    def test_values_failed_parsing(self):
+        """Regression test for #20 (if the value could not be parsed ignore the condition)"""
+        result = self.parser.parse(
+            'Required if Constraint Violation Significance (0082,0036) '
+            'is only significant under certain conditions.'
+        )
+        self.assertEqual('U', result.type)
 
 
 class ValueConditionParserTest(ConditionParserTest):
@@ -318,6 +324,14 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('=', result.operator)
         self.assertEqual(['AS'], result.values)
 
+    def test_value_is_not(self):
+        result = self.parser.parse(
+            'Required if Shadow Style (0070,0244) value is not OFF.'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('!=', result.operator)
+        self.assertEqual(['OFF'], result.values)
+
     def test_other_than(self):
         result = self.parser.parse(
             'Required if Decay Correction (0054,1102) is other than NONE.'
@@ -334,6 +348,14 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result.type)
         self.assertEqual('!=', result.operator)
         self.assertEqual(['UNDEFINED'], result.values)
+
+    def test_equal_to(self):
+        result = self.parser.parse(
+            'Required if Blending Mode (0070,1B06) is equal to FOREGROUND.'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('=', result.operator)
+        self.assertEqual(['FOREGROUND'], result.values)
 
     def test_present_with_value_of(self):
         result = self.parser.parse(
@@ -361,6 +383,26 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('!=', result.operator)
         self.assertEqual(['0'], result.values)
 
+    def test_non_null(self):
+        result = self.parser.parse(
+            'Required if value Transfer Tube Number (300A,02A2) is non-null.'
+        )
+        assert result.type == 'MN'
+        assert result.tag == '(300A,02A2)'
+        assert result.operator == '++'
+        self.assertEqual([], result.values)
+
+    def test_zero_length(self):
+        result = self.parser.parse(
+            'Required if Material ID (300A,00E1) is zero-length. '
+            'May be present if Material ID (300A,00E1) is non-zero length.'
+        )
+        assert result.type == 'MC'
+        assert result.tag == '(300A,00E1)'
+        assert result.operator == '='
+        self.assertEqual([''], result.values)
+        assert result.other_condition is not None
+
     def test_greater_than_zero(self):
         result = self.parser.parse(
             'Required if Number of Beams (300A,0080) is greater than zero'
@@ -385,6 +427,51 @@ class ValueConditionParserTest(ConditionParserTest):
         self.assertEqual('MN', result.type)
         self.assertEqual('!=', result.operator)
         self.assertEqual([''], result.values)
+
+    def test_equal_sign(self):
+        result = self.parser.parse(
+            'Required if Pixel Component Organization = Bit aligned.'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('(0018,6044)', result.tag)
+        self.assertEqual('=', result.operator)
+        self.assertEqual(['Bit aligned'], result.values)
+
+    def test_value_has_explanation(self):
+        result = self.parser.parse(
+            'Required if Conversion Type (0008,0064) is DF (Digitized Film).'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('(0008,0064)', result.tag)
+        self.assertEqual('=', result.operator)
+        self.assertEqual(['DF'], result.values)
+
+    def test_values_have_explanation(self):
+        result = self.parser.parse(
+            'Required if Conversion Type (0008,0064) is SD (Scanned Document) or SI (Scanned Image).'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('(0008,0064)', result.tag)
+        self.assertEqual('=', result.operator)
+        self.assertEqual(['SD', 'SI'], result.values)
+
+    def test_is_with_colon_after_value(self):
+        result = self.parser.parse(
+            'Required if the value of Reformatting Operation Type (0072,0510) is 3D_RENDERING:'
+        )
+        self.assertEqual('MN', result.type)
+        self.assertEqual('(0072,0510)', result.tag)
+        self.assertEqual('=', result.operator)
+        self.assertEqual(['3D_RENDERING'], result.values)
+
+    def test_is_set_to(self):
+        result = self.parser.parse(
+            'Required if Ophthalmic Volumetric Properties Flag (0022,1622) is set to YES. May be present otherwise.'
+        )
+        self.assertEqual('MU', result.type)
+        self.assertEqual('(0022,1622)', result.tag)
+        self.assertEqual('=', result.operator)
+        self.assertEqual(['YES'], result.values)
 
 
 class NotMandatoryConditionParserTest(ConditionParserTest):
