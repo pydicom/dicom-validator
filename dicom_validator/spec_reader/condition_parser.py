@@ -31,10 +31,13 @@ class ConditionParser:
         r'(?P<id>\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?(,? Value (?P<index>\d))?$')
 
     operators = OrderedDict([
+        (' is present and the value is ', '='),
+        (' is present and has a value of ', '='),
         (' is greater than ', '>'),
         (' is present and equals ', '='),
         (' is present with a value of ', '='),
-        (' value is ', '='),
+        (' is set to ', '='),
+        (' equals one of the following values: ', '='),
         (' has a value of more than ', '>'),
         (' has a value greater than ', '>'),
         (' has a value of ', '='),
@@ -43,16 +46,17 @@ class ConditionParser:
         (' equals other than ', '!='),
         (' equals ', '='),
         (' is other than ', '!='),
-        (' is present and the value is ', '='),
-        (' is present and has a value of ', '='),
         (' is one of the following: ', '='),
         (' is present and has a value', '++'),
         (' is present', '+'),
+        (' value is not ', '!='),
+        (' value is ', '='),
         (' is sent', '+'),
         (' is not sent', '-'),
         (' is not present', '-'),
         (' is absent', '-'),
         (' is not equal to ', '!='),
+        (' is equal to ', '='),
         (' is not ', '!='),
         (' is ', '='),
         (' is: ', '='),
@@ -115,9 +119,18 @@ class ConditionParser:
         if operator in ('=', '!=', '>', '<'):
             values, rest = self._parse_tag_values(rest)
             # fixup special values
-            if values and values[0].startswith('non-zero'):
-                operator = '!='
-                values = ['0'] if values[0] == 'non-zero' else ['']
+            if values:
+                if values[0].startswith('non-zero'):
+                    operator = '!='
+                    values = ['0'] if values[0] == 'non-zero' else ['']
+                elif values[0].startswith('non-null'):
+                    operator = '++'
+                    values = []
+                elif values[0].startswith('zero-length'):
+                    values = ['']
+            else:
+                # failed to parse mandatory values - ignore the condition
+                return Condition(ctype='U'), None
         elif operator == '=>':
             value_string, rest = self._split_value_part(rest)
             tag, _ = self._parse_tag(value_string)
@@ -203,7 +216,7 @@ class ConditionParser:
     def _split_value_part(self, value_string: str) -> Tuple[str, str]:
         value_string = value_string.strip()
         end_index = self._end_index_for_stop_chars(
-            value_string, [';', '.', ', and ', ' and '])
+            value_string, [';', '.', ', and ', ' and ', ':'])
         return value_string[:end_index], value_string[end_index:]
 
     @staticmethod
@@ -232,13 +245,17 @@ class ConditionParser:
         value = value.strip()
         if value[0] == value[-1] == '"':
             return value[1:-1], ''
-        if re.match('^[A-Z0-9_ ]+$', value) is not None:
+        if re.match('^[A-Z0-9][A-Za-z0-9_ ]*$', value) is not None:
             return value, ''
+        # sometimes a value explanation is present in scopes
+        match = re.match(r'^([A-Z0-9_ ]+)\([A-Za-z ]+\)+$', value)
+        if match is not None:
+            return match.group(1).strip(), ''
         if value == 'zero length':
             return '', ''
         if value == 'zero':
             return '0', ''
-        if value in ('non-zero', 'non-zero length'):
+        if value in ('non-zero', 'non-zero length', 'non-null', 'zero-length'):
             return value, ''
         match = re.match(r'^.* \(\"([\d.]+)\"\)(.*)$', value)
         if match is not None:

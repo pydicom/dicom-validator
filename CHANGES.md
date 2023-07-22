@@ -4,12 +4,15 @@ The released versions correspond to PyPi releases.
 ## [Version 0.4.0] (Unreleased)
 
 ### Fixes
-* condition parser: multiple or expressions handled correctly
+* Condition parser: multiple or expressions handled correctly
 * Condition parser: handle a few more complicated conditions
 * Condition parser: handle conditions without values,
   see [#15](../.. /issues/15)
 * Condition parser: fixed handling of "zero" and "non-zero" values
   see [#17](../.. /issues/17)
+* Condition parser: handle a few more simple expressions
+* Condition parser: ignore equality conditions with missing values
+  (caused crash, see [#20](../.. /issues/20)
 
 ### Changes
 * Removed support for Python 3.6
