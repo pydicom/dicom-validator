@@ -1,6 +1,6 @@
 # dicom-validator
 
-[![PyPI version](https://badge.fury.io/py/dicom-validator.svg)](https://pypi.org/project/dicom-validator) [![Test Suite](https://github.com/pydicom/dicom-validator/workflows/Python%20package/badge.svg)](https://github.com/pydicom/dicom-validator/actions) [![Python version](https://img.shields.io/pypi/pyversions/dicom-validator.svg)](https://pypi.org/project/dicom-validator)
+[![PyPI version](https://badge.fury.io/py/dicom-validator.svg)](https://pypi.org/project/dicom-validator) [![Test Suite](https://github.com/pydicom/dicom-validator/workflows/Testsuite/badge.svg)](https://github.com/pydicom/dicom-validator/actions) [![Python version](https://img.shields.io/pypi/pyversions/dicom-validator.svg)](https://pypi.org/project/dicom-validator)
 
 *dicom-validator* provides the command line tool `validate_iods` that 
 checks a DICOM file for missing or unexpected attributes. The check is done by
