@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os
+from pathlib import Path
 
 from setuptools import setup, find_packages
 
@@ -7,8 +7,8 @@ from dicom_validator import __version__
 
 EXTRA = {}
 
-BASE_PATH = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(BASE_PATH, 'README.md')) as f:
+BASE_PATH = Path(__file__).parent.absolute()
+with open(BASE_PATH / 'README.md') as f:
     long_description = f.read()
 
 
@@ -21,7 +21,7 @@ setup(
     description="Python DICOM tools using input from DICOM specs in docbook format",
     author="mrbean-bremen",
     author_email="hansemrbean@googlemail.com",
-    url="http://github.com/pydicom/dicom-validator",
+    url="https://github.com/pydicom/dicom-validator",
     keywords="dicom python",
     entry_points={
         'console_scripts': [
@@ -40,6 +40,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Operating System :: POSIX :: Linux",
         'Operating System :: MacOS',
         "Operating System :: Microsoft :: Windows",
