@@ -5,6 +5,7 @@ Dumps tag information from a DICOM file using information in PS3.6.
 import argparse
 import os
 import re
+from pathlib import Path
 
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
@@ -32,8 +33,7 @@ class DataElementDumper:
         for tag in tags:
             match = self.tag_regex.match(tag)
             if match:
-                self.tags.append(
-                    '({},{})'.format(match.group(1), match.group(2)))
+                self.tags.append(f'({match.group(1)},{match.group(2)})')
             else:
                 matching = [tag_id for tag_id in dict_info
                             if
@@ -41,8 +41,7 @@ class DataElementDumper:
                 if matching:
                     self.tags.append(matching[0])
                 else:
-                    print('{} is not a valid tag expression - '
-                          'ignoring'.format(tag))
+                    print(f'{tag} is not a valid tag expression - ignoring')
 
     def print_dataset(self, dataset):
         dataset.walk(
@@ -74,8 +73,7 @@ class DataElementDumper:
         return True
 
     def print_dataelement(self, _, dataelement):
-        tag_id = '({:04X},{:04X})'.format(dataelement.tag.group,
-                                          dataelement.tag.element)
+        tag_id = f'{dataelement.tag.group:04X},{dataelement.tag.element:04X})'
         description = self.dict_info.get(tag_id)
         if description is None:
             name = '[Unknown]'
@@ -93,8 +91,7 @@ class DataElementDumper:
             value = self.uid_info.get(value, value)
         if vr == 'SQ':
             if self.print_element(tag_id, name, vr, prop,
-                                  'Sequence with {} item(s)'.format(
-                                      len(value))):
+                                  f'Sequence with {len(value)} item(s)'):
                 self.level += 1
                 self.print_sequence(dataelement)
                 self.level -= 1
@@ -119,8 +116,7 @@ class DataElementDumper:
                 file_path, stop_before_pixels=self.show_image_data, force=True)
             self.print_dataset(dataset)
         except (InvalidDicomError, KeyError):
-            print(
-                '{} is not a valid DICOM file - skipping.'.format(file_path))
+            print(f'{file_path} is not a valid DICOM file - skipping.')
 
     def dump_directory(self, dir_path):
         for root, _, names in os.walk(dir_path):
@@ -138,8 +134,7 @@ def main():
     parser.add_argument('--standard-path', '-src',
                         help='Path with the DICOM specs in docbook '
                              'and json format',
-                        default=os.path.join(os.path.expanduser("~"),
-                                             'dicom-validator'))
+                        default=str(Path.home() / 'dicom-validator'))
     parser.add_argument('--revision', '-r',
                         help='Standard revision (e.g. "2014c"), year of '
                              'revision, "current" or "local" (latest '
@@ -161,11 +156,10 @@ def main():
     edition_reader = EditionReader(args.standard_path)
     destination = edition_reader.get_revision(args.revision)
     if destination is None:
-        print(
-            'Failed to get DICOM edition {} - aborting'.format(args.revision))
+        print(f'Failed to get DICOM edition {args.revision} - aborting')
         return 1
 
-    json_path = os.path.join(destination, 'json')
+    json_path = destination / 'json'
     dict_info = EditionReader.load_dict_info(json_path)
     uid_info = EditionReader.load_uid_info(json_path)
     dumper = DataElementDumper(dict_info, uid_info, args.max_value_len,

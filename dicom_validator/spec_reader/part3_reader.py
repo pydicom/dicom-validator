@@ -53,8 +53,7 @@ class Part3Reader(SpecReader):
         try:
             return self._iod_descriptions[chapter]
         except KeyError:
-            raise SpecReaderLookupError(
-                'No definition found for chapter {}'.format(chapter))
+            raise SpecReaderLookupError(f'No definition found for chapter {chapter}')
 
     def iod_descriptions(self):
         """Return the IOD information dict per chapter.
@@ -91,7 +90,7 @@ class Part3Reader(SpecReader):
             return self._module_descriptions[section]
         except KeyError:
             raise SpecReaderLookupError(
-                'No definition found for section {}'.format(section))
+                f'No definition found for section {section}')
 
     def module_descriptions(self):
         """Return the module attribute information for all IODs.
@@ -136,10 +135,10 @@ class Part3Reader(SpecReader):
     def _get_section_node(self, section):
         section_parts = section.split('.')
         section_name = section_parts[0]
-        search_path = ['chapter[@label="{}"]'.format(section_name)]
+        search_path = [f'chapter[@label="{section_name}"]']
         for section_part in section_parts[1:]:
             section_name = section_name + '.' + section_part
-            search_path.append('section[@label="{}"]'.format(section_name))
+            search_path.append(f'section[@label="{section_name}"]')
         return self._find(self._get_doc_root(), search_path)
 
     def _parse_iod_node(self, iod_node):
@@ -219,7 +218,7 @@ class Part3Reader(SpecReader):
 
     def _get_ref_node(self, element, label):
         return self._get_doc_tree().find(
-            './/{}{}[@label="{}"]'.format(self.docbook_ns, element, label))
+            f'.//{self.docbook_ns}{element}[@label="{label}"]')
 
     @staticmethod
     def _get_ref_element_and_label(ref):

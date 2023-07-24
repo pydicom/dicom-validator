@@ -1,44 +1,31 @@
-import json
-import unittest
-
-import os
-
 from dicom_validator.spec_reader.condition import Condition
-from dicom_validator.spec_reader.edition_reader import EditionReader
-from dicom_validator.tests.test_utils import json_fixture_path
 
 
-class ConditionReadTest(unittest.TestCase):
-    dict_info = None
-
-    @classmethod
-    def setUpClass(cls):
-        with open(os.path.join(json_fixture_path(),
-                               EditionReader.dict_info_json)) as info_file:
-            cls.dict_info = json.load(info_file)
+class ConditionReadTest:
 
     def check_condition(self, cond_dict, cond_type, index=0, op=None,
                         tag=None, values=None, nr_and_cond=0, nr_or_cond=0):
         condition = Condition.read_condition(cond_dict)
-        self.assertEqual(cond_type, condition.type)
+        assert cond_type == condition.type
         self.check_sub_condition(condition, index, op, tag, values,
                                  nr_and_cond, nr_or_cond)
         return condition
 
-    def check_sub_condition(self, condition, index=0, op=None,
+    @staticmethod
+    def check_sub_condition(condition, index=0, op=None,
                             tag=None, values=None, nr_and_cond=0,
                             nr_or_cond=0):
-        self.assertEqual(index, condition.index)
-        self.assertEqual(op, condition.operator)
-        self.assertEqual(tag, condition.tag)
-        self.assertEqual(values or [], condition.values)
-        self.assertEqual(nr_and_cond, len(condition.and_conditions))
-        self.assertEqual(nr_or_cond, len(condition.or_conditions))
+        assert index == condition.index
+        assert op == condition.operator
+        assert tag == condition.tag
+        assert values or [] == condition.values
+        assert nr_and_cond == len(condition.and_conditions)
+        assert nr_or_cond == len(condition.or_conditions)
 
     def test_read_type_only(self):
         self.check_condition({"type": "U"}, 'U')
 
-    def test_eq(self):
+    def test_eq(self, dict_info):
         cond_dict = {
             "index": 0,
             "op": "=",
@@ -60,11 +47,11 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('Dose Summation Type is equal to "BEAM", '
-                         '"BEAM_SESSION" or "CONTROL_POINT"',
-                         condition.to_string(self.dict_info))
+        assert (condition.to_string(
+            dict_info) == 'Dose Summation Type is equal to "BEAM", '
+                          '"BEAM_SESSION" or "CONTROL_POINT"')
 
-    def test_greater(self):
+    def test_greater(self, dict_info):
         cond_dict = {
             "index": 0,
             "op": ">",
@@ -81,10 +68,9 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('Number of Frames is greater than 1',
-                         condition.to_string(self.dict_info))
+        assert condition.to_string(dict_info) == 'Number of Frames is greater than 1'
 
-    def test_less(self):
+    def test_less(self, dict_info):
         cond_dict = {
             "index": 0,
             "op": "<",
@@ -101,10 +87,9 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('Number of Frames is less than 20',
-                         condition.to_string(self.dict_info))
+        assert condition.to_string(dict_info) == 'Number of Frames is less than 20'
 
-    def test_points_to(self):
+    def test_points_to(self, dict_info):
         cond_dict = {
             "index": 0,
             "op": "=>",
@@ -123,11 +108,10 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('Frame Increment Pointer points to '
-                         '(0018,1065) (Frame Time Vector)',
-                         condition.to_string(self.dict_info))
+        assert (condition.to_string(dict_info) == 'Frame Increment Pointer points to '
+                                                  '(0018,1065) (Frame Time Vector)')
 
-    def test_exists(self):
+    def test_exists(self, dict_info):
         cond_dict = {
             "index": 0,
             "op": "+",
@@ -142,10 +126,9 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('Pixel Data exists',
-                         condition.to_string(self.dict_info))
+        assert condition.to_string(dict_info) == 'Pixel Data exists'
 
-    def test_and_condition(self):
+    def test_and_condition(self, dict_info):
         cond_dict = {
             "and": [
                 {
@@ -184,12 +167,12 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('DICOM Media Retrieval Sequence is not present and '
-                         'WADO Retrieval Sequence[1] exists and WADO-RS '
-                         'Retrieval Sequence is not equal to "TEST"',
-                         condition.to_string(self.dict_info))
+        assert (condition.to_string(dict_info) == 'DICOM Media Retrieval Sequence is not present and '
+                                                  'WADO Retrieval Sequence[1] exists and WADO-RS '
+                                                  'Retrieval Sequence is not equal to "TEST"'
+                )
 
-    def test_or_condition(self):
+    def test_or_condition(self, dict_info):
         cond_dict = {
             "or": [
                 {
@@ -218,9 +201,8 @@ class ConditionReadTest(unittest.TestCase):
         condition = test_condition()
         cond_dict = condition.dict()
         test_condition()
-        self.assertEqual('STOW-RS Storage Sequence is not present or '
-                         'XDS Storage Sequence is not present',
-                         condition.to_string(self.dict_info))
+        assert (condition.to_string(dict_info) == 'STOW-RS Storage Sequence is not present or '
+                                                  'XDS Storage Sequence is not present')
 
     def test_other_condition(self):
         cond_dict = {
@@ -245,7 +227,7 @@ class ConditionReadTest(unittest.TestCase):
                 tag='(0072,0704)', values=['PALETTE'])
             self.check_sub_condition(
                 cond.other_condition, op='+', tag='(0072,0704)')
-            self.assertEqual('MN', cond.other_condition.type)
+            assert cond.other_condition.type == 'MN'
             return cond
 
         condition = test_condition()

@@ -52,7 +52,7 @@ class IODValidator:
             if self.errors:
                 self.logger.info('\nErrors\n======')
                 for module_name, errors in self.errors.items():
-                    self.logger.warning('Module "{}":'.format(module_name))
+                    self.logger.warning(f'Module "{module_name}":')
                     for error_msg in errors:
                         self.logger.warning(error_msg)
         return self.errors
