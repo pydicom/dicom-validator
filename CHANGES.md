@@ -17,6 +17,9 @@ The released versions correspond to PyPi releases.
 ### Changes
 * Removed support for Python 3.6, added support for Python 3.11
 
+### Infrastructure
+* Added release workflow
+
 ## [Version 0.3.4](https://pypi.python.org/pypi/dicom-validator/0.3.3) (2021-11-22)
 Fixes a regression introduced with the last release.
 
