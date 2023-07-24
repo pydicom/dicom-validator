@@ -2,9 +2,9 @@
 SpecReader reads information from DICOM standard files in docbook format as
 provided by ACR-NEMA.
 """
-import os
 
 import xml.etree.ElementTree as ElementTree
+from pathlib import Path
 
 
 class SpecReaderError(Exception):
@@ -27,29 +27,24 @@ class SpecReader:
     docbook_ns = '{http://docbook.org/ns/docbook}'
 
     def __init__(self, spec_dir):
-        self.spec_dir = spec_dir
+        self.spec_dir = Path(spec_dir)
         self.part_nr = 0
-        document_files = os.listdir(self.spec_dir)
-        if not document_files:
+        if not list(self.spec_dir.iterdir()):
             raise SpecReaderFileError(
-                'Missing docbook files in {}'.format(self.spec_dir))
+                f'Missing docbook files in {self.spec_dir}')
         self._doc_trees = {}
 
     def _get_doc_tree(self):
         if self.part_nr not in self._doc_trees:
-            doc_name = 'part{:02}.xml'.format(self.part_nr)
-            document_files = os.listdir(self.spec_dir)
-            if doc_name not in document_files:
+            doc_name = self.spec_dir / f'part{self.part_nr:02}.xml'
+            if doc_name not in self.spec_dir.iterdir():
                 raise SpecReaderFileError(
-                    'Missing docbook file {} in {}'.format(
-                        doc_name, self.spec_dir))
+                    f'Missing docbook file {doc_name}')
             try:
-                self._doc_trees[self.part_nr] = ElementTree.parse(
-                    os.path.join(self.spec_dir, doc_name))
+                self._doc_trees[self.part_nr] = ElementTree.parse(doc_name)
             except ElementTree.ParseError:
                 raise SpecReaderFileError(
-                    'Parse error in docbook file {} in {}'.format(
-                        doc_name, self.spec_dir))
+                    f'Parse error in docbook file {doc_name}')
         return self._doc_trees.get(self.part_nr)
 
     def _get_doc_root(self):

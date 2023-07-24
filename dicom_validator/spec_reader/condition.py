@@ -108,7 +108,7 @@ class Condition:
             else:
                 result = self.tag
             if self.index:
-                result += '[{}]'.format(self.index)
+                result += f'[{self.index}]'
         if self.operator is None:
             return result
         if self.operator == '+':

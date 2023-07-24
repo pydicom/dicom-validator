@@ -25,7 +25,7 @@ class Part4Reader(SpecReader):
             return self._sop_class_uids[sop_class_uid]
         except KeyError:
             raise SpecReaderLookupError(
-                'SOP Class {} not found'.format(sop_class_uid))
+                f'SOP Class {sop_class_uid} not found')
 
     def iod_chapters(self):
         """Return a dict of the chapter in part 3 for each SOP Class
@@ -38,7 +38,7 @@ class Part4Reader(SpecReader):
     def _read_sop_table(self, chapter):
         table = self._find(self._get_doc_root(),
                            ['chapter[@label="B"]',
-                            'section[@label="{}"]'.format(chapter), 'table',
+                            f'section[@label="{chapter}"]', 'table',
                             'tbody'])
         if table is None:
             raise SpecReaderParseError('SOP Class table in Part 4 not found')

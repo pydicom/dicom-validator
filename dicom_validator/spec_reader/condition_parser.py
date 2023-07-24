@@ -336,7 +336,7 @@ class ConditionParser:
             self, condition_str: str, operator: str,
             values: List[str], logical_op: str
     ) -> Optional[Condition]:
-        split_string = ', {} '.format(logical_op)
+        split_string = f', {logical_op} '
         conditions = condition_str.split(split_string)
         result0 = self._parse_tags(conditions[0], operator, values)
         if result0 is None:
@@ -355,7 +355,7 @@ class ConditionParser:
             self, condition: str, operator: str,
             values: List[str], logical_op: str
     ) -> Optional[Condition]:
-        condition = condition.replace(' {} '.format(logical_op), ', ')
+        condition = condition.replace(f' {logical_op} ', ', ')
         result = Condition()
         cond_list = self._condition_list(logical_op, result)
         for tag_string in condition.split(', '):
