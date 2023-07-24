@@ -1,20 +1,18 @@
 import datetime
+import html.parser as html_parser
 import json
 import logging
-import os
 import re
 import sys
 from abc import ABC
+from pathlib import Path
+from urllib.request import urlretrieve
 
 from dicom_validator import __version__
 from dicom_validator.spec_reader.part3_reader import Part3Reader
 from dicom_validator.spec_reader.part4_reader import Part4Reader
 from dicom_validator.spec_reader.part6_reader import Part6Reader
 from dicom_validator.spec_reader.serializer import DefinitionEncoder
-
-from urllib.request import urlretrieve
-
-import html.parser as html_parser
 
 
 class EditionParser(html_parser.HTMLParser, ABC):
@@ -48,7 +46,7 @@ class EditionReader:
     uid_info_json = 'uid_info.json'
 
     def __init__(self, path):
-        self.path = path
+        self.path = Path(path)
         self.logger = logging.getLogger()
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -56,24 +54,23 @@ class EditionReader:
     def update_edition(self):
         try:
             self.logger.info('Getting DICOM editions...')
-            self.retrieve(os.path.join(self.path, self.html_filename))
+            self.retrieve(self.path / self.html_filename)
             self.write_to_json()
         except BaseException as exception:
             self.logger.warning('Failed to get DICOM read_from_html: %s',
                                 str(exception))
 
     def retrieve(self, html_path):
-        if not os.path.exists(os.path.dirname(html_path)):
-            os.makedirs(os.path.dirname(html_path))
+        html_path.parent.mkdir(exist_ok=True)
         urlretrieve(self.base_url, html_path)
 
     def get_editions(self, update=True):
-        editions_path = os.path.join(self.path, self.json_filename)
-        if os.path.exists(editions_path):
+        editions_path = self.path / self.json_filename
+        if editions_path.exists():
             if update:
                 today = datetime.datetime.today()
                 modified_date = datetime.datetime.fromtimestamp(
-                    os.path.getmtime(editions_path))
+                    editions_path.stat().st_mtime)
                 # no need to update the edition dir more than once a month
                 update = (today - modified_date).days > 30
             else:
@@ -83,12 +80,12 @@ class EditionReader:
             update = True
         if update:
             self.update_edition()
-        if os.path.exists(editions_path):
+        if editions_path.exists():
             with open(editions_path) as json_file:
                 return json.load(json_file)
 
     def read_from_html(self):
-        html_path = os.path.join(self.path, self.html_filename)
+        html_path = self.path / self.html_filename
         with open(html_path) as html_file:
             contents = html_file.read()
         parser = EditionParser()
@@ -99,7 +96,7 @@ class EditionReader:
     def write_to_json(self):
         editions = self.read_from_html()
         if editions:
-            json_path = os.path.join(self.path, self.json_filename)
+            json_path = self.path / self.json_filename
             with open(json_path, 'w') as json_file:
                 json_file.write(json.dumps(editions))
 
@@ -139,16 +136,16 @@ class EditionReader:
         if revision != 'none':
             revision = self.get_edition(revision)
             if revision:
-                return revision, os.path.join(self.path, revision)
+                return revision, self.path / revision
             return None, None
         return None, self.path
 
     def get_chapter(self, revision, chapter, destination, is_current):
-        file_path = os.path.join(destination, 'part{:02}.xml'.format(chapter))
-        if os.path.exists(file_path):
+        file_path = destination / f'part{chapter:02}.xml'
+        if file_path.exists():
             return True
         elif not revision:
-            print('Chapter {} not present at {}.'.format(chapter, file_path))
+            print(f'Chapter {chapter} not present at {file_path}.')
             return False
         revision_dir = 'current' if is_current else revision
         url = '{0}{1}/source/docbook/part{2:02}/part{2:02}.xml'.format(
@@ -160,18 +157,16 @@ class EditionReader:
             return True
         except BaseException as exception:
             print('Failed to download {}: {}'.format(url, str(exception)))
-            if os.path.exists(file_path):
+            if file_path.exists():
                 try:
-                    os.remove(file_path)
+                    file_path.unlink()
                 except OSError:
-                    print('Failed to remove incomplete file {}.'.format(
-                        file_path))
+                    print(f'Failed to remove incomplete file {file_path}.')
             return False
 
     @staticmethod
     def load_info(json_path, info_json):
-        with open(os.path.join(json_path,
-                               info_json)) as info_file:
+        with open(json_path / info_json) as info_file:
             return json.load(info_file)
 
     @classmethod
@@ -194,7 +189,7 @@ class EditionReader:
     def json_files_exist(cls, json_path):
         for filename in (cls.dict_info_json, cls.module_info_json,
                          cls.iod_info_json, cls.uid_info_json):
-            if not os.path.exists(os.path.join(json_path, filename)):
+            if not (json_path / filename).exists():
                 return False
         return True
 
@@ -217,18 +212,14 @@ class EditionReader:
             if chapter in chapter_info:
                 for uid in chapter_info[chapter]:
                     definition[uid] = iod_info[chapter]
-        with open(os.path.join(json_path, cls.iod_info_json),
-                  'w') as info_file:
+        with open(json_path / cls.iod_info_json, 'w') as info_file:
             info_file.write(cls.dump_description(definition))
-        with open(os.path.join(json_path, cls.module_info_json),
-                  'w') as info_file:
+        with open(json_path / cls.module_info_json, 'w') as info_file:
             info_file.write(
                 cls.dump_description(part3reader.module_descriptions()))
-        with open(os.path.join(json_path, cls.dict_info_json),
-                  'w') as info_file:
+        with open(json_path / cls.dict_info_json, 'w') as info_file:
             info_file.write(cls.dump_description(dict_info))
-        with open(os.path.join(json_path, cls.uid_info_json),
-                  'w') as info_file:
+        with open(json_path / cls.uid_info_json, 'w') as info_file:
             info_file.write(cls.dump_description(part6reader.all_uids()))
         cls.write_current_version(json_path)
         print('Done!')
@@ -239,12 +230,10 @@ class EditionReader:
             print('DICOM revision {} not found.'.format(revision))
             return
 
-        docbook_path = os.path.join(destination, 'docbook')
-        if not os.path.exists(docbook_path):
-            os.makedirs(docbook_path)
-        json_path = os.path.join(destination, 'json')
-        if not os.path.exists(json_path):
-            os.makedirs(json_path)
+        docbook_path = destination / 'docbook'
+        docbook_path.mkdir(parents=True, exist_ok=True)
+        json_path = destination / 'json'
+        json_path.mkdir(parents=True, exist_ok=True)
 
         # download the docbook files
         for chapter in [3, 4, 6]:
@@ -261,14 +250,14 @@ class EditionReader:
 
     @staticmethod
     def is_current_version(json_path):
-        version_path = os.path.join(json_path, 'version')
-        if not os.path.exists(version_path):
+        version_path = json_path / 'version'
+        if not version_path.exists():
             return False
         with open(version_path) as f:
             return f.read() >= __version__
 
     @staticmethod
     def write_current_version(json_path):
-        version_path = os.path.join(json_path, 'version')
+        version_path = json_path / 'version'
         with open(version_path, 'w') as f:
             f.write(__version__)

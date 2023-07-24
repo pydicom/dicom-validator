@@ -1,13 +1,13 @@
 import argparse
 import logging
-import os
+from pathlib import Path
 
 from dicom_validator.spec_reader.edition_reader import EditionReader
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
 
 
 def validate(args, base_path):
-    json_path = os.path.join(base_path, 'json')
+    json_path = Path(base_path, 'json')
     dict_info = EditionReader.load_dict_info(json_path)
     iod_info = EditionReader.load_iod_info(json_path)
     module_info = EditionReader.load_module_info(json_path)
@@ -30,8 +30,7 @@ def main(args=None):
     parser.add_argument('--standard-path', '-src',
                         help='Base path with the DICOM specs in docbook '
                              'and json format',
-                        default=os.path.join(os.path.expanduser("~"),
-                                             'dicom-validator'))
+                        default=str(Path.home() / 'dicom-validator'))
     parser.add_argument('--revision', '-r',
                         help='Standard revision (e.g. "2014c"), year of '
                              'revision, "current" or "local" (latest '

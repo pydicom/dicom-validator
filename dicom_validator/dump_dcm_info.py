@@ -5,6 +5,7 @@ Dumps tag information from a DICOM file using information in PS3.6.
 import argparse
 import os
 import re
+from pathlib import Path
 
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
@@ -138,8 +139,7 @@ def main():
     parser.add_argument('--standard-path', '-src',
                         help='Path with the DICOM specs in docbook '
                              'and json format',
-                        default=os.path.join(os.path.expanduser("~"),
-                                             'dicom-validator'))
+                        default=str(Path.home() / 'dicom-validator'))
     parser.add_argument('--revision', '-r',
                         help='Standard revision (e.g. "2014c"), year of '
                              'revision, "current" or "local" (latest '
@@ -165,7 +165,7 @@ def main():
             'Failed to get DICOM edition {} - aborting'.format(args.revision))
         return 1
 
-    json_path = os.path.join(destination, 'json')
+    json_path = destination / 'json'
     dict_info = EditionReader.load_dict_info(json_path)
     uid_info = EditionReader.load_uid_info(json_path)
     dumper = DataElementDumper(dict_info, uid_info, args.max_value_len,
