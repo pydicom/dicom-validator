@@ -10,7 +10,9 @@ import sys
 
 from dicom_validator.spec_reader.condition_parser import ConditionParser
 from dicom_validator.spec_reader.spec_reader import (
-    SpecReader, SpecReaderParseError, SpecReaderLookupError
+    SpecReader,
+    SpecReaderParseError,
+    SpecReaderLookupError,
 )
 
 
@@ -53,7 +55,7 @@ class Part3Reader(SpecReader):
         try:
             return self._iod_descriptions[chapter]
         except KeyError:
-            raise SpecReaderLookupError(f'No definition found for chapter {chapter}')
+            raise SpecReaderLookupError(f"No definition found for chapter {chapter}")
 
     def iod_descriptions(self):
         """Return the IOD information dict per chapter.
@@ -63,9 +65,11 @@ class Part3Reader(SpecReader):
         See iod_description() for the format of the IOD descriptions.
         Retired IODs (which have no module list) are omitted.
         """
-        return {chapter: self.iod_description(chapter) for chapter in
-                self._get_iod_nodes()
-                if self.iod_description(chapter)['modules']}
+        return {
+            chapter: self.iod_description(chapter)
+            for chapter in self._get_iod_nodes()
+            if self.iod_description(chapter)["modules"]
+        }
 
     def module_description(self, section):
         """Return the module information in the given section.
@@ -89,8 +93,7 @@ class Part3Reader(SpecReader):
         try:
             return self._module_descriptions[section]
         except KeyError:
-            raise SpecReaderLookupError(
-                f'No definition found for section {section}')
+            raise SpecReaderLookupError(f"No definition found for section {section}")
 
     def module_descriptions(self):
         """Return the module attribute information for all IODs.
@@ -105,68 +108,72 @@ class Part3Reader(SpecReader):
 
     def _get_iod_nodes(self):
         if not self._iod_nodes:
-            chapter_a = self._find(self._get_doc_root(),
-                                   ['chapter[@label="A"]'])
+            chapter_a = self._find(self._get_doc_root(), ['chapter[@label="A"]'])
             if chapter_a is None:
-                raise SpecReaderParseError('Chapter A in Part 3 not found')
+                raise SpecReaderParseError("Chapter A in Part 3 not found")
             # ignore A.1
-            all_iod_nodes = self._findall(chapter_a, ['section'])[1:]
+            all_iod_nodes = self._findall(chapter_a, ["section"])[1:]
             iod_def_endings = (
-                ' IOD',
-                ' Information Object Definition',
-                ' Information Objection Definition'  # account for known typo
+                " IOD",
+                " Information Object Definition",
+                " Information Objection Definition",  # account for known typo
             )
 
             iod_sub_nodes = []
             nodes_with_subnodes = []
             for iod_node in all_iod_nodes:
                 sub_nodes = self._find_sections_with_title_endings(
-                    iod_node, iod_def_endings)
+                    iod_node, iod_def_endings
+                )
                 if sub_nodes:
                     nodes_with_subnodes.append(iod_node)
                     iod_sub_nodes.extend(sub_nodes)
-            all_iod_nodes = [node for node in all_iod_nodes if
-                             node not in nodes_with_subnodes]
+            all_iod_nodes = [
+                node for node in all_iod_nodes if node not in nodes_with_subnodes
+            ]
             all_iod_nodes.extend(iod_sub_nodes)
-            self._iod_nodes = {node.attrib['label']: node for node in
-                               all_iod_nodes}
+            self._iod_nodes = {node.attrib["label"]: node for node in all_iod_nodes}
         return self._iod_nodes
 
     def _get_section_node(self, section):
-        section_parts = section.split('.')
+        section_parts = section.split(".")
         section_name = section_parts[0]
         search_path = [f'chapter[@label="{section_name}"]']
         for section_part in section_parts[1:]:
-            section_name = section_name + '.' + section_part
+            section_name = section_name + "." + section_part
             search_path.append(f'section[@label="{section_name}"]')
         return self._find(self._get_doc_root(), search_path)
 
     def _parse_iod_node(self, iod_node):
-        return {'title': self._find(iod_node, ['title']).text,
-                'modules': self._get_iod_modules(iod_node)}
+        return {
+            "title": self._find(iod_node, ["title"]).text,
+            "modules": self._get_iod_modules(iod_node),
+        }
 
     def _parse_module_description(self, parent_node):
-        table_node = self._find(parent_node, ['table'])
+        table_node = self._find(parent_node, ["table"])
         # handle the case that the parent node is the table itself
         if table_node is None:
             table_node = parent_node
-        table_body_node = self._find(table_node, ['tbody'])
+        table_body_node = self._find(table_node, ["tbody"])
         if table_body_node is None:
             return
-        rows = self._findall(table_body_node, ['tr'])
+        rows = self._findall(table_body_node, ["tr"])
         current_level = 0
         current_descriptions = [{}]
         last_tag_id = None
         for row in rows:
-            columns = self._findall(row, ['td'])
+            columns = self._findall(row, ["td"])
             if not columns:
                 continue
             tag_name, current_level = self._get_tag_name_and_level(
-                columns[0], current_descriptions, current_level, last_tag_id)
+                columns[0], current_descriptions, current_level, last_tag_id
+            )
             if len(columns) == 4:
                 last_tag_id = self._handle_regular_attribute(
-                    columns, current_descriptions, last_tag_id, tag_name)
-            elif tag_name.startswith('Include'):
+                    columns, current_descriptions, last_tag_id, tag_name
+                )
+            elif tag_name.startswith("Include"):
                 self._handle_included_attributes(columns, current_descriptions)
             else:
                 # todo: other entries
@@ -174,13 +181,13 @@ class Part3Reader(SpecReader):
         return current_descriptions[0]
 
     def _handle_included_attributes(self, columns, current_descriptions):
-        include_node = self._find(columns[0], ['para', 'emphasis', 'xref'])
+        include_node = self._find(columns[0], ["para", "emphasis", "xref"])
         if include_node is None:
             # todo: functional group macros or similar
             return
-        include_ref = include_node.attrib['linkend']
+        include_ref = include_node.attrib["linkend"]
         if self._current_refs and include_ref == self._current_refs[-1]:
-            self.logger.debug('Self reference in %s  - ignoring.', include_ref)
+            self.logger.debug("Self reference in %s  - ignoring.", include_ref)
             return
         self._current_refs.append(include_ref)
         element, label = self._get_ref_element_and_label(include_ref)
@@ -188,58 +195,61 @@ class Part3Reader(SpecReader):
             ref_node = self._get_ref_node(element, label)
             if ref_node is None:
                 raise SpecReaderLookupError(
-                    'Failed to lookup include reference ' + include_ref)
+                    "Failed to lookup include reference " + include_ref
+                )
             # it is allowed to have no attributes (example: Raw Data)
             ref_description = self._parse_module_description(ref_node) or {}
             self._module_descriptions[label] = ref_description
-        current_descriptions[-1].setdefault('include', []).append(label)
+        current_descriptions[-1].setdefault("include", []).append(label)
         self._current_refs.pop()
 
-    def _handle_regular_attribute(self, columns, current_descriptions,
-                                  last_tag_id, tag_name):
+    def _handle_regular_attribute(
+        self, columns, current_descriptions, last_tag_id, tag_name
+    ):
         tag_id = self._find_text(columns[1])
         tag_type = self._find_text(columns[2])
         if tag_id:
             current_descriptions[-1][tag_id] = {
-                'name': tag_name,
-                'type': tag_type,
+                "name": tag_name,
+                "type": tag_type,
             }
-            if self._condition_parser and tag_type in ('1C', '2C'):
+            if self._condition_parser and tag_type in ("1C", "2C"):
                 # cond = self._find_all_text(columns[3])
                 # index = cond.find('Required if ')
                 # if index >= 0:
                 #     current_descriptions[-1][tag_id]['desc'] = cond[index:]
-                current_descriptions[-1][tag_id][
-                    'cond'] = self._condition_parser.parse(
-                    self._find_all_text(columns[3]))
+                current_descriptions[-1][tag_id]["cond"] = self._condition_parser.parse(
+                    self._find_all_text(columns[3])
+                )
 
             last_tag_id = tag_id
         return last_tag_id
 
     def _get_ref_node(self, element, label):
         return self._get_doc_tree().find(
-            f'.//{self.docbook_ns}{element}[@label="{label}"]')
+            f'.//{self.docbook_ns}{element}[@label="{label}"]'
+        )
 
     @staticmethod
     def _get_ref_element_and_label(ref):
-        element, label = ref.split('_')
-        if element == 'sect':
-            element = 'section'
+        element, label = ref.split("_")
+        if element == "sect":
+            element = "section"
         return element, label
 
-    def _get_tag_name_and_level(self, column, current_descriptions,
-                                current_level, last_tag_id):
+    def _get_tag_name_and_level(
+        self, column, current_descriptions, current_level, last_tag_id
+    ):
         tag_name = self._find_text(column)
         if not tag_name:
-            return '', 0
+            return "", 0
         start_chars = next(groupby(tag_name))
-        level = len(list(start_chars[1])) if start_chars[0] == '>' else 0
+        level = len(list(start_chars[1])) if start_chars[0] == ">" else 0
         tag_name = tag_name[level:]
         if level > current_level:
             sequence_description = {}
             try:
-                current_descriptions[-1][last_tag_id][
-                    'items'] = sequence_description
+                current_descriptions[-1][last_tag_id]["items"] = sequence_description
                 current_descriptions.append(sequence_description)
             except KeyError:
                 # silently ignore error in older specs
@@ -252,59 +262,68 @@ class Part3Reader(SpecReader):
 
     def _get_iod_modules(self, iod_node):
         module_table_sections = self._find_sections_with_title_endings(
-            iod_node, (' Module Table', ' IOD Modules'))
+            iod_node, (" Module Table", " IOD Modules")
+        )
         if not module_table_sections:
             module_table_sections = self._find_sections_with_title_endings(
-                iod_node, ('IOD Entity-Relationship Model',))
+                iod_node, ("IOD Entity-Relationship Model",)
+            )
         modules = {}
         if len(module_table_sections) == 1:
-            module_rows = self._findall(module_table_sections[0],
-                                        ['table', 'tbody', 'tr'])
+            module_rows = self._findall(
+                module_table_sections[0], ["table", "tbody", "tr"]
+            )
             row_span = 0
             for row in module_rows:
-                columns = self._findall(row, ['td'])
+                columns = self._findall(row, ["td"])
                 name_index = 0 if row_span > 0 else 1
                 if row_span == 0:
-                    if 'rowspan' in columns[0].attrib:
-                        row_span = int(columns[0].attrib['rowspan'])
+                    if "rowspan" in columns[0].attrib:
+                        row_span = int(columns[0].attrib["rowspan"])
                     else:
                         row_span = 1
                 name = self._find_text(columns[name_index])
                 modules[name] = {}
                 try:
-                    ref_section = self._find(columns[name_index + 1],
-                                             ['para', 'xref']).attrib[
-                        'linkend'].split('_')[1]
+                    ref_section = (
+                        self._find(columns[name_index + 1], ["para", "xref"])
+                        .attrib["linkend"]
+                        .split("_")[1]
+                    )
                 except AttributeError:
                     try:
-                        ref_section = self._find(
-                            columns[name_index + 1], ['xref']).attrib[
-                            'linkend'].split('_')[1]
+                        ref_section = (
+                            self._find(columns[name_index + 1], ["xref"])
+                            .attrib["linkend"]
+                            .split("_")[1]
+                        )
                     except AttributeError:
-                        self.logger.warning(
-                            'Failed to read module table for %s', name)
+                        self.logger.warning("Failed to read module table for %s", name)
                         continue
-                modules[name]['ref'] = ref_section
+                modules[name]["ref"] = ref_section
                 # make sure the module description is loaded
                 self.module_description(ref_section)
-                modules[name]['use'] = self._find_text(columns[name_index + 2])
-                if (self._condition_parser is not None and
-                        modules[name]['use'].startswith('C - ')):
-                    modules[name]['cond'] = self._condition_parser.parse(
-                        modules[name]['use'])
+                modules[name]["use"] = self._find_text(columns[name_index + 2])
+                if self._condition_parser is not None and modules[name][
+                    "use"
+                ].startswith("C - "):
+                    modules[name]["cond"] = self._condition_parser.parse(
+                        modules[name]["use"]
+                    )
                 else:
-                    modules[name]['use'] = modules[name]['use'][0]
+                    modules[name]["use"] = modules[name]["use"][0]
                 row_span -= 1
         return modules
 
     def _find_sections_with_title_endings(self, node, title_endings):
-        section_nodes = self._findall(node, ['section'])
+        section_nodes = self._findall(node, ["section"])
         found_nodes = []
         for sections_node in section_nodes:
-            title_node = self._find(sections_node, ['title'])
+            title_node = self._find(sections_node, ["title"])
             if title_node is not None:
                 title = title_node.text
-                if any([title.endswith(title_ending) for title_ending in
-                        title_endings]):
+                if any(
+                    [title.endswith(title_ending) for title_ending in title_endings]
+                ):
                     found_nodes.append(sections_node)
         return found_nodes
