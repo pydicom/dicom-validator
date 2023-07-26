@@ -34,7 +34,7 @@
 * add modules requiring missing attributes to result
 * allow additional user input specs (fixed name)
 
-#### Other 
+#### Other
 * type validation :question:
 * value validation (content, size)
 

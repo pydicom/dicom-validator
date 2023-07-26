@@ -9,8 +9,14 @@ from dicom_validator.validator.iod_validator import IODValidator
 
 
 class DicomFileValidator:
-    def __init__(self, iod_info, module_info, dict_info=None,
-                 log_level=logging.INFO, force_read=False):
+    def __init__(
+        self,
+        iod_info,
+        module_info,
+        dict_info=None,
+        log_level=logging.INFO,
+        force_read=False,
+    ):
         self._module_info = module_info
         self._iod_info = iod_info
         self._dict_info = dict_info
@@ -23,7 +29,7 @@ class DicomFileValidator:
     def validate(self, path):
         errors = {}
         if not os.path.exists(path):
-            errors.update({path: {'fatal': 'File missing'}})
+            errors.update({path: {"fatal": "File missing"}})
             self.logger.warning('\n"%s" does not exist - skipping', path)
         else:
             if os.path.isdir(path):
@@ -44,10 +50,14 @@ class DicomFileValidator:
         try:
             data_set = dcmread(file_path, defer_size=1024, force=self._force_read)
         except InvalidDicomError:
-            self.logger.error(f'Invalid DICOM file: {file_path}')
-            return {file_path: {'fatal': 'Invalid DICOM file'}}
+            self.logger.error(f"Invalid DICOM file: {file_path}")
+            return {file_path: {"fatal": "Invalid DICOM file"}}
         return {
-            file_path: IODValidator(data_set, self._iod_info,
-                                    self._module_info, self._dict_info,
-                                    self.logger.level).validate()
+            file_path: IODValidator(
+                data_set,
+                self._iod_info,
+                self._module_info,
+                self._dict_info,
+                self.logger.level,
+            ).validate()
         }

@@ -3,6 +3,9 @@ The released versions correspond to PyPi releases.
 
 ## [Version 0.4.0] (Unreleased)
 
+### Infrastructure
+* Added pre-commit configuration for use with pre-commit hook
+
 ## [Version 0.3.5](https://pypi.python.org/pypi/dicom-validator/0.3.5) (2023-07-24)
 Fixes several issues with the condition parser.
 
@@ -35,12 +38,12 @@ This is a bugfix release.
 
 ### Fixes
 - all tags including PixelData are now loaded to account for dependencies on PixelData
-  see [#6](../../issues/6)) 
+  see [#6](../../issues/6))
 
 ## [Version 0.3.2](https://pypi.python.org/pypi/dicom-validator/0.3.2) (2021-07-30)
 Renamed from dcm-spec-tools to dicom-validator and moved into pydicom organization.
 No functional changes have been made in this release.
-  
+
 ## [Version 0.3.1](https://pypi.org/project/dcm-spec-tools/0.3.1) (2021-01-24)
 
 ### Changes
@@ -55,10 +58,10 @@ No functional changes have been made in this release.
 
 ### Fixes
 * handled empty rows in some editions (caused crash for 2019 edition)
-* account for added columns in IOD and UID tables see [#3](../../issues/3)) 
+* account for added columns in IOD and UID tables see [#3](../../issues/3))
 
 ### Infrastructure
-* changed CI to GitHub actions  
+* changed CI to GitHub actions
 
 ## [Version 0.3.0](https://pypi.org/project/dcm-spec-tools/0.3.0) (2018-06-26)
 (omitted some minor releases)
