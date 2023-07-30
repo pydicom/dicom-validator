@@ -70,7 +70,7 @@ class DataElementDumper:
         return True
 
     def print_dataelement(self, _, dataelement):
-        tag_id = f"{dataelement.tag.group:04X},{dataelement.tag.element:04X})"
+        tag_id = f"({dataelement.tag.group:04X},{dataelement.tag.element:04X})"
         description = self.dict_info.get(tag_id)
         if description is None:
             name = "[Unknown]"
