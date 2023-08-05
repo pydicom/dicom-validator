@@ -1,7 +1,7 @@
 import logging
 
 import pytest
-from pydicom.dataset import Dataset
+from pydicom.dataset import Dataset, FileMetaDataset
 
 from dicom_validator.validator.iod_validator import IODValidator
 
@@ -14,7 +14,7 @@ def new_data_set(tags):
     data_set = Dataset()
     for tag_name, value in tags.items():
         setattr(data_set, tag_name, value)
-    data_set.file_meta = Dataset()
+    data_set.file_meta = FileMetaDataset()
     data_set.is_implicit_VR = False
     data_set.is_little_endian = True
     return data_set
@@ -31,7 +31,7 @@ def validator(iod_info, module_info, request):
     return IODValidator(data_set, iod_info, module_info, None, logging.ERROR)
 
 
-class IODValidatorTest:
+class TestIODValidator:
     """Tests IODValidator.
     Note: some of the fixture data are not consistent with the DICOM Standard.
     """
@@ -70,7 +70,7 @@ class IODValidatorTest:
         # PatientName is set
         assert not self.has_tag_error(result, "Patient", "(0010,0010)", "missing")
         # PatientSex - type 2, missing
-        assert not self.has_tag_error(result, "Patient", "(0010,0040)", "missing")
+        assert self.has_tag_error(result, "Patient", "(0010,0040)", "missing")
         # Clinical Trial Sponsor Name -> type 1, but module usage U
         assert not self.has_tag_error(result, "Patient", "(0012,0010)", "missing")
         # Patient Breed Description -> type 2C, but no parsable condition

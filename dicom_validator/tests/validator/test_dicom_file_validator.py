@@ -2,7 +2,7 @@ import os
 
 import pytest
 from pydicom import write_file
-from pydicom.dataset import Dataset, FileDataset
+from pydicom.dataset import Dataset, FileDataset, FileMetaDataset
 
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
 
@@ -15,10 +15,10 @@ def validator(iod_info, module_info):
 
 
 @pytest.mark.usefixtures("fs")
-class FakeDicomFileValidatorTest:
+class TestFakeDicomFileValidator:
     @staticmethod
     def create_metadata():
-        metadata = Dataset()
+        metadata = FileMetaDataset()
         metadata.MediaStorageSOPClassUID = "1.2.840.10008.5.1.4.1.1.7"
         metadata.MediaStorageSOPInstanceUID = "1.2.3"
         metadata.TransferSyntaxUID = "1.2.840.10008.1.2"
