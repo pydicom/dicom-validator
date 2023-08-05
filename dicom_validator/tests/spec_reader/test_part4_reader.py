@@ -25,7 +25,7 @@ def reader(fs, doc_contents):
 
 
 @pytest.mark.usefixtures("fs")
-class TestPart4ReaderTest:
+class TestPart4Reader:
     def test_read_incomplete_doc_file(self, fs):
         spec_path = Path("/var/dicom/specs")
         spec_path.mkdir(parents=True)

@@ -1,7 +1,7 @@
 from dicom_validator.spec_reader.condition import Condition
 
 
-class ConditionReadTest:
+class TestConditionRead:
     def check_condition(
         self,
         cond_dict,
@@ -14,7 +14,7 @@ class ConditionReadTest:
         nr_or_cond=0,
     ):
         condition = Condition.read_condition(cond_dict)
-        assert cond_type == condition.type
+        assert condition.type == cond_type
         self.check_sub_condition(
             condition, index, op, tag, values, nr_and_cond, nr_or_cond
         )
@@ -24,12 +24,12 @@ class ConditionReadTest:
     def check_sub_condition(
         condition, index=0, op=None, tag=None, values=None, nr_and_cond=0, nr_or_cond=0
     ):
-        assert index == condition.index
-        assert op == condition.operator
-        assert tag == condition.tag
-        assert values or [] == condition.values
-        assert nr_and_cond == len(condition.and_conditions)
-        assert nr_or_cond == len(condition.or_conditions)
+        assert condition.index == index
+        assert condition.operator == op
+        assert condition.tag == tag
+        assert condition.values == (values or [])
+        assert len(condition.and_conditions) == nr_and_cond
+        assert len(condition.or_conditions) == nr_or_cond
 
     def test_read_type_only(self):
         self.check_condition({"type": "U"}, "U")
