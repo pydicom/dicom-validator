@@ -1,8 +1,6 @@
 ## Reader
 
 #### Module definition tables from part 3
-* handle functional groups
-* basic/enhanced, more? additional attributes
 * handle other SOP classes not in the table (presentation states etc.)
 
 #### Parse attribute description

@@ -10,18 +10,13 @@ from dicom_validator.spec_reader.spec_reader import (
 )
 
 
-@pytest.fixture(scope="module")
-def doc_contents(spec_fixture_path):
-    with open(spec_fixture_path / "part03.xml", "rb") as spec_file:
-        contents = spec_file.read()
-    yield contents
+@pytest.fixture
+def reader_with_dict(dict_reader, spec_path):
+    yield Part3Reader(spec_path, dict_reader.data_elements())
 
 
 @pytest.fixture
-def reader(fs, doc_contents):
-    spec_path = Path("dicom", "specs")
-    part3_path = spec_path / "part03.xml"
-    fs.create_file(part3_path, contents=doc_contents)
+def reader(spec_path):
     yield Part3Reader(spec_path)
 
 
@@ -88,6 +83,28 @@ class TestReadPart3:
         assert "A.18" in descriptions
         assert "A.38.1" in descriptions
 
+    def test_group_macros(self, reader_with_dict):
+        descriptions = reader_with_dict.iod_descriptions()
+        assert not descriptions["A.3"]["group_macros"]
+        enhanced_ct_macros = descriptions["A.38.1"]["group_macros"]
+        assert len(enhanced_ct_macros) == 24
+        pixel_measures = enhanced_ct_macros.get("Pixel Measures")
+        assert pixel_measures
+        assert pixel_measures["ref"] == "C.7.6.16.2.1"
+        assert pixel_measures["use"] == "M"
+        xray_details = enhanced_ct_macros.get("CT X-Ray Details")
+        assert xray_details
+        assert xray_details["ref"] == "C.8.15.3.9"
+        assert xray_details["use"] == (
+            "C - Required if Image Type (0008,0008) Value 1"
+            " is ORIGINAL or MIXED, may be present otherwise."
+        )
+        condition = xray_details["cond"]
+        assert condition.type == "MU"
+        assert condition.operator == "="
+        assert condition.tag == "(0008,0008)"
+        assert condition.values == ["ORIGINAL", "MIXED"]
+
     def test_module_description(self, reader):
         with pytest.raises(SpecReaderLookupError):
             reader.module_description("C.9.9.9")
@@ -124,6 +141,4 @@ class TestReadPart3:
 
     def test_module_descriptions(self, reader):
         descriptions = reader.module_descriptions()
-        # 42 modules from 3 classes (20/23/26) with overlapping
-        # common modules + 27 referenced macros
-        assert len(descriptions) == 69
+        assert len(descriptions) == 113

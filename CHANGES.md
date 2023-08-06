@@ -3,6 +3,9 @@ The released versions correspond to PyPi releases.
 
 ## [Version 0.4.0] (Unreleased)
 
+### Features
+* added initial support for validating functional group macros
+
 ### Infrastructure
 * Added pre-commit configuration for use with pre-commit hook
 
