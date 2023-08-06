@@ -1,5 +1,220 @@
 {
   "1.2.840.10008.5.1.4.1.1.12.1.1": {
+    "group_macros": {
+      "Cardiac Synchronization": {
+        "ref": "C.7.6.16.2.7",
+        "use": "U"
+      },
+      "Contrast/Bolus Usage": {
+        "cond": {
+          "type": "U"
+        },
+        "ref": "C.7.6.16.2.12",
+        "use": "C - Required if the is present."
+      },
+      "Derivation Image": {
+        "cond": {
+          "type": "U"
+        },
+        "ref": "C.7.6.16.2.6",
+        "use": "C - Required if the image or frame has been derived from another SOP Instance."
+      },
+      "Frame Anatomy": {
+        "ref": "C.7.6.16.2.8",
+        "use": "M"
+      },
+      "Frame Content": {
+        "ref": "C.7.6.16.2.2",
+        "use": "M"
+      },
+      "Frame Display Shutter": {
+        "ref": "C.7.6.16.2.16",
+        "use": "U"
+      },
+      "Frame Pixel Shift": {
+        "ref": "C.7.6.16.2.14",
+        "use": "U"
+      },
+      "Frame VOI LUT": {
+        "ref": "C.7.6.16.2.10",
+        "use": "M"
+      },
+      "Irradiation Event Identification": {
+        "ref": "C.7.6.16.2.18",
+        "use": "M"
+      },
+      "Patient Orientation in Frame": {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0018,9474)",
+          "type": "MU",
+          "values": [
+            "YES"
+          ]
+        },
+        "ref": "C.7.6.16.2.15",
+        "use": "C - Required if C-arm Positioner Tabletop Relationship (0018,9474) is present and equals YES. May be present otherwise."
+      },
+      "Pixel Intensity Relationship LUT": {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0028,1040)",
+          "type": "MU",
+          "values": [
+            "LOG"
+          ]
+        },
+        "ref": "C.7.6.16.2.13",
+        "use": "C - Required if Pixel Intensity Relationship (0028,1040) equals LOG. May be present otherwise."
+      },
+      "Referenced Image": {
+        "ref": "C.7.6.16.2.5",
+        "use": "U"
+      },
+      "Respiratory Synchronization": {
+        "ref": "C.7.6.16.2.17",
+        "use": "U"
+      },
+      "X-Ray Calibration Device Usage": {
+        "ref": "C.8.19.6.6",
+        "use": "U"
+      },
+      "X-Ray Collimator": {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0008,0008)",
+          "type": "MU",
+          "values": [
+            "ORIGINAL"
+          ]
+        },
+        "ref": "C.8.19.6.12",
+        "use": "C - Required if Image Type (0008,0008) Value 1 equals ORIGINAL. May be present otherwise."
+      },
+      "X-Ray Exposure Control Sensing Regions": {
+        "ref": "C.8.19.6.3",
+        "use": "U"
+      },
+      "X-Ray Field of View": {
+        "cond": {
+          "index": 0,
+          "op": "+",
+          "tag": "(0018,9462)",
+          "type": "MU"
+        },
+        "ref": "C.8.19.6.2",
+        "use": "C - Required if Isocenter Reference System Sequence (0018,9462) is present. May be present otherwise."
+      },
+      "X-Ray Frame Acquisition": {
+        "ref": "C.8.19.6.8",
+        "use": "U"
+      },
+      "X-Ray Frame Characteristics": {
+        "ref": "C.8.19.6.1",
+        "use": "U"
+      },
+      "X-Ray Frame Detector Parameters": {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0018,9420)",
+          "type": "MN",
+          "values": [
+            "DIGITAL_DETECTOR"
+          ]
+        },
+        "ref": "C.8.19.6.5",
+        "use": "C - Required if X-Ray Receptor Type (0018,9420) is present and equals DIGITAL_DETECTOR."
+      },
+      "X-Ray Frame Pixel Data Properties": {
+        "ref": "C.8.19.6.4",
+        "use": "M"
+      },
+      "X-Ray Geometry": {
+        "cond": {
+          "index": 0,
+          "op": "+",
+          "tag": "(0018,9401)",
+          "type": "MU"
+        },
+        "ref": "C.8.19.6.14",
+        "use": "C - Required if Projection Pixel Calibration Sequence (0018,9401) is present. May be present otherwise."
+      },
+      "X-Ray Isocenter Reference System": {
+        "ref": "C.8.19.6.13",
+        "use": "U"
+      },
+      "X-Ray Object Thickness": {
+        "ref": "C.8.19.6.7",
+        "use": "U"
+      },
+      "X-Ray Positioner": {
+        "cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "ORIGINAL"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0018,9474)",
+              "values": [
+                "YES"
+              ]
+            }
+          ],
+          "type": "MU"
+        },
+        "ref": "C.8.19.6.10",
+        "use": "C - Required if Image Type (0008,0008) Value 1 equals ORIGINAL and C-arm Positioner Tabletop Relationship (0018,9474) is present and equals YES. May be present otherwise."
+      },
+      "X-Ray Projection Pixel Calibration": {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0018,9474)",
+          "type": "MN",
+          "values": [
+            "YES"
+          ]
+        },
+        "ref": "C.8.19.6.9",
+        "use": "C - Required if C-arm Positioner Tabletop Relationship (0018,9474) is present and equals YES."
+      },
+      "X-Ray Table Position": {
+        "cond": {
+          "and": [
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0008,0008)",
+              "values": [
+                "ORIGINAL"
+              ]
+            },
+            {
+              "index": 0,
+              "op": "=",
+              "tag": "(0018,9474)",
+              "values": [
+                "YES"
+              ]
+            }
+          ],
+          "type": "MU"
+        },
+        "ref": "C.8.19.6.11",
+        "use": "C - Required if Image Type (0008,0008) Value 1 equals ORIGINAL and C-arm Positioner Tabletop Relationship (0018,9474) is present and equals YES. May be present otherwise."
+      }
+    },
     "modules": {
       "Acquisition Context": {
         "ref": "C.7.6.14",
@@ -117,6 +332,7 @@
     "title": "Enhanced X-Ray Angiographic Image IOD"
   },
   "1.2.840.10008.5.1.4.1.1.2": {
+    "group_macros": {},
     "modules": {
       "CT Image": {
         "ref": "C.8.2.1",
@@ -205,6 +421,7 @@
     "title": "Computed Tomography Image IOD"
   },
   "1.2.840.10008.5.1.4.1.1.481.2": {
+    "group_macros": {},
     "modules": {
       "Clinical Trial Series": {
         "ref": "C.7.3.2",

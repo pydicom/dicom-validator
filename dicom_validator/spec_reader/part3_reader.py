@@ -142,12 +142,22 @@ class Part3Reader(SpecReader):
         for section_part in section_parts[1:]:
             section_name = section_name + "." + section_part
             search_path.append(f'section[@label="{section_name}"]')
-        return self._find(self._get_doc_root(), search_path)
+        section_node = self._find(self._get_doc_root(), search_path)
+        # handle incorrect nesting in specific section
+        if (
+            section_node is None
+            and section_parts[:-1] == ["C", "8", "31"]
+            and int(section_parts[-1]) > 6
+        ):
+            search_path.insert(-1, 'section[@label="C.8.31.6"]')
+            section_node = self._find(self._get_doc_root(), search_path)
+        return section_node
 
     def _parse_iod_node(self, iod_node):
         return {
             "title": self._find(iod_node, ["title"]).text,
             "modules": self._get_iod_modules(iod_node),
+            "group_macros": self._get_functional_group_macros(iod_node),
         }
 
     def _parse_module_description(self, parent_node):
@@ -183,7 +193,14 @@ class Part3Reader(SpecReader):
     def _handle_included_attributes(self, columns, current_descriptions):
         include_node = self._find(columns[0], ["para", "emphasis", "xref"])
         if include_node is None:
-            # todo: functional group macros or similar
+            description = self._find_text(columns[0])
+            is_func_group = (
+                description
+                and "Include one or more Functional Group Macros" in description
+            )
+            if is_func_group:
+                # add a placeholder - has to be evaluated at validation time
+                current_descriptions[-1].setdefault("include", []).append("FuncGroup")
             return
         include_ref = include_node.attrib["linkend"]
         if self._current_refs and include_ref == self._current_refs[-1]:
@@ -260,6 +277,54 @@ class Part3Reader(SpecReader):
             del current_descriptions[-level_delta:]
         return tag_name, level
 
+    def _collect_modules(self, table_section, check_rowspan):
+        modules = {}
+        module_rows = self._findall(table_section, ["table", "tbody", "tr"])
+        row_span = 0
+        for row in module_rows:
+            columns = self._findall(row, ["td"])
+            if check_rowspan:
+                name_index = 0 if row_span > 0 else 1
+                if row_span == 0:
+                    if "rowspan" in columns[0].attrib:
+                        row_span = int(columns[0].attrib["rowspan"])
+                    else:
+                        row_span = 1
+            else:
+                name_index = 0
+            name = self._find_text(columns[name_index])
+            modules[name] = {}
+            try:
+                ref_section = (
+                    self._find(columns[name_index + 1], ["para", "xref"])
+                    .attrib["linkend"]
+                    .split("_")[1]
+                )
+            except AttributeError:
+                try:
+                    ref_section = (
+                        self._find(columns[name_index + 1], ["xref"])
+                        .attrib["linkend"]
+                        .split("_")[1]
+                    )
+                except AttributeError:
+                    self.logger.warning("Failed to read module table for %s", name)
+                    continue
+            modules[name]["ref"] = ref_section
+            # make sure the referenced description is loaded
+            self.module_description(ref_section)
+            modules[name]["use"] = self._find_text(columns[name_index + 2])
+            if self._condition_parser is not None and modules[name]["use"].startswith(
+                "C - "
+            ):
+                modules[name]["cond"] = self._condition_parser.parse(
+                    modules[name]["use"]
+                )
+            else:
+                modules[name]["use"] = modules[name]["use"][0]
+            row_span -= 1
+        return modules
+
     def _get_iod_modules(self, iod_node):
         module_table_sections = self._find_sections_with_title_endings(
             iod_node, (" Module Table", " IOD Modules")
@@ -270,50 +335,19 @@ class Part3Reader(SpecReader):
             )
         modules = {}
         if len(module_table_sections) == 1:
-            module_rows = self._findall(
-                module_table_sections[0], ["table", "tbody", "tr"]
+            modules = self._collect_modules(
+                module_table_sections[0], check_rowspan=True
             )
-            row_span = 0
-            for row in module_rows:
-                columns = self._findall(row, ["td"])
-                name_index = 0 if row_span > 0 else 1
-                if row_span == 0:
-                    if "rowspan" in columns[0].attrib:
-                        row_span = int(columns[0].attrib["rowspan"])
-                    else:
-                        row_span = 1
-                name = self._find_text(columns[name_index])
-                modules[name] = {}
-                try:
-                    ref_section = (
-                        self._find(columns[name_index + 1], ["para", "xref"])
-                        .attrib["linkend"]
-                        .split("_")[1]
-                    )
-                except AttributeError:
-                    try:
-                        ref_section = (
-                            self._find(columns[name_index + 1], ["xref"])
-                            .attrib["linkend"]
-                            .split("_")[1]
-                        )
-                    except AttributeError:
-                        self.logger.warning("Failed to read module table for %s", name)
-                        continue
-                modules[name]["ref"] = ref_section
-                # make sure the module description is loaded
-                self.module_description(ref_section)
-                modules[name]["use"] = self._find_text(columns[name_index + 2])
-                if self._condition_parser is not None and modules[name][
-                    "use"
-                ].startswith("C - "):
-                    modules[name]["cond"] = self._condition_parser.parse(
-                        modules[name]["use"]
-                    )
-                else:
-                    modules[name]["use"] = modules[name]["use"][0]
-                row_span -= 1
         return modules
+
+    def _get_functional_group_macros(self, iod_node):
+        macros = {}
+        group_macro_sections = self._find_sections_with_title_endings(
+            iod_node, (" Functional Group Macros",)
+        )
+        if len(group_macro_sections) == 1:
+            macros = self._collect_modules(group_macro_sections[0], check_rowspan=False)
+        return macros
 
     def _find_sections_with_title_endings(self, node, title_endings):
         section_nodes = self._findall(node, ["section"])

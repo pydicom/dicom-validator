@@ -748,6 +748,29 @@
       "type": "1"
     }
   },
+  "10-5": {
+    "(0008,2218)": {
+      "items": {
+        "(0008,2220)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Anatomic Region Modifier Sequence",
+          "type": "3"
+        },
+        "include": [
+          "8.8-1"
+        ]
+      },
+      "name": "Anatomic Region Sequence",
+      "type": "1"
+    },
+    "include": [
+      "10-8"
+    ]
+  },
   "10-7": {
     "(0008,2218)": {
       "items": {
@@ -3395,12 +3418,20 @@
       "type": "3"
     },
     "(5200,9229)": {
-      "items": {},
+      "items": {
+        "include": [
+          "FuncGroup"
+        ]
+      },
       "name": "Shared Functional Groups Sequence",
       "type": "1"
     },
     "(5200,9230)": {
-      "items": {},
+      "items": {
+        "include": [
+          "FuncGroup"
+        ]
+      },
       "name": "Per-frame Functional Groups Sequence",
       "type": "1"
     }
@@ -3573,6 +3604,507 @@
       },
       "name": "Real World Value Slope",
       "type": "1C"
+    }
+  },
+  "C.7.6.16.2.2": {
+    "(0020,9111)": {
+      "items": {
+        "(0018,9074)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Frame Acquisition DateTime",
+          "type": "1C"
+        },
+        "(0018,9151)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Frame Reference DateTime",
+          "type": "1C"
+        },
+        "(0018,9214)": {
+          "name": "Respiratory Cycle Position",
+          "type": "3"
+        },
+        "(0018,9220)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Frame Acquisition Duration",
+          "type": "1C"
+        },
+        "(0018,9236)": {
+          "name": "Cardiac Cycle Position",
+          "type": "3"
+        },
+        "(0020,9056)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0016)",
+            "type": "MU",
+            "values": [
+              "1.2.840.10008.5.1.4.1.1.130"
+            ]
+          },
+          "name": "Stack ID",
+          "type": "1C"
+        },
+        "(0020,9057)": {
+          "cond": {
+            "or": [
+              {
+                "index": 0,
+                "op": "+",
+                "tag": "(0020,9056)"
+              },
+              {
+                "index": 0,
+                "op": "+",
+                "tag": "(0018,9621)"
+              }
+            ],
+            "type": "MN"
+          },
+          "name": "In-Stack Position Number",
+          "type": "1C"
+        },
+        "(0020,9128)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0016)",
+            "type": "MU",
+            "values": [
+              "1.2.840.10008.5.1.4.1.1.130"
+            ]
+          },
+          "name": "Temporal Position Index",
+          "type": "1C"
+        },
+        "(0020,9156)": {
+          "name": "Frame Acquisition Number",
+          "type": "3"
+        },
+        "(0020,9157)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Dimension Index Values",
+          "type": "1C"
+        },
+        "(0020,9158)": {
+          "name": "Frame Comments",
+          "type": "3"
+        },
+        "(0020,9453)": {
+          "name": "Frame Label",
+          "type": "3"
+        }
+      },
+      "name": "Frame Content Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.5": {
+    "(0008,1140)": {
+      "items": {
+        "(0040,A170)": {
+          "cond": {
+            "type": "U"
+          },
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "1C"
+        },
+        "include": [
+          "10-3"
+        ]
+      },
+      "name": "Referenced Image Sequence",
+      "type": "2"
+    }
+  },
+  "C.7.6.16.2.6": {
+    "(0008,9124)": {
+      "items": {
+        "(0008,2111)": {
+          "name": "Derivation Description",
+          "type": "3"
+        },
+        "(0008,2112)": {
+          "items": {
+            "(0020,0020)": {
+              "cond": {
+                "index": 0,
+                "op": "=",
+                "tag": "(0028,135A)",
+                "type": "MN",
+                "values": [
+                  "REORIENTED_ONLY"
+                ]
+              },
+              "name": "Patient Orientation",
+              "type": "1C"
+            },
+            "(0028,135A)": {
+              "name": "Spatial Locations Preserved",
+              "type": "3"
+            },
+            "(0040,A170)": {
+              "cond": {
+                "type": "U"
+              },
+              "items": {
+                "include": [
+                  "8.8-1"
+                ]
+              },
+              "name": "Purpose of Reference Code Sequence",
+              "type": "1C"
+            },
+            "include": [
+              "10-3"
+            ]
+          },
+          "name": "Source Image Sequence",
+          "type": "2"
+        },
+        "(0008,9215)": {
+          "cond": {
+            "type": "U"
+          },
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Derivation Code Sequence",
+          "type": "1C"
+        }
+      },
+      "name": "Derivation Image Sequence",
+      "type": "2"
+    }
+  },
+  "C.7.6.16.2.7": {
+    "(0018,9118)": {
+      "items": {
+        "(0018,1081)": {
+          "name": "Low R-R Value",
+          "type": "3"
+        },
+        "(0018,1082)": {
+          "name": "High R-R Value",
+          "type": "3"
+        },
+        "(0018,1083)": {
+          "name": "Intervals Acquired",
+          "type": "3"
+        },
+        "(0018,1084)": {
+          "name": "Intervals Rejected",
+          "type": "3"
+        },
+        "(0018,1088)": {
+          "name": "Heart Rate",
+          "type": "3"
+        },
+        "(0020,9153)": {
+          "name": "Nominal Cardiac Trigger Delay Time",
+          "type": "1"
+        },
+        "(0020,9154)": {
+          "name": "Nominal Cardiac Trigger Time Prior to R-peak",
+          "type": "3"
+        },
+        "(0020,9155)": {
+          "name": "Actual Cardiac Trigger Time Prior to R-peak",
+          "type": "3"
+        },
+        "(0020,9241)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Nominal Percentage of Cardiac Phase",
+          "type": "1C"
+        },
+        "(0020,9251)": {
+          "cond": {
+            "index": 0,
+            "op": "!=",
+            "tag": "(0018,9037)",
+            "type": "MU",
+            "values": [
+              "NONE",
+              "REALTIME"
+            ]
+          },
+          "name": "R-R Interval Time Nominal",
+          "type": "1C"
+        },
+        "(0020,9252)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1083)",
+            "type": "MU",
+            "values": [
+              "1"
+            ]
+          },
+          "name": "Actual Cardiac Trigger Delay Time",
+          "type": "1C"
+        }
+      },
+      "name": "Cardiac Synchronization Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.8": {
+    "(0020,9071)": {
+      "items": {
+        "(0020,9072)": {
+          "name": "Frame Laterality",
+          "type": "1"
+        },
+        "include": [
+          "10-5"
+        ]
+      },
+      "name": "Frame Anatomy Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.10": {
+    "(0028,9132)": {
+      "items": {
+        "(0028,1050)": {
+          "name": "Window Center",
+          "type": "1"
+        },
+        "(0028,1051)": {
+          "name": "Window Width",
+          "type": "1"
+        },
+        "(0028,1055)": {
+          "name": "Window Center & Width Explanation",
+          "type": "3"
+        },
+        "(0028,1056)": {
+          "name": "VOI LUT Function",
+          "type": "3"
+        }
+      },
+      "name": "Frame VOI LUT Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.12": {
+    "(0018,9341)": {
+      "items": {
+        "(0018,9337)": {
+          "name": "Contrast/Bolus Agent Number",
+          "type": "1"
+        },
+        "(0018,9342)": {
+          "name": "Contrast/Bolus Agent Administered",
+          "type": "1"
+        },
+        "(0018,9343)": {
+          "name": "Contrast/Bolus Agent Detected",
+          "type": "2"
+        },
+        "(0018,9344)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Contrast/Bolus Agent Phase",
+          "type": "2C"
+        }
+      },
+      "name": "Contrast/Bolus Usage Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.13": {
+    "(0028,9422)": {
+      "items": {
+        "(0028,3002)": {
+          "name": "LUT Descriptor",
+          "type": "1"
+        },
+        "(0028,3006)": {
+          "name": "LUT Data",
+          "type": "1"
+        },
+        "(0028,9474)": {
+          "name": "LUT Function",
+          "type": "1"
+        }
+      },
+      "name": "Pixel Intensity Relationship LUT Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.14": {
+    "(0028,9415)": {
+      "items": {
+        "(0028,6114)": {
+          "name": "Mask Sub-pixel Shift",
+          "type": "1"
+        },
+        "(0028,9416)": {
+          "name": "Subtraction Item ID",
+          "type": "1"
+        }
+      },
+      "name": "Frame Pixel Shift Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.15": {
+    "(0020,9450)": {
+      "items": {
+        "(0020,0020)": {
+          "name": "Patient Orientation",
+          "type": "1"
+        }
+      },
+      "name": "Patient Orientation in Frame Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.16": {
+    "(0018,9472)": {
+      "items": {
+        "include": [
+          "C.7-17a"
+        ]
+      },
+      "name": "Frame Display Shutter Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.17": {
+    "(0020,9253)": {
+      "items": {
+        "(0020,9245)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Nominal Percentage of Respiratory Phase",
+          "type": "1C"
+        },
+        "(0020,9246)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0020,9250)",
+            "type": "MN",
+            "values": [
+              "AMPLITUDE",
+              "BOTH"
+            ]
+          },
+          "name": "Starting Respiratory Amplitude",
+          "type": "1C"
+        },
+        "(0020,9247)": {
+          "cond": {
+            "index": 0,
+            "op": "+",
+            "tag": "(0020,9246)",
+            "type": "MN"
+          },
+          "name": "Starting Respiratory Phase",
+          "type": "1C"
+        },
+        "(0020,9248)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0020,9250)",
+            "type": "MN",
+            "values": [
+              "AMPLITUDE",
+              "BOTH"
+            ]
+          },
+          "name": "Ending Respiratory Amplitude",
+          "type": "1C"
+        },
+        "(0020,9249)": {
+          "cond": {
+            "index": 0,
+            "op": "+",
+            "tag": "(0020,9248)",
+            "type": "MN"
+          },
+          "name": "Ending Respiratory Phase",
+          "type": "1C"
+        },
+        "(0020,9254)": {
+          "cond": {
+            "and": [
+              {
+                "index": 0,
+                "op": "!=",
+                "tag": "(0018,9170)",
+                "values": [
+                  "NONE",
+                  "REALTIME"
+                ]
+              },
+              {
+                "index": 0,
+                "op": "-",
+                "tag": "(0020,9250)"
+              }
+            ],
+            "type": "MN"
+          },
+          "name": "Respiratory Interval Time",
+          "type": "1C"
+        },
+        "(0020,9255)": {
+          "name": "Nominal Respiratory Trigger Delay Time",
+          "type": "1"
+        },
+        "(0020,9257)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0020,9250)",
+            "type": "MN",
+            "values": [
+              "TIME",
+              "BOTH"
+            ]
+          },
+          "name": "Actual Respiratory Trigger Delay Time",
+          "type": "1C"
+        }
+      },
+      "name": "Respiratory Synchronization Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.18": {
+    "(0018,9477)": {
+      "items": {
+        "(0008,3010)": {
+          "name": "Irradiation Event UID",
+          "type": "1"
+        }
+      },
+      "name": "Irradiation Event Identification Sequence",
+      "type": "1"
     }
   },
   "C.7.6.17": {
@@ -4502,6 +5034,111 @@
     "(0028,0009)": {
       "name": "Frame Increment Pointer",
       "type": "1"
+    }
+  },
+  "C.7-17a": {
+    "(0018,1600)": {
+      "name": "Shutter Shape",
+      "type": "1"
+    },
+    "(0018,1602)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MN",
+        "values": [
+          "RECTANGULAR"
+        ]
+      },
+      "name": "Shutter Left Vertical Edge",
+      "type": "1C"
+    },
+    "(0018,1604)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MN",
+        "values": [
+          "RECTANGULAR"
+        ]
+      },
+      "name": "Shutter Right Vertical Edge",
+      "type": "1C"
+    },
+    "(0018,1606)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MN",
+        "values": [
+          "RECTANGULAR"
+        ]
+      },
+      "name": "Shutter Upper Horizontal Edge",
+      "type": "1C"
+    },
+    "(0018,1608)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MN",
+        "values": [
+          "RECTANGULAR"
+        ]
+      },
+      "name": "Shutter Lower Horizontal Edge",
+      "type": "1C"
+    },
+    "(0018,1610)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MN",
+        "values": [
+          "CIRCULAR"
+        ]
+      },
+      "name": "Center of Circular Shutter",
+      "type": "1C"
+    },
+    "(0018,1612)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MN",
+        "values": [
+          "CIRCULAR"
+        ]
+      },
+      "name": "Radius of Circular Shutter",
+      "type": "1C"
+    },
+    "(0018,1620)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MN",
+        "values": [
+          "POLYGONAL"
+        ]
+      },
+      "name": "Vertices of the Polygonal Shutter",
+      "type": "1C"
+    },
+    "(0018,1622)": {
+      "name": "Shutter Presentation Value",
+      "type": "3"
+    },
+    "(0018,1624)": {
+      "name": "Shutter Presentation Color CIELab Value",
+      "type": "3"
     }
   },
   "C.8-131": {
@@ -5623,6 +6260,584 @@
         }
       },
       "name": "RT Dose ROI Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.1": {
+    "(0018,9412)": {
+      "items": {
+        "(0008,2111)": {
+          "name": "Derivation Description",
+          "type": "3"
+        },
+        "(0008,9215)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Derivation Code Sequence",
+          "type": "3"
+        },
+        "(0018,1400)": {
+          "name": "Acquisition Device Processing Description",
+          "type": "3"
+        },
+        "(0018,1401)": {
+          "name": "Acquisition Device Processing Code",
+          "type": "3"
+        }
+      },
+      "name": "XA/XRF Frame Characteristics Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.2": {
+    "(0018,9432)": {
+      "items": {
+        "(0018,1147)": {
+          "name": "Field of View Shape",
+          "type": "3"
+        },
+        "(0018,7030)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9420)",
+            "type": "MU",
+            "values": [
+              "DIGITAL_DETECTOR"
+            ]
+          },
+          "name": "Field of View Origin",
+          "type": "1C"
+        },
+        "(0018,7032)": {
+          "name": "Field of View Rotation",
+          "type": "1"
+        },
+        "(0018,7034)": {
+          "name": "Field of View Horizontal Flip",
+          "type": "1"
+        },
+        "(0018,9433)": {
+          "name": "Field of View Description",
+          "type": "3"
+        },
+        "(0018,9461)": {
+          "name": "Field of View Dimension(s) in Float",
+          "type": "3"
+        }
+      },
+      "name": "Field of View Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.3": {
+    "(0018,9434)": {
+      "items": {
+        "(0018,9435)": {
+          "name": "Exposure Control Sensing Region Shape",
+          "type": "1"
+        },
+        "(0018,9436)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MN",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Exposure Control Sensing Region Left Vertical Edge",
+          "type": "1C"
+        },
+        "(0018,9437)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MN",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Exposure Control Sensing Region Right Vertical Edge",
+          "type": "1C"
+        },
+        "(0018,9438)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MN",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Exposure Control Sensing Region Upper Horizontal Edge",
+          "type": "1C"
+        },
+        "(0018,9439)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MN",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Exposure Control Sensing Region Lower Horizontal Edge",
+          "type": "1C"
+        },
+        "(0018,9440)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MN",
+            "values": [
+              "CIRCULAR"
+            ]
+          },
+          "name": "Center of Circular Exposure Control Sensing Region",
+          "type": "1C"
+        },
+        "(0018,9441)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MN",
+            "values": [
+              "CIRCULAR"
+            ]
+          },
+          "name": "Radius of Circular Exposure Control Sensing Region",
+          "type": "1C"
+        },
+        "(0018,9442)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MN",
+            "values": [
+              "POLYGONAL"
+            ]
+          },
+          "name": "Vertices of the Polygonal Exposure Control Sensing Region",
+          "type": "1C"
+        }
+      },
+      "name": "Exposure Control Sensing Regions Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.4": {
+    "(0028,9443)": {
+      "items": {
+        "(0008,9007)": {
+          "name": "Frame Type",
+          "type": "1"
+        },
+        "(0018,1164)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0008)",
+            "type": "MU",
+            "values": [
+              "ORIGINAL"
+            ]
+          },
+          "name": "Imager Pixel Spacing",
+          "type": "1C"
+        },
+        "(0018,7036)": {
+          "name": "Pixel Data Area Origin Relative To FOV",
+          "type": "3"
+        },
+        "(0018,7038)": {
+          "name": "Pixel Data Area Rotation Angle Relative To FOV",
+          "type": "3"
+        },
+        "(0028,1040)": {
+          "name": "Pixel Intensity Relationship",
+          "type": "1"
+        },
+        "(0028,1041)": {
+          "name": "Pixel Intensity Relationship Sign",
+          "type": "1"
+        },
+        "(0028,9444)": {
+          "name": "Geometrical Properties",
+          "type": "1"
+        },
+        "(0028,9445)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,9444)",
+            "type": "MN",
+            "values": [
+              "NON_UNIFORM"
+            ]
+          },
+          "name": "Geometric Maximum Distortion",
+          "type": "2C"
+        },
+        "(0028,9446)": {
+          "name": "Image Processing Applied",
+          "type": "1"
+        }
+      },
+      "name": "Frame Pixel Data Properties Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.5": {
+    "(0018,9451)": {
+      "items": {
+        "(0018,7014)": {
+          "name": "Detector Active Time",
+          "type": "3"
+        },
+        "(0018,7016)": {
+          "name": "Detector Activation Offset From Exposure",
+          "type": "3"
+        }
+      },
+      "name": "Frame Detector Parameters Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.6": {
+    "(0018,9455)": {
+      "items": {
+        "(0050,0004)": {
+          "name": "Calibration Image",
+          "type": "1"
+        }
+      },
+      "name": "Calibration Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.7": {
+    "(0018,9456)": {
+      "items": {
+        "(0018,9452)": {
+          "name": "Calculated Anatomy Thickness",
+          "type": "1"
+        }
+      },
+      "name": "Object Thickness Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.8": {
+    "(0018,9417)": {
+      "items": {
+        "(0018,0060)": {
+          "name": "KVP",
+          "type": "1"
+        },
+        "(0018,9330)": {
+          "name": "X-Ray Tube Current in mA",
+          "type": "1"
+        }
+      },
+      "name": "Frame Acquisition Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.9": {
+    "(0018,9401)": {
+      "items": {
+        "(0018,1130)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0008)",
+            "type": "MU",
+            "values": [
+              "ORIGINAL"
+            ]
+          },
+          "name": "Table Height",
+          "type": "1C"
+        },
+        "(0018,9403)": {
+          "name": "Distance Object to Table Top",
+          "type": "2"
+        },
+        "(0018,9404)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Object Pixel Spacing in Center of Beam",
+          "type": "1C"
+        },
+        "(0018,9449)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0008)",
+            "type": "MU",
+            "values": [
+              "ORIGINAL"
+            ]
+          },
+          "name": "Beam Angle",
+          "type": "1C"
+        }
+      },
+      "name": "Projection Pixel Calibration Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.10": {
+    "(0018,9405)": {
+      "items": {
+        "(0018,1510)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1508)",
+            "type": "MN",
+            "values": [
+              "CARM"
+            ]
+          },
+          "name": "Positioner Primary Angle",
+          "type": "1C"
+        },
+        "(0018,1511)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1508)",
+            "type": "MN",
+            "values": [
+              "CARM"
+            ]
+          },
+          "name": "Positioner Secondary Angle",
+          "type": "1C"
+        },
+        "(0018,9447)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1508)",
+            "type": "MN",
+            "values": [
+              "COLUMN"
+            ]
+          },
+          "name": "Column Angulation (Patient)",
+          "type": "1C"
+        }
+      },
+      "name": "Positioner Position Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.11": {
+    "(0018,9406)": {
+      "items": {
+        "(0018,9469)": {
+          "name": "Table Horizontal Rotation Angle",
+          "type": "1"
+        },
+        "(0018,9470)": {
+          "name": "Table Head Tilt Angle",
+          "type": "1"
+        },
+        "(0018,9471)": {
+          "name": "Table Cradle Tilt Angle",
+          "type": "1"
+        },
+        "(300A,0128)": {
+          "name": "Table Top Vertical Position",
+          "type": "1"
+        },
+        "(300A,0129)": {
+          "name": "Table Top Longitudinal Position",
+          "type": "1"
+        },
+        "(300A,012A)": {
+          "name": "Table Top Lateral Position",
+          "type": "1"
+        }
+      },
+      "name": "Table Position Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.12": {
+    "(0018,9407)": {
+      "items": {
+        "(0018,1700)": {
+          "name": "Collimator Shape",
+          "type": "1"
+        },
+        "(0018,1702)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MN",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Collimator Left Vertical Edge",
+          "type": "1C"
+        },
+        "(0018,1704)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MN",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Collimator Right Vertical Edge",
+          "type": "1C"
+        },
+        "(0018,1706)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MN",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Collimator Upper Horizontal Edge",
+          "type": "1C"
+        },
+        "(0018,1708)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MN",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Collimator Lower Horizontal Edge",
+          "type": "1C"
+        },
+        "(0018,1710)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MN",
+            "values": [
+              "CIRCULAR"
+            ]
+          },
+          "name": "Center of Circular Collimator",
+          "type": "1C"
+        },
+        "(0018,1712)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MN",
+            "values": [
+              "CIRCULAR"
+            ]
+          },
+          "name": "Radius of Circular Collimator",
+          "type": "1C"
+        },
+        "(0018,1720)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MN",
+            "values": [
+              "POLYGONAL"
+            ]
+          },
+          "name": "Vertices of the Polygonal Collimator",
+          "type": "1C"
+        }
+      },
+      "name": "Collimator Shape Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.13": {
+    "(0018,9462)": {
+      "items": {
+        "(0018,9463)": {
+          "name": "Positioner Isocenter Primary Angle",
+          "type": "1"
+        },
+        "(0018,9464)": {
+          "name": "Positioner Isocenter Secondary Angle",
+          "type": "1"
+        },
+        "(0018,9465)": {
+          "name": "Positioner Isocenter Detector Rotation Angle",
+          "type": "1"
+        },
+        "(0018,9466)": {
+          "name": "Table X Position to Isocenter",
+          "type": "1"
+        },
+        "(0018,9467)": {
+          "name": "Table Y Position to Isocenter",
+          "type": "1"
+        },
+        "(0018,9468)": {
+          "name": "Table Z Position to Isocenter",
+          "type": "1"
+        },
+        "(0018,9469)": {
+          "name": "Table Horizontal Rotation Angle",
+          "type": "1"
+        },
+        "(0018,9470)": {
+          "name": "Table Head Tilt Angle",
+          "type": "1"
+        },
+        "(0018,9471)": {
+          "name": "Table Cradle Tilt Angle",
+          "type": "1"
+        }
+      },
+      "name": "Isocenter Reference System Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.14": {
+    "(0018,9476)": {
+      "items": {
+        "(0018,1110)": {
+          "name": "Distance Source to Detector",
+          "type": "1"
+        },
+        "(0018,9402)": {
+          "name": "Distance Source to Isocenter",
+          "type": "1"
+        }
+      },
+      "name": "X-Ray Geometry Sequence",
       "type": "1"
     }
   },

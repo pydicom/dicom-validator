@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from dicom_validator.spec_reader.edition_reader import EditionReader
+from dicom_validator.spec_reader.part6_reader import Part6Reader
 
 CURRENT_REVISION = "2021d"
 
@@ -55,3 +56,14 @@ def disable_logging():
     logging.disable(logging.CRITICAL)
     yield
     logging.disable(logging.DEBUG)
+
+
+@pytest.fixture(scope="module")
+def spec_path(fs_module, spec_fixture_path):
+    fs_module.add_real_directory(spec_fixture_path)
+    yield spec_fixture_path
+
+
+@pytest.fixture
+def dict_reader(spec_path):
+    yield Part6Reader(spec_path)

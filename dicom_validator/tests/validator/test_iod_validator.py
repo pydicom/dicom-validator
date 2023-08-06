@@ -3,6 +3,7 @@ import logging
 import pytest
 from pydicom.dataset import Dataset, FileMetaDataset
 
+from dicom_validator.tests.utils import has_tag_error
 from dicom_validator.validator.iod_validator import IODValidator
 
 pytestmark = pytest.mark.usefixtures("disable_logging")
@@ -45,15 +46,6 @@ class TestIODValidator:
         result = validator.validate()
         assert "fatal" in result
 
-    @staticmethod
-    def has_tag_error(messages, module_name, tag_id_string, error_kind):
-        if module_name not in messages:
-            return False
-        for message in messages[module_name]:
-            if message.startswith(f"Tag {tag_id_string} is {error_kind}"):
-                return True
-        return False
-
     @pytest.mark.tag_set(
         {
             "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",  # CT
@@ -68,13 +60,13 @@ class TestIODValidator:
         assert "CT Image" in result
 
         # PatientName is set
-        assert not self.has_tag_error(result, "Patient", "(0010,0010)", "missing")
+        assert not has_tag_error(result, "Patient", "(0010,0010)", "missing")
         # PatientSex - type 2, missing
-        assert self.has_tag_error(result, "Patient", "(0010,0040)", "missing")
+        assert has_tag_error(result, "Patient", "(0010,0040)", "missing")
         # Clinical Trial Sponsor Name -> type 1, but module usage U
-        assert not self.has_tag_error(result, "Patient", "(0012,0010)", "missing")
+        assert not has_tag_error(result, "Patient", "(0012,0010)", "missing")
         # Patient Breed Description -> type 2C, but no parsable condition
-        assert not self.has_tag_error(result, "Patient", "(0010,2292)", "missing")
+        assert not has_tag_error(result, "Patient", "(0010,2292)", "missing")
 
     @pytest.mark.tag_set(
         {
@@ -89,9 +81,9 @@ class TestIODValidator:
         assert "fatal" not in result
         assert "CT Image" in result
         # Modality - type 1, present but empty
-        assert self.has_tag_error(result, "Patient", "(0010,0040)", "missing")
+        assert has_tag_error(result, "Patient", "(0010,0040)", "missing")
         # PatientName - type 2, empty tag is allowed
-        assert not self.has_tag_error(result, "Patient", "(0010,0010)", "missing")
+        assert not has_tag_error(result, "Patient", "(0010,0010)", "missing")
 
     @pytest.mark.tag_set(
         {
@@ -108,12 +100,10 @@ class TestIODValidator:
         result = validator.validate()
 
         # Frame Of Reference UID Is and Synchronization Trigger set
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Enhanced X-Ray Angiographic Image", "(0020,0052)", "missing"
         )
-        assert not self.has_tag_error(
-            result, "Synchronization", "(0018,106A)", "missing"
-        )
+        assert not has_tag_error(result, "Synchronization", "(0018,106A)", "missing")
 
     @pytest.mark.tag_set(
         {
@@ -127,10 +117,8 @@ class TestIODValidator:
     def test_fulfilled_condition_missing_tag(self, validator):
         result = validator.validate()
 
-        assert self.has_tag_error(
-            result, "Frame of Reference", "(0020,0052)", "missing"
-        )
-        assert self.has_tag_error(result, "Synchronization", "(0018,106A)", "missing")
+        assert has_tag_error(result, "Frame of Reference", "(0020,0052)", "missing")
+        assert has_tag_error(result, "Synchronization", "(0018,106A)", "missing")
 
     @pytest.mark.tag_set(
         {
@@ -143,10 +131,8 @@ class TestIODValidator:
     def test_condition_not_met_no_tag(self, validator):
         result = validator.validate()
 
-        assert not self.has_tag_error(
-            result, "Frame of Reference", "(0020,0052)", "missing"
-        )
-        assert not self.has_tag_error(
+        assert not has_tag_error(result, "Frame of Reference", "(0020,0052)", "missing")
+        assert not has_tag_error(
             result, "Frame of Reference", "(0020,0052)", "not allowed"
         )
 
@@ -164,15 +150,11 @@ class TestIODValidator:
         result = validator.validate()
 
         # Frame Of Reference is allowed, Synchronization Trigger not
-        assert not self.has_tag_error(
-            result, "Frame of Reference", "(0020,0052)", "missing"
-        )
-        assert not self.has_tag_error(
+        assert not has_tag_error(result, "Frame of Reference", "(0020,0052)", "missing")
+        assert not has_tag_error(
             result, "Frame of Reference", "(0020,0052)", "not allowed"
         )
-        assert self.has_tag_error(
-            result, "Synchronization", "(0018,106A)", "not allowed"
-        )
+        assert has_tag_error(result, "Synchronization", "(0018,106A)", "not allowed")
 
     @pytest.mark.tag_set(
         {
@@ -189,10 +171,10 @@ class TestIODValidator:
         result = validator.validate()
 
         # Both Low R-R Value and High R-R Value are not needed but allowed
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,1081)", "missing"
         )
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,1082)", "missing"
         )
 
@@ -211,10 +193,10 @@ class TestIODValidator:
         result = validator.validate()
 
         # Both Low R-R Value and High R-R Value are not needed but allowed
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,1081)", "missing"
         )
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,1082)", "missing"
         )
 
@@ -233,10 +215,10 @@ class TestIODValidator:
         result = validator.validate()
 
         # Both Low R-R Value and High R-R Value are needed
-        assert self.has_tag_error(
+        assert has_tag_error(
             result, "Cardiac Synchronization", "(0018,1081)", "missing"
         )
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,1082)", "missing"
         )
 
@@ -253,7 +235,7 @@ class TestIODValidator:
     def test_presence_condition_met(self, validator):
         result = validator.validate()
 
-        assert self.has_tag_error(
+        assert has_tag_error(
             result, "General Equipment", "(0028,0120)", "missing"
         )  # Pixel Padding Value
 
@@ -269,7 +251,7 @@ class TestIODValidator:
     def test_presence_condition_not_met(self, validator):
         result = validator.validate()
 
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "General Equipment", "(0028,0120)", "missing"
         )  # Pixel Padding Value
 
@@ -285,7 +267,7 @@ class TestIODValidator:
     def test_greater_condition_met(self, validator):
         result = validator.validate()
 
-        assert self.has_tag_error(
+        assert has_tag_error(
             result, "Image Pixel", "(0028,0006)", "missing"
         )  # Planar configuration
 
@@ -301,7 +283,7 @@ class TestIODValidator:
     def test_greater_condition_not_met(self, validator):
         result = validator.validate()
 
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Image Pixel", "(0028,0006)", "missing"
         )  # Planar configuration
 
@@ -317,7 +299,7 @@ class TestIODValidator:
     def test_points_to_condition_met(self, validator):
         result = validator.validate()
 
-        assert self.has_tag_error(
+        assert has_tag_error(
             result, "Cardiac Synchronization", "(0018,1086)", "missing"
         )  # Skip beats
 
@@ -333,7 +315,7 @@ class TestIODValidator:
     def test_points_to_condition_not_met(self, validator):
         result = validator.validate()
 
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,1086)", "missing"
         )  # Skip beats
 
@@ -350,7 +332,7 @@ class TestIODValidator:
     def test_condition_for_not_required_tag_cond1_fulfilled(self, validator):
         result = validator.validate()
 
-        assert self.has_tag_error(
+        assert has_tag_error(
             result, "Cardiac Synchronization", "(0018,9085)", "missing"
         )  # Cardiac signal source
 
@@ -368,7 +350,7 @@ class TestIODValidator:
     def test_condition_for_not_required_tag_no_cond_fulfilled(self, validator):
         result = validator.validate()
 
-        assert self.has_tag_error(
+        assert has_tag_error(
             result, "Cardiac Synchronization", "(0018,9085)", "not allowed"
         )  # Cardiac signal source
 
@@ -386,7 +368,7 @@ class TestIODValidator:
     def test_condition_for_not_required_tag_cond2_fulfilled_present(self, validator):
         result = validator.validate()
 
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,9085)", "not allowed"
         )  # Cardiac signal source
 
@@ -405,6 +387,6 @@ class TestIODValidator:
     ):
         result = validator.validate()
 
-        assert not self.has_tag_error(
+        assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,9085)", "missing"
         )  # Cardiac signal source
