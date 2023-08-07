@@ -82,7 +82,6 @@ FRAME_ANATOMY = {
                 {
                     "CodeValue": "T-D3000",
                     "CodingSchemeDesignator": "SRT",
-                    "CodingSchemeVersion": "1",
                     "CodeMeaning": "Chest",
                 }
             ],

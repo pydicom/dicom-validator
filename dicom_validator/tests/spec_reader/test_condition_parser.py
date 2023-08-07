@@ -485,15 +485,23 @@ class TestCompositeConditionParser:
         assert result2.operator == "="
         assert result2.values == ["Y"]
 
-    def test_ignore_unverifyable_and_condition(self, parser):
+    def test_ignore_unverifyable_or_condition(self, parser):
         result = parser.parse(
-            "Required if Delivery Type (300A,00CE) is CONTINUATION and "
+            "Required if Delivery Type (300A,00CE) is CONTINUATION or "
             "one or more channels of any Application Setup are omitted."
         )
         assert result.type == "MN"
         assert len(result.and_conditions) == 0
         assert result.operator == "="
         assert result.values == ["CONTINUATION"]
+
+    def test_unverifyable_and_condition_invalidates_condition(self, parser):
+        result = parser.parse(
+            "Required if Delivery Type (300A,00CE) is CONTINUATION and "
+            "one or more channels of any Application Setup are omitted."
+        )
+        assert result.type == "U"
+        assert result.tag is None
 
     def test_and_without_value(self, parser):
         result = parser.parse(
