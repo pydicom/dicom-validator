@@ -304,6 +304,10 @@ class ConditionParser:
                     cond_list.append(next_result)
                     result.type = None
                     result = new_result
+                elif logical_op == "and":
+                    # the second part of the condition could not be parsed
+                    # this invalidates the whole condition
+                    result = next_result
         if not nested and rest is not None:
             other_cond = self._get_other_condition(rest)
             if other_cond is not None and other_cond.type != "U":
