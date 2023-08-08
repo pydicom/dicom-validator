@@ -7,7 +7,8 @@ The released versions correspond to PyPi releases.
 * added initial support for validating functional group macros
 
 ### Fixes
-* fixes handling of unverifiable and condition, see [#32](../.. /issues/32)
+* fixed handling of unverifiable and condition, see [#32](../.. /issues/32)
+* fixed too broad matching for "otherwise" condition, see [#32](../.. /issues/29)
 
 ### Infrastructure
 * Added pre-commit configuration for use with pre-commit hook

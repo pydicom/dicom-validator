@@ -753,7 +753,7 @@ class TestComplicatedConditionParser:
             "May be present for other SOP Classes if Patient Orientation "
             "Code Sequence (0054,0410) is not present. "
         )
-        assert result.type == "MC"
+        assert result.type == "MN"
         assert len(result.and_conditions) == 2
         assert result.and_conditions[0].operator == "-"
         assert result.and_conditions[0].tag == "(0054,0410)"
@@ -768,6 +768,4 @@ class TestComplicatedConditionParser:
             "1.2.840.10008.5.1.4.1.1.4.2",
         ]
         other_cond = result.other_condition
-        assert other_cond
-        assert other_cond.operator == "-"
-        assert other_cond.tag == "(0054,0410)"
+        assert other_cond is None

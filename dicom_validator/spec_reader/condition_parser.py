@@ -153,7 +153,7 @@ class ConditionParser:
 
     def _get_other_condition(self, condition_string: str) -> Optional[Condition]:
         match = re.match(
-            ".*(may be present( [a-z]+( [a-z]+)*)? if ).*", condition_string.lower()
+            ".*(may be present( otherwise)?( only)? if ).*", condition_string.lower()
         )
         if match is not None:
             marker = match.group(1)
