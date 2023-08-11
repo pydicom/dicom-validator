@@ -47,7 +47,13 @@ def main(args=None):
     parser.add_argument(
         "--force-read",
         action="store_true",
-        help="Force-read DICOM files without header",
+        help="Force-read DICOM files without DICOM header",
+        default=False,
+    )
+    parser.add_argument(
+        "--recreate-json",
+        action="store_true",
+        help="Force recreating the JSON information from the DICOM specs",
         default=False,
     )
     parser.add_argument(
@@ -56,7 +62,7 @@ def main(args=None):
     args = parser.parse_args(args)
 
     edition_reader = EditionReader(args.standard_path)
-    destination = edition_reader.get_revision(args.revision)
+    destination = edition_reader.get_revision(args.revision, args.recreate_json)
     if destination is None:
         print(f"Failed to get DICOM edition {args.revision} - aborting")
         return 1

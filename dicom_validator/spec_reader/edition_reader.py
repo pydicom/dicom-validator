@@ -228,7 +228,7 @@ class EditionReader:
         cls.write_current_version(json_path)
         print("Done!")
 
-    def get_revision(self, revision):
+    def get_revision(self, revision, recreate_json=False):
         revision, destination = self.check_revision(revision)
         if destination is None:
             print(f"DICOM revision {revision} not found.")
@@ -249,8 +249,10 @@ class EditionReader:
             ):
                 return
 
-        if not self.json_files_exist(json_path) or not self.is_current_version(
-            json_path
+        if (
+            not self.json_files_exist(json_path)
+            or not self.is_current_version(json_path)
+            or recreate_json
         ):
             self.create_json_files(docbook_path, json_path)
         print(f"Using DICOM revision {revision}")

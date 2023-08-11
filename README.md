@@ -40,8 +40,15 @@ pip install dicom-validator
 
 ## Usage
 ```
-dump_dcm_info [-r <revision>] [-src <spec dir>] <DICOM filename>
-validate_iods [-r <revision>] [-src <spec dir>] [-v] <DICOM files or directories>
+dump_dcm_info.py [-h] [--standard-path STANDARD_PATH]
+                      [--revision REVISION] [--max-value-len MAX_VALUE_LEN]
+                      [--show-tags [SHOW_TAGS [SHOW_TAGS ...]]]
+                      [--show-image-data] [--recreate-json]
+                      dicomfiles [dicomfiles ...]
+validate_iods.py [-h] [--standard-path STANDARD_PATH]
+                      [--revision REVISION] [--force-read] [--recreate-json]
+                      [--verbose]
+                      dicomfiles [dicomfiles ...]
 ```
 Use the `--help` option for each script do get usage info.
 
