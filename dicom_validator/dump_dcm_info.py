@@ -167,10 +167,16 @@ def main():
         action="store_false",
         help="Also show the image data tag (slower)",
     )
+    parser.add_argument(
+        "--recreate-json",
+        action="store_true",
+        help="Force recreating the JSON information from the DICOM specs",
+        default=False,
+    )
     args = parser.parse_args()
 
     edition_reader = EditionReader(args.standard_path)
-    destination = edition_reader.get_revision(args.revision)
+    destination = edition_reader.get_revision(args.revision, args.recreate_json)
     if destination is None:
         print(f"Failed to get DICOM edition {args.revision} - aborting")
         return 1

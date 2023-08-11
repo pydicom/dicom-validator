@@ -249,5 +249,7 @@ def test_recreate_json_if_needed(fs, base_path, edition_path):
         EditionReader.write_current_version(json_path)
         reader.get_revision("2014a")
         assert create_json_files_called == 2
+        reader.get_revision("2014a", recreate_json=True)
+        assert create_json_files_called == 3
     finally:
         MemoryEditionReader.create_json_files = orig_create_json_files

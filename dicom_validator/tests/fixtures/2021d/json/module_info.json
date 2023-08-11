@@ -956,10 +956,7 @@
     },
     "(0008,0103)": {
       "cond": {
-        "index": 0,
-        "op": "+",
-        "tag": "(0008,0102)",
-        "type": "MU"
+        "type": "U"
       },
       "name": "Coding Scheme Version",
       "type": "1C"

@@ -5,10 +5,12 @@ The released versions correspond to PyPi releases.
 
 ### Features
 * added initial support for validating functional group macros
+* added option `--recreate-json` for testing purposes (per default, the json files are only
+  recreated after a `dicom-validator` version change)
 
 ### Fixes
 * fixed handling of unverifiable and condition, see [#32](../.. /issues/32)
-* fixed too broad matching for "otherwise" condition, see [#32](../.. /issues/29)
+* fixed too broad matching for "otherwise" condition, see [#29](../.. /issues/29)
 
 ### Infrastructure
 * Added pre-commit configuration for use with pre-commit hook

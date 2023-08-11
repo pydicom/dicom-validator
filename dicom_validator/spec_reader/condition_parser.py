@@ -159,6 +159,9 @@ class ConditionParser:
             marker = match.group(1)
             index = condition_string.lower().find(marker)
             return self._parse_tag_expressions(condition_string[index + len(marker) :])
+        elif re.match(".*may be present .*", condition_string.lower()):
+            # unknown condition - handle as if it may always be present
+            return Condition(ctype="U")
         return None
 
     @staticmethod
@@ -310,9 +313,13 @@ class ConditionParser:
                     result = next_result
         if not nested and rest is not None:
             other_cond = self._get_other_condition(rest)
-            if other_cond is not None and other_cond.type != "U":
-                result.type = "MC"
-                result.other_condition = other_cond
+            if other_cond is not None:
+                if other_cond.type == "U":
+                    if result.type != "U":
+                        result.type = "MU"
+                else:
+                    result.type = "MC"
+                    result.other_condition = other_cond
         return result
 
     def _parse_tags(
