@@ -14,7 +14,6 @@
     * compound conditions :on:
 * check for condition who need special handling
     * pixel type
-    * functional group macros present
 
 ## Validator
 
