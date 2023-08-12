@@ -438,6 +438,14 @@ class TestValueConditionParser:
         assert result.operator == "="
         assert result.values == ["YES"]
 
+    def test_mandatory_no_shared_group(self, parser):
+        result = parser.parse("M - May not be used as a Shared Functional Group.")
+        assert result.type == "MF"
+
+    def test_user_no_shared_group(self, parser):
+        result = parser.parse("U - May not be used as a Shared Functional Group.")
+        assert result.type == "UF"
+
 
 class TestNotMandatoryConditionParser:
     def test_default(self, parser):

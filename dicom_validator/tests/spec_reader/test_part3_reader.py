@@ -11,13 +11,8 @@ from dicom_validator.spec_reader.spec_reader import (
 
 
 @pytest.fixture
-def reader_with_dict(dict_reader, spec_path):
+def reader(dict_reader, spec_path):
     yield Part3Reader(spec_path, dict_reader.data_elements())
-
-
-@pytest.fixture
-def reader(spec_path):
-    yield Part3Reader(spec_path)
 
 
 @pytest.mark.usefixtures("fs")
@@ -26,26 +21,24 @@ class TestReadPart3:
         spec_path = Path("/var/dicom/specs")
         spec_path.mkdir(parents=True)
         fs.create_file(spec_path / "part03.xml")
-        spec_reader = Part3Reader(spec_path)
+        spec_reader = Part3Reader(spec_path, {})
         with pytest.raises(SpecReaderFileError):
             spec_reader.iod_description("A.16")
 
     def test_read_invalid_doc_file(self, fs):
         spec_path = Path("/var/dicom/specs")
-        spec_path.mkdir(parents=True)
         fs.create_file(spec_path / "part03.xml", contents="Not an xml")
-        spec_reader = Part3Reader(spec_path)
+        spec_reader = Part3Reader(spec_path, {})
         with pytest.raises(SpecReaderFileError):
             spec_reader.iod_description("A.6")
 
     def test_read_incomplete_doc_file(self, fs):
         spec_path = Path("/var/dicom/specs")
-        spec_path.mkdir(parents=True)
         fs.create_file(
             spec_path / "part03.xml",
             contents='<book xmlns="http://docbook.org/ns/docbook">\n</book>',
         )
-        reader = Part3Reader(spec_path)
+        reader = Part3Reader(spec_path, {})
         with pytest.raises(SpecReaderParseError):
             reader.iod_description("A.6")
 
@@ -74,7 +67,7 @@ class TestReadPart3:
         assert "Clinical Trial Subject" in modules
         module = modules["Clinical Trial Subject"]
         assert module["ref"] == "C.7.1.3"
-        assert module["use"] == "U"
+        assert module["use"] == "U - see elsewhere"
 
     def test_iod_descriptions(self, reader):
         descriptions = reader.iod_descriptions()
@@ -83,8 +76,8 @@ class TestReadPart3:
         assert "A.18" in descriptions
         assert "A.38.1" in descriptions
 
-    def test_group_macros(self, reader_with_dict):
-        descriptions = reader_with_dict.iod_descriptions()
+    def test_group_macros(self, reader):
+        descriptions = reader.iod_descriptions()
         assert not descriptions["A.3"]["group_macros"]
         enhanced_ct_macros = descriptions["A.38.1"]["group_macros"]
         assert len(enhanced_ct_macros) == 24
@@ -92,6 +85,12 @@ class TestReadPart3:
         assert pixel_measures
         assert pixel_measures["ref"] == "C.7.6.16.2.1"
         assert pixel_measures["use"] == "M"
+        frame_content = enhanced_ct_macros.get("Frame Content")
+        assert frame_content
+        assert frame_content["ref"] == "C.7.6.16.2.2"
+        assert frame_content["use"] == (
+            "M - May not be used as a Shared Functional Group."
+        )
         xray_details = enhanced_ct_macros.get("CT X-Ray Details")
         assert xray_details
         assert xray_details["ref"] == "C.8.15.3.9"

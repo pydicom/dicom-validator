@@ -19,7 +19,7 @@ from dicom_validator.spec_reader.spec_reader import (
 class Part3Reader(SpecReader):
     """Reads information from PS3.3 in docbook format."""
 
-    def __init__(self, spec_dir, dict_info=None):
+    def __init__(self, spec_dir, dict_info):
         super(Part3Reader, self).__init__(spec_dir)
         self.part_nr = 3
         self._condition_parser = None
@@ -31,8 +31,7 @@ class Part3Reader(SpecReader):
         self.logger = logging.getLogger()
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        if dict_info is not None:
-            self._condition_parser = ConditionParser(self._dict_info)
+        self._condition_parser = ConditionParser(self._dict_info)
 
     def iod_description(self, chapter):
         """Return the IOD information for the given chapter.
@@ -230,7 +229,7 @@ class Part3Reader(SpecReader):
                 "name": tag_name,
                 "type": tag_type,
             }
-            if self._condition_parser and tag_type in ("1C", "2C"):
+            if tag_type in ("1C", "2C"):
                 # cond = self._find_all_text(columns[3])
                 # index = cond.find('Required if ')
                 # if index >= 0:
@@ -314,14 +313,10 @@ class Part3Reader(SpecReader):
             # make sure the referenced description is loaded
             self.module_description(ref_section)
             modules[name]["use"] = self._find_text(columns[name_index + 2])
-            if self._condition_parser is not None and modules[name]["use"].startswith(
-                "C - "
-            ):
+            if len(modules[name]["use"]) > 1:
                 modules[name]["cond"] = self._condition_parser.parse(
                     modules[name]["use"]
                 )
-            else:
-                modules[name]["use"] = modules[name]["use"][0]
             row_span -= 1
         return modules
 

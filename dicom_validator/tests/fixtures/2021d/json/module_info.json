@@ -5033,6 +5033,112 @@
       "type": "1"
     }
   },
+  "C.7.6.16.2.1": {
+    "(0028,9110)": {
+      "items": {
+        "(0018,0050)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Slice Thickness",
+          "type": "1C"
+        },
+        "(0018,0088)": {
+          "cond": {
+            "and": [
+              {
+                "index": 0,
+                "op": "=",
+                "tag": "(0020,9311)",
+                "values": [
+                  "TILED_FULL"
+                ]
+              },
+              {
+                "index": 0,
+                "op": ">",
+                "tag": "(0048,0303)",
+                "values": [
+                  "1"
+                ]
+              }
+            ],
+            "type": "MU"
+          },
+          "name": "Spacing Between Slices",
+          "type": "1C"
+        },
+        "(0028,0030)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Pixel Spacing",
+          "type": "1C"
+        }
+      },
+      "name": "Pixel Measures Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.11": {
+    "(0040,9096)": {
+      "items": {
+        "include": [
+          "C.7.6.16-12b"
+        ]
+      },
+      "name": "Real World Value Mapping Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.10.1": {
+    "(0008,0017)": {
+      "name": "Acquisition UID",
+      "type": "3"
+    },
+    "(0008,0022)": {
+      "name": "Acquisition Date",
+      "type": "3"
+    },
+    "(0008,002A)": {
+      "name": "Acquisition DateTime",
+      "type": "3"
+    },
+    "(0008,0032)": {
+      "name": "Acquisition Time",
+      "type": "3"
+    },
+    "(0008,3010)": {
+      "name": "Irradiation Event UID",
+      "type": "3"
+    },
+    "(0018,9073)": {
+      "name": "Acquisition Duration",
+      "type": "3"
+    },
+    "(0020,0012)": {
+      "name": "Acquisition Number",
+      "type": "3"
+    },
+    "(0020,1002)": {
+      "name": "Images in Acquisition",
+      "type": "3"
+    }
+  },
+  "C.7.11.1": {
+    "(0008,0019)": {
+      "name": "Pyramid UID",
+      "type": "1"
+    },
+    "(0008,1088)": {
+      "name": "Pyramid Description",
+      "type": "3"
+    },
+    "(0020,0027)": {
+      "name": "Pyramid Label",
+      "type": "3"
+    }
+  },
   "C.7-17a": {
     "(0018,1600)": {
       "name": "Shutter Shape",
@@ -5136,6 +5242,240 @@
     "(0018,1624)": {
       "name": "Shutter Presentation Color CIELab Value",
       "type": "3"
+    }
+  },
+  "C.7-22a": {
+    "(0028,1101)": {
+      "name": "Red Palette Color Lookup Table Descriptor",
+      "type": "1"
+    },
+    "(0028,1102)": {
+      "name": "Green Palette Color Lookup Table Descriptor",
+      "type": "1"
+    },
+    "(0028,1103)": {
+      "name": "Blue Palette Color Lookup Table Descriptor",
+      "type": "1"
+    },
+    "(0028,1199)": {
+      "name": "Palette Color Lookup Table UID",
+      "type": "3"
+    },
+    "(0028,1201)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Red Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1202)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Green Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1203)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Blue Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1221)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Segmented Red Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1222)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Segmented Green Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1223)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Segmented Blue Palette Color Lookup Table Data",
+      "type": "1C"
+    }
+  },
+  "C.8.12.5": {
+    "(0048,0105)": {
+      "items": {
+        "(0022,0001)": {
+          "name": "Light Path Filter Pass-Through Wavelength",
+          "type": "3"
+        },
+        "(0022,0002)": {
+          "name": "Light Path Filter Pass Band",
+          "type": "3"
+        },
+        "(0022,0003)": {
+          "name": "Image Path Filter Pass-Through Wavelength",
+          "type": "3"
+        },
+        "(0022,0004)": {
+          "name": "Image Path Filter Pass Band",
+          "type": "3"
+        },
+        "(0022,0016)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Illumination Type Code Sequence",
+          "type": "1"
+        },
+        "(0022,0017)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Light Path Filter Type Stack Code Sequence",
+          "type": "3"
+        },
+        "(0022,0018)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Image Path Filter Type Stack Code Sequence",
+          "type": "3"
+        },
+        "(0022,0019)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Lenses Code Sequence",
+          "type": "3"
+        },
+        "(0022,001A)": {
+          "cond": {
+            "type": "U"
+          },
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Channel Description Code Sequence",
+          "type": "1C"
+        },
+        "(0022,0055)": {
+          "cond": {
+            "index": 0,
+            "op": "-",
+            "tag": "(0048,ee08)",
+            "type": "MU"
+          },
+          "name": "Illumination Wave Length",
+          "type": "1C"
+        },
+        "(0028,2000)": {
+          "cond": {
+            "or": [
+              {
+                "index": 0,
+                "op": "!=",
+                "tag": "(0028,0004)",
+                "values": [
+                  "MONOCHROME2"
+                ]
+              },
+              {
+                "index": 0,
+                "op": "+",
+                "tag": "(0048,0120)"
+              }
+            ],
+            "type": "MN"
+          },
+          "name": "ICC Profile",
+          "type": "1C"
+        },
+        "(0028,2002)": {
+          "name": "Color Space",
+          "type": "3"
+        },
+        "(0048,0100)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Illuminator Type Code Sequence",
+          "type": "3"
+        },
+        "(0048,0106)": {
+          "name": "Optical Path Identifier",
+          "type": "1"
+        },
+        "(0048,0107)": {
+          "name": "Optical Path Description",
+          "type": "3"
+        },
+        "(0048,0108)": {
+          "cond": {
+            "index": 0,
+            "op": "-",
+            "tag": "(0022,0055)",
+            "type": "MU"
+          },
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Illumination Color Code Sequence",
+          "type": "1C"
+        },
+        "(0048,0111)": {
+          "name": "Condenser Lens Power",
+          "type": "3"
+        },
+        "(0048,0112)": {
+          "name": "Objective Lens Power",
+          "type": "3"
+        },
+        "(0048,0113)": {
+          "name": "Objective Lens Numerical Aperture",
+          "type": "3"
+        },
+        "(0048,0120)": {
+          "items": {
+            "include": [
+              "C.7-22a"
+            ]
+          },
+          "name": "Palette Color Lookup Table Sequence",
+          "type": "3"
+        }
+      },
+      "name": "Optical Path Sequence",
+      "type": "1"
+    },
+    "(0048,0302)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0020,9311)",
+        "type": "MU",
+        "values": [
+          "TILED_FULL"
+        ]
+      },
+      "name": "Number of Optical Paths",
+      "type": "1C"
     }
   },
   "C.8-131": {
@@ -6260,6 +6600,364 @@
       "type": "1"
     }
   },
+  "C.8.12.3": {
+    "(0008,0060)": {
+      "name": "Modality",
+      "type": "1"
+    },
+    "(0008,1111)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          "10-11"
+        ]
+      },
+      "name": "Referenced Performed Procedure Step Sequence",
+      "type": "1C"
+    }
+  },
+  "C.8.12.4": {
+    "(0008,0008)": {
+      "name": "Image Type",
+      "type": "1"
+    },
+    "(0008,002A)": {
+      "name": "Acquisition DateTime",
+      "type": "1"
+    },
+    "(0008,9206)": {
+      "name": "Volumetric Properties",
+      "type": "1"
+    },
+    "(0018,1210)": {
+      "name": "Convolution Kernel",
+      "type": "3"
+    },
+    "(0018,1400)": {
+      "name": "Acquisition Device Processing Description",
+      "type": "3"
+    },
+    "(0018,9073)": {
+      "name": "Acquisition Duration",
+      "type": "3"
+    },
+    "(0028,0002)": {
+      "name": "Samples Per Pixel",
+      "type": "1"
+    },
+    "(0028,0004)": {
+      "name": "Photometric Interpretation",
+      "type": "1"
+    },
+    "(0028,0006)": {
+      "cond": {
+        "index": 0,
+        "op": ">",
+        "tag": "(0028,0002)",
+        "type": "MN",
+        "values": [
+          "1"
+        ]
+      },
+      "name": "Planar Configuration",
+      "type": "1C"
+    },
+    "(0028,0008)": {
+      "name": "Number of Frames",
+      "type": "1"
+    },
+    "(0028,0100)": {
+      "name": "Bits Allocated",
+      "type": "1"
+    },
+    "(0028,0101)": {
+      "name": "Bits Stored",
+      "type": "1"
+    },
+    "(0028,0102)": {
+      "name": "High Bit",
+      "type": "1"
+    },
+    "(0028,0103)": {
+      "name": "Pixel Representation",
+      "type": "1"
+    },
+    "(0028,0301)": {
+      "name": "Burned In Annotation",
+      "type": "1"
+    },
+    "(0028,1052)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,0004)",
+        "type": "MN",
+        "values": [
+          "MONOCHROME2"
+        ]
+      },
+      "name": "Rescale Intercept",
+      "type": "1C"
+    },
+    "(0028,1053)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,0004)",
+        "type": "MN",
+        "values": [
+          "MONOCHROME2"
+        ]
+      },
+      "name": "Rescale Slope",
+      "type": "1C"
+    },
+    "(0028,2110)": {
+      "name": "Lossy Image Compression",
+      "type": "1"
+    },
+    "(0028,2112)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,2110)",
+        "type": "MN",
+        "values": [
+          "01"
+        ]
+      },
+      "name": "Lossy Image Compression Ratio",
+      "type": "1C"
+    },
+    "(0028,2114)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,2110)",
+        "type": "MN",
+        "values": [
+          "01"
+        ]
+      },
+      "name": "Lossy Image Compression Method",
+      "type": "1C"
+    },
+    "(0048,0001)": {
+      "cond": {
+        "index": 2,
+        "op": "=",
+        "tag": "(0008,0008)",
+        "type": "MU",
+        "values": [
+          "VOLUME"
+        ]
+      },
+      "name": "Imaged Volume Width",
+      "type": "1C"
+    },
+    "(0048,0002)": {
+      "cond": {
+        "index": 2,
+        "op": "=",
+        "tag": "(0008,0008)",
+        "type": "MU",
+        "values": [
+          "VOLUME"
+        ]
+      },
+      "name": "Imaged Volume Height",
+      "type": "1C"
+    },
+    "(0048,0003)": {
+      "cond": {
+        "index": 2,
+        "op": "=",
+        "tag": "(0008,0008)",
+        "type": "MU",
+        "values": [
+          "VOLUME"
+        ]
+      },
+      "name": "Imaged Volume Depth",
+      "type": "1C"
+    },
+    "(0048,0010)": {
+      "name": "Specimen Label in Image",
+      "type": "1"
+    },
+    "(0048,0011)": {
+      "name": "Focus Method",
+      "type": "1"
+    },
+    "(0048,0012)": {
+      "name": "Extended Depth of Field",
+      "type": "1"
+    },
+    "(0048,0013)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Number of Focal Planes",
+      "type": "1C"
+    },
+    "(0048,0014)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0048,0012)",
+        "type": "MN",
+        "values": [
+          "YES"
+        ]
+      },
+      "name": "Distance Between Focal Planes",
+      "type": "1C"
+    },
+    "(0048,0015)": {
+      "name": "Recommended Absent Pixel CIELab Value",
+      "type": "3"
+    },
+    "(2050,0020)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,0004)",
+        "type": "MN",
+        "values": [
+          "MONOCHROME2"
+        ]
+      },
+      "name": "Presentation LUT Shape",
+      "type": "1C"
+    }
+  },
+  "C.8.12.6.1": {
+    "(0048,021A)": {
+      "items": {
+        "(0040,072A)": {
+          "name": "X Offset in Slide Coordinate System",
+          "type": "1"
+        },
+        "(0040,073A)": {
+          "name": "Y Offset in Slide Coordinate System",
+          "type": "1"
+        },
+        "(0040,074A)": {
+          "name": "Z Offset in Slide Coordinate System",
+          "type": "1"
+        },
+        "(0048,021E)": {
+          "name": "Column Position In Total Image Pixel Matrix",
+          "type": "1"
+        },
+        "(0048,021F)": {
+          "name": "Row Position In Total Image Pixel Matrix",
+          "type": "1"
+        }
+      },
+      "name": "Plane Position (Slide) Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.12.6.2": {
+    "(0048,0207)": {
+      "items": {
+        "(0048,0106)": {
+          "name": "Optical Path Identifier",
+          "type": "1"
+        }
+      },
+      "name": "Optical Path Identification Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.12.6.3": {
+    "(0048,0110)": {
+      "items": {
+        "(0040,0554)": {
+          "name": "Specimen UID",
+          "type": "1"
+        }
+      },
+      "name": "Specimen Reference Sequence",
+      "type": "2"
+    }
+  },
+  "C.8.12.8": {
+    "(2200,0002)": {
+      "name": "Label Text",
+      "type": "2"
+    },
+    "(2200,0005)": {
+      "name": "Barcode Value",
+      "type": "2"
+    }
+  },
+  "C.8.12.9": {
+    "(0040,0710)": {
+      "items": {
+        "(0008,9007)": {
+          "name": "Frame Type",
+          "type": "1"
+        }
+      },
+      "name": "Whole Slide Microscopy Image Frame Type Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.12.14": {
+    "(0048,0006)": {
+      "name": "Total Pixel Matrix Columns",
+      "type": "1"
+    },
+    "(0048,0007)": {
+      "name": "Total Pixel Matrix Rows",
+      "type": "1"
+    },
+    "(0048,0008)": {
+      "items": {
+        "(0040,072A)": {
+          "name": "X Offset in Slide Coordinate System",
+          "type": "1"
+        },
+        "(0040,073A)": {
+          "name": "Y Offset in Slide Coordinate System",
+          "type": "1"
+        },
+        "(0040,074A)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Z Offset in Slide Coordinate System",
+          "type": "1C"
+        }
+      },
+      "name": "Total Pixel Matrix Origin Sequence",
+      "type": "1"
+    },
+    "(0048,0102)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Image Orientation (Slide)",
+      "type": "1C"
+    },
+    "(0048,0303)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0020,9311)",
+        "type": "MU",
+        "values": [
+          "TILED_FULL"
+        ]
+      },
+      "name": "Total Pixel Matrix Focal Planes",
+      "type": "1C"
+    }
+  },
   "C.8.19.6.1": {
     "(0018,9412)": {
       "items": {
@@ -6899,6 +7597,110 @@
     },
     "(60xx,0051)": {
       "name": "Image Frame Origin",
+      "type": "3"
+    }
+  },
+  "C.12.4": {
+    "(0008,1140)": {
+      "items": {
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "3"
+        },
+        "include": [
+          "10-3"
+        ]
+      },
+      "name": "Referenced Image Sequence",
+      "type": "3"
+    },
+    "(0008,114A)": {
+      "items": {
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "1"
+        },
+        "include": [
+          "10-11"
+        ]
+      },
+      "name": "Referenced Instance Sequence",
+      "type": "3"
+    },
+    "(0008,2111)": {
+      "name": "Derivation Description",
+      "type": "3"
+    },
+    "(0008,2112)": {
+      "items": {
+        "(0020,0020)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,135A)",
+            "type": "MN",
+            "values": [
+              "REORIENTED_ONLY"
+            ]
+          },
+          "name": "Patient Orientation",
+          "type": "1C"
+        },
+        "(0028,135A)": {
+          "name": "Spatial Locations Preserved",
+          "type": "3"
+        },
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "3"
+        },
+        "include": [
+          "10-3"
+        ]
+      },
+      "name": "Source Image Sequence",
+      "type": "3"
+    },
+    "(0008,9215)": {
+      "items": {
+        "include": [
+          "8.8-1"
+        ]
+      },
+      "name": "Derivation Code Sequence",
+      "type": "3"
+    },
+    "(0042,0013)": {
+      "items": {
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              "8.8-1"
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "3"
+        },
+        "include": [
+          "10-11"
+        ]
+      },
+      "name": "Source Instance Sequence",
       "type": "3"
     }
   }

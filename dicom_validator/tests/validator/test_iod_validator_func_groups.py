@@ -17,7 +17,7 @@ def new_data_set(shared_macros, per_frame_macros):
     data_set.SOPClassUID = "1.2.840.10008.5.1.4.1.1.12.1.1"
     data_set.PatientName = "XXX"
     data_set.PatientID = "ZZZ"
-    data_set.ImageType = "DERIVED"
+    data_set.ImageType = "DERIVED\\SECONDARY"
     data_set.InstanceNumber = "1"
     data_set.ContentDate = "20000101"
     data_set.ContentTime = "120000"
@@ -93,6 +93,10 @@ FRAME_VOI_LUT = {
     "FrameVOILUTSequence": [{"WindowCenter": "7200", "WindowWidth": "12800"}]
 }
 
+FRAME_CONTENT = {"FrameContentSequence": [{"FrameReferenceDateTime": "200001011200"}]}
+
+PIXEL_MEASURES = {"PixelMeasuresSequence": [{"PixelSpacing": "0.1\\0.1"}]}
+
 
 class TestIODValidatorFuncGroups:
     """Tests IODValidator for functional groups."""
@@ -121,6 +125,10 @@ class TestIODValidatorFuncGroups:
     @pytest.mark.per_frame_macros([FRAME_VOI_LUT])
     def test_missing_sequences(self, validator):
         result = validator.validate()
+        # Irradiation Event Identification Sequence (mandatory, missing)
+        assert has_tag_error(
+            result, "Irradiation Event Identification", "(0018,9477)", "missing"
+        )
         # Frame Content Sequence (mandatory, missing)
         assert has_tag_error(result, "Frame Content", "(0020,9111)", "missing")
         # Frame Anatomy Sequence (present in shared groups)
@@ -130,10 +138,30 @@ class TestIODValidatorFuncGroups:
         # Referenced Image Sequence (not mandatory)
         assert not has_tag_error(result, "Referenced Image", "(0008,1140)", "missing")
 
-    @pytest.mark.skip("Not yet implemented")
     @pytest.mark.shared_macros([FRAME_ANATOMY])
     @pytest.mark.per_frame_macros([FRAME_ANATOMY])
     def test_sequence_in_shared_and_per_frame(self, validator):
         result = validator.validate()
         # Frame Anatomy Sequence (present in shared groups)
-        assert has_tag_error(result, "Frame Anatomy", "(0020,9071)", "not allowed")
+        assert has_tag_error(
+            result,
+            "Frame Anatomy",
+            "(0020,9071)",
+            "present in both Shared and Per Frame Functional Groups",
+        )
+
+    @pytest.mark.shared_macros([FRAME_CONTENT])
+    @pytest.mark.per_frame_macros([FRAME_ANATOMY])
+    def test_macro_not_allowed_in_shared_group(self, validator):
+        result = validator.validate()
+        # Frame Anatomy Sequence (present in shared groups)
+        assert has_tag_error(result, "Frame Content", "(0020,9111)", "not allowed")
+
+    @pytest.mark.shared_macros([])
+    @pytest.mark.per_frame_macros([PIXEL_MEASURES])
+    def test_macro_not_allowed_in_per_frame_group(self, validator):
+        # VL Whole Slide Microscopy Image IOD
+        validator._dataset.SOPClassUID = "1.2.840.10008.5.1.4.1.1.77.1.6"
+        result = validator.validate()
+        # Frame Anatomy Sequence (present in shared groups)
+        assert has_tag_error(result, "Pixel Measures", "(0028,9110)", "not allowed")

@@ -17,6 +17,14 @@ class Condition:
                 otherwise is user defined
             'MC': the object is mandatory if the condition is fulfilled,
                 otherwise another condition will be checked
+            'MF': the object is mandatory in the per-frame functional groups,
+                and is not allowed in the shared functional groups
+            'UF': the object may be present in the per-frame functional groups,
+                and is not allowed in the shared functional groups
+            'MS': the object is mandatory in the shared functional groups,
+                and is not allowed in the per-frame functional groups
+            'US': the object may be present in the shared functional groups,
+                and is not allowed in the per-frame functional groups
         tag: the ID of the required tag in the form '(####,####)' or None
         index: the index of the tag for multi-valued tags or 0
         values: a list of values the tag shall have if the condition
@@ -53,6 +61,21 @@ class Condition:
     def read_condition(
         cls, condition_dict: Dict, condition: Optional["Condition"] = None
     ) -> "Condition":
+        """Create or update a Condition object from a condition dict.
+        Parameters
+        ----------
+        condition_dict : dict
+            Contains condition or sub-condition attributes
+
+        condition : Condition | None
+            If not None, the condition that shall be updated from the dict,
+            otherwise a new Condition object is created.
+
+        Returns
+        -------
+        Condition
+            A condition object containing the given attributes.
+        """
         condition = condition or Condition()
         condition.type = condition_dict.get("type")
         condition.operator = condition_dict.get("op")

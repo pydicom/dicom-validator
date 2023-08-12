@@ -4,7 +4,7 @@ The released versions correspond to PyPi releases.
 ## [Version 0.4.0] (Unreleased)
 
 ### Features
-* added initial support for validating functional group macros
+* added support for validating functional group macros, see [#27](../.. /issues/27)
 * added option `--recreate-json` for testing purposes (per default, the json files are only
   recreated after a `dicom-validator` version change)
 

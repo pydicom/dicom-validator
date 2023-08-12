@@ -96,13 +96,22 @@ class ConditionParser:
             "required for images where ",
             "required only if",
         )
+        condition_lower = condition_str.lower()
         for prefix in condition_prefixes:
-            index = condition_str.lower().find(prefix)
+            index = condition_lower.find(prefix)
             if index >= 0:
                 condition_str = condition_str[len(prefix) + index :]
                 condition_str = self._fix_condition(condition_str)
                 condition = self._parse_tag_expressions(condition_str)
                 return condition
+        # special handling for functional group restrictions
+        if " not be used as a shared functional group" in condition_lower:
+            return Condition(ctype=f"{condition_str[0]}F")
+        elif (
+            " not be used as a per-frame functional group" in condition_lower
+            or "shall be used as a shared functional group" in condition_lower
+        ):
+            return Condition(ctype=f"{condition_str[0]}S")
         return Condition(ctype="U")
 
     def _parse_tag_expression(self, condition: str) -> Tuple[Condition, Optional[str]]:

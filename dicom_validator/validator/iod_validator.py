@@ -31,7 +31,7 @@ class FunctionalGroupInfo:
         self.shared_results.clear()
         self.checked_modules.clear()
 
-    def combined(self, module_name, per_frame):
+    def combined(self, module_name, seq_tag, per_frame):
         """Return the combined error for errors from shared and per-frame groups
         for the given module.
 
@@ -39,6 +39,8 @@ class FunctionalGroupInfo:
         ----------
         module_name : str
             The name of the validated macro module.
+        seq_tag : str
+            The tag ID string of the top-level-sequence tag in the macro
         per_frame : dict
             The errors from validation of the module in the per-frame group.
         """
@@ -48,8 +50,8 @@ class FunctionalGroupInfo:
             # the module is present in both shared and per-frame groups
             # this is an error
             return {
-                f"Tag {module_name} is present in both Shared and Per Frame "
-                f"Functional Groups": []
+                f"Tag {seq_tag} is present in both Shared and Per Frame "
+                f"Functional Groups": [seq_tag]
             }
         for error in shared:
             # similar errors differ by the functional group tag
@@ -100,7 +102,7 @@ class IODValidator:
         self._iod_info = iod_info
         self._module_info = module_info
         self._dict_info = dict_info
-        self._func_group_info = FunctionalGroupInfo({}, {})
+        self._func_group_info = FunctionalGroupInfo({}, set())
         self.errors = {}
         self.logger = logging.getLogger("validator")
         self.logger.level = log_level
@@ -210,10 +212,15 @@ class IODValidator:
                 is_per_frame = self._in_per_frame_group
 
         allowed = True
-        if usage == "M":
+        if condition and "F" in condition["type"] and is_shared:
+            required, allowed = False, False
+        elif condition and "S" in condition["type"] and is_per_frame:
+            required, allowed = False, False
+        elif usage[0] == "M":
             required = True
-        elif usage == "U":
+        elif usage[0] == "U":
             required = False
+
         else:
             required, allowed = self._object_is_required_or_allowed(condition)
         if group_macros is not None:
@@ -236,7 +243,9 @@ class IODValidator:
             if is_per_frame:
                 shared_result = self._func_group_info.shared_results.get(module_name)
                 if shared_result is not None:
-                    return self._func_group_info.combined(module_name, result)
+                    seq_tag = list(module_info.keys())[0]
+                    return self._func_group_info.combined(module_name, seq_tag, result)
+                return result
 
         if module["ref"] not in maybe_existing_modules:
             # The module is not present at all in the dataset.
@@ -258,14 +267,10 @@ class IODValidator:
             errors = {}
             for tag_id_string in module_info:
                 tag_id = self._tag_id(tag_id_string)
-                if tag_id in self._dataset:
+                if tag_id in self._dataset_stack[-1].dataset:
                     message = self._incorrect_tag_message(tag_id, "not allowed")
                     errors.setdefault(message, []).append(tag_id_string)
             return errors
-
-        # TODO: handle the case that the macro is not allowed
-        #       in shared or per-frame groups
-        # TODO: handle the case that a macro is present in both
         return self._validate_attributes(module_info, False)
 
     @property
@@ -331,7 +336,7 @@ class IODValidator:
         for module_name, module in modules.items():
             errors = self._validate_module(module, module_name, maybe_existing_modules)
             if errors:
-                self.errors[module_name] = errors
+                self.errors.setdefault(module_name, {}).update(errors)
 
     def _validate_attribute(self, tag_id, attribute):
         """Validate a single DICOM attribute according to its type.
@@ -403,7 +408,7 @@ class IODValidator:
         """
         if isinstance(condition, str):
             condition = json.loads(condition)
-        if condition["type"] == "U":
+        if condition["type"][0] == "U":
             return False, True
         required = self._composite_object_is_required(condition)
         if required:
@@ -491,7 +496,7 @@ class IODValidator:
     # We return a dictionary, where the key is the module ref
     # and the value is the list of tags present in the dataset.
     #
-    def _get_maybe_existing_modules(self, modules, group_macros=None):
+    def _get_maybe_existing_modules(self, modules):
         maybe_existing_modules = {}
         for module in modules.values():
             module_info = self._get_module_info(module["ref"])
