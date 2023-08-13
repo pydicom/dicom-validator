@@ -1,6 +1,7 @@
 import logging
 
 import pytest
+from pydicom import DataElement
 from pydicom.dataset import Dataset, FileMetaDataset
 
 from dicom_validator.tests.utils import has_tag_error
@@ -13,8 +14,11 @@ def new_data_set(tags):
     """Create a DICOM data set with the given attributes"""
     tags = tags or {}
     data_set = Dataset()
-    for tag_name, value in tags.items():
-        setattr(data_set, tag_name, value)
+    for tag, value in tags.items():
+        if isinstance(tag, int):
+            data_set[tag] = DataElement(tag, "LO", value)
+        else:
+            setattr(data_set, tag, value)
     data_set.file_meta = FileMetaDataset()
     data_set.is_implicit_VR = False
     data_set.is_little_endian = True
@@ -155,6 +159,18 @@ class TestIODValidator:
             result, "Frame of Reference", "(0020,0052)", "not allowed"
         )
         assert has_tag_error(result, "Synchronization", "(0018,106A)", "not allowed")
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            0x00191001: "unknown",
+        }
+    )
+    def test_private_tags_are_ignored(self, validator):
+        result = validator.validate()
+        assert not has_tag_error(result, "Root", "(0019,1001)", "unexpected")
 
     @pytest.mark.tag_set(
         {

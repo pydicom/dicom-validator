@@ -14,7 +14,7 @@ class DatasetStackItem:
     def __init__(self, dataset, name):
         self.dataset = dataset
         self.name = name
-        self.unexpected_tags = {int(d.tag) for d in dataset}
+        self.unexpected_tags = {int(d.tag) for d in dataset if not d.tag.is_private}
 
 
 @dataclass
