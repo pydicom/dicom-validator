@@ -42,7 +42,7 @@ class TestSimpleConditionParser:
         result = parser.parse(
             "Required if VOI LUT Sequence (0028,3010) is not present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0028,3010)"
         assert result.operator == "-"
         assert result.values == []
@@ -51,7 +51,7 @@ class TestSimpleConditionParser:
         result = parser.parse(
             "Required if Fractional Channel Display Scale " "(003A,0247) is not present"
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(003A,0247)"
         assert result.operator == "-"
         assert result.values == []
@@ -60,7 +60,7 @@ class TestSimpleConditionParser:
         result = parser.parse(
             "Required if Bounding Box Top Left Hand Corner " "(0070,0010) is present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0070,0010)"
         assert result.operator == "+"
         assert result.values == []
@@ -68,6 +68,7 @@ class TestSimpleConditionParser:
     def test_is_present_with_value(self, parser):
         result = parser.parse(
             "Required if Responsible Person is present and has a value."
+            "Shall not be present otherwise."
         )
         assert result.type == "MN"
         assert result.tag == "(0010,2297)"
@@ -76,7 +77,7 @@ class TestSimpleConditionParser:
 
     def test_is_present_tag_name_with_digit(self, parser):
         result = parser.parse("Required if 3D Mating Point (0068,64C0) is present.")
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0068,64C0)"
         assert result.operator == "+"
         assert result.values == []
@@ -85,7 +86,7 @@ class TestSimpleConditionParser:
         result = parser.parse(
             "Required if Anatomic Region Modifier Sequence " "(0008,2220) is not sent. "
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0008,2220)"
         assert result.operator == "-"
         assert result.values == []
@@ -124,7 +125,7 @@ class TestSimpleConditionParser:
 class TestValueConditionParser:
     def test_equality_tag(self, parser):
         result = parser.parse("C - Required if Modality (0008,0060) = IVUS")
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0008,0060)"
         assert result.index == 0
         assert result.operator == "="
@@ -132,7 +133,7 @@ class TestValueConditionParser:
 
     def test_equality_tag_without_tag_id(self, parser):
         result = parser.parse("C - Required if Modality = IVUS")
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0008,0060)"
         assert result.index == 0
         assert result.operator == "="
@@ -141,7 +142,8 @@ class TestValueConditionParser:
     def test_multiple_values_and_index(self, parser):
         result = parser.parse(
             "C - Required if Image Type (0008,0008) Value 3 "
-            "is GATED, GATED TOMO, or RECON GATED TOMO"
+            "is GATED, GATED TOMO, or RECON GATED TOMO."
+            "Shall not be present otherwise."
         )
         assert result.type == "MN"
         assert result.tag == "(0008,0008)"
@@ -153,7 +155,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Value Type (0040,A040) is " "COMPOSITE or IMAGE or WAVEFORM."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0040,A040)"
         assert result.index == 0
         assert result.operator == "="
@@ -163,7 +165,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Series Type (0054,1000), Value 2 is REPROJECTION."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0054,1000)"
         assert result.index == 1
         assert result.operator == "="
@@ -182,7 +184,7 @@ class TestValueConditionParser:
 
     def test_greater_operator(self, parser):
         result = parser.parse("C - Required if Number of Frames is greater than 1")
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0028,0008)"
         assert result.index == 0
         assert result.operator == ">"
@@ -192,7 +194,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Samples per Pixel " "(0028,0002) has a value greater than 1"
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0028,0002)"
         assert result.index == 0
         assert result.operator == ">"
@@ -203,7 +205,7 @@ class TestValueConditionParser:
             "C - Required if Frame Increment Pointer (0028,0009) "
             "is Frame Time (0018,1063) or Frame Time Vector (0018,1065)"
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0028,0009)"
         assert result.index == 0
         assert result.operator == "="
@@ -216,7 +218,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Pixel Presentation " "(0008,9205) has a value of TRUE_COLOR."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0008,9205)"
         assert result.operator == "="
         assert result.values == ["TRUE_COLOR"]
@@ -226,7 +228,7 @@ class TestValueConditionParser:
             '"Required if Pixel Presentation (0008,9205) at the image level '
             "equals COLOR or MIXED."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "="
         assert result.values == ["COLOR", "MIXED"]
 
@@ -234,7 +236,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Image Type " "(0008,0008) Value 3 is: WHOLE BODY or STATIC."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0008,0008)"
         assert result.operator == "="
         assert result.index == 2
@@ -264,7 +266,7 @@ class TestValueConditionParser:
             "Required if the value of Context Group Extension Flag "
             '(0008,010B) is "Y".'
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "="
         assert result.values == ["Y"]
 
@@ -272,7 +274,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Data Point Rows " "(0028,9001) has a value of more than 1."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0028,9001)"
         assert result.operator == ">"
         assert result.values == ["1"]
@@ -282,7 +284,7 @@ class TestValueConditionParser:
             "Required if SOP Class UID is not "
             '"1.2.840.10008.5.1.4.1.1.4.4" (Legacy Converted).'
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0008,0016)"
         assert result.operator == "!="
         assert result.values == ["1.2.840.10008.5.1.4.1.1.4.4"]
@@ -292,13 +294,13 @@ class TestValueConditionParser:
             "Required if Selector Attribute VR "
             "(0072,0050) is present and the value is AS."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "="
         assert result.values == ["AS"]
 
     def test_value_is_not(self, parser):
         result = parser.parse("Required if Shadow Style (0070,0244) value is not OFF.")
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "!="
         assert result.values == ["OFF"]
 
@@ -306,7 +308,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Decay Correction (0054,1102) is other than NONE."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "!="
         assert result.values == ["NONE"]
 
@@ -315,7 +317,7 @@ class TestValueConditionParser:
             "Required if Planes in Acquisition "
             "(0018,9410) is not equal to UNDEFINED."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "!="
         assert result.values == ["UNDEFINED"]
 
@@ -323,7 +325,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Blending Mode (0070,1B06) is equal to FOREGROUND."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "="
         assert result.values == ["FOREGROUND"]
 
@@ -331,7 +333,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Partial View " "(0028,1350) is present with a value of YES."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "="
         assert result.values == ["YES"]
 
@@ -340,13 +342,13 @@ class TestValueConditionParser:
             "Required if Frame Increment Pointer (0028,0009) points to "
             "Frame Label Vector (0018,2002)."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "=>"
         assert result.values == ["1581058"]
 
     def test_non_zero(self, parser):
         result = parser.parse("Required if Number of Blocks (300A,00F0) is non-zero.")
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "!="
         assert result.values == ["0"]
 
@@ -354,7 +356,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if value Transfer Tube Number (300A,02A2) is non-null."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(300A,02A2)"
         assert result.operator == "++"
         assert result.values == []
@@ -374,13 +376,13 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Number of Beams (300A,0080) is greater than zero"
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == ">"
         assert result.values == ["0"]
 
     def test_is_non_zero_length(self, parser):
         result = parser.parse("Required if Material ID (300A,00E1) is non-zero length.")
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "!="
         assert result.values == [""]
 
@@ -388,13 +390,13 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if value Transfer Tube Number (300A,02A2) " "is not zero length."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.operator == "!="
         assert result.values == [""]
 
     def test_equal_sign(self, parser):
         result = parser.parse("Required if Pixel Component Organization = Bit aligned.")
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0018,6044)"
         assert result.operator == "="
         assert result.values == ["Bit aligned"]
@@ -403,7 +405,7 @@ class TestValueConditionParser:
         result = parser.parse(
             "Required if Conversion Type (0008,0064) is DF (Digitized Film)."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0008,0064)"
         assert result.operator == "="
         assert result.values == ["DF"]
@@ -413,7 +415,7 @@ class TestValueConditionParser:
             "Required if Conversion Type (0008,0064) is SD "
             "(Scanned Document) or SI (Scanned Image)."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0008,0064)"
         assert result.operator == "="
         assert result.values == ["SD", "SI"]
@@ -423,7 +425,7 @@ class TestValueConditionParser:
             "Required if the value of Reformatting Operation Type "
             "(0072,0510) is 3D_RENDERING:"
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert result.tag == "(0072,0510)"
         assert result.operator == "="
         assert result.values == ["3D_RENDERING"]
@@ -482,7 +484,7 @@ class TestCompositeConditionParser:
             "Required if Series Type (0054,1000), Value 1 is GATED and "
             "Beat Rejection Flag (0018,1080) is Y."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 2
         result1 = result.and_conditions[0]
         assert result1.tag == "(0054,1000)"
@@ -498,7 +500,7 @@ class TestCompositeConditionParser:
             "Required if Delivery Type (300A,00CE) is CONTINUATION or "
             "one or more channels of any Application Setup are omitted."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 0
         assert result.operator == "="
         assert result.values == ["CONTINUATION"]
@@ -516,7 +518,7 @@ class TestCompositeConditionParser:
             "Required if Recorded Channel Sequence (3008,0130) is sent and "
             "Brachy Treatment Type (300A,0202) is not MANUAL or PDR."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 2
         result1 = result.and_conditions[0]
         assert result1.tag == "(3008,0130)"
@@ -532,7 +534,7 @@ class TestCompositeConditionParser:
             "and Respiratory Motion Compensation Technique "
             "(0018,9170) equals other than NONE."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 2
         assert result.and_conditions[0].operator == "="
         assert result.and_conditions[0].values == ["ORIGINAL", "MIXED"]
@@ -545,7 +547,7 @@ class TestCompositeConditionParser:
             "(0010,0033) or Patient's Alternative Death Date in Calendar "
             "(0010,0034) is present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         result1 = result.or_conditions[0]
         assert result1.tag == "(0010,0033)"
         assert result1.operator == "+"
@@ -572,7 +574,7 @@ class TestCompositeConditionParser:
             "and WADO-RS Retrieval Sequence (0040,E025) "
             "and XDS Retrieval Sequence (0040,E024) are not present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 4
         for result_part in result.and_conditions:
             assert result_part.operator == "-"
@@ -582,7 +584,7 @@ class TestCompositeConditionParser:
             "Required if Selector Attribute (0072,0026) and "
             "Filter-by Operator (0072,0406) are present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 2
         for result_part in result.and_conditions:
             assert result_part.operator == "+"
@@ -592,7 +594,7 @@ class TestCompositeConditionParser:
             "Required if Selector Attribute (0072,0026) or Filter-by Category "
             "(0072,0402), and Filter-by Operator (0072,0406) are present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 2
         assert len(result.and_conditions[0].or_conditions) == 2
         for result_part in result.and_conditions[0].or_conditions:
@@ -605,7 +607,7 @@ class TestCompositeConditionParser:
             "and if Referenced Time Offsets (0040,A138) and "
             "Referenced DateTime (0040,A13A) are not present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 2
         assert len(result.and_conditions[1].and_conditions) == 2
         for result_part in result.and_conditions[1].and_conditions:
@@ -617,7 +619,7 @@ class TestCompositeConditionParser:
             "Required if Bounding Box Top Left Hand Corner (0070,0010) "
             "or Bounding Box Bottom Right Hand Corner (0070,0011) is present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.or_conditions) == 2
         for result_part in result.or_conditions:
             assert result_part.operator == "+"
@@ -629,7 +631,7 @@ class TestCompositeConditionParser:
             "Image Box Tile Horizontal Dimension (0072,0306) or "
             "Image Box Tile Vertical Dimension (0072,0308) is greater than 1."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 2
         assert len(result.and_conditions[1].or_conditions) == 2
         for result_part in result.and_conditions[1].or_conditions:
@@ -643,14 +645,14 @@ class TestCompositeConditionParser:
             "has a value of YES and De-identification Method Code Sequence "
             "(0012,0064) is not present."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.and_conditions) == 2
         assert result.and_conditions[0].operator == "="
         assert result.and_conditions[0].values[0] == "YES"
         assert result.and_conditions[1].operator == "-"
 
     def check_or_condition(self, result):
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.or_conditions) == 2
         assert result.or_conditions[0].operator == "="
         assert result.or_conditions[0].values[0] == "PALETTE COLOR"
@@ -682,7 +684,7 @@ class TestComplicatedConditionParser:
             "or Graphic Type (0070,0023) is POLYLINE or INTERPOLATED "
             "and the first data point is the same as the last data point."
         )
-        assert result.type == "MN"
+        assert result.type == "MU"
         assert len(result.or_conditions) == 3
         assert result.or_conditions[0].operator == "="
         assert result.or_conditions[0].values == ["closed"]

@@ -11,6 +11,8 @@ The released versions correspond to PyPi releases.
 ### Fixes
 * fixed handling of unverifiable and condition, see [#32](../.. /issues/32)
 * fixed too broad matching for "otherwise" condition, see [#29](../.. /issues/29)
+* fixed too strict handling without "otherwise" condition, see [#38](../.. /issues/38)
+* ignore private tags during validation (had been flagged as unexpected)
 
 ### Infrastructure
 * Added pre-commit configuration for use with pre-commit hook

@@ -154,9 +154,9 @@ class ConditionParser:
             return Condition(ctype="U"), None
 
         result.type = (
-            "MU"
-            if "may be present otherwise" in condition[op_offset:].lower()
-            else "MN"
+            "MN"
+            if "not be present otherwise" in condition[op_offset:].lower()
+            else "MU"
         )
         return result, rest
 
