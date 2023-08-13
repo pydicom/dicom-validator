@@ -1,7 +1,10 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## [Version 0.4.0] (Unreleased)
+## [Version 0.5.0] (Unreleased)
+
+## [Version 0.4.0](https://pypi.python.org/pypi/dicom-validator/0.4.0) (2023-08-13)
+Adds support for functional group macros.
 
 ### Features
 * added support for validating functional group macros, see [#27](../.. /issues/27)
