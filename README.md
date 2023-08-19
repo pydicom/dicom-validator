@@ -82,30 +82,42 @@ to collect the needed information.
 Conditions for type 1C and 2C modules and tags are evaluated if possible.
 If the evaluation fails, the respective modules and tags are considered
 optional.
+The return value of the function represents the  number of errors found during the check.
 
 The output for a single file may look like this:
 ```
-(py3_test) c:\dev\GitHub\dicom-validator>validate_iods "c:\dev\DICOM Data\SR\test.dcm"
+(py3_test) c:\dev\GitHub\dicom-validator>validate_iods "c:\dev\DICOM Data\WG02\Enhanced-XA\ENHXA"
 
-Processing DICOM file "c:\dev\DICOM Data\SR\test.dcm"
-SOP class is "1.2.840.10008.5.1.4.1.1.88.33" (Comprehensive SR IOD)
+Using DICOM revision 2023c
+SOP class is "1.2.840.10008.5.1.4.1.1.12.1.1" (Enhanced XA Image IOD)
 
 Errors
 ======
-Module "SR Document Content":
-Tag (0040,A043) (Concept Name Code Sequence) is not allowed due to condition:
-  Value Type is equal to "TEXT", "NUM", "CODE", "DATETIME", "DATE", "TIME", "UIDREF" or "PNAME"
-Tag (0040,A300) (Measured Value Sequence) is missing
-Tag (0040,A168) (Concept Code Sequence) is missing
-Tag (0008,1199) (Referenced SOP Sequence) is missing
-Tag (0070,0022) (Graphic Data) is missing
-Tag (0070,0023) (Graphic Type) is missing
-Tag (3006,0024) (Referenced Frame of Reference UID) is missing
-Tag (0040,A130) (Temporal Range Type) is missing
-Tag (0040,A138) (Referenced Time Offsets) is missing due to condition:
-  Referenced Sample Positions is not present and Referenced DateTime is not present
-Tag (0040,A13A) (Referenced DateTime) is missing due to condition:
-  Referenced Sample Positions is not present and Referenced Time Offsets is not present
+Module "Enhanced XA/XRF Image":
+Tag (0018,9410) (Planes in Acquisition) is missing
+
+Module "Mask":
+Tag (0028,6100) (Mask Subtraction Sequence) is missing
+
+Module "X-Ray Frame Acquisition":
+Tag (0018,9328) (Exposure Time in ms) is unexpected in  Multi-frame Functional Groups > (5200,9230) > (0018,9417)
+Tag (0018,9332) (Exposure in mAs) is unexpected in  Multi-frame Functional Groups > (5200,9230) > (0018,9417)
+
+Module "X-Ray Geometry":
+Tag (0018,9476) (X-Ray Geometry Sequence) is missing in  Multi-frame Functional Groups > (5200,9230)
+
+Module "XA/XRF Multi-frame Presentation":
+Tag (0028,1090) (Recommended Viewing Mode) is missing in  XA/XRF Multi-frame Presentation > (0008,9458)
+Tag (0028,9411) (Display Filter Percentage) is missing in  XA/XRF Multi-frame Presentation > (0008,9458)
+
+General:
+Tag (0008,0022) (Acquisition Date) is unexpected
+Tag (0008,0032) (Acquisition Time) is unexpected
+Tag (0028,9411) (Display Filter Percentage) is unexpected
+Tag (0018,1164) (Imager Pixel Spacing) is unexpected
+
+
+Process finished with exit code 6
 ```
 
 ### Limitations

@@ -1,0 +1,53 @@
+[build-system]
+requires = [
+  "setuptools>=45.0"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [
+    {name = "mrbean-bremen and contributors", email = "hansemrbean@googlemail.com"}
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Healthcare Industry",
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dependencies = ["pydicom"]
+description = "Python DICOM validator using input from DICOM specs in docbook format"
+keywords = ["dicom, python"]
+license = {text = "MIT"}
+name = "dicom-validator"
+readme = "README.md"
+requires-python = ">=3.8"
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "pyfakefs>=5.0.0",
+    "pytest",
+]
+
+[project.urls]
+documentation = "https://github.com/pydicom/dicom-validator#readme"
+download = "https://github.com/pydicom/dicom-validator/archive/main.zip"
+homepage = "https://github.com/pydicom/dicom-validator"
+repository = "https://github.com/pydicom/dicom-validator"
+
+[project.scripts]
+validate_iods = "dicom_validator.validate_iods:main"
+dump_dcm_info = "dicom_validator.dump_dcm_info:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "dicom_validator.__version__"}
