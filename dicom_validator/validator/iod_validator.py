@@ -573,12 +573,16 @@ class IODValidator:
         expanded_mod_info = {}
         for k, v in module_info.items():
             if k == "include":
-                for ref in module_info["include"]:
+                for info in module_info["include"]:
+                    ref = info["ref"]
                     if ref == "FuncGroup":
                         if group_macros is None:
                             continue
                         expanded_mod_info["modules"] = group_macros
                     else:
+                        if "cond" in info:
+                            if not self._object_is_required_or_allowed(info["cond"])[0]:
+                                continue
                         expanded_mod_info.update(
                             self._get_module_info(ref, group_macros)
                         )

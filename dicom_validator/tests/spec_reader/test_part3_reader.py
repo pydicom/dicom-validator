@@ -133,7 +133,7 @@ class TestReadPart3:
         assert len(description) == 3
         assert "(0028,7FE0)" in description
         assert "include" in description
-        assert "C.7-11b" in description["include"]
+        assert "C.7-11b" in [d["ref"] for d in description["include"]]
         description = reader.module_description("C.7-11b")
         assert len(description) == 21
         assert "(7FE0,0010)" in description
@@ -141,3 +141,24 @@ class TestReadPart3:
     def test_module_descriptions(self, reader):
         descriptions = reader.module_descriptions()
         assert len(descriptions) == 113
+
+    def test_conditional_include_in_sr_module(self, reader):
+        description = reader.module_description("C.17.3")
+        assert "include" in description
+        assert "C.17-5" in [d["ref"] for d in description["include"]]
+        description = reader.module_description("C.17-5")
+        assert "include" in description
+        assert len(description["include"]) == 10
+        # all macros are included conditionally
+        assert all("cond" in d for d in description["include"])
+
+        # check numeric measurement macro:
+        #   Include Table C.18.1-1 “Numeric Measurement Macro Attributes”
+        #   if and only if Value Type (0040,A040) is NUM.
+        assert "C.18.1-1" in [d["ref"] for d in description["include"]]
+        include = [d for d in description["include"] if d["ref"] == "C.18.1-1"][0]
+        condition = include["cond"]
+        assert condition.type == "MN"
+        assert condition.operator == "="
+        assert condition.tag == "(0040,A040)"
+        assert condition.values == ["NUM"]

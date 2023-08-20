@@ -6,6 +6,9 @@ The released versions correspond to PyPi releases.
 ### Changes
 * removed official support for Python 3.7 which has reached end of life
 
+### Features
+* added handling of conditional includes (needed for SR documents)
+  (see [#39](../.. /issues/39))
 ### Infrastructure
 *  use `pyproject.toml` instead of `setup.py`
 

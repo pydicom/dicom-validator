@@ -406,3 +406,32 @@ class TestIODValidator:
         assert not has_tag_error(
             result, "Cardiac Synchronization", "(0018,9085)", "missing"
         )  # Cardiac signal source
+
+    @pytest.mark.tag_set(
+        {
+            # X-Ray Radiation Dose SR Storage
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.88.67",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ImageType": "DERIVED",
+            "ValueType": "NUM",
+        }
+    )
+    def test_conditional_includes(self, validator):
+        result = validator.validate()
+
+        # condition met (ValueType is NUM) - error because of missing tag
+        assert has_tag_error(
+            result, "SR Document Content", "(0040,A300)", "missing"
+        )  # Measured Value Sequence
+
+        # condition not met for other macros - no tags expected
+        assert not has_tag_error(
+            result, "SR Document Content", "(0040,A168)", "missing"
+        )  # Concept Code Sequence
+        assert not has_tag_error(
+            result, "SR Document Content", "(0008,1199)", "missing"
+        )  # Referenced SOP Sequence
+        assert not has_tag_error(
+            result, "SR Document Content", "(0070,0022)", "missing"
+        )  # Graphic Data
