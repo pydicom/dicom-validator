@@ -183,13 +183,15 @@ class Part3Reader(SpecReader):
                     columns, current_descriptions, last_tag_id, tag_name
                 )
             elif tag_name.startswith("Include"):
-                self._handle_included_attributes(columns, current_descriptions)
+                self._handle_included_attributes(
+                    tag_name, columns, current_descriptions
+                )
             else:
                 # todo: other entries
                 pass
         return current_descriptions[0]
 
-    def _handle_included_attributes(self, columns, current_descriptions):
+    def _handle_included_attributes(self, text, columns, current_descriptions):
         include_node = self._find(columns[0], ["para", "emphasis", "xref"])
         if include_node is None:
             description = self._find_text(columns[0])
@@ -199,7 +201,9 @@ class Part3Reader(SpecReader):
             )
             if is_func_group:
                 # add a placeholder - has to be evaluated at validation time
-                current_descriptions[-1].setdefault("include", []).append("FuncGroup")
+                current_descriptions[-1].setdefault("include", []).append(
+                    {"ref": "FuncGroup"}
+                )
             return
         include_ref = include_node.attrib["linkend"]
         if self._current_refs and include_ref == self._current_refs[-1]:
@@ -216,7 +220,18 @@ class Part3Reader(SpecReader):
             # it is allowed to have no attributes (example: Raw Data)
             ref_description = self._parse_module_description(ref_node) or {}
             self._module_descriptions[label] = ref_description
-        current_descriptions[-1].setdefault("include", []).append(label)
+        include_attr = {"ref": label}
+        # this is currently the only occurring condition for includes
+        cond_prefix = "if and only if "
+        cond_index = text.find(cond_prefix)
+        if cond_index > 0:
+            # we replace the prefix to avois special handling in the parser
+            cond_text = text[cond_index:].replace(cond_prefix, "required if ")
+            condition = self._condition_parser.parse(cond_text)
+            # the parser will put "MU", which makes no sense for includes
+            condition.type = "MN"
+            include_attr["cond"] = condition
+        current_descriptions[-1].setdefault("include", []).append(include_attr)
         self._current_refs.pop()
 
     def _handle_regular_attribute(
@@ -230,10 +245,6 @@ class Part3Reader(SpecReader):
                 "type": tag_type,
             }
             if tag_type in ("1C", "2C"):
-                # cond = self._find_all_text(columns[3])
-                # index = cond.find('Required if ')
-                # if index >= 0:
-                #     current_descriptions[-1][tag_id]['desc'] = cond[index:]
                 current_descriptions[-1][tag_id]["cond"] = self._condition_parser.parse(
                     self._find_all_text(columns[3])
                 )

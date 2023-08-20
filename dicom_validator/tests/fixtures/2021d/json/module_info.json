@@ -23,7 +23,9 @@
       },
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Institution Code Sequence",
@@ -32,7 +34,9 @@
     "(0040,1101)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Person Identification Code Sequence",
@@ -97,21 +101,27 @@
             "(0040,0441)": {
               "items": {
                 "include": [
-                  "10-2"
+                  {
+                    "ref": "10-2"
+                  }
                 ]
               },
               "name": "Content Item Modifier Sequence",
               "type": "3"
             },
             "include": [
-              "10-2"
+              {
+                "ref": "10-2"
+              }
             ]
           },
           "name": "Protocol Context Sequence",
           "type": "3"
         },
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Performed Protocol Code Sequence",
@@ -178,7 +188,9 @@
         "(0040,0036)": {
           "items": {
             "include": [
-              "10-17"
+              {
+                "ref": "10-17"
+              }
             ]
           },
           "name": "Assigning Facility Sequence",
@@ -187,7 +199,9 @@
         "(0040,0039)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Assigning Jurisdiction Code Sequence",
@@ -196,7 +210,9 @@
         "(0040,003A)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Assigning Agency or Department Code Sequence",
@@ -235,7 +251,9 @@
           "type": "1C"
         },
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced SOP Sequence",
@@ -253,7 +271,9 @@
       },
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Measurement Units Code Sequence",
@@ -266,7 +286,9 @@
     "(0040,A043)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Concept Name Code Sequence",
@@ -386,7 +408,9 @@
       },
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Concept Code Sequence",
@@ -412,7 +436,9 @@
         "(0054,0222)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "View Modifier Code Sequence",
@@ -423,7 +449,9 @@
           "type": "3"
         },
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "View Code Sequence",
@@ -468,7 +496,9 @@
       "type": "1C"
     },
     "include": [
-      "10-11"
+      {
+        "ref": "10-11"
+      }
     ]
   },
   "10-3b": {
@@ -733,7 +763,9 @@
         "(0008,114A)": {
           "items": {
             "include": [
-              "10-11"
+              {
+                "ref": "10-11"
+              }
             ]
           },
           "name": "Referenced Instance Sequence",
@@ -754,21 +786,27 @@
         "(0008,2220)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Anatomic Region Modifier Sequence",
           "type": "3"
         },
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Anatomic Region Sequence",
       "type": "1"
     },
     "include": [
-      "10-8"
+      {
+        "ref": "10-8"
+      }
     ]
   },
   "10-7": {
@@ -777,15 +815,21 @@
         "(0008,2220)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Anatomic Region Modifier Sequence",
           "type": "3"
         },
         "include": [
-          "8.8-1",
-          "10-8"
+          {
+            "ref": "8.8-1"
+          },
+          {
+            "ref": "10-8"
+          }
         ]
       },
       "name": "Anatomic Region Sequence",
@@ -798,14 +842,18 @@
         "(0008,2230)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Primary Anatomic Structure Modifier Sequence",
           "type": "3"
         },
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Primary Anatomic Structure Sequence",
@@ -820,7 +868,9 @@
     "(0008,0051)": {
       "items": {
         "include": [
-          "10-17"
+          {
+            "ref": "10-17"
+          }
         ]
       },
       "name": "Issuer of Accession Number Sequence",
@@ -829,7 +879,9 @@
     "(0008,1110)": {
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Study Sequence",
@@ -846,7 +898,9 @@
     "(0032,1064)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Requested Procedure Code Sequence",
@@ -863,21 +917,27 @@
             "(0040,0441)": {
               "items": {
                 "include": [
-                  "10-2"
+                  {
+                    "ref": "10-2"
+                  }
                 ]
               },
               "name": "Content Item Modifier Sequence",
               "type": "3"
             },
             "include": [
-              "10-2"
+              {
+                "ref": "10-2"
+              }
             ]
           },
           "name": "Protocol Context Sequence",
           "type": "3"
         },
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Scheduled Protocol Code Sequence",
@@ -904,7 +964,9 @@
     "(0040,100A)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Reason for Requested Procedure Code Sequence",
@@ -915,16 +977,24 @@
     "(0008,0121)": {
       "items": {
         "include": [
-          "8.8-1a",
-          "8.8-1b"
+          {
+            "ref": "8.8-1a"
+          },
+          {
+            "ref": "8.8-1b"
+          }
         ]
       },
       "name": "Equivalent Code Sequence",
       "type": "3"
     },
     "include": [
-      "8.8-1a",
-      "8.8-1b"
+      {
+        "ref": "8.8-1a"
+      },
+      {
+        "ref": "8.8-1b"
+      }
     ]
   },
   "8.8-1a": {
@@ -1161,7 +1231,9 @@
   },
   "C.11.1": {
     "include": [
-      "C.11-1b"
+      {
+        "ref": "C.11-1b"
+      }
     ]
   },
   "C.11.15": {
@@ -1176,7 +1248,9 @@
   },
   "C.11.2": {
     "include": [
-      "C.11-2b"
+      {
+        "ref": "C.11-2b"
+      }
     ]
   },
   "C.12-6": {
@@ -1245,7 +1319,9 @@
         "(0400,0401)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Digital Signature Purpose Code Sequence",
@@ -1404,7 +1480,9 @@
         "(0008,1072)": {
           "items": {
             "include": [
-              "10-1"
+              {
+                "ref": "10-1"
+              }
             ]
           },
           "name": "Operator Identification Sequence",
@@ -1445,7 +1523,9 @@
         "(0040,A170)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
@@ -1556,7 +1636,9 @@
           },
           "items": {
             "include": [
-              "10-3"
+              {
+                "ref": "10-3"
+              }
             ]
           },
           "name": "Conversion Source Attributes Sequence",
@@ -1580,7 +1662,9 @@
               "type": "3"
             },
             "include": [
-              "10-11"
+              {
+                "ref": "10-11"
+              }
             ]
           },
           "name": "HL7 Structured Document Reference Sequence",
@@ -1612,7 +1696,9 @@
       "type": "3"
     },
     "include": [
-      "C.12-6"
+      {
+        "ref": "C.12-6"
+      }
     ]
   },
   "C.12.2": {
@@ -1624,7 +1710,9 @@
         "(0008,114A)": {
           "items": {
             "include": [
-              "10-11"
+              {
+                "ref": "10-11"
+              }
             ]
           },
           "name": "Referenced Instance Sequence",
@@ -1640,7 +1728,9 @@
               "type": "1"
             },
             "include": [
-              "10-4"
+              {
+                "ref": "10-4"
+              }
             ]
           },
           "name": "Studies Containing Other Referenced Instances Sequence",
@@ -1688,11 +1778,23 @@
       "type": "1"
     }
   },
+  "C.17.3": {
+    "include": [
+      {
+        "ref": "C.17-5"
+      },
+      {
+        "ref": "C.17-6"
+      }
+    ]
+  },
   "C.17-3": {
     "(0008,1115)": {
       "items": {
         "include": [
-          "C.17-3a"
+          {
+            "ref": "C.17-3a"
+          }
         ]
       },
       "name": "Referenced Series Sequence",
@@ -1717,7 +1819,9 @@
         "(0040,A170)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
@@ -1760,7 +1864,9 @@
           "type": "3"
         },
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced SOP Sequence",
@@ -1781,6 +1887,278 @@
     "(0088,0140)": {
       "name": "Storage Media File-Set UID",
       "type": "3"
+    }
+  },
+  "C.17-5": {
+    "(0040,A040)": {
+      "name": "Value Type",
+      "type": "1"
+    },
+    "(0040,A043)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "TEXT",
+          "NUM",
+          "CODE",
+          "DATETIME",
+          "DATE",
+          "TIME",
+          "UIDREF",
+          "TABLE",
+          "PNAME"
+        ]
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Concept Name Code Sequence",
+      "type": "1C"
+    },
+    "(0040,A120)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "DATETIME"
+        ]
+      },
+      "name": "DateTime",
+      "type": "1C"
+    },
+    "(0040,A121)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "DATE"
+        ]
+      },
+      "name": "Date",
+      "type": "1C"
+    },
+    "(0040,A122)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "TIME"
+        ]
+      },
+      "name": "Time",
+      "type": "1C"
+    },
+    "(0040,A123)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "PNAME"
+        ]
+      },
+      "name": "Person Name",
+      "type": "1C"
+    },
+    "(0040,A124)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "UIDREF"
+        ]
+      },
+      "name": "UID",
+      "type": "1C"
+    },
+    "(0040,A160)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "TEXT"
+        ]
+      },
+      "name": "Text Value",
+      "type": "1C"
+    },
+    "include": [
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "NUM"
+          ]
+        },
+        "ref": "C.18.1-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "CODE"
+          ]
+        },
+        "ref": "C.18.2-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "COMPOSITE"
+          ]
+        },
+        "ref": "C.18.3-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "IMAGE"
+          ]
+        },
+        "ref": "C.18.4-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "WAVEFORM"
+          ]
+        },
+        "ref": "C.18.5-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "SCOORD"
+          ]
+        },
+        "ref": "C.18.6-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "SCOORD3D"
+          ]
+        },
+        "ref": "C.18.9-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "TCOORD"
+          ]
+        },
+        "ref": "C.18.7-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "CONTAINER"
+          ]
+        },
+        "ref": "C.18.8-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "TABLE"
+          ]
+        },
+        "ref": "C.18.10-1"
+      }
+    ]
+  },
+  "C.17-6": {
+    "(0040,A032)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Observation DateTime",
+      "type": "1C"
+    },
+    "(0040,A171)": {
+      "name": "Observation UID",
+      "type": "3"
+    },
+    "(0040,A730)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "(0040,A010)": {
+          "name": "Relationship Type",
+          "type": "1"
+        },
+        "(0040,DB73)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Referenced Content Item Identifier",
+          "type": "1C"
+        },
+        "include": [
+          {
+            "ref": "C.17-5"
+          }
+        ]
+      },
+      "name": "Content Sequence",
+      "type": "1C"
     }
   },
   "C.7-11b": {
@@ -2023,7 +2401,9 @@
     "(0008,1120)": {
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Patient Sequence",
@@ -2099,7 +2479,9 @@
           "type": "1"
         },
         "include": [
-          "10-18"
+          {
+            "ref": "10-18"
+          }
         ]
       },
       "name": "Other Patient IDs Sequence",
@@ -2108,7 +2490,9 @@
     "(0010,1100)": {
       "items": {
         "include": [
-          "10-3b"
+          {
+            "ref": "10-3b"
+          }
         ]
       },
       "name": "Referenced Patient Photo Sequence",
@@ -2131,7 +2515,9 @@
       },
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Patient Species Code Sequence",
@@ -2150,7 +2536,9 @@
       },
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Patient Breed Code Sequence",
@@ -2178,7 +2566,9 @@
             "(0010,0215)": {
               "items": {
                 "include": [
-                  "8.8-1"
+                  {
+                    "ref": "8.8-1"
+                  }
                 ]
               },
               "name": "Strain Source Registry Code Sequence",
@@ -2259,14 +2649,18 @@
               },
               "items": {
                 "include": [
-                  "8.8-1"
+                  {
+                    "ref": "8.8-1"
+                  }
                 ]
               },
               "name": "De-identification Method Code Sequence",
               "type": "1C"
             },
             "include": [
-              "C.7.1.4-1"
+              {
+                "ref": "C.7.1.4-1"
+              }
             ]
           },
           "name": "Strain Stock Sequence",
@@ -2279,7 +2673,9 @@
         "(0010,0219)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Strain Code Sequence",
@@ -2292,7 +2688,9 @@
         "(0010,2296)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Breed Registry Code Sequence",
@@ -2307,7 +2705,9 @@
       "type": "3"
     },
     "include": [
-      "10-18"
+      {
+        "ref": "10-18"
+      }
     ]
   },
   "C.7.1.3": {
@@ -2374,7 +2774,9 @@
           "type": "1"
         },
         "include": [
-          "10-18"
+          {
+            "ref": "10-18"
+          }
         ]
       },
       "name": "Source Patient Group Identification Sequence",
@@ -2395,7 +2797,9 @@
           "type": "3"
         },
         "include": [
-          "10-18"
+          {
+            "ref": "10-18"
+          }
         ]
       },
       "name": "Group of Patients Identification Sequence",
@@ -2418,7 +2822,9 @@
     "(0008,0051)": {
       "items": {
         "include": [
-          "10-17"
+          {
+            "ref": "10-17"
+          }
         ]
       },
       "name": "Issuer of Accession Number Sequence",
@@ -2431,7 +2837,9 @@
     "(0008,0096)": {
       "items": {
         "include": [
-          "10-1"
+          {
+            "ref": "10-1"
+          }
         ]
       },
       "name": "Referring Physician Identification Sequence",
@@ -2444,7 +2852,9 @@
     "(0008,009D)": {
       "items": {
         "include": [
-          "10-1"
+          {
+            "ref": "10-1"
+          }
         ]
       },
       "name": "Consulting Physician Identification Sequence",
@@ -2457,7 +2867,9 @@
     "(0008,1032)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Procedure Code Sequence",
@@ -2470,7 +2882,9 @@
     "(0008,1049)": {
       "items": {
         "include": [
-          "10-1"
+          {
+            "ref": "10-1"
+          }
         ]
       },
       "name": "Physician(s) of Record Identification Sequence",
@@ -2483,7 +2897,9 @@
     "(0008,1062)": {
       "items": {
         "include": [
-          "10-1"
+          {
+            "ref": "10-1"
+          }
         ]
       },
       "name": "Physician(s) Reading Study Identification Sequence",
@@ -2492,7 +2908,9 @@
     "(0008,1110)": {
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Study Sequence",
@@ -2509,7 +2927,9 @@
     "(0032,1034)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Requesting Service Code Sequence",
@@ -2518,7 +2938,9 @@
     "(0040,1012)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Reason For Performed Procedure Code Sequence",
@@ -2533,7 +2955,9 @@
     "(0008,1084)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Admitting Diagnoses Code Sequence",
@@ -2550,7 +2974,9 @@
     "(0010,1021)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Patient's Size Code Sequence",
@@ -2582,7 +3008,9 @@
     "(0038,0014)": {
       "items": {
         "include": [
-          "10-17"
+          {
+            "ref": "10-17"
+          }
         ]
       },
       "name": "Issuer of Admission ID Sequence",
@@ -2599,7 +3027,9 @@
     "(0038,0064)": {
       "items": {
         "include": [
-          "10-17"
+            {
+              "ref": "10-17"
+            }
         ]
       },
       "name": "Issuer of Service Episode ID Sequence",
@@ -2673,7 +3103,9 @@
     "(0008,103F)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Series Description Code Sequence",
@@ -2686,7 +3118,9 @@
     "(0008,1052)": {
       "items": {
         "include": [
-          "10-1"
+          {
+            "ref": "10-1"
+          }
         ]
       },
       "name": "Performing Physician Identification Sequence",
@@ -2699,7 +3133,9 @@
     "(0008,1072)": {
       "items": {
         "include": [
-          "10-1"
+          {
+            "ref": "10-1"
+          }
         ]
       },
       "name": "Operator Identification Sequence",
@@ -2708,7 +3144,9 @@
     "(0008,1111)": {
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Performed Procedure Step Sequence",
@@ -2753,7 +3191,9 @@
         "(0040,0275)": {
           "items": {
             "include": [
-              "10-9"
+              {
+                "ref": "10-9"
+              }
             ]
           },
           "name": "Request Attributes Sequence",
@@ -2762,14 +3202,18 @@
         "(0040,A170)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
           "type": "2"
         },
         "include": [
-          "10-16"
+          {
+            "ref": "10-16"
+          }
         ]
       },
       "name": "Related Series Sequence",
@@ -3026,7 +3470,9 @@
             "(0040,9096)": {
               "items": {
                 "include": [
-                  "C.7.6.16-12b"
+                  {
+                    "ref": "C.7.6.16-12b"
+                  }
                 ]
               },
               "name": "Real World Value Mapping Sequence",
@@ -3035,7 +3481,9 @@
             "(0040,A170)": {
               "items": {
                 "include": [
-                  "8.8-1"
+                  {
+                    "ref": "8.8-1"
+                  }
                 ]
               },
               "name": "Purpose of Reference Code Sequence",
@@ -3044,7 +3492,9 @@
             "(0088,0200)": {
               "items": {
                 "include": [
-                  "C.7-11b"
+                  {
+                    "ref": "C.7-11b"
+                  }
                 ]
               },
               "name": "Icon Image Sequence",
@@ -3055,7 +3505,9 @@
               "type": "3"
             },
             "include": [
-              "10-11"
+              {
+                "ref": "10-11"
+              }
             ]
           },
           "name": "Referenced Instance Sequence",
@@ -3087,14 +3539,18 @@
             "(0040,A170)": {
               "items": {
                 "include": [
-                  "8.8-1"
+                  {
+                    "ref": "8.8-1"
+                  }
                 ]
               },
               "name": "Purpose of Reference Code Sequence",
               "type": "3"
             },
             "include": [
-              "10-3"
+              {
+                "ref": "10-3"
+              }
             ]
           },
           "name": "Source Image Sequence",
@@ -3103,7 +3559,9 @@
         "(0008,9215)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Derivation Code Sequence",
@@ -3112,14 +3570,18 @@
         "(0040,A170)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
           "type": "3"
         },
         "include": [
-          "10-3"
+          {
+            "ref": "10-3"
+          }
         ]
       },
       "name": "Referenced Image Sequence",
@@ -3191,7 +3653,9 @@
           "type": "3"
         },
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Device Sequence",
@@ -3214,7 +3678,9 @@
           },
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Measurement Units Code Sequence",
@@ -3227,7 +3693,9 @@
         "(0040,A043)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Concept Name Code Sequence",
@@ -3330,7 +3798,9 @@
           },
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Concept Code Sequence",
@@ -3417,7 +3887,9 @@
     "(5200,9229)": {
       "items": {
         "include": [
-          "FuncGroup"
+          {
+            "ref": "FuncGroup"
+          }
         ]
       },
       "name": "Shared Functional Groups Sequence",
@@ -3426,7 +3898,9 @@
     "(5200,9230)": {
       "items": {
         "include": [
-          "FuncGroup"
+          {
+            "ref": "FuncGroup"
+          }
         ]
       },
       "name": "Per-frame Functional Groups Sequence",
@@ -3441,7 +3915,9 @@
     "(0040,08EA)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Measurement Units Code Sequence",
@@ -3540,7 +4016,9 @@
     "(0040,9220)": {
       "items": {
         "include": [
-          "10-2"
+          {
+            "ref": "10-2"
+          }
         ]
       },
       "name": "Quantity Definition Sequence",
@@ -3713,14 +4191,18 @@
           },
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
           "type": "1C"
         },
         "include": [
-          "10-3"
+          {
+            "ref": "10-3"
+          }
         ]
       },
       "name": "Referenced Image Sequence",
@@ -3759,14 +4241,18 @@
               },
               "items": {
                 "include": [
-                  "8.8-1"
+                  {
+                    "ref": "8.8-1"
+                  }
                 ]
               },
               "name": "Purpose of Reference Code Sequence",
               "type": "1C"
             },
             "include": [
-              "10-3"
+              {
+                "ref": "10-3"
+              }
             ]
           },
           "name": "Source Image Sequence",
@@ -3778,7 +4264,9 @@
           },
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Derivation Code Sequence",
@@ -3871,7 +4359,9 @@
           "type": "1"
         },
         "include": [
-          "10-5"
+          {
+            "ref": "10-5"
+          }
         ]
       },
       "name": "Frame Anatomy Sequence",
@@ -3981,7 +4471,9 @@
     "(0018,9472)": {
       "items": {
         "include": [
-          "C.7-17a"
+          {
+            "ref": "C.7-17a"
+          }
         ]
       },
       "name": "Frame Display Shutter Sequence",
@@ -4681,7 +5173,9 @@
   },
   "C.7.6.22": {
     "include": [
-      "C.7.6.22-2"
+      {
+        "ref": "C.7.6.22-2"
+      }
     ]
   },
   "C.7.6.22-2": {
@@ -4692,7 +5186,9 @@
     "(0040,0513)": {
       "items": {
         "include": [
-          "10-17"
+          {
+            "ref": "10-17"
+          }
         ]
       },
       "name": "Issuer of the Container Identifier Sequence",
@@ -4707,7 +5203,9 @@
         "(0040,0513)": {
           "items": {
             "include": [
-              "10-17"
+              {
+                "ref": "10-17"
+              }
             ]
           },
           "name": "Issuer of the Container Identifier Sequence",
@@ -4716,7 +5214,9 @@
         "(0040,0518)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Container Type Code Sequence",
@@ -4739,7 +5239,9 @@
             "(0050,0012)": {
               "items": {
                 "include": [
-                  "8.8-1"
+                  {
+                    "ref": "8.8-1"
+                  }
                 ]
               },
               "name": "Container Component Type Code Sequence",
@@ -4790,7 +5292,9 @@
             "(0040,0562)": {
               "items": {
                 "include": [
-                  "10-17"
+                  {
+                    "ref": "10-17"
+                  }
                 ]
               },
               "name": "Issuer of the Specimen Identifier Sequence",
@@ -4799,7 +5303,9 @@
             "(0040,059A)": {
               "items": {
                 "include": [
-                  "8.8-1"
+                  {
+                    "ref": "8.8-1"
+                  }
                 ]
               },
               "name": "Specimen Type Code Sequence",
@@ -4818,7 +5324,9 @@
                 "(0040,0612)": {
                   "items": {
                     "include": [
-                      "10-2"
+                      {
+                        "ref": "10-2"
+                      }
                     ]
                   },
                   "name": "Specimen Preparation Step Content Item Sequence",
@@ -4830,14 +5338,18 @@
                   },
                   "items": {
                     "include": [
-                      "10-2"
+                      {
+                        "ref": "10-2"
+                      }
                     ]
                   },
                   "name": "Specimen Localization Content Item Sequence",
                   "type": "1C"
                 },
                 "include": [
-                  "10-8"
+                  {
+                    "ref": "10-8"
+                  }
                 ]
               },
               "name": "Specimen Preparation Sequence",
@@ -4868,7 +5380,9 @@
       "type": "1C"
     },
     "include": [
-      "C.7-11b"
+      {
+        "ref": "C.7-11b"
+      }
     ]
   },
   "C.7.6.4": {
@@ -4879,7 +5393,9 @@
     "(0018,0012)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Contrast/Bolus Agent Sequence",
@@ -4890,7 +5406,9 @@
         "(0018,002A)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Additional Drug Sequence",
@@ -4929,7 +5447,9 @@
           "type": "3"
         },
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Contrast/Bolus Administration Route Sequence",
@@ -4950,7 +5470,9 @@
         "(0018,0014)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Contrast/Bolus Administration Route Sequence",
@@ -4971,7 +5493,9 @@
         "(0018,9338)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Contrast/Bolus Ingredient Code Sequence",
@@ -5012,7 +5536,9 @@
           "type": "3"
         },
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Contrast/Bolus Agent Sequence",
@@ -5084,7 +5610,9 @@
     "(0040,9096)": {
       "items": {
         "include": [
-          "C.7.6.16-12b"
+          {
+            "ref": "C.7.6.16-12b"
+          }
         ]
       },
       "name": "Real World Value Mapping Sequence",
@@ -5326,7 +5854,9 @@
         "(0022,0016)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Illumination Type Code Sequence",
@@ -5335,7 +5865,9 @@
         "(0022,0017)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Light Path Filter Type Stack Code Sequence",
@@ -5344,7 +5876,9 @@
         "(0022,0018)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Image Path Filter Type Stack Code Sequence",
@@ -5353,7 +5887,9 @@
         "(0022,0019)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Lenses Code Sequence",
@@ -5365,7 +5901,9 @@
           },
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Channel Description Code Sequence",
@@ -5410,7 +5948,9 @@
         "(0048,0100)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Illuminator Type Code Sequence",
@@ -5433,7 +5973,9 @@
           },
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Illumination Color Code Sequence",
@@ -5454,7 +5996,9 @@
         "(0048,0120)": {
           "items": {
             "include": [
-              "C.7-22a"
+              {
+                "ref": "C.7-22a"
+              }
             ]
           },
           "name": "Palette Color Lookup Table Sequence",
@@ -5503,7 +6047,9 @@
       },
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Performed Procedure Step Sequence",
@@ -5525,7 +6071,9 @@
     "(0008,113A)": {
       "items": {
         "include": [
-          "C.17-3"
+          {
+            "ref": "C.17-3"
+          }
         ]
       },
       "name": "Referenced Waveform Sequence",
@@ -5540,7 +6088,9 @@
       },
       "items": {
         "include": [
-          "C.17-3"
+          {
+            "ref": "C.17-3"
+          }
         ]
       },
       "name": "Referenced Image Evidence Sequence",
@@ -5549,7 +6099,9 @@
     "(0008,9121)": {
       "items": {
         "include": [
-          "C.17-3"
+          {
+            "ref": "C.17-3"
+          }
         ]
       },
       "name": "Referenced Raw Data Sequence",
@@ -5564,7 +6116,9 @@
       },
       "items": {
         "include": [
-          "C.17-3"
+          {
+            "ref": "C.17-3"
+          }
         ]
       },
       "name": "Source Image Evidence Sequence",
@@ -5576,7 +6130,9 @@
       },
       "items": {
         "include": [
-          "C.17-3"
+          {
+            "ref": "C.17-3"
+          }
         ]
       },
       "name": "Referenced Presentation State Sequence",
@@ -5689,7 +6245,9 @@
     "(0088,0200)": {
       "items": {
         "include": [
-          "C.7-11b"
+          {
+            "ref": "C.7-11b"
+          }
         ]
       },
       "name": "Icon Image Sequence",
@@ -5704,9 +6262,15 @@
       "type": "3"
     },
     "include": [
-      "C.8-131",
-      "10-25",
-      "10-27"
+      {
+        "ref": "C.8-131"
+      },
+      {
+        "ref": "10-25"
+      },
+      {
+        "ref": "10-27"
+      }
     ]
   },
   "C.8.2.1": {
@@ -5795,7 +6359,9 @@
       },
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Water Equivalent Diameter Method Code Sequence",
@@ -5848,7 +6414,9 @@
     "(0018,9346)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "CTDI Phantom Type Code Sequence",
@@ -5954,9 +6522,15 @@
       "type": "3"
     },
     "include": [
-      "10-7",
-      "10-25",
-      "10-27"
+      {
+        "ref": "10-7"
+      },
+      {
+        "ref": "10-25"
+      },
+      {
+        "ref": "10-27"
+      }
     ]
   },
   "C.8.8.1": {
@@ -5979,7 +6553,9 @@
     "(0008,103F)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Series Description Code Sequence",
@@ -5992,7 +6568,9 @@
     "(0008,1072)": {
       "items": {
         "include": [
-          "10-1"
+          {
+            "ref": "10-1"
+          }
         ]
       },
       "name": "Operator Identification Sequence",
@@ -6001,7 +6579,9 @@
     "(0008,1111)": {
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Performed Procedure Step Sequence",
@@ -6018,14 +6598,18 @@
     "(0040,0275)": {
       "items": {
         "include": [
-          "10-9"
+          {
+            "ref": "10-9"
+          }
         ]
       },
       "name": "Request Attributes Sequence",
       "type": "3"
     },
     "include": [
-      "10-16"
+      {
+        "ref": "10-16"
+      }
     ]
   },
   "C.8.8.3": {
@@ -6093,7 +6677,9 @@
       },
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Spatial Registration Sequence",
@@ -6188,14 +6774,18 @@
                         "(0040,A170)": {
                           "items": {
                             "include": [
-                              "8.8-1"
+                              {
+                                "ref": "8.8-1"
+                              }
                             ]
                           },
                           "name": "Purpose of Reference Code Sequence",
                           "type": "1"
                         },
                         "include": [
-                          "10-11"
+                          {
+                            "ref": "10-11"
+                          }
                         ]
                       },
                       "name": "Referenced Instance Sequence",
@@ -6204,7 +6794,9 @@
                     "(0008,9215)": {
                       "items": {
                         "include": [
-                          "8.8-1"
+                          {
+                            "ref": "8.8-1"
+                          }
                         ]
                       },
                       "name": "Derivation Code Sequence",
@@ -6245,7 +6837,9 @@
                       "type": "1C"
                     },
                     "include": [
-                      "10-11"
+                      {
+                        "ref": "10-11"
+                      }
                     ]
                   },
                   "name": "Referenced Treatment Record Sequence",
@@ -6311,7 +6905,9 @@
           "type": "1C"
         },
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced RT Plan Sequence",
@@ -6390,7 +6986,9 @@
     "(300C,0060)": {
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Structure Set Sequence",
@@ -6439,7 +7037,9 @@
                 "(3006,0016)": {
                   "items": {
                     "include": [
-                      "10-3"
+                      {
+                        "ref": "10-3"
+                      }
                     ]
                   },
                   "name": "Contour Image Sequence",
@@ -6450,7 +7050,9 @@
                     "(0008,9215)": {
                       "items": {
                         "include": [
-                          "8.8-1"
+                          {
+                            "ref": "8.8-1"
+                          }
                         ]
                       },
                       "name": "Derivation Code Sequence",
@@ -6459,7 +7061,9 @@
                     "(3006,0018)": {
                       "items": {
                         "include": [
-                          "10-11"
+                          {
+                            "ref": "10-11"
+                          }
                         ]
                       },
                       "name": "Predecessor Structure Set Sequence",
@@ -6502,7 +7106,9 @@
               "type": "1"
             },
             "include": [
-              "10-11"
+              {
+                "ref": "10-11"
+              }
             ]
           },
           "name": "RT Referenced Study Sequence",
@@ -6533,7 +7139,9 @@
             "(3006,0016)": {
               "items": {
                 "include": [
-                  "10-3"
+                  {
+                    "ref": "10-3"
+                  }
                 ]
               },
               "name": "Contour Image Sequence",
@@ -6611,7 +7219,9 @@
       },
       "items": {
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Performed Procedure Step Sequence",
@@ -6968,7 +7578,9 @@
         "(0008,9215)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Derivation Code Sequence",
@@ -7606,14 +8218,18 @@
         "(0040,A170)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
           "type": "3"
         },
         "include": [
-          "10-3"
+          {
+            "ref": "10-3"
+          }
         ]
       },
       "name": "Referenced Image Sequence",
@@ -7624,14 +8240,18 @@
         "(0040,A170)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
           "type": "1"
         },
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Referenced Instance Sequence",
@@ -7663,14 +8283,18 @@
         "(0040,A170)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
           "type": "3"
         },
         "include": [
-          "10-3"
+          {
+            "ref": "10-3"
+          }
         ]
       },
       "name": "Source Image Sequence",
@@ -7679,7 +8303,9 @@
     "(0008,9215)": {
       "items": {
         "include": [
-          "8.8-1"
+          {
+            "ref": "8.8-1"
+          }
         ]
       },
       "name": "Derivation Code Sequence",
@@ -7690,18 +8316,857 @@
         "(0040,A170)": {
           "items": {
             "include": [
-              "8.8-1"
+              {
+                "ref": "8.8-1"
+              }
             ]
           },
           "name": "Purpose of Reference Code Sequence",
           "type": "3"
         },
         "include": [
-          "10-11"
+          {
+            "ref": "10-11"
+          }
         ]
       },
       "name": "Source Instance Sequence",
       "type": "3"
     }
+  },
+  "C.18.1-1": {
+    "(0040,A300)": {
+      "items": {
+        "(0040,08EA)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Measurement Units Code Sequence",
+          "type": "1"
+        },
+        "(0040,A161)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Floating Point Value",
+          "type": "1C"
+        },
+        "(0040,A162)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Rational Numerator Value",
+          "type": "1C"
+        },
+        "(0040,A163)": {
+          "cond": {
+            "index": 0,
+            "op": "+",
+            "tag": "(0040,A162)",
+            "type": "MU"
+          },
+          "name": "Rational Denominator Value",
+          "type": "1C"
+        },
+        "(0040,A30A)": {
+          "name": "Numeric Value",
+          "type": "1"
+        }
+      },
+      "name": "Measured Value Sequence",
+      "type": "2"
+    },
+    "(0040,A301)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Numeric Value Qualifier Code Sequence",
+      "type": "1C"
+    }
+  },
+  "C.17.1": {
+    "(0008,0021)": {
+      "name": "Series Date",
+      "type": "3"
+    },
+    "(0008,0031)": {
+      "name": "Series Time",
+      "type": "3"
+    },
+    "(0008,0060)": {
+      "name": "Modality",
+      "type": "1"
+    },
+    "(0008,103E)": {
+      "name": "Series Description",
+      "type": "3"
+    },
+    "(0008,103F)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Series Description Code Sequence",
+      "type": "3"
+    },
+    "(0008,1111)": {
+      "items": {
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Performed Procedure Step Sequence",
+      "type": "2"
+    },
+    "(0018,1030)": {
+      "name": "Protocol Name",
+      "type": "3"
+    },
+    "(0020,000E)": {
+      "name": "Series Instance UID",
+      "type": "1"
+    },
+    "(0020,0011)": {
+      "name": "Series Number",
+      "type": "1"
+    },
+    "(300A,0700)": {
+      "name": "Treatment Session UID",
+      "type": "3"
+    }
+  },
+  "C.17.2": {
+    "(0008,0023)": {
+      "name": "Content Date",
+      "type": "1"
+    },
+    "(0008,0033)": {
+      "name": "Content Time",
+      "type": "1"
+    },
+    "(0008,114A)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "1"
+        },
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Instance Sequence",
+      "type": "1C"
+    },
+    "(0020,0013)": {
+      "name": "Instance Number",
+      "type": "1"
+    },
+    "(0040,A073)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A493)",
+        "type": "MU",
+        "values": [
+          "VERIFIED"
+        ]
+      },
+      "items": {
+        "(0040,A027)": {
+          "name": "Verifying Organization",
+          "type": "1"
+        },
+        "(0040,A030)": {
+          "name": "Verification DateTime",
+          "type": "1"
+        },
+        "(0040,A075)": {
+          "name": "Verifying Observer Name",
+          "type": "1"
+        },
+        "(0040,A088)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Verifying Observer Identification Code Sequence",
+          "type": "2"
+        }
+      },
+      "name": "Verifying Observer Sequence",
+      "type": "1C"
+    },
+    "(0040,A078)": {
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3b"
+          }
+        ]
+      },
+      "name": "Author Observer Sequence",
+      "type": "3"
+    },
+    "(0040,A07A)": {
+      "items": {
+        "(0040,A080)": {
+          "name": "Participation Type",
+          "type": "1"
+        },
+        "(0040,A082)": {
+          "name": "Participation DateTime",
+          "type": "2"
+        },
+        "include": [
+          {
+            "ref": "C.17-3b"
+          }
+        ]
+      },
+      "name": "Participant Sequence",
+      "type": "3"
+    },
+    "(0040,A07C)": {
+      "items": {
+        "(0008,0080)": {
+          "name": "Institution Name",
+          "type": "2"
+        },
+        "(0008,0082)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Institution Code Sequence",
+          "type": "2"
+        },
+        "(0008,0220)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Responsible Group Code Sequence",
+          "type": "3"
+        }
+      },
+      "name": "Custodial Organization Sequence",
+      "type": "3"
+    },
+    "(0040,A360)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3"
+          }
+        ]
+      },
+      "name": "Predecessor Documents Sequence",
+      "type": "1C"
+    },
+    "(0040,A370)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3c"
+          }
+        ]
+      },
+      "name": "Referenced Request Sequence",
+      "type": "1C"
+    },
+    "(0040,A372)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Performed Procedure Code Sequence",
+      "type": "2"
+    },
+    "(0040,A375)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3"
+          }
+        ]
+      },
+      "name": "Current Requested Procedure Evidence Sequence",
+      "type": "1C"
+    },
+    "(0040,A385)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3"
+          }
+        ]
+      },
+      "name": "Pertinent Other Evidence Sequence",
+      "type": "1C"
+    },
+    "(0040,A491)": {
+      "name": "Completion Flag",
+      "type": "1"
+    },
+    "(0040,A492)": {
+      "name": "Completion Flag Description",
+      "type": "3"
+    },
+    "(0040,A493)": {
+      "name": "Verification Flag",
+      "type": "1"
+    },
+    "(0040,A496)": {
+      "name": "Preliminary Flag",
+      "type": "3"
+    },
+    "(0040,A525)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3"
+          }
+        ]
+      },
+      "name": "Identical Documents Sequence",
+      "type": "1C"
+    }
+  },
+  "C.17-3b": {
+    "(0008,0055)": {
+      "name": "Station AE Title",
+      "type": "3"
+    },
+    "(0008,0070)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A084)",
+        "type": "MU",
+        "values": [
+          "DEV"
+        ]
+      },
+      "name": "Manufacturer",
+      "type": "1C"
+    },
+    "(0008,0080)": {
+      "name": "Institution Name",
+      "type": "2"
+    },
+    "(0008,0082)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Institution Code Sequence",
+      "type": "2"
+    },
+    "(0008,1010)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A084)",
+        "type": "MU",
+        "values": [
+          "DEV"
+        ]
+      },
+      "name": "Station Name",
+      "type": "2C"
+    },
+    "(0008,1040)": {
+      "name": "Institutional Department Name",
+      "type": "3"
+    },
+    "(0008,1041)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Institutional Department Type Code Sequence",
+      "type": "3"
+    },
+    "(0008,1090)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A084)",
+        "type": "MU",
+        "values": [
+          "DEV"
+        ]
+      },
+      "name": "Manufacturer's Model Name",
+      "type": "1C"
+    },
+    "(0018,1000)": {
+      "name": "Device Serial Number",
+      "type": "3"
+    },
+    "(0018,1002)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A084)",
+        "type": "MU",
+        "values": [
+          "DEV"
+        ]
+      },
+      "name": "Device UID",
+      "type": "1C"
+    },
+    "(0018,1020)": {
+      "name": "Software Versions",
+      "type": "3"
+    },
+    "(0018,1204)": {
+      "name": "Date of Manufacture",
+      "type": "3"
+    },
+    "(0018,1205)": {
+      "name": "Date of Installation",
+      "type": "3"
+    },
+    "(0040,1101)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A084)",
+        "type": "MU",
+        "values": [
+          "PSN"
+        ]
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Person Identification Code Sequence",
+      "type": "2C"
+    },
+    "(0040,A084)": {
+      "name": "Observer Type",
+      "type": "1"
+    },
+    "(0040,A123)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A084)",
+        "type": "MU",
+        "values": [
+          "PSN"
+        ]
+      },
+      "name": "Person Name",
+      "type": "1C"
+    },
+    "(0044,010A)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Organizational Role Code Sequence",
+      "type": "3"
+    }
+  },
+  "C.17-3c": {
+    "(0008,0050)": {
+      "name": "Accession Number",
+      "type": "2"
+    },
+    "(0008,0051)": {
+      "items": {
+        "include": [
+          {
+            "ref": "10-17"
+          }
+        ]
+      },
+      "name": "Issuer of Accession Number Sequence",
+      "type": "3"
+    },
+    "(0008,1110)": {
+      "items": {
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Study Sequence",
+      "type": "2"
+    },
+    "(0020,000D)": {
+      "name": "Study Instance UID",
+      "type": "1"
+    },
+    "(0032,1060)": {
+      "name": "Requested Procedure Description",
+      "type": "2"
+    },
+    "(0032,1064)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Requested Procedure Code Sequence",
+      "type": "2"
+    },
+    "(0040,0026)": {
+      "items": {
+        "include": [
+          {
+            "ref": "10-17"
+          }
+        ]
+      },
+      "name": "Order Placer Identifier Sequence",
+      "type": "3"
+    },
+    "(0040,0027)": {
+      "items": {
+        "include": [
+          {
+            "ref": "10-17"
+          }
+        ]
+      },
+      "name": "Order Filler Identifier Sequence",
+      "type": "3"
+    },
+    "(0040,1001)": {
+      "name": "Requested Procedure ID",
+      "type": "2"
+    },
+    "(0040,1002)": {
+      "name": "Reason for the Requested Procedure",
+      "type": "3"
+    },
+    "(0040,100A)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Reason for Requested Procedure Code Sequence",
+      "type": "3"
+    },
+    "(0040,2016)": {
+      "name": "Placer Order Number / Imaging Service Request",
+      "type": "2"
+    },
+    "(0040,2017)": {
+      "name": "Filler Order Number / Imaging Service Request",
+      "type": "2"
+    }
+  },
+  "C.17-5": {
+    "(0040,A040)": {
+      "name": "Value Type",
+      "type": "1"
+    },
+    "(0040,A043)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "TEXT",
+          "NUM",
+          "CODE",
+          "DATETIME",
+          "DATE",
+          "TIME",
+          "UIDREF",
+          "TABLE",
+          "PNAME"
+        ]
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Concept Name Code Sequence",
+      "type": "1C"
+    },
+    "(0040,A120)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "DATETIME"
+        ]
+      },
+      "name": "DateTime",
+      "type": "1C"
+    },
+    "(0040,A121)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "DATE"
+        ]
+      },
+      "name": "Date",
+      "type": "1C"
+    },
+    "(0040,A122)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "TIME"
+        ]
+      },
+      "name": "Time",
+      "type": "1C"
+    },
+    "(0040,A123)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "PNAME"
+        ]
+      },
+      "name": "Person Name",
+      "type": "1C"
+    },
+    "(0040,A124)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "UIDREF"
+        ]
+      },
+      "name": "UID",
+      "type": "1C"
+    },
+    "(0040,A160)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A040)",
+        "type": "MU",
+        "values": [
+          "TEXT"
+        ]
+      },
+      "name": "Text Value",
+      "type": "1C"
+    },
+    "include": [
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "NUM"
+          ]
+        },
+        "ref": "C.18.1-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "CODE"
+          ]
+        },
+        "ref": "C.18.2-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "COMPOSITE"
+          ]
+        },
+        "ref": "C.18.3-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "IMAGE"
+          ]
+        },
+        "ref": "C.18.4-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "WAVEFORM"
+          ]
+        },
+        "ref": "C.18.5-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "SCOORD"
+          ]
+        },
+        "ref": "C.18.6-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "SCOORD3D"
+          ]
+        },
+        "ref": "C.18.9-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "TCOORD"
+          ]
+        },
+        "ref": "C.18.7-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "CONTAINER"
+          ]
+        },
+        "ref": "C.18.8-1"
+      },
+      {
+        "cond": {
+          "index": 0,
+          "op": "=",
+          "tag": "(0040,A040)",
+          "type": "MU",
+          "values": [
+            "TABLE"
+          ]
+        },
+        "ref": "C.18.10-1"
+      }
+    ]
   }
 }
