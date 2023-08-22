@@ -11,15 +11,11 @@ from dicom_validator.validator.iod_validator import IODValidator
 class DicomFileValidator:
     def __init__(
         self,
-        iod_info,
-        module_info,
-        dict_info=None,
+        dicom_info,
         log_level=logging.INFO,
         force_read=False,
     ):
-        self._module_info = module_info
-        self._iod_info = iod_info
-        self._dict_info = dict_info
+        self._dicom_info = dicom_info
         self.logger = logging.getLogger()
         self.logger.level = log_level
         if not self.logger.hasHandlers():
@@ -55,9 +51,7 @@ class DicomFileValidator:
         return {
             file_path: IODValidator(
                 data_set,
-                self._iod_info,
-                self._module_info,
-                self._dict_info,
+                self._dicom_info,
                 self.logger.level,
             ).validate()
         }

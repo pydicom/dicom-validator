@@ -6,7 +6,11 @@ from dataclasses import dataclass
 from pydicom import Sequence
 from pydicom.tag import Tag
 
-from dicom_validator.spec_reader.condition import Condition
+from dicom_validator.spec_reader.condition import (
+    Condition,
+    ConditionType,
+    ConditionOperator,
+)
 from dicom_validator.tag_tools import tag_name_from_id
 
 
@@ -89,19 +93,22 @@ class FunctionalGroupInfo:
         return result
 
 
+@dataclass
+class DicomInfo:
+    dictionary: dict
+    iods: dict
+    modules: dict
+
+
 class InvalidParameterError(Exception):
     pass
 
 
 class IODValidator:
-    def __init__(
-        self, dataset, iod_info, module_info, dict_info=None, log_level=logging.INFO
-    ):
+    def __init__(self, dataset, dicom_info, log_level=logging.INFO):
         self._dataset = dataset
         self._dataset_stack = [DatasetStackItem(self._dataset, None)]
-        self._iod_info = iod_info
-        self._module_info = module_info
-        self._dict_info = dict_info
+        self._dicom_info = dicom_info
         self._func_group_info = FunctionalGroupInfo({}, set())
         self.errors = {}
         self.logger = logging.getLogger("validator")
@@ -119,7 +126,7 @@ class IODValidator:
             self.errors["fatal"] = "Missing SOPClassUID"
         else:
             sop_class_uid = self._dataset.SOPClassUID
-            if sop_class_uid not in self._iod_info:
+            if sop_class_uid not in self._dicom_info.iods:
                 self.errors["fatal"] = (
                     f"Unknown SOPClassUID " f"(probably retired): {sop_class_uid}"
                 )
@@ -151,7 +158,7 @@ class IODValidator:
         sop_class_uid : str
             The SOP Class UID of the dataset.
         """
-        iod_info = self._iod_info[sop_class_uid]
+        iod_info = self._dicom_info.iods[sop_class_uid]
 
         self.logger.info('SOP class is "%s" (%s)', sop_class_uid, iod_info["title"])
         self.logger.debug("Checking modules for SOP Class")
@@ -218,7 +225,7 @@ class IODValidator:
             required, allowed = False, False
         elif usage[0] == "M":
             required = True
-        elif usage[0] == "U":
+        elif usage[0] == ConditionType.UserDefined:
             required = False
 
         else:
@@ -408,14 +415,14 @@ class IODValidator:
         """
         if isinstance(condition, str):
             condition = json.loads(condition)
-        if condition["type"][0] == "U":
+        if ConditionType(condition["type"]).user_defined:
             return False, True
         required = self._composite_object_is_required(condition)
         if required:
             return True, True
         allowed = (
-            condition["type"] == "MU"
-            or condition["type"] == "MC"
+            condition["type"] == ConditionType.MandatoryOrUserDefined
+            or condition["type"] == ConditionType.MandatoryOrConditional
             and self._composite_object_is_required(condition["other_cond"])
         )
         return False, allowed
@@ -463,9 +470,9 @@ class IODValidator:
         tag_id = self._tag_id(condition["tag"])
         tag_value = None
         operator = condition["op"]
-        if operator == "+":
+        if operator == ConditionOperator.Present:
             return self._tag_exists(tag_id)
-        elif operator == "-":
+        elif operator == ConditionOperator.Absent:
             return not self._tag_exists(tag_id)
         elif self._tag_exists(tag_id):
             tag = self._lookup_tag(tag_id)
@@ -479,7 +486,7 @@ class IODValidator:
                 tag_value = tag.value
             if tag_value is None:
                 return False
-            if operator == "++":
+            if operator == ConditionOperator.NotEmpty:
                 return True
             return self._tag_matches(tag_value, operator, condition["values"])
         return False
@@ -554,20 +561,22 @@ class IODValidator:
     @staticmethod
     def _tag_matches(tag_value, operator, values):
         values = [type(tag_value)(value) for value in values]
-        if operator == "=":
+        if operator == ConditionOperator.EqualsValue:
             return tag_value in values
-        if operator == "!=":
+        if operator == ConditionOperator.NotEqualsValue:
             return tag_value not in values
-        if operator == ">":
+        if operator == ConditionOperator.GreaterValue:
             return tag_value > values[0]
-        if operator == "<":
+        if operator == ConditionOperator.LessValue:
             return tag_value < values[0]
-        if operator == "=>":
+        if operator == ConditionOperator.EqualsTag:
             return tag_value in values
         return False
 
     def _get_module_info(self, module_ref, group_macros=None):
-        return self._expanded_module_info(self._module_info[module_ref], group_macros)
+        return self._expanded_module_info(
+            self._dicom_info.modules[module_ref], group_macros
+        )
 
     def _expanded_module_info(self, module_info, group_macros):
         expanded_mod_info = {}
@@ -614,7 +623,7 @@ class IODValidator:
         return ""
 
     def _incorrect_tag_message(self, tag_id, error_kind, extra_message=""):
-        tag_name = tag_name_from_id(tag_id, self._dict_info)
+        tag_name = tag_name_from_id(tag_id, self._dicom_info.dictionary)
         msg = f"Tag {tag_name} is {error_kind}{self._tag_context_message()}"
         if len(extra_message) != 0:
             msg = f"{msg} {extra_message}"
@@ -625,8 +634,11 @@ class IODValidator:
             return ""
         msg = ""
         condition = Condition.read_condition(condition_dict)
-        if condition.type != "U":
-            msg += f"due to condition:\n  '{condition.to_string(self._dict_info)}'"
+        if condition.type != ConditionType.UserDefined:
+            msg += (
+                f"due to condition:\n  "
+                f"'{condition.to_string(self._dicom_info.dictionary)}'"
+            )
         return msg
 
     # For debugging

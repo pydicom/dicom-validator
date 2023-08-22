@@ -8,13 +8,9 @@ from dicom_validator.validator.dicom_file_validator import DicomFileValidator
 
 def validate(args, base_path):
     json_path = Path(base_path, "json")
-    dict_info = EditionReader.load_dict_info(json_path)
-    iod_info = EditionReader.load_iod_info(json_path)
-    module_info = EditionReader.load_module_info(json_path)
+    dicom_info = EditionReader.load_dicom_info(json_path)
     log_level = logging.DEBUG if args.verbose else logging.INFO
-    validator = DicomFileValidator(
-        iod_info, module_info, dict_info, log_level, args.force_read
-    )
+    validator = DicomFileValidator(dicom_info, log_level, args.force_read)
     error_nr = 0
     for dicom_path in args.dicomfiles:
         error_nr += sum(

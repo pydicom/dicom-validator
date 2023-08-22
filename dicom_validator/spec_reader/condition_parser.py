@@ -2,7 +2,11 @@ import re
 from collections import OrderedDict
 from typing import Dict, Tuple, Optional, List
 
-from dicom_validator.spec_reader.condition import Condition
+from dicom_validator.spec_reader.condition import (
+    Condition,
+    ConditionType,
+    ConditionOperator,
+)
 
 
 class ConditionParser:
@@ -14,15 +18,6 @@ class ConditionParser:
     - the condition is related only to the data set itself
     All other conditions (including parsable conditions which reference
     other data sets) are ignored.
-    The following operators are used for conditions:
-    '+' - required if the given tag is present
-    '++' - required if the given tag is present and has a value
-    '-' - required if the given tag is absent
-    '=' - required if the given tag has one of the given values
-    '!=' - required if the given tag does not have one of the given values
-    '>' - required if the given tag value is greater than the given value
-    '<' - required if the given tag value is less than the given value
-    '=>' - required if the given tag points to one of the given tags
     """
 
     tag_expression = re.compile(
@@ -32,38 +27,38 @@ class ConditionParser:
 
     operators = OrderedDict(
         [
-            (" is present and the value is ", "="),
-            (" is present and has a value of ", "="),
-            (" is greater than ", ">"),
-            (" is present and equals ", "="),
-            (" is present with a value of ", "="),
-            (" is set to ", "="),
-            (" equals one of the following values: ", "="),
-            (" has a value of more than ", ">"),
-            (" has a value greater than ", ">"),
-            (" has a value of ", "="),
-            (" = ", "="),
-            (" at the image level equals ", "="),
-            (" equals other than ", "!="),
-            (" equals ", "="),
-            (" is other than ", "!="),
-            (" is one of the following: ", "="),
-            (" is present and has a value", "++"),
-            (" is present", "+"),
-            (" value is not ", "!="),
-            (" value is ", "="),
-            (" is sent", "+"),
-            (" is not sent", "-"),
-            (" is not present", "-"),
-            (" is absent", "-"),
-            (" is not equal to ", "!="),
-            (" is equal to ", "="),
-            (" is not ", "!="),
-            (" is ", "="),
-            (" is: ", "="),
-            (" are not present", "-"),
-            (" are present", "+"),
-            (" points to ", "=>"),
+            (" is present and the value is ", ConditionOperator.EqualsValue),
+            (" is present and has a value of ", ConditionOperator.EqualsValue),
+            (" is greater than ", ConditionOperator.GreaterValue),
+            (" is present and equals ", ConditionOperator.EqualsValue),
+            (" is present with a value of ", ConditionOperator.EqualsValue),
+            (" is set to ", ConditionOperator.EqualsValue),
+            (" equals one of the following values: ", ConditionOperator.EqualsValue),
+            (" has a value of more than ", ConditionOperator.GreaterValue),
+            (" has a value greater than ", ConditionOperator.GreaterValue),
+            (" has a value of ", ConditionOperator.EqualsValue),
+            (" = ", ConditionOperator.EqualsValue),
+            (" at the image level equals ", ConditionOperator.EqualsValue),
+            (" equals other than ", ConditionOperator.NotEqualsValue),
+            (" equals ", ConditionOperator.EqualsValue),
+            (" is other than ", ConditionOperator.NotEqualsValue),
+            (" is one of the following: ", ConditionOperator.EqualsValue),
+            (" is present and has a value", ConditionOperator.NotEmpty),
+            (" is present", ConditionOperator.Present),
+            (" value is not ", ConditionOperator.NotEqualsValue),
+            (" value is ", ConditionOperator.EqualsValue),
+            (" is sent", ConditionOperator.Present),
+            (" is not sent", ConditionOperator.Absent),
+            (" is not present", ConditionOperator.Absent),
+            (" is absent", ConditionOperator.Absent),
+            (" is not equal to ", ConditionOperator.NotEqualsValue),
+            (" is equal to ", ConditionOperator.EqualsValue),
+            (" is not ", ConditionOperator.NotEqualsValue),
+            (" is ", ConditionOperator.EqualsValue),
+            (" is: ", ConditionOperator.EqualsValue),
+            (" are not present", ConditionOperator.Absent),
+            (" are present", ConditionOperator.Present),
+            (" points to ", ConditionOperator.EqualsTag),
         ]
     )
 
@@ -106,13 +101,15 @@ class ConditionParser:
                 return condition
         # special handling for functional group restrictions
         if " not be used as a shared functional group" in condition_lower:
-            return Condition(ctype=f"{condition_str[0]}F")
+            ctype = ConditionType.per_frame_type(condition_str[0] == "M")
+            return Condition(ctype=ctype)
         elif (
             " not be used as a per-frame functional group" in condition_lower
             or "shall be used as a shared functional group" in condition_lower
         ):
-            return Condition(ctype=f"{condition_str[0]}S")
-        return Condition(ctype="U")
+            ctype = ConditionType.shared_type(condition_str[0] == "M")
+            return Condition(ctype=ctype)
+        return Condition(ctype=ConditionType.UserDefined)
 
     def _parse_tag_expression(self, condition: str) -> Tuple[Condition, Optional[str]]:
         operator_text = None
@@ -123,40 +120,45 @@ class ConditionParser:
                 op_offset = offset
                 operator_text = operator
         if operator_text is None or op_offset is None:
-            return Condition(ctype="U"), None
+            return Condition(ctype=ConditionType.UserDefined), None
         operator = self.operators[operator_text]
         rest = condition[op_offset + len(operator_text) :]
-        if operator in ("=", "!=", ">", "<"):
+        if operator in (
+            ConditionOperator.EqualsValue,
+            ConditionOperator.NotEqualsValue,
+            ConditionOperator.GreaterValue,
+            ConditionOperator.LessValue,
+        ):
             values, rest = self._parse_tag_values(rest)
             # fixup special values
             if values:
                 if values[0].startswith("non-zero"):
-                    operator = "!="
+                    operator = ConditionOperator.NotEqualsValue
                     values = ["0"] if values[0] == "non-zero" else [""]
                 elif values[0].startswith("non-null"):
-                    operator = "++"
+                    operator = ConditionOperator.NotEmpty
                     values = []
                 elif values[0].startswith("zero-length"):
                     values = [""]
             else:
                 # failed to parse mandatory values - ignore the condition
-                return Condition(ctype="U"), None
-        elif operator == "=>":
+                return Condition(ctype=ConditionType.UserDefined), None
+        elif operator == ConditionOperator.EqualsTag:
             value_string, rest = self._split_value_part(rest)
             tag, _ = self._parse_tag(value_string)
             if tag is None:
-                return Condition(ctype="U"), None
+                return Condition(ctype=ConditionType.UserDefined), None
             values, rest = [str(self._tag_id(tag))], rest
         else:
             values, rest = [], rest.strip()
         result = self._parse_tags(condition[:op_offset], operator, values)
         if not result:
-            return Condition(ctype="U"), None
+            return Condition(ctype=ConditionType.UserDefined), None
 
         result.type = (
-            "MN"
+            ConditionType.MandatoryOrNotAllowed
             if "not be present otherwise" in condition[op_offset:].lower()
-            else "MU"
+            else ConditionType.MandatoryOrUserDefined
         )
         return result, rest
 
@@ -168,9 +170,6 @@ class ConditionParser:
             marker = match.group(1)
             index = condition_string.lower().find(marker)
             return self._parse_tag_expressions(condition_string[index + len(marker) :])
-        elif re.match(".*may be present .*", condition_string.lower()):
-            # unknown condition - handle as if it may always be present
-            return Condition(ctype="U")
         return None
 
     @staticmethod
@@ -308,7 +307,7 @@ class ConditionParser:
                     break
             if logical_op is not None:
                 next_result = self._parse_tag_expressions(condition, nested=True)
-                if next_result.type != "U":
+                if next_result.type != ConditionType.UserDefined:
                     next_result.type = None
                     new_result = Condition(ctype=result.type)
                     cond_list = self._condition_list(logical_op, new_result)
@@ -323,16 +322,16 @@ class ConditionParser:
         if not nested and rest is not None:
             other_cond = self._get_other_condition(rest)
             if other_cond is not None:
-                if other_cond.type == "U":
-                    if result.type != "U":
-                        result.type = "MU"
+                if other_cond.type == ConditionType.UserDefined:
+                    if result.type != ConditionType.UserDefined:
+                        result.type = ConditionType.MandatoryOrUserDefined
                 else:
-                    result.type = "MC"
+                    result.type = ConditionType.MandatoryOrConditional
                     result.other_condition = other_cond
         return result
 
     def _parse_tags(
-        self, condition: str, operator: str, values: List[str]
+        self, condition: str, operator: ConditionOperator, values: List[str]
     ) -> Optional[Condition]:
         # this handles only a few cases that are actually found
         if ", and " in condition:
@@ -346,7 +345,11 @@ class ConditionParser:
         return self._result_from_tag_string(condition, operator, values)
 
     def _parse_tag_composition(
-        self, condition_str: str, operator: str, values: List[str], logical_op: str
+        self,
+        condition_str: str,
+        operator: ConditionOperator,
+        values: List[str],
+        logical_op: str,
     ) -> Optional[Condition]:
         split_string = f", {logical_op} "
         conditions = condition_str.split(split_string)
@@ -367,7 +370,11 @@ class ConditionParser:
         return result
 
     def _parse_multiple_tags(
-        self, condition: str, operator: str, values: List[str], logical_op: str
+        self,
+        condition: str,
+        operator: ConditionOperator,
+        values: List[str],
+        logical_op: str,
     ) -> Optional[Condition]:
         condition = condition.replace(f" {logical_op} ", ", ")
         result = Condition()
@@ -388,7 +395,7 @@ class ConditionParser:
         return cond_list
 
     def _result_from_tag_string(
-        self, tag_string: str, operator: str, values: List[str]
+        self, tag_string: str, operator: ConditionOperator, values: List[str]
     ) -> Optional[Condition]:
         tag, index = self._parse_tag(tag_string)
         if index is not None:

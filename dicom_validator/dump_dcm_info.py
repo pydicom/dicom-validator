@@ -16,14 +16,14 @@ from dicom_validator.spec_reader.edition_reader import EditionReader
 class DataElementDumper:
     tag_regex = re.compile(r"(\(?[\dabcdefABCDEF]{4}), *([\dabcdefABCDEF]{4})\)?")
 
-    def __init__(self, dict_info, uid_info, max_value_len, show_image_data, tags):
-        self.dict_info = dict_info
+    def __init__(self, dicom_info, max_value_len, show_image_data, tags):
+        self.dicom_info = dicom_info
         self.max_value_len = max_value_len
         self.level = 0
         self.show_image_data = show_image_data
 
         self.uid_info = {}
-        for uid_dict in uid_info.values():
+        for uid_dict in dicom_info.dictionary.values():
             self.uid_info.update(uid_dict)
 
         tags = tags or []
@@ -35,8 +35,8 @@ class DataElementDumper:
             else:
                 matching = [
                     tag_id
-                    for tag_id in dict_info
-                    if dict_info[tag_id]["name"].replace(" ", "") == tag
+                    for tag_id in dicom_info.dictionary
+                    if dicom_info.dictionary[tag_id]["name"].replace(" ", "") == tag
                 ]
                 if matching:
                     self.tags.append(matching[0])
@@ -182,10 +182,9 @@ def main():
         return 1
 
     json_path = destination / "json"
-    dict_info = EditionReader.load_dict_info(json_path)
-    uid_info = EditionReader.load_uid_info(json_path)
+    dicom_info = EditionReader.load_dicom_info(json_path)
     dumper = DataElementDumper(
-        dict_info, uid_info, args.max_value_len, args.show_image_data, args.show_tags
+        dicom_info, args.max_value_len, args.show_image_data, args.show_tags
     )
     for dicom_path in args.dicomfiles:
         if not os.path.exists(dicom_path):

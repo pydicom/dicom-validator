@@ -13,6 +13,7 @@ from dicom_validator.spec_reader.part3_reader import Part3Reader
 from dicom_validator.spec_reader.part4_reader import Part4Reader
 from dicom_validator.spec_reader.part6_reader import Part6Reader
 from dicom_validator.spec_reader.serializer import DefinitionEncoder
+from dicom_validator.validator.iod_validator import DicomInfo
 
 
 class EditionParser(html_parser.HTMLParser, ABC):
@@ -172,20 +173,12 @@ class EditionReader:
             return json.load(info_file)
 
     @classmethod
-    def load_dict_info(cls, json_path):
-        return cls.load_info(json_path, cls.dict_info_json)
-
-    @classmethod
-    def load_uid_info(cls, json_path):
-        return cls.load_info(json_path, cls.uid_info_json)
-
-    @classmethod
-    def load_iod_info(cls, json_path):
-        return cls.load_info(json_path, cls.iod_info_json)
-
-    @classmethod
-    def load_module_info(cls, json_path):
-        return cls.load_info(json_path, cls.module_info_json)
+    def load_dicom_info(cls, json_path):
+        return DicomInfo(
+            cls.load_info(json_path, cls.dict_info_json),
+            cls.load_info(json_path, cls.iod_info_json),
+            cls.load_info(json_path, cls.module_info_json),
+        )
 
     @classmethod
     def json_files_exist(cls, json_path):

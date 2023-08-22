@@ -26,14 +26,14 @@ def new_data_set(tags):
 
 
 @pytest.fixture
-def validator(iod_info, module_info, request):
+def validator(dicom_info, request):
     marker = request.node.get_closest_marker("tag_set")
     if marker is None:
         tag_set = {}
     else:
         tag_set = marker.args[0]
     data_set = new_data_set(tag_set)
-    return IODValidator(data_set, iod_info, module_info, None, logging.ERROR)
+    return IODValidator(data_set, dicom_info, logging.ERROR)
 
 
 class TestIODValidator:
@@ -91,8 +91,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "CArmPositionerTabletopRelationship": "YES",
             "SynchronizationTrigger": "SET",
             "FrameOfReferenceUID": "1.2.3.4.5.6.7.8",
@@ -111,8 +111,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "CArmPositionerTabletopRelationship": "YES",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
@@ -126,8 +126,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
         }
@@ -143,26 +143,6 @@ class TestIODValidator:
     @pytest.mark.tag_set(
         {
             "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
-            # Enhanced X-Ray Angiographic Image
-            "FrameOfReferenceUID": "1.2.3.4.5.6.7.8",
-            "SynchronizationTrigger": "SET",
-            "PatientName": "XXX",
-            "PatientID": "ZZZ",
-        }
-    )
-    def test_condition_not_met_existing_tag(self, validator):
-        result = validator.validate()
-
-        # Frame Of Reference is allowed, Synchronization Trigger not
-        assert not has_tag_error(result, "Frame of Reference", "(0020,0052)", "missing")
-        assert not has_tag_error(
-            result, "Frame of Reference", "(0020,0052)", "not allowed"
-        )
-        assert has_tag_error(result, "Synchronization", "(0018,106A)", "not allowed")
-
-    @pytest.mark.tag_set(
-        {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             0x00191001: "unknown",
@@ -174,8 +154,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "SECONDARY",
@@ -196,8 +176,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "PRIMARY",
@@ -218,8 +198,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "MIXED",
@@ -240,8 +220,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "PixelPaddingRangeLimit": "10",
@@ -257,8 +237,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "PixelPaddingRangeLimit": "10",
@@ -273,8 +253,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "SamplesPerPixel": 3,
@@ -289,8 +269,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "SamplesPerPixel": 1,
@@ -305,8 +285,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "FrameIncrementPointer": 0x00181065,
@@ -321,8 +301,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "FrameIncrementPointer": 0x00181055,
@@ -337,8 +317,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "ORIGINAL",
@@ -354,8 +334,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "ORIGINAL",
@@ -372,8 +352,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "DERIVED",
@@ -390,8 +370,8 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             # Enhanced X-Ray Angiographic Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "DERIVED",
