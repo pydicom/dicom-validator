@@ -10,8 +10,8 @@ pytestmark = pytest.mark.usefixtures("disable_logging")
 
 
 @pytest.fixture
-def validator(iod_info, module_info):
-    yield DicomFileValidator(iod_info, module_info)
+def validator(dicom_info):
+    yield DicomFileValidator(dicom_info)
 
 
 @pytest.mark.usefixtures("fs")
@@ -50,12 +50,15 @@ class TestFakeDicomFileValidator:
 
     def test_unknown_sop_class(self, validator):
         dataset = Dataset()
-        dataset.SOPClassUID = "Unknown"
-        file_dataset = FileDataset("test", dataset, file_meta=self.create_metadata())
-        write_file("test", file_dataset, write_like_original=False)
-        self.assert_fatal_error(
-            validator, "test", "Unknown SOPClassUID (probably retired): Unknown"
-        )
+        with pytest.warns(UserWarning, match="Invalid value for VR UI*"):
+            dataset.SOPClassUID = "Unknown"
+            file_dataset = FileDataset(
+                "test", dataset, file_meta=self.create_metadata()
+            )
+            write_file("test", file_dataset, write_like_original=False)
+            self.assert_fatal_error(
+                validator, "test", "Unknown SOPClassUID (probably retired): Unknown"
+            )
 
     def test_validate_dir(self, fs, validator):
         fs.create_dir(os.path.join("foo", "bar", "baz"))
@@ -87,6 +90,6 @@ def test_that_pixeldata_is_read(dicom_fixture_path, validator):
     assert len(error_dict) == 1
     results = error_dict[rtdose_path]
     assert "RT Series" in results
-    assert "Tag (0008,1070) is missing" in results["RT Series"]
+    assert "Tag (0008,1070) (Operators' Name) is missing" in results["RT Series"]
     # if PixelData is not read, RT Dose will show errors
     assert "RT Dose" not in results

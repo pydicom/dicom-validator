@@ -2,7 +2,9 @@
   "SOP Class": {
     "1.2.840.10008.1.1": "Verification SOP Class",
     "1.2.840.10008.5.1.4.1.1.2": "CT Image Storage",
-    "1.2.840.10008.5.1.4.1.1.6.2": "Enhanced US Volume Storage"
+    "1.2.840.10008.5.1.4.1.1.6.2": "Enhanced US Volume Storage",
+    "1.2.840.10008.5.1.4.1.1.77.1.6": "VL Whole Slide Microscopy Image Storage",
+    "1.2.840.10008.5.1.4.1.1.88.67": "X-Ray Radiation Dose SR Storage"
   },
   "Transfer Syntax": {
     "1.2.840.10008.1.2": "Implicit VR Little Endian: Default Transfer Syntax for DICOM",

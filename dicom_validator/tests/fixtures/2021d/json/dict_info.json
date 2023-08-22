@@ -47,23 +47,35 @@
     "vm": "1",
     "vr": "PN"
   },
+  "(0018,1065)": {
+    "name": "Frame Time Vector",
+    "prop": "",
+    "vm": "1-n",
+    "vr": "DS"
+  },
+  "(0018,106A)": {
+    "name": "Synchronization Trigger",
+    "prop": "",
+    "vm": "1",
+    "vr": "CS"
+  },
   "(0018,6044)": {
     "name": "Pixel Component Organization",
     "prop": "",
     "vm": "1",
     "vr": "US"
   },
+  "(0020,0052)": {
+    "name": "Frame of Reference UID",
+    "prop": "",
+    "vm": "1",
+    "vr": "UI"
+  },
   "(0028,0008)": {
     "name": "Number of Frames",
     "prop": "",
     "vm": "1",
     "vr": "IS"
-  },
-  "(0018,1065)": {
-    "name": "Frame Time Vector",
-    "prop": "",
-    "vm": "1-n",
-    "vr": "DS"
   },
   "(0028,0009)": {
     "name": "Frame Increment Pointer",
@@ -76,12 +88,6 @@
     "prop": "",
     "vm": "1",
     "vr": "SQ"
-  },
-  "(0040,4073)": {
-    "name": "Storage URL",
-    "prop": "",
-    "vm": "1",
-    "vr": "UR"
   },
   "(0040,4074)": {
     "name": "XDS Storage Sequence",

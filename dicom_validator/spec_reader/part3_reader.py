@@ -8,6 +8,7 @@ from itertools import groupby
 
 import sys
 
+from dicom_validator.spec_reader.condition import ConditionType, ConditionOperator
 from dicom_validator.spec_reader.condition_parser import ConditionParser
 from dicom_validator.spec_reader.spec_reader import (
     SpecReader,
@@ -225,11 +226,12 @@ class Part3Reader(SpecReader):
         cond_prefix = "if and only if "
         cond_index = text.find(cond_prefix)
         if cond_index > 0:
-            # we replace the prefix to avois special handling in the parser
+            # we replace the prefix to avoid special handling in the parser
             cond_text = text[cond_index:].replace(cond_prefix, "required if ")
             condition = self._condition_parser.parse(cond_text)
-            # the parser will put "MU", which makes no sense for includes
-            condition.type = "MN"
+            # the parser will put ConditionType.MandatoryOrUserDefined,
+            # which makes no sense for includes
+            condition.type = ConditionType.MandatoryOrNotAllowed
             include_attr["cond"] = condition
         current_descriptions[-1].setdefault("include", []).append(include_attr)
         self._current_refs.pop()
@@ -271,7 +273,11 @@ class Part3Reader(SpecReader):
         if not tag_name:
             return "", 0
         start_chars = next(groupby(tag_name))
-        level = len(list(start_chars[1])) if start_chars[0] == ">" else 0
+        level = (
+            len(list(start_chars[1]))
+            if start_chars[0] == ConditionOperator.GreaterValue
+            else 0
+        )
         tag_name = tag_name[level:]
         if level > current_level:
             sequence_description = {}

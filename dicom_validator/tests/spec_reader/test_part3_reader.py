@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from dicom_validator.spec_reader.condition import ConditionType, ConditionOperator
 from dicom_validator.spec_reader.part3_reader import Part3Reader
 from dicom_validator.spec_reader.spec_reader import (
     SpecReaderLookupError,
@@ -99,8 +100,8 @@ class TestReadPart3:
             " is ORIGINAL or MIXED, may be present otherwise."
         )
         condition = xray_details["cond"]
-        assert condition.type == "MU"
-        assert condition.operator == "="
+        assert condition.type == ConditionType.MandatoryOrUserDefined
+        assert condition.operator == ConditionOperator.EqualsValue
         assert condition.tag == "(0008,0008)"
         assert condition.values == ["ORIGINAL", "MIXED"]
 
@@ -158,7 +159,7 @@ class TestReadPart3:
         assert "C.18.1-1" in [d["ref"] for d in description["include"]]
         include = [d for d in description["include"] if d["ref"] == "C.18.1-1"][0]
         condition = include["cond"]
-        assert condition.type == "MN"
-        assert condition.operator == "="
+        assert condition.type == ConditionType.MandatoryOrNotAllowed
+        assert condition.operator == ConditionOperator.EqualsValue
         assert condition.tag == "(0040,A040)"
         assert condition.values == ["NUM"]

@@ -2,7 +2,7 @@ import logging
 
 import pytest
 from pydicom import Sequence
-from pydicom.dataset import Dataset
+from pydicom.dataset import Dataset, FileMetaDataset
 
 from dicom_validator.tests.utils import has_tag_error
 from dicom_validator.validator.iod_validator import IODValidator
@@ -41,7 +41,7 @@ def new_data_set(shared_macros, per_frame_macros):
             per_frame_groups.append(item)
     data_set.PerFrameFunctionalGroupsSequence = per_frame_groups
 
-    data_set.file_meta = Dataset()
+    data_set.file_meta = FileMetaDataset()
     data_set.is_implicit_VR = False
     data_set.is_little_endian = True
     return data_set
@@ -65,13 +65,13 @@ def add_items_to_sequence(sequence, contents):
 
 
 @pytest.fixture
-def validator(iod_info, module_info, request):
+def validator(dicom_info, request):
     marker = request.node.get_closest_marker("shared_macros")
     shared_macros = {} if marker is None else marker.args[0]
     marker = request.node.get_closest_marker("per_frame_macros")
     per_frame_macros = {} if marker is None else marker.args[0]
     data_set = new_data_set(shared_macros, per_frame_macros)
-    return IODValidator(data_set, iod_info, module_info, None, logging.ERROR)
+    return IODValidator(data_set, dicom_info, logging.ERROR)
 
 
 FRAME_ANATOMY = {
@@ -105,11 +105,11 @@ class TestIODValidatorFuncGroups:
         assert "Multi-frame Functional Groups" in result
         return result["Multi-frame Functional Groups"]
 
-    def test_missing_func_groups(self, iod_info, module_info):
+    def test_missing_func_groups(self, dicom_info):
         data_set = new_data_set({}, {})
         del data_set[0x52009229]
         del data_set[0x52009230]
-        validator = IODValidator(data_set, iod_info, module_info, None, logging.ERROR)
+        validator = IODValidator(data_set, dicom_info, logging.ERROR)
         result = validator.validate()
         group_result = self.ensure_group_result(result)
         assert "Tag (5200,9229) is missing" in group_result

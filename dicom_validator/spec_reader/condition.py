@@ -1,43 +1,97 @@
+import enum
 from typing import Optional, List, Dict, Any
 
 from dicom_validator.tag_tools import tag_name_from_id
+
+
+class ConditionType(str, enum.Enum):  # replace later with StrEnum from Python 3.11
+    """The type of the condition, which defines the consequences of the condition
+    being met or not met for the existence of the related tag."""
+
+    # user defined, e.g. both existence or non-existence
+    # of the related object is considered legal
+    UserDefined = "U"
+    # mandatory if the condition is fulfilled, otherwise not allowed
+    MandatoryOrNotAllowed = "MN"
+    # mandatory if the condition is fulfilled, otherwise user defined
+    MandatoryOrUserDefined = "MU"
+    # mandatory if the condition is fulfilled,
+    # otherwise another condition will be checked
+    MandatoryOrConditional = "MC"
+    # mandatory in the per-frame functional groups,
+    # not allowed in the shared functional groups
+    MandatoryPerFrame = "MF"
+    # may be present in the per-frame functional groups,
+    # not allowed in the shared functional groups
+    UserDefinedPerFrame = "UF"
+    # mandatory in the per-frame functional groups,
+    # not allowed in the shared functional groups
+    MandatoryShared = "MS"
+    # may be present in the per-frame functional groups,
+    # not allowed in the shared functional groups
+    UserDefinedShared = "US"
+
+    @property
+    def user_defined(self):
+        return self in (
+            self.UserDefined,
+            self.UserDefinedPerFrame,
+            self.UserDefinedShared,
+        )
+
+    @classmethod
+    def per_frame_type(cls, is_mandatory):
+        return cls.MandatoryPerFrame if is_mandatory else cls.UserDefinedPerFrame
+
+    @classmethod
+    def shared_type(cls, is_mandatory):
+        return cls.MandatoryShared if is_mandatory else cls.UserDefinedShared
+
+
+class ConditionOperator(str, enum.Enum):
+    """The operator used in the condition in that defines if the related tag
+    is required."""
+
+    # tag exists
+    Present = "+"
+    # tag exists and has a value
+    NotEmpty = "++"
+    # tag does not exist
+    Absent = "-"
+    # tag has one of the given values
+    EqualsValue = "="
+    # tag does not have one of the given values
+    NotEqualsValue = "!="
+    # tag value is greater than the given value
+    GreaterValue = ">"
+    # tag value is less than the given value
+    LessValue = "<"
+    # tag points to one of the given tag IDs
+    EqualsTag = "=>"
 
 
 class Condition:
     """Represents a condition for the presence of a specific tag.
 
     Attributes:
-        type: the type of the related object (tag or module) regarding its
-            existence; possible values:
-            'U': user defined, e.g. both existence or non-existence
-                of the related object is considered legal
-            'MN': the object is mandatory if the condition is fulfilled,
-                otherwise not
-            'MU': the object is mandatory if the condition is fulfilled,
-                otherwise is user defined
-            'MC': the object is mandatory if the condition is fulfilled,
-                otherwise another condition will be checked
-            'MF': the object is mandatory in the per-frame functional groups,
-                and is not allowed in the shared functional groups
-            'UF': the object may be present in the per-frame functional groups,
-                and is not allowed in the shared functional groups
-            'MS': the object is mandatory in the shared functional groups,
-                and is not allowed in the per-frame functional groups
-            'US': the object may be present in the shared functional groups,
-                and is not allowed in the per-frame functional groups
-        tag: the ID of the required tag in the form '(####,####)' or None
-        index: the index of the tag for multi-valued tags or 0
-        values: a list of values the tag shall have if the condition
+        type: ConditionType
+            the type of the related object (tag or module) regarding its existence
+        tag: str | None
+            the ID of the required tag in the form '(####,####)' or None
+        index: int
+            the index of the tag for multivalued tags or 0
+        values: list[str] | None
+            a list of values the tag shall have if the condition
             is fulfilled, or None
-        operator: the comparison operation used ('=', '<', '>') for the
-            value(s), or None
+        operator: ConditionOperator | None
+            the comparison operation used for the value(s), or None
 
     """
 
     def __init__(
         self,
-        ctype: Optional[str] = None,
-        operator: Optional[str] = None,
+        ctype: Optional[ConditionType] = None,
+        operator: Optional[ConditionOperator] = None,
         tag: Optional[str] = None,
         index: int = 0,
         values: Optional[List[str]] = None,
@@ -136,33 +190,33 @@ class Condition:
                 result += f"[{self.index}]"
         if self.operator is None:
             return result
-        if self.operator == "+":
+        if self.operator == ConditionOperator.Present:
             result += " exists"
-        elif self.operator == "++":
+        elif self.operator == ConditionOperator.NotEmpty:
             result += " exists and has a value"
-        elif self.operator == "-":
+        elif self.operator == ConditionOperator.Absent:
             result += " is not present"
-        elif self.operator == "=>":
+        elif self.operator == ConditionOperator.EqualsTag:
             tag_value = int(self.values[0])
             result += " points to " + tag_name_from_id(tag_value, dict_info)
         elif not self.values:
             # if no values are found here, we have some unhandled condition
             # and ignore it for the time being
             return result
-        elif self.operator == "=":
+        elif self.operator == ConditionOperator.EqualsValue:
             values = ['"' + value + '"' for value in self.values]
             result += " is equal to "
             if len(values) > 1:
                 result += ", ".join(values[:-1]) + " or "
             result += values[-1]
-        elif self.operator == "!=":
+        elif self.operator == ConditionOperator.NotEqualsValue:
             values = ['"' + value + '"' for value in self.values]
             result += " is not equal to "
             if len(values) > 1:
                 result += ", ".join(values[:-1]) + " and "
             result += values[-1]
-        elif self.operator == "<":
+        elif self.operator == ConditionOperator.LessValue:
             result += " is less than " + self.values[0]
-        elif self.operator == ">":
+        elif self.operator == ConditionOperator.GreaterValue:
             result += " is greater than " + self.values[0]
         return result

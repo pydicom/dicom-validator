@@ -5,7 +5,7 @@
         "index": 0,
         "op": "-",
         "tag": "(0008,0082)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Institution Name",
       "type": "1C"
@@ -19,7 +19,7 @@
         "index": 0,
         "op": "-",
         "tag": "(0008,0080)",
-        "type": "MN"
+        "type": "MU"
       },
       "items": {
         "include": [
@@ -94,10 +94,6 @@
       "items": {
         "(0040,0440)": {
           "items": {
-            "(0040,0280)": {
-              "name": "Comments on the Performed Procedure Step",
-              "type": "3"
-            },
             "(0040,0441)": {
               "items": {
                 "include": [
@@ -125,6 +121,10 @@
         ]
       },
       "name": "Performed Protocol Code Sequence",
+      "type": "3"
+    },
+    "(0040,0280)": {
+      "name": "Comments on the Performed Procedure Step",
       "type": "3"
     }
   },
@@ -154,7 +154,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0040,0032)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Universal Entity ID Type",
       "type": "1C"
@@ -176,7 +176,7 @@
             "index": 0,
             "op": "+",
             "tag": "(0040,0032)",
-            "type": "MN"
+            "type": "MU"
           },
           "name": "Universal Entity ID Type",
           "type": "1C"
@@ -229,7 +229,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "COMPOSITE",
           "IMAGE"
@@ -264,7 +264,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "NUMERIC"
         ]
@@ -299,7 +299,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "DATETIME"
         ]
@@ -312,7 +312,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "DATE"
         ]
@@ -325,7 +325,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "TIME"
         ]
@@ -338,7 +338,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "PNAME"
         ]
@@ -351,7 +351,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "UIDREF"
         ]
@@ -364,7 +364,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "TEXT"
         ]
@@ -391,7 +391,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0040,A162)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Rational Denominator Value",
       "type": "1C"
@@ -401,7 +401,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "CODE"
         ]
@@ -421,7 +421,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,A040)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "NUMERIC"
         ]
@@ -444,10 +444,6 @@
           "name": "View Modifier Code Sequence",
           "type": "3"
         },
-        "(0054,0500)": {
-          "name": "Slice Progression Direction",
-          "type": "3"
-        },
         "include": [
           {
             "ref": "8.8-1"
@@ -455,6 +451,10 @@
         ]
       },
       "name": "View Code Sequence",
+      "type": "3"
+    },
+    "(0054,0500)": {
+      "name": "Slice Progression Direction",
       "type": "3"
     }
   },
@@ -524,7 +524,7 @@
             "index": 0,
             "op": "=",
             "tag": "(0040,E020)",
-            "type": "MN",
+            "type": "MU",
             "values": [
               "CDA"
             ]
@@ -548,7 +548,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,E020)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "DICOM"
         ]
@@ -561,7 +561,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0040,E020)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "DICOM"
         ]
@@ -826,15 +826,17 @@
         "include": [
           {
             "ref": "8.8-1"
-          },
-          {
-            "ref": "10-8"
           }
         ]
       },
       "name": "Anatomic Region Sequence",
       "type": "3"
-    }
+    },
+    "include": [
+      {
+        "ref": "10-8"
+      }
+    ]
   },
   "10-8": {
     "(0008,2228)": {
@@ -1037,20 +1039,14 @@
     },
     "(0008,0119)": {
       "cond": {
-        "index": 0,
-        "op": "-",
-        "tag": "(0008,0100)",
-        "type": "MN"
+        "type": "U"
       },
       "name": "Long Code Value",
       "type": "1C"
     },
     "(0008,0120)": {
       "cond": {
-        "index": 0,
-        "op": "-",
-        "tag": "(0008,0100)",
-        "type": "MN"
+        "type": "U"
       },
       "name": "URN Code Value",
       "type": "1C"
@@ -1062,7 +1058,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0008,010F)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Mapping Resource",
       "type": "1C"
@@ -1072,7 +1068,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0008,010F)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Context Group Version",
       "type": "1C"
@@ -1082,7 +1078,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0008,010B)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "Y"
         ]
@@ -1099,7 +1095,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0008,010B)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "Y"
         ]
@@ -1191,7 +1187,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0028,1050)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Window Width",
       "type": "1C"
@@ -1307,7 +1303,7 @@
             "index": 0,
             "op": "+",
             "tag": "(0400,0310)",
-            "type": "MN"
+            "type": "MU"
           },
           "name": "Certified Timestamp Type",
           "type": "1C"
@@ -1371,6 +1367,13 @@
     "(0008,001B)": {
       "name": "Original Specialized SOP Class UID",
       "type": "3"
+    },
+    "(0008,0053)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Query/Retrieve View",
+      "type": "1C"
     },
     "(0008,0105)": {
       "name": "Mapping Resource",
@@ -1449,6 +1452,55 @@
     },
     "(0008,0201)": {
       "name": "Timezone Offset From UTC",
+      "type": "3"
+    },
+    "(0008,0300)": {
+      "items": {
+        "(0008,0301)": {
+          "name": "Private Group Reference",
+          "type": "1"
+        },
+        "(0008,0302)": {
+          "name": "Private Creator Reference",
+          "type": "1"
+        },
+        "(0008,0303)": {
+          "name": "Block Identifying Information Status",
+          "type": "1"
+        },
+        "(0008,0304)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0303)",
+            "type": "MU",
+            "values": [
+              "MIXED"
+            ]
+          },
+          "name": "Nonidentifying Private Elements",
+          "type": "1C"
+        },
+        "(0008,0305)": {
+          "items": {
+            "(0008,0306)": {
+              "name": "Identifying Private Elements",
+              "type": "1"
+            },
+            "(0008,0307)": {
+              "name": "Deidentification Action",
+              "type": "1"
+            }
+          },
+          "name": "Deidentification Action Sequence",
+          "type": "3"
+        }
+      },
+      "name": "Private Data Element Characteristics Sequence",
+      "type": "3"
+    },
+    "(0018,9004)": {
+      "name": "Content Qualification",
       "type": "3"
     },
     "(0018,A001)": {
@@ -1539,6 +1591,46 @@
       "name": "Instance Number",
       "type": "3"
     },
+    "(0020,9172)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "10-3"
+          }
+        ]
+      },
+      "name": "Conversion Source Attributes Sequence",
+      "type": "1C"
+    },
+    "(0028,0303)": {
+      "name": "Longitudinal Temporal Information Modified",
+      "type": "3"
+    },
+    "(0040,A390)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "(0040,E001)": {
+          "name": "HL7 Instance Identifier",
+          "type": "1"
+        },
+        "(0040,E010)": {
+          "name": "Retrieve URI",
+          "type": "3"
+        },
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "HL7 Structured Document Reference Sequence",
+      "type": "1C"
+    },
     "(0100,0410)": {
       "name": "SOP Instance Status",
       "type": "3"
@@ -1574,102 +1666,6 @@
     },
     "(0400,0561)": {
       "items": {
-        "(0008,0053)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Query/Retrieve View",
-          "type": "1C"
-        },
-        "(0008,0300)": {
-          "items": {
-            "(0008,0301)": {
-              "name": "Private Group Reference",
-              "type": "1"
-            },
-            "(0008,0302)": {
-              "name": "Private Creator Reference",
-              "type": "1"
-            },
-            "(0008,0303)": {
-              "name": "Block Identifying Information Status",
-              "type": "1"
-            },
-            "(0008,0304)": {
-              "cond": {
-                "index": 0,
-                "op": "=",
-                "tag": "(0008,0303)",
-                "type": "MN",
-                "values": [
-                  "MIXED"
-                ]
-              },
-              "name": "Nonidentifying Private Elements",
-              "type": "1C"
-            },
-            "(0008,0305)": {
-              "items": {
-                "(0008,0306)": {
-                  "name": "Identifying Private Elements",
-                  "type": "1"
-                },
-                "(0008,0307)": {
-                  "name": "Deidentification Action",
-                  "type": "1"
-                }
-              },
-              "name": "Deidentification Action Sequence",
-              "type": "3"
-            }
-          },
-          "name": "Private Data Element Characteristics Sequence",
-          "type": "3"
-        },
-        "(0018,9004)": {
-          "name": "Content Qualification",
-          "type": "3"
-        },
-        "(0020,9172)": {
-          "cond": {
-            "type": "U"
-          },
-          "items": {
-            "include": [
-              {
-                "ref": "10-3"
-              }
-            ]
-          },
-          "name": "Conversion Source Attributes Sequence",
-          "type": "1C"
-        },
-        "(0028,0303)": {
-          "name": "Longitudinal Temporal Information Modified",
-          "type": "3"
-        },
-        "(0040,A390)": {
-          "cond": {
-            "type": "U"
-          },
-          "items": {
-            "(0040,E001)": {
-              "name": "HL7 Instance Identifier",
-              "type": "1"
-            },
-            "(0040,E010)": {
-              "name": "Retrieve URI",
-              "type": "3"
-            },
-            "include": [
-              {
-                "ref": "10-11"
-              }
-            ]
-          },
-          "name": "HL7 Structured Document Reference Sequence",
-          "type": "1C"
-        },
         "(0400,0550)": {
           "items": {},
           "name": "Modified Attributes Sequence",
@@ -1718,30 +1714,30 @@
           "name": "Referenced Instance Sequence",
           "type": "1"
         },
-        "(0008,1200)": {
-          "cond": {
-            "type": "U"
-          },
-          "items": {
-            "(0020,000D)": {
-              "name": "Study Instance UID",
-              "type": "1"
-            },
-            "include": [
-              {
-                "ref": "10-4"
-              }
-            ]
-          },
-          "name": "Studies Containing Other Referenced Instances Sequence",
-          "type": "1C"
-        },
         "(0020,000E)": {
           "name": "Series Instance UID",
           "type": "1"
         }
       },
       "name": "Referenced Series Sequence",
+      "type": "1C"
+    },
+    "(0008,1200)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "(0020,000D)": {
+          "name": "Study Instance UID",
+          "type": "1"
+        },
+        "include": [
+          {
+            "ref": "10-4"
+          }
+        ]
+      },
+      "name": "Studies Containing Other Referenced Instances Sequence",
       "type": "1C"
     }
   },
@@ -1777,16 +1773,6 @@
       "name": "Frame Extraction Sequence",
       "type": "1"
     }
-  },
-  "C.17.3": {
-    "include": [
-      {
-        "ref": "C.17-5"
-      },
-      {
-        "ref": "C.17-6"
-      }
-    ]
   },
   "C.17-3": {
     "(0008,1115)": {
@@ -1889,278 +1875,6 @@
       "type": "3"
     }
   },
-  "C.17-5": {
-    "(0040,A040)": {
-      "name": "Value Type",
-      "type": "1"
-    },
-    "(0040,A043)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0040,A040)",
-        "type": "MU",
-        "values": [
-          "TEXT",
-          "NUM",
-          "CODE",
-          "DATETIME",
-          "DATE",
-          "TIME",
-          "UIDREF",
-          "TABLE",
-          "PNAME"
-        ]
-      },
-      "items": {
-        "include": [
-          {
-            "ref": "8.8-1"
-          }
-        ]
-      },
-      "name": "Concept Name Code Sequence",
-      "type": "1C"
-    },
-    "(0040,A120)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0040,A040)",
-        "type": "MU",
-        "values": [
-          "DATETIME"
-        ]
-      },
-      "name": "DateTime",
-      "type": "1C"
-    },
-    "(0040,A121)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0040,A040)",
-        "type": "MU",
-        "values": [
-          "DATE"
-        ]
-      },
-      "name": "Date",
-      "type": "1C"
-    },
-    "(0040,A122)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0040,A040)",
-        "type": "MU",
-        "values": [
-          "TIME"
-        ]
-      },
-      "name": "Time",
-      "type": "1C"
-    },
-    "(0040,A123)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0040,A040)",
-        "type": "MU",
-        "values": [
-          "PNAME"
-        ]
-      },
-      "name": "Person Name",
-      "type": "1C"
-    },
-    "(0040,A124)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0040,A040)",
-        "type": "MU",
-        "values": [
-          "UIDREF"
-        ]
-      },
-      "name": "UID",
-      "type": "1C"
-    },
-    "(0040,A160)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0040,A040)",
-        "type": "MU",
-        "values": [
-          "TEXT"
-        ]
-      },
-      "name": "Text Value",
-      "type": "1C"
-    },
-    "include": [
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "NUM"
-          ]
-        },
-        "ref": "C.18.1-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "CODE"
-          ]
-        },
-        "ref": "C.18.2-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "COMPOSITE"
-          ]
-        },
-        "ref": "C.18.3-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "IMAGE"
-          ]
-        },
-        "ref": "C.18.4-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "WAVEFORM"
-          ]
-        },
-        "ref": "C.18.5-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "SCOORD"
-          ]
-        },
-        "ref": "C.18.6-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "SCOORD3D"
-          ]
-        },
-        "ref": "C.18.9-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "TCOORD"
-          ]
-        },
-        "ref": "C.18.7-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "CONTAINER"
-          ]
-        },
-        "ref": "C.18.8-1"
-      },
-      {
-        "cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0040,A040)",
-          "type": "MU",
-          "values": [
-            "TABLE"
-          ]
-        },
-        "ref": "C.18.10-1"
-      }
-    ]
-  },
-  "C.17-6": {
-    "(0040,A032)": {
-      "cond": {
-        "type": "U"
-      },
-      "name": "Observation DateTime",
-      "type": "1C"
-    },
-    "(0040,A171)": {
-      "name": "Observation UID",
-      "type": "3"
-    },
-    "(0040,A730)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "(0040,A010)": {
-          "name": "Relationship Type",
-          "type": "1"
-        },
-        "(0040,DB73)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Referenced Content Item Identifier",
-          "type": "1C"
-        },
-        "include": [
-          {
-            "ref": "C.17-5"
-          }
-        ]
-      },
-      "name": "Content Sequence",
-      "type": "1C"
-    }
-  },
   "C.7-11b": {
     "(0028,0002)": {
       "name": "Samples per Pixel",
@@ -2175,7 +1889,7 @@
         "index": 0,
         "op": ">",
         "tag": "(0028,0002)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "1"
         ]
@@ -2243,7 +1957,7 @@
             ]
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Red Palette Color Lookup Table Descriptor",
       "type": "1C"
@@ -2269,7 +1983,7 @@
             ]
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Green Palette Color Lookup Table Descriptor",
       "type": "1C"
@@ -2295,7 +2009,7 @@
             ]
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Blue Palette Color Lookup Table Descriptor",
       "type": "1C"
@@ -2321,7 +2035,7 @@
             ]
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Red Palette Color Lookup Table Data",
       "type": "1C"
@@ -2347,7 +2061,7 @@
             ]
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Green Palette Color Lookup Table Data",
       "type": "1C"
@@ -2373,7 +2087,7 @@
             ]
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Blue Palette Color Lookup Table Data",
       "type": "1C"
@@ -2391,9 +2105,174 @@
         "index": 0,
         "op": "-",
         "tag": "(0028,7FE0)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Pixel Data",
+      "type": "1C"
+    }
+  },
+  "C.7-17a": {
+    "(0018,1600)": {
+      "name": "Shutter Shape",
+      "type": "1"
+    },
+    "(0018,1602)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MU",
+        "values": [
+          "RECTANGULAR"
+        ]
+      },
+      "name": "Shutter Left Vertical Edge",
+      "type": "1C"
+    },
+    "(0018,1604)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MU",
+        "values": [
+          "RECTANGULAR"
+        ]
+      },
+      "name": "Shutter Right Vertical Edge",
+      "type": "1C"
+    },
+    "(0018,1606)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MU",
+        "values": [
+          "RECTANGULAR"
+        ]
+      },
+      "name": "Shutter Upper Horizontal Edge",
+      "type": "1C"
+    },
+    "(0018,1608)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MU",
+        "values": [
+          "RECTANGULAR"
+        ]
+      },
+      "name": "Shutter Lower Horizontal Edge",
+      "type": "1C"
+    },
+    "(0018,1610)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MU",
+        "values": [
+          "CIRCULAR"
+        ]
+      },
+      "name": "Center of Circular Shutter",
+      "type": "1C"
+    },
+    "(0018,1612)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MU",
+        "values": [
+          "CIRCULAR"
+        ]
+      },
+      "name": "Radius of Circular Shutter",
+      "type": "1C"
+    },
+    "(0018,1620)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0018,1600)",
+        "type": "MU",
+        "values": [
+          "POLYGONAL"
+        ]
+      },
+      "name": "Vertices of the Polygonal Shutter",
+      "type": "1C"
+    },
+    "(0018,1622)": {
+      "name": "Shutter Presentation Value",
+      "type": "3"
+    },
+    "(0018,1624)": {
+      "name": "Shutter Presentation Color CIELab Value",
+      "type": "3"
+    }
+  },
+  "C.7-22a": {
+    "(0028,1101)": {
+      "name": "Red Palette Color Lookup Table Descriptor",
+      "type": "1"
+    },
+    "(0028,1102)": {
+      "name": "Green Palette Color Lookup Table Descriptor",
+      "type": "1"
+    },
+    "(0028,1103)": {
+      "name": "Blue Palette Color Lookup Table Descriptor",
+      "type": "1"
+    },
+    "(0028,1199)": {
+      "name": "Palette Color Lookup Table UID",
+      "type": "3"
+    },
+    "(0028,1201)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Red Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1202)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Green Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1203)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Blue Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1221)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Segmented Red Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1222)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Segmented Green Palette Color Lookup Table Data",
+      "type": "1C"
+    },
+    "(0028,1223)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Segmented Blue Palette Color Lookup Table Data",
       "type": "1C"
     }
   },
@@ -2447,7 +2326,7 @@
             "tag": "(0010,0034)"
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Patient's Alternative Calendar",
       "type": "1C"
@@ -2458,6 +2337,54 @@
     },
     "(0010,0200)": {
       "name": "Quality Control Subject",
+      "type": "3"
+    },
+    "(0010,0212)": {
+      "name": "Strain Description",
+      "type": "3"
+    },
+    "(0010,0213)": {
+      "name": "Strain Nomenclature",
+      "type": "3"
+    },
+    "(0010,0216)": {
+      "items": {
+        "(0010,0214)": {
+          "name": "Strain Stock Number",
+          "type": "1"
+        },
+        "(0010,0215)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Strain Source Registry Code Sequence",
+          "type": "1"
+        },
+        "(0010,0217)": {
+          "name": "Strain Source",
+          "type": "1"
+        }
+      },
+      "name": "Strain Stock Sequence",
+      "type": "3"
+    },
+    "(0010,0218)": {
+      "name": "Strain Additional Information",
+      "type": "3"
+    },
+    "(0010,0219)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Strain Code Sequence",
       "type": "3"
     },
     "(0010,1000)": {
@@ -2549,138 +2476,6 @@
         "type": "U"
       },
       "items": {
-        "(0010,0212)": {
-          "name": "Strain Description",
-          "type": "3"
-        },
-        "(0010,0213)": {
-          "name": "Strain Nomenclature",
-          "type": "3"
-        },
-        "(0010,0216)": {
-          "items": {
-            "(0010,0214)": {
-              "name": "Strain Stock Number",
-              "type": "1"
-            },
-            "(0010,0215)": {
-              "items": {
-                "include": [
-                  {
-                    "ref": "8.8-1"
-                  }
-                ]
-              },
-              "name": "Strain Source Registry Code Sequence",
-              "type": "1"
-            },
-            "(0010,0217)": {
-              "name": "Strain Source",
-              "type": "1"
-            },
-            "(0010,2297)": {
-              "cond": {
-                "type": "U"
-              },
-              "name": "Responsible Person",
-              "type": "2C"
-            },
-            "(0010,2298)": {
-              "cond": {
-                "index": 0,
-                "op": "++",
-                "tag": "(0010,2297)",
-                "type": "MN"
-              },
-              "name": "Responsible Person Role",
-              "type": "1C"
-            },
-            "(0010,2299)": {
-              "cond": {
-                "type": "U"
-              },
-              "name": "Responsible Organization",
-              "type": "2C"
-            },
-            "(0012,0062)": {
-              "name": "Patient Identity Removed",
-              "type": "3"
-            },
-            "(0012,0063)": {
-              "cond": {
-                "and": [
-                  {
-                    "index": 0,
-                    "op": "=",
-                    "tag": "(0012,0062)",
-                    "values": [
-                      "YES"
-                    ]
-                  },
-                  {
-                    "index": 0,
-                    "op": "-",
-                    "tag": "(0012,0064)"
-                  }
-                ],
-                "type": "MU"
-              },
-              "name": "De-identification Method",
-              "type": "1C"
-            },
-            "(0012,0064)": {
-              "cond": {
-                "and": [
-                  {
-                    "index": 0,
-                    "op": "=",
-                    "tag": "(0012,0062)",
-                    "values": [
-                      "YES"
-                    ]
-                  },
-                  {
-                    "index": 0,
-                    "op": "-",
-                    "tag": "(0012,0063)"
-                  }
-                ],
-                "type": "MU"
-              },
-              "items": {
-                "include": [
-                  {
-                    "ref": "8.8-1"
-                  }
-                ]
-              },
-              "name": "De-identification Method Code Sequence",
-              "type": "1C"
-            },
-            "include": [
-              {
-                "ref": "C.7.1.4-1"
-              }
-            ]
-          },
-          "name": "Strain Stock Sequence",
-          "type": "3"
-        },
-        "(0010,0218)": {
-          "name": "Strain Additional Information",
-          "type": "3"
-        },
-        "(0010,0219)": {
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Strain Code Sequence",
-          "type": "3"
-        },
         "(0010,2295)": {
           "name": "Breed Registration Number",
           "type": "1"
@@ -2700,13 +2495,95 @@
       "name": "Breed Registration Sequence",
       "type": "2C"
     },
+    "(0010,2297)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Responsible Person",
+      "type": "2C"
+    },
+    "(0010,2298)": {
+      "cond": {
+        "index": 0,
+        "op": "++",
+        "tag": "(0010,2297)",
+        "type": "MU"
+      },
+      "name": "Responsible Person Role",
+      "type": "1C"
+    },
+    "(0010,2299)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Responsible Organization",
+      "type": "2C"
+    },
     "(0010,4000)": {
       "name": "Patient Comments",
       "type": "3"
     },
+    "(0012,0062)": {
+      "name": "Patient Identity Removed",
+      "type": "3"
+    },
+    "(0012,0063)": {
+      "cond": {
+        "and": [
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0012,0062)",
+            "values": [
+              "YES"
+            ]
+          },
+          {
+            "index": 0,
+            "op": "-",
+            "tag": "(0012,0064)"
+          }
+        ],
+        "type": "MU"
+      },
+      "name": "De-identification Method",
+      "type": "1C"
+    },
+    "(0012,0064)": {
+      "cond": {
+        "and": [
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0012,0062)",
+            "values": [
+              "YES"
+            ]
+          },
+          {
+            "index": 0,
+            "op": "-",
+            "tag": "(0012,0063)"
+          }
+        ],
+        "type": "MU"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "De-identification Method Code Sequence",
+      "type": "1C"
+    },
     "include": [
       {
         "ref": "10-18"
+      },
+      {
+        "ref": "C.7.1.4-1"
       }
     ]
   },
@@ -2756,7 +2633,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0012,0082)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Clinical Trial Protocol Ethics Committee Name",
       "type": "1C"
@@ -3027,9 +2904,9 @@
     "(0038,0064)": {
       "items": {
         "include": [
-            {
-              "ref": "10-17"
-            }
+          {
+            "ref": "10-17"
+          }
         ]
       },
       "name": "Issuer of Service Episode ID Sequence",
@@ -3049,13 +2926,7 @@
       "items": {
         "(0012,0020)": {
           "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0012,0084)",
-            "type": "MN",
-            "values": [
-              "NAMED_PROTOCOL"
-            ]
+            "type": "U"
           },
           "name": "Clinical Trial Protocol ID",
           "type": "1C"
@@ -3065,7 +2936,7 @@
             "index": 0,
             "op": "=",
             "tag": "(0012,0085)",
-            "type": "MN",
+            "type": "MU",
             "values": [
               "YES",
               "WITHDRAWN"
@@ -3154,24 +3025,6 @@
     },
     "(0008,1250)": {
       "items": {
-        "(0010,2210)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Anatomical Orientation Type",
-          "type": "1C"
-        },
-        "(0018,0015)": {
-          "name": "Body Part Examined",
-          "type": "3"
-        },
-        "(0018,5100)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Patient Position",
-          "type": "2C"
-        },
         "(0020,000D)": {
           "name": "Study Instance UID",
           "type": "1"
@@ -3179,25 +3032,6 @@
         "(0020,000E)": {
           "name": "Series Instance UID",
           "type": "1"
-        },
-        "(0028,0108)": {
-          "name": "Smallest Pixel Value in Series",
-          "type": "3"
-        },
-        "(0028,0109)": {
-          "name": "Largest Pixel Value in Series",
-          "type": "3"
-        },
-        "(0040,0275)": {
-          "items": {
-            "include": [
-              {
-                "ref": "10-9"
-              }
-            ]
-          },
-          "name": "Request Attributes Sequence",
-          "type": "3"
         },
         "(0040,A170)": {
           "items": {
@@ -3209,19 +3043,52 @@
           },
           "name": "Purpose of Reference Code Sequence",
           "type": "2"
-        },
-        "include": [
-          {
-            "ref": "10-16"
-          }
-        ]
+        }
       },
       "name": "Related Series Sequence",
+      "type": "3"
+    },
+    "(0010,2210)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Anatomical Orientation Type",
+      "type": "1C"
+    },
+    "(0018,0015)": {
+      "name": "Body Part Examined",
       "type": "3"
     },
     "(0018,1030)": {
       "name": "Protocol Name",
       "type": "3"
+    },
+    "(0018,5100)": {
+      "cond": {
+        "and": [
+          {
+            "index": 0,
+            "op": "-",
+            "tag": "(0054,0410)"
+          },
+          {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0016)",
+            "values": [
+              "1.2.840.10008.5.1.4.1.1.2",
+              "1.2.840.10008.5.1.4.1.1.4",
+              "1.2.840.10008.5.1.4.1.1.2.1",
+              "1.2.840.10008.5.1.4.1.1.4.1",
+              "1.2.840.10008.5.1.4.1.1.4.3",
+              "1.2.840.10008.5.1.4.1.1.4.2"
+            ]
+          }
+        ],
+        "type": "MU"
+      },
+      "name": "Patient Position",
+      "type": "2C"
     },
     "(0020,000E)": {
       "name": "Series Instance UID",
@@ -3237,7 +3104,31 @@
       },
       "name": "Laterality",
       "type": "2C"
-    }
+    },
+    "(0028,0108)": {
+      "name": "Smallest Pixel Value in Series",
+      "type": "3"
+    },
+    "(0028,0109)": {
+      "name": "Largest Pixel Value in Series",
+      "type": "3"
+    },
+    "(0040,0275)": {
+      "items": {
+        "include": [
+          {
+            "ref": "10-9"
+          }
+        ]
+      },
+      "name": "Request Attributes Sequence",
+      "type": "3"
+    },
+    "include": [
+      {
+        "ref": "10-16"
+      }
+    ]
   },
   "C.7.3.2": {
     "(0012,0060)": {
@@ -3372,7 +3263,22 @@
             ]
           }
         ],
-        "type": "MU"
+        "other_cond": {
+          "or": [
+            {
+              "index": 0,
+              "op": "+",
+              "tag": "(7FE0,0010)"
+            },
+            {
+              "index": 0,
+              "op": "+",
+              "tag": "(0028,7FE0)"
+            }
+          ],
+          "type": "MU"
+        },
+        "type": "MC"
       },
       "name": "Pixel Padding Value",
       "type": "1C"
@@ -3429,144 +3335,6 @@
     },
     "(0008,1140)": {
       "items": {
-        "(0008,114A)": {
-          "items": {
-            "(0008,3010)": {
-              "name": "Irradiation Event UID",
-              "type": "3"
-            },
-            "(0020,1002)": {
-              "name": "Images in Acquisition",
-              "type": "3"
-            },
-            "(0020,4000)": {
-              "name": "Image Comments",
-              "type": "3"
-            },
-            "(0028,0300)": {
-              "name": "Quality Control Image",
-              "type": "3"
-            },
-            "(0028,0301)": {
-              "name": "Burned In Annotation",
-              "type": "3"
-            },
-            "(0028,0302)": {
-              "name": "Recognizable Visual Features",
-              "type": "3"
-            },
-            "(0028,2110)": {
-              "name": "Lossy Image Compression",
-              "type": "3"
-            },
-            "(0028,2112)": {
-              "name": "Lossy Image Compression Ratio",
-              "type": "3"
-            },
-            "(0028,2114)": {
-              "name": "Lossy Image Compression Method",
-              "type": "3"
-            },
-            "(0040,9096)": {
-              "items": {
-                "include": [
-                  {
-                    "ref": "C.7.6.16-12b"
-                  }
-                ]
-              },
-              "name": "Real World Value Mapping Sequence",
-              "type": "3"
-            },
-            "(0040,A170)": {
-              "items": {
-                "include": [
-                  {
-                    "ref": "8.8-1"
-                  }
-                ]
-              },
-              "name": "Purpose of Reference Code Sequence",
-              "type": "1"
-            },
-            "(0088,0200)": {
-              "items": {
-                "include": [
-                  {
-                    "ref": "C.7-11b"
-                  }
-                ]
-              },
-              "name": "Icon Image Sequence",
-              "type": "3"
-            },
-            "(2050,0020)": {
-              "name": "Presentation LUT Shape",
-              "type": "3"
-            },
-            "include": [
-              {
-                "ref": "10-11"
-              }
-            ]
-          },
-          "name": "Referenced Instance Sequence",
-          "type": "3"
-        },
-        "(0008,2111)": {
-          "name": "Derivation Description",
-          "type": "3"
-        },
-        "(0008,2112)": {
-          "items": {
-            "(0020,0020)": {
-              "cond": {
-                "index": 0,
-                "op": "=",
-                "tag": "(0028,135A)",
-                "type": "MN",
-                "values": [
-                  "REORIENTED_ONLY"
-                ]
-              },
-              "name": "Patient Orientation",
-              "type": "1C"
-            },
-            "(0028,135A)": {
-              "name": "Spatial Locations Preserved",
-              "type": "3"
-            },
-            "(0040,A170)": {
-              "items": {
-                "include": [
-                  {
-                    "ref": "8.8-1"
-                  }
-                ]
-              },
-              "name": "Purpose of Reference Code Sequence",
-              "type": "3"
-            },
-            "include": [
-              {
-                "ref": "10-3"
-              }
-            ]
-          },
-          "name": "Source Image Sequence",
-          "type": "3"
-        },
-        "(0008,9215)": {
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Derivation Code Sequence",
-          "type": "3"
-        },
         "(0040,A170)": {
           "items": {
             "include": [
@@ -3587,6 +3355,86 @@
       "name": "Referenced Image Sequence",
       "type": "3"
     },
+    "(0008,114A)": {
+      "items": {
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "1"
+        },
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Instance Sequence",
+      "type": "3"
+    },
+    "(0008,2111)": {
+      "name": "Derivation Description",
+      "type": "3"
+    },
+    "(0008,2112)": {
+      "items": {
+        "(0020,0020)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,135A)",
+            "type": "MU",
+            "values": [
+              "REORIENTED_ONLY"
+            ]
+          },
+          "name": "Patient Orientation",
+          "type": "1C"
+        },
+        "(0028,135A)": {
+          "name": "Spatial Locations Preserved",
+          "type": "3"
+        },
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "3"
+        },
+        "include": [
+          {
+            "ref": "10-3"
+          }
+        ]
+      },
+      "name": "Source Image Sequence",
+      "type": "3"
+    },
+    "(0008,3010)": {
+      "name": "Irradiation Event UID",
+      "type": "3"
+    },
+    "(0008,9215)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Derivation Code Sequence",
+      "type": "3"
+    },
     "(0020,0012)": {
       "name": "Acquisition Number",
       "type": "3"
@@ -3601,6 +3449,64 @@
       },
       "name": "Patient Orientation",
       "type": "2C"
+    },
+    "(0020,1002)": {
+      "name": "Images in Acquisition",
+      "type": "3"
+    },
+    "(0020,4000)": {
+      "name": "Image Comments",
+      "type": "3"
+    },
+    "(0028,0300)": {
+      "name": "Quality Control Image",
+      "type": "3"
+    },
+    "(0028,0301)": {
+      "name": "Burned In Annotation",
+      "type": "3"
+    },
+    "(0028,0302)": {
+      "name": "Recognizable Visual Features",
+      "type": "3"
+    },
+    "(0028,2110)": {
+      "name": "Lossy Image Compression",
+      "type": "3"
+    },
+    "(0028,2112)": {
+      "name": "Lossy Image Compression Ratio",
+      "type": "3"
+    },
+    "(0028,2114)": {
+      "name": "Lossy Image Compression Method",
+      "type": "3"
+    },
+    "(0040,9096)": {
+      "items": {
+        "include": [
+          {
+            "ref": "C.7.6.16-12b"
+          }
+        ]
+      },
+      "name": "Real World Value Mapping Sequence",
+      "type": "3"
+    },
+    "(0088,0200)": {
+      "items": {
+        "include": [
+          {
+            "ref": "C.7-11b"
+          }
+        ]
+      },
+      "name": "Icon Image Sequence",
+      "type": "3"
+    },
+    "(2050,0020)": {
+      "name": "Presentation LUT Shape",
+      "type": "3"
     }
   },
   "C.7.6.12": {
@@ -3635,7 +3541,7 @@
             "index": 0,
             "op": "+",
             "tag": "(0050,0016)",
-            "type": "MN"
+            "type": "MU"
           },
           "name": "Device Diameter Units",
           "type": "2C"
@@ -3665,10 +3571,6 @@
   "C.7.6.14": {
     "(0040,0555)": {
       "items": {
-        "(0040,0556)": {
-          "name": "Acquisition Context Description",
-          "type": "3"
-        },
         "(0040,08EA)": {
           "cond": {
             "index": 0,
@@ -3755,7 +3657,7 @@
             "index": 0,
             "op": "+",
             "tag": "(0040,A162)",
-            "type": "MN"
+            "type": "MU"
           },
           "name": "Rational Denominator Value",
           "type": "1C"
@@ -3794,7 +3696,7 @@
                 "tag": "(0040,08EA)"
               }
             ],
-            "type": "MN"
+            "type": "MU"
           },
           "items": {
             "include": [
@@ -3816,6 +3718,10 @@
       },
       "name": "Acquisition Context Sequence",
       "type": "2"
+    },
+    "(0040,0556)": {
+      "name": "Acquisition Context Description",
+      "type": "3"
     }
   },
   "C.7.6.16": {
@@ -3836,7 +3742,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0020,9161)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "SOP Instance UID of Concatenation Source",
       "type": "1C"
@@ -3853,7 +3759,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0020,9161)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "In-concatenation Number",
       "type": "1C"
@@ -3867,7 +3773,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0020,9161)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Concatenation Frame Offset Number",
       "type": "1C"
@@ -3950,7 +3856,7 @@
             "tag": "(0040,9213)"
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Real World Value Last Value Mapped",
       "type": "1C"
@@ -3960,7 +3866,7 @@
         "index": 0,
         "op": "-",
         "tag": "(0040,9224)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Real World Value LUT Data",
       "type": "1C"
@@ -3970,7 +3876,7 @@
         "index": 0,
         "op": "-",
         "tag": "(0040,9211)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Double Float Real World Value Last Value Mapped",
       "type": "1C"
@@ -3980,7 +3886,7 @@
         "index": 0,
         "op": "-",
         "tag": "(0040,9216)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Double Float Real World Value First Value Mapped",
       "type": "1C"
@@ -4008,7 +3914,7 @@
             "tag": "(0040,9214)"
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Real World Value First Value Mapped",
       "type": "1C"
@@ -4047,7 +3953,7 @@
             "tag": "(0040,9212)"
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Real World Value Intercept",
       "type": "1C"
@@ -4075,296 +3981,35 @@
             "tag": "(0040,9212)"
           }
         ],
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Real World Value Slope",
       "type": "1C"
     }
   },
-  "C.7.6.16.2.2": {
-    "(0020,9111)": {
+  "C.7.6.16.2.1": {
+    "(0028,9110)": {
       "items": {
-        "(0018,9074)": {
+        "(0018,0050)": {
           "cond": {
             "type": "U"
           },
-          "name": "Frame Acquisition DateTime",
+          "name": "Slice Thickness",
           "type": "1C"
         },
-        "(0018,9151)": {
+        "(0018,0088)": {
+          "name": "Spacing Between Slices",
+          "type": "3"
+        },
+        "(0028,0030)": {
           "cond": {
             "type": "U"
           },
-          "name": "Frame Reference DateTime",
-          "type": "1C"
-        },
-        "(0018,9214)": {
-          "name": "Respiratory Cycle Position",
-          "type": "3"
-        },
-        "(0018,9220)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Frame Acquisition Duration",
-          "type": "1C"
-        },
-        "(0018,9236)": {
-          "name": "Cardiac Cycle Position",
-          "type": "3"
-        },
-        "(0020,9056)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0008,0016)",
-            "type": "MU",
-            "values": [
-              "1.2.840.10008.5.1.4.1.1.130"
-            ]
-          },
-          "name": "Stack ID",
-          "type": "1C"
-        },
-        "(0020,9057)": {
-          "cond": {
-            "or": [
-              {
-                "index": 0,
-                "op": "+",
-                "tag": "(0020,9056)"
-              },
-              {
-                "index": 0,
-                "op": "+",
-                "tag": "(0018,9621)"
-              }
-            ],
-            "type": "MN"
-          },
-          "name": "In-Stack Position Number",
-          "type": "1C"
-        },
-        "(0020,9128)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0008,0016)",
-            "type": "MU",
-            "values": [
-              "1.2.840.10008.5.1.4.1.1.130"
-            ]
-          },
-          "name": "Temporal Position Index",
-          "type": "1C"
-        },
-        "(0020,9156)": {
-          "name": "Frame Acquisition Number",
-          "type": "3"
-        },
-        "(0020,9157)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Dimension Index Values",
-          "type": "1C"
-        },
-        "(0020,9158)": {
-          "name": "Frame Comments",
-          "type": "3"
-        },
-        "(0020,9453)": {
-          "name": "Frame Label",
-          "type": "3"
-        }
-      },
-      "name": "Frame Content Sequence",
-      "type": "1"
-    }
-  },
-  "C.7.6.16.2.5": {
-    "(0008,1140)": {
-      "items": {
-        "(0040,A170)": {
-          "cond": {
-            "type": "U"
-          },
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Purpose of Reference Code Sequence",
-          "type": "1C"
-        },
-        "include": [
-          {
-            "ref": "10-3"
-          }
-        ]
-      },
-      "name": "Referenced Image Sequence",
-      "type": "2"
-    }
-  },
-  "C.7.6.16.2.6": {
-    "(0008,9124)": {
-      "items": {
-        "(0008,2111)": {
-          "name": "Derivation Description",
-          "type": "3"
-        },
-        "(0008,2112)": {
-          "items": {
-            "(0020,0020)": {
-              "cond": {
-                "index": 0,
-                "op": "=",
-                "tag": "(0028,135A)",
-                "type": "MN",
-                "values": [
-                  "REORIENTED_ONLY"
-                ]
-              },
-              "name": "Patient Orientation",
-              "type": "1C"
-            },
-            "(0028,135A)": {
-              "name": "Spatial Locations Preserved",
-              "type": "3"
-            },
-            "(0040,A170)": {
-              "cond": {
-                "type": "U"
-              },
-              "items": {
-                "include": [
-                  {
-                    "ref": "8.8-1"
-                  }
-                ]
-              },
-              "name": "Purpose of Reference Code Sequence",
-              "type": "1C"
-            },
-            "include": [
-              {
-                "ref": "10-3"
-              }
-            ]
-          },
-          "name": "Source Image Sequence",
-          "type": "2"
-        },
-        "(0008,9215)": {
-          "cond": {
-            "type": "U"
-          },
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Derivation Code Sequence",
+          "name": "Pixel Spacing",
           "type": "1C"
         }
       },
-      "name": "Derivation Image Sequence",
-      "type": "2"
-    }
-  },
-  "C.7.6.16.2.7": {
-    "(0018,9118)": {
-      "items": {
-        "(0018,1081)": {
-          "name": "Low R-R Value",
-          "type": "3"
-        },
-        "(0018,1082)": {
-          "name": "High R-R Value",
-          "type": "3"
-        },
-        "(0018,1083)": {
-          "name": "Intervals Acquired",
-          "type": "3"
-        },
-        "(0018,1084)": {
-          "name": "Intervals Rejected",
-          "type": "3"
-        },
-        "(0018,1088)": {
-          "name": "Heart Rate",
-          "type": "3"
-        },
-        "(0020,9153)": {
-          "name": "Nominal Cardiac Trigger Delay Time",
-          "type": "1"
-        },
-        "(0020,9154)": {
-          "name": "Nominal Cardiac Trigger Time Prior to R-peak",
-          "type": "3"
-        },
-        "(0020,9155)": {
-          "name": "Actual Cardiac Trigger Time Prior to R-peak",
-          "type": "3"
-        },
-        "(0020,9241)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Nominal Percentage of Cardiac Phase",
-          "type": "1C"
-        },
-        "(0020,9251)": {
-          "cond": {
-            "index": 0,
-            "op": "!=",
-            "tag": "(0018,9037)",
-            "type": "MU",
-            "values": [
-              "NONE",
-              "REALTIME"
-            ]
-          },
-          "name": "R-R Interval Time Nominal",
-          "type": "1C"
-        },
-        "(0020,9252)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1083)",
-            "type": "MU",
-            "values": [
-              "1"
-            ]
-          },
-          "name": "Actual Cardiac Trigger Delay Time",
-          "type": "1C"
-        }
-      },
-      "name": "Cardiac Synchronization Sequence",
-      "type": "1"
-    }
-  },
-  "C.7.6.16.2.8": {
-    "(0020,9071)": {
-      "items": {
-        "(0020,9072)": {
-          "name": "Frame Laterality",
-          "type": "1"
-        },
-        "include": [
-          {
-            "ref": "10-5"
-          }
-        ]
-      },
-      "name": "Frame Anatomy Sequence",
+      "name": "Pixel Measures Sequence",
       "type": "1"
     }
   },
@@ -4389,6 +4034,19 @@
         }
       },
       "name": "Frame VOI LUT Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.11": {
+    "(0040,9096)": {
+      "items": {
+        "include": [
+          {
+            "ref": "C.7.6.16-12b"
+          }
+        ]
+      },
+      "name": "Real World Value Mapping Sequence",
       "type": "1"
     }
   },
@@ -4495,7 +4153,7 @@
             "index": 0,
             "op": "=",
             "tag": "(0020,9250)",
-            "type": "MN",
+            "type": "MU",
             "values": [
               "AMPLITUDE",
               "BOTH"
@@ -4509,7 +4167,7 @@
             "index": 0,
             "op": "+",
             "tag": "(0020,9246)",
-            "type": "MN"
+            "type": "MU"
           },
           "name": "Starting Respiratory Phase",
           "type": "1C"
@@ -4519,7 +4177,7 @@
             "index": 0,
             "op": "=",
             "tag": "(0020,9250)",
-            "type": "MN",
+            "type": "MU",
             "values": [
               "AMPLITUDE",
               "BOTH"
@@ -4533,7 +4191,7 @@
             "index": 0,
             "op": "+",
             "tag": "(0020,9248)",
-            "type": "MN"
+            "type": "MU"
           },
           "name": "Ending Respiratory Phase",
           "type": "1C"
@@ -4556,7 +4214,7 @@
                 "tag": "(0020,9250)"
               }
             ],
-            "type": "MN"
+            "type": "MU"
           },
           "name": "Respiratory Interval Time",
           "type": "1C"
@@ -4570,7 +4228,7 @@
             "index": 0,
             "op": "=",
             "tag": "(0020,9250)",
-            "type": "MN",
+            "type": "MU",
             "values": [
               "TIME",
               "BOTH"
@@ -4593,6 +4251,314 @@
         }
       },
       "name": "Irradiation Event Identification Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.2": {
+    "(0020,9111)": {
+      "items": {
+        "(0018,9074)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Frame Acquisition DateTime",
+          "type": "1C"
+        },
+        "(0018,9151)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Frame Reference DateTime",
+          "type": "1C"
+        },
+        "(0018,9214)": {
+          "name": "Respiratory Cycle Position",
+          "type": "3"
+        },
+        "(0018,9220)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Frame Acquisition Duration",
+          "type": "1C"
+        },
+        "(0018,9236)": {
+          "name": "Cardiac Cycle Position",
+          "type": "3"
+        },
+        "(0020,9056)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0016)",
+            "type": "MU",
+            "values": [
+              "1.2.840.10008.5.1.4.1.1.130"
+            ]
+          },
+          "name": "Stack ID",
+          "type": "1C"
+        },
+        "(0020,9057)": {
+          "cond": {
+            "or": [
+              {
+                "index": 0,
+                "op": "+",
+                "tag": "(0020,9056)"
+              },
+              {
+                "index": 0,
+                "op": "+",
+                "tag": "(0018,9621)"
+              }
+            ],
+            "type": "MU"
+          },
+          "name": "In-Stack Position Number",
+          "type": "1C"
+        },
+        "(0020,9128)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0016)",
+            "type": "MU",
+            "values": [
+              "1.2.840.10008.5.1.4.1.1.130"
+            ]
+          },
+          "name": "Temporal Position Index",
+          "type": "1C"
+        },
+        "(0020,9156)": {
+          "name": "Frame Acquisition Number",
+          "type": "3"
+        },
+        "(0020,9157)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Dimension Index Values",
+          "type": "1C"
+        },
+        "(0020,9158)": {
+          "name": "Frame Comments",
+          "type": "3"
+        },
+        "(0020,9453)": {
+          "name": "Frame Label",
+          "type": "3"
+        }
+      },
+      "name": "Frame Content Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.3": {
+    "(0020,9113)": {
+      "items": {
+        "(0020,0032)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Image Position (Patient)",
+          "type": "1C"
+        }
+      },
+      "name": "Plane Position Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.4": {
+    "(0020,9116)": {
+      "items": {
+        "(0020,0037)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Image Orientation (Patient)",
+          "type": "1C"
+        }
+      },
+      "name": "Plane Orientation Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.5": {
+    "(0008,1140)": {
+      "items": {
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "1"
+        },
+        "include": [
+          {
+            "ref": "10-3"
+          }
+        ]
+      },
+      "name": "Referenced Image Sequence",
+      "type": "2"
+    }
+  },
+  "C.7.6.16.2.6": {
+    "(0008,9124)": {
+      "items": {
+        "(0008,2111)": {
+          "name": "Derivation Description",
+          "type": "3"
+        },
+        "(0008,2112)": {
+          "items": {
+            "(0020,0020)": {
+              "cond": {
+                "index": 0,
+                "op": "=",
+                "tag": "(0028,135A)",
+                "type": "MU",
+                "values": [
+                  "REORIENTED_ONLY"
+                ]
+              },
+              "name": "Patient Orientation",
+              "type": "1C"
+            },
+            "(0028,135A)": {
+              "name": "Spatial Locations Preserved",
+              "type": "3"
+            },
+            "(0040,A170)": {
+              "items": {
+                "include": [
+                  {
+                    "ref": "8.8-1"
+                  }
+                ]
+              },
+              "name": "Purpose of Reference Code Sequence",
+              "type": "1"
+            },
+            "include": [
+              {
+                "ref": "10-3"
+              }
+            ]
+          },
+          "name": "Source Image Sequence",
+          "type": "2"
+        },
+        "(0008,9215)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Derivation Code Sequence",
+          "type": "1"
+        }
+      },
+      "name": "Derivation Image Sequence",
+      "type": "2"
+    }
+  },
+  "C.7.6.16.2.7": {
+    "(0018,9118)": {
+      "items": {
+        "(0018,1081)": {
+          "name": "Low R-R Value",
+          "type": "3"
+        },
+        "(0018,1082)": {
+          "name": "High R-R Value",
+          "type": "3"
+        },
+        "(0018,1083)": {
+          "name": "Intervals Acquired",
+          "type": "3"
+        },
+        "(0018,1084)": {
+          "name": "Intervals Rejected",
+          "type": "3"
+        },
+        "(0018,1088)": {
+          "name": "Heart Rate",
+          "type": "3"
+        },
+        "(0020,9153)": {
+          "name": "Nominal Cardiac Trigger Delay Time",
+          "type": "1"
+        },
+        "(0020,9154)": {
+          "name": "Nominal Cardiac Trigger Time Prior to R-peak",
+          "type": "3"
+        },
+        "(0020,9155)": {
+          "name": "Actual Cardiac Trigger Time Prior to R-peak",
+          "type": "3"
+        },
+        "(0020,9241)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Nominal Percentage of Cardiac Phase",
+          "type": "1C"
+        },
+        "(0020,9251)": {
+          "cond": {
+            "index": 0,
+            "op": "!=",
+            "tag": "(0018,9037)",
+            "type": "MU",
+            "values": [
+              "NONE",
+              "REALTIME"
+            ]
+          },
+          "name": "R-R Interval Time Nominal",
+          "type": "1C"
+        },
+        "(0020,9252)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1083)",
+            "type": "MU",
+            "values": [
+              "1"
+            ]
+          },
+          "name": "Actual Cardiac Trigger Delay Time",
+          "type": "1C"
+        }
+      },
+      "name": "Cardiac Synchronization Sequence",
+      "type": "1"
+    }
+  },
+  "C.7.6.16.2.8": {
+    "(0020,9071)": {
+      "items": {
+        "(0020,9072)": {
+          "name": "Frame Laterality",
+          "type": "1"
+        },
+        "include": [
+          {
+            "ref": "10-5"
+          }
+        ]
+      },
+      "name": "Frame Anatomy Sequence",
       "type": "1"
     }
   },
@@ -4622,26 +4588,14 @@
         },
         "(0020,9167)": {
           "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0020,9165)",
-            "type": "MN",
-            "values": [
-              "the Data Element Tag of an Attribute that is contained within a Functional Group Sequence"
-            ]
+            "type": "U"
           },
           "name": "Functional Group Pointer",
           "type": "1C"
         },
         "(0020,9213)": {
           "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0020,9165)",
-            "type": "MN",
-            "values": [
-              "the Data Element Tag of a Private Attribute"
-            ]
+            "type": "U"
           },
           "name": "Dimension Index Private Creator",
           "type": "1C"
@@ -4716,7 +4670,7 @@
               ]
             }
           ],
-          "type": "MN"
+          "type": "MU"
         },
         "type": "MC"
       },
@@ -4765,7 +4719,7 @@
               ]
             }
           ],
-          "type": "MN"
+          "type": "MU"
         },
         "type": "MC"
       },
@@ -4812,7 +4766,7 @@
               ]
             }
           ],
-          "type": "MN"
+          "type": "MU"
         },
         "type": "MC"
       },
@@ -4859,7 +4813,7 @@
               ]
             }
           ],
-          "type": "MN"
+          "type": "MU"
         },
         "type": "MC"
       },
@@ -4871,7 +4825,7 @@
         "index": 0,
         "op": "=>",
         "tag": "(0028,0009)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "1577061"
         ]
@@ -4933,7 +4887,7 @@
               ]
             }
           ],
-          "type": "MN"
+          "type": "MU"
         },
         "type": "MC"
       },
@@ -4980,7 +4934,7 @@
               ]
             }
           ],
-          "type": "MN"
+          "type": "MU"
         },
         "type": "MC"
       },
@@ -5029,7 +4983,7 @@
               ]
             }
           ],
-          "type": "MN"
+          "type": "MU"
         },
         "type": "MC"
       },
@@ -5073,16 +5027,7 @@
             ]
           }
         ],
-        "other_cond": {
-          "index": 0,
-          "op": "=",
-          "tag": "(0008,0008)",
-          "type": "MN",
-          "values": [
-            "DERIVED"
-          ]
-        },
-        "type": "MC"
+        "type": "MU"
       },
       "name": "Respiratory Signal Source",
       "type": "1C"
@@ -5210,8 +5155,37 @@
           },
           "name": "Issuer of the Container Identifier Sequence",
           "type": "2"
+        }
+      },
+      "name": "Alternate Container Identifier Sequence",
+      "type": "3"
+    },
+    "(0040,0518)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Container Type Code Sequence",
+      "type": "2"
+    },
+    "(0040,051A)": {
+      "name": "Container Description",
+      "type": "3"
+    },
+    "(0040,0520)": {
+      "items": {
+        "(0008,0070)": {
+          "name": "Manufacturer",
+          "type": "3"
         },
-        "(0040,0518)": {
+        "(0008,1090)": {
+          "name": "Manufacturer's Model Name",
+          "type": "3"
+        },
+        "(0050,0012)": {
           "items": {
             "include": [
               {
@@ -5219,149 +5193,120 @@
               }
             ]
           },
-          "name": "Container Type Code Sequence",
-          "type": "2"
-        },
-        "(0040,051A)": {
-          "name": "Container Description",
-          "type": "3"
-        },
-        "(0040,0520)": {
-          "items": {
-            "(0008,0070)": {
-              "name": "Manufacturer",
-              "type": "3"
-            },
-            "(0008,1090)": {
-              "name": "Manufacturer's Model Name",
-              "type": "3"
-            },
-            "(0050,0012)": {
-              "items": {
-                "include": [
-                  {
-                    "ref": "8.8-1"
-                  }
-                ]
-              },
-              "name": "Container Component Type Code Sequence",
-              "type": "1"
-            },
-            "(0050,0013)": {
-              "name": "Container Component Thickness",
-              "type": "3"
-            },
-            "(0050,0015)": {
-              "name": "Container Component Width",
-              "type": "3"
-            },
-            "(0050,001A)": {
-              "name": "Container Component Material",
-              "type": "3"
-            },
-            "(0050,001B)": {
-              "name": "Container Component ID",
-              "type": "3"
-            },
-            "(0050,001C)": {
-              "name": "Container Component Length",
-              "type": "3"
-            },
-            "(0050,001D)": {
-              "name": "Container Component Diameter",
-              "type": "3"
-            },
-            "(0050,001E)": {
-              "name": "Container Component Description",
-              "type": "3"
-            }
-          },
-          "name": "Container Component Sequence",
-          "type": "3"
-        },
-        "(0040,0560)": {
-          "items": {
-            "(0040,0551)": {
-              "name": "Specimen Identifier",
-              "type": "1"
-            },
-            "(0040,0554)": {
-              "name": "Specimen UID",
-              "type": "1"
-            },
-            "(0040,0562)": {
-              "items": {
-                "include": [
-                  {
-                    "ref": "10-17"
-                  }
-                ]
-              },
-              "name": "Issuer of the Specimen Identifier Sequence",
-              "type": "2"
-            },
-            "(0040,059A)": {
-              "items": {
-                "include": [
-                  {
-                    "ref": "8.8-1"
-                  }
-                ]
-              },
-              "name": "Specimen Type Code Sequence",
-              "type": "3"
-            },
-            "(0040,0600)": {
-              "name": "Specimen Short Description",
-              "type": "3"
-            },
-            "(0040,0602)": {
-              "name": "Specimen Detailed Description",
-              "type": "3"
-            },
-            "(0040,0610)": {
-              "items": {
-                "(0040,0612)": {
-                  "items": {
-                    "include": [
-                      {
-                        "ref": "10-2"
-                      }
-                    ]
-                  },
-                  "name": "Specimen Preparation Step Content Item Sequence",
-                  "type": "1"
-                },
-                "(0040,0620)": {
-                  "cond": {
-                    "type": "U"
-                  },
-                  "items": {
-                    "include": [
-                      {
-                        "ref": "10-2"
-                      }
-                    ]
-                  },
-                  "name": "Specimen Localization Content Item Sequence",
-                  "type": "1C"
-                },
-                "include": [
-                  {
-                    "ref": "10-8"
-                  }
-                ]
-              },
-              "name": "Specimen Preparation Sequence",
-              "type": "2"
-            }
-          },
-          "name": "Specimen Description Sequence",
+          "name": "Container Component Type Code Sequence",
           "type": "1"
+        },
+        "(0050,0013)": {
+          "name": "Container Component Thickness",
+          "type": "3"
+        },
+        "(0050,0015)": {
+          "name": "Container Component Width",
+          "type": "3"
+        },
+        "(0050,001A)": {
+          "name": "Container Component Material",
+          "type": "3"
+        },
+        "(0050,001B)": {
+          "name": "Container Component ID",
+          "type": "3"
+        },
+        "(0050,001C)": {
+          "name": "Container Component Length",
+          "type": "3"
+        },
+        "(0050,001D)": {
+          "name": "Container Component Diameter",
+          "type": "3"
+        },
+        "(0050,001E)": {
+          "name": "Container Component Description",
+          "type": "3"
         }
       },
-      "name": "Alternate Container Identifier Sequence",
+      "name": "Container Component Sequence",
       "type": "3"
+    },
+    "(0040,0560)": {
+      "items": {
+        "(0040,0551)": {
+          "name": "Specimen Identifier",
+          "type": "1"
+        },
+        "(0040,0554)": {
+          "name": "Specimen UID",
+          "type": "1"
+        },
+        "(0040,0562)": {
+          "items": {
+            "include": [
+              {
+                "ref": "10-17"
+              }
+            ]
+          },
+          "name": "Issuer of the Specimen Identifier Sequence",
+          "type": "2"
+        },
+        "(0040,059A)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Specimen Type Code Sequence",
+          "type": "3"
+        },
+        "(0040,0600)": {
+          "name": "Specimen Short Description",
+          "type": "3"
+        },
+        "(0040,0602)": {
+          "name": "Specimen Detailed Description",
+          "type": "3"
+        },
+        "(0040,0610)": {
+          "items": {
+            "(0040,0612)": {
+              "items": {
+                "include": [
+                  {
+                    "ref": "10-2"
+                  }
+                ]
+              },
+              "name": "Specimen Preparation Step Content Item Sequence",
+              "type": "1"
+            }
+          },
+          "name": "Specimen Preparation Sequence",
+          "type": "2"
+        },
+        "(0040,0620)": {
+          "cond": {
+            "type": "U"
+          },
+          "items": {
+            "include": [
+              {
+                "ref": "10-2"
+              }
+            ]
+          },
+          "name": "Specimen Localization Content Item Sequence",
+          "type": "1C"
+        },
+        "include": [
+          {
+            "ref": "10-8"
+          }
+        ]
+      },
+      "name": "Specimen Description Sequence",
+      "type": "1"
     }
   },
   "C.7.6.3": {
@@ -5414,38 +5359,6 @@
           "name": "Additional Drug Sequence",
           "type": "3"
         },
-        "(0018,1041)": {
-          "name": "Contrast/Bolus Volume",
-          "type": "3"
-        },
-        "(0018,1042)": {
-          "name": "Contrast/Bolus Start Time",
-          "type": "3"
-        },
-        "(0018,1043)": {
-          "name": "Contrast/Bolus Stop Time",
-          "type": "3"
-        },
-        "(0018,1044)": {
-          "name": "Contrast/Bolus Total Dose",
-          "type": "3"
-        },
-        "(0018,1046)": {
-          "name": "Contrast Flow Rate",
-          "type": "3"
-        },
-        "(0018,1047)": {
-          "name": "Contrast Flow Duration",
-          "type": "3"
-        },
-        "(0018,1048)": {
-          "name": "Contrast/Bolus Ingredient",
-          "type": "3"
-        },
-        "(0018,1049)": {
-          "name": "Contrast/Bolus Ingredient Concentration",
-          "type": "3"
-        },
         "include": [
           {
             "ref": "8.8-1"
@@ -5457,6 +5370,38 @@
     },
     "(0018,1040)": {
       "name": "Contrast/Bolus Route",
+      "type": "3"
+    },
+    "(0018,1041)": {
+      "name": "Contrast/Bolus Volume",
+      "type": "3"
+    },
+    "(0018,1042)": {
+      "name": "Contrast/Bolus Start Time",
+      "type": "3"
+    },
+    "(0018,1043)": {
+      "name": "Contrast/Bolus Stop Time",
+      "type": "3"
+    },
+    "(0018,1044)": {
+      "name": "Contrast/Bolus Total Dose",
+      "type": "3"
+    },
+    "(0018,1046)": {
+      "name": "Contrast Flow Rate",
+      "type": "3"
+    },
+    "(0018,1047)": {
+      "name": "Contrast Flow Duration",
+      "type": "3"
+    },
+    "(0018,1048)": {
+      "name": "Contrast/Bolus Ingredient",
+      "type": "3"
+    },
+    "(0018,1049)": {
+      "name": "Contrast/Bolus Ingredient Concentration",
       "type": "3"
     }
   },
@@ -5559,66 +5504,6 @@
       "type": "1"
     }
   },
-  "C.7.6.16.2.1": {
-    "(0028,9110)": {
-      "items": {
-        "(0018,0050)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Slice Thickness",
-          "type": "1C"
-        },
-        "(0018,0088)": {
-          "cond": {
-            "and": [
-              {
-                "index": 0,
-                "op": "=",
-                "tag": "(0020,9311)",
-                "values": [
-                  "TILED_FULL"
-                ]
-              },
-              {
-                "index": 0,
-                "op": ">",
-                "tag": "(0048,0303)",
-                "values": [
-                  "1"
-                ]
-              }
-            ],
-            "type": "MU"
-          },
-          "name": "Spacing Between Slices",
-          "type": "1C"
-        },
-        "(0028,0030)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Pixel Spacing",
-          "type": "1C"
-        }
-      },
-      "name": "Pixel Measures Sequence",
-      "type": "1"
-    }
-  },
-  "C.7.6.16.2.11": {
-    "(0040,9096)": {
-      "items": {
-        "include": [
-          {
-            "ref": "C.7.6.16-12b"
-          }
-        ]
-      },
-      "name": "Real World Value Mapping Sequence",
-      "type": "1"
-    }
-  },
   "C.7.10.1": {
     "(0008,0017)": {
       "name": "Acquisition UID",
@@ -5667,168 +5552,252 @@
       "type": "3"
     }
   },
-  "C.7-17a": {
-    "(0018,1600)": {
-      "name": "Shutter Shape",
+  "C.8-131": {
+    "(0008,9205)": {
+      "name": "Pixel Presentation",
       "type": "1"
     },
-    "(0018,1602)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0018,1600)",
-        "type": "MN",
-        "values": [
-          "RECTANGULAR"
-        ]
-      },
-      "name": "Shutter Left Vertical Edge",
-      "type": "1C"
+    "(0008,9206)": {
+      "name": "Volumetric Properties",
+      "type": "1"
     },
-    "(0018,1604)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0018,1600)",
-        "type": "MN",
-        "values": [
-          "RECTANGULAR"
-        ]
-      },
-      "name": "Shutter Right Vertical Edge",
-      "type": "1C"
-    },
-    "(0018,1606)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0018,1600)",
-        "type": "MN",
-        "values": [
-          "RECTANGULAR"
-        ]
-      },
-      "name": "Shutter Upper Horizontal Edge",
-      "type": "1C"
-    },
-    "(0018,1608)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0018,1600)",
-        "type": "MN",
-        "values": [
-          "RECTANGULAR"
-        ]
-      },
-      "name": "Shutter Lower Horizontal Edge",
-      "type": "1C"
-    },
-    "(0018,1610)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0018,1600)",
-        "type": "MN",
-        "values": [
-          "CIRCULAR"
-        ]
-      },
-      "name": "Center of Circular Shutter",
-      "type": "1C"
-    },
-    "(0018,1612)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0018,1600)",
-        "type": "MN",
-        "values": [
-          "CIRCULAR"
-        ]
-      },
-      "name": "Radius of Circular Shutter",
-      "type": "1C"
-    },
-    "(0018,1620)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0018,1600)",
-        "type": "MN",
-        "values": [
-          "POLYGONAL"
-        ]
-      },
-      "name": "Vertices of the Polygonal Shutter",
-      "type": "1C"
-    },
-    "(0018,1622)": {
-      "name": "Shutter Presentation Value",
-      "type": "3"
-    },
-    "(0018,1624)": {
-      "name": "Shutter Presentation Color CIELab Value",
-      "type": "3"
+    "(0008,9207)": {
+      "name": "Volume Based Calculation Technique",
+      "type": "1"
     }
   },
-  "C.7-22a": {
-    "(0028,1101)": {
-      "name": "Red Palette Color Lookup Table Descriptor",
+  "C.8.12.3": {
+    "(0008,0060)": {
+      "name": "Modality",
       "type": "1"
     },
-    "(0028,1102)": {
-      "name": "Green Palette Color Lookup Table Descriptor",
+    "(0008,1111)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Performed Procedure Step Sequence",
+      "type": "1C"
+    }
+  },
+  "C.8.12.4": {
+    "(0008,0008)": {
+      "name": "Image Type",
       "type": "1"
     },
-    "(0028,1103)": {
-      "name": "Blue Palette Color Lookup Table Descriptor",
+    "(0008,002A)": {
+      "name": "Acquisition DateTime",
       "type": "1"
     },
-    "(0028,1199)": {
-      "name": "Palette Color Lookup Table UID",
+    "(0008,9206)": {
+      "name": "Volumetric Properties",
+      "type": "1"
+    },
+    "(0018,1210)": {
+      "name": "Convolution Kernel",
       "type": "3"
     },
-    "(0028,1201)": {
+    "(0018,1400)": {
+      "name": "Acquisition Device Processing Description",
+      "type": "3"
+    },
+    "(0018,9073)": {
+      "name": "Acquisition Duration",
+      "type": "3"
+    },
+    "(0028,0002)": {
+      "name": "Samples Per Pixel",
+      "type": "1"
+    },
+    "(0028,0004)": {
+      "name": "Photometric Interpretation",
+      "type": "1"
+    },
+    "(0028,0006)": {
       "cond": {
-        "type": "U"
+        "index": 0,
+        "op": ">",
+        "tag": "(0028,0002)",
+        "type": "MU",
+        "values": [
+          "1"
+        ]
       },
-      "name": "Red Palette Color Lookup Table Data",
+      "name": "Planar Configuration",
       "type": "1C"
     },
-    "(0028,1202)": {
+    "(0028,0008)": {
+      "name": "Number of Frames",
+      "type": "1"
+    },
+    "(0028,0100)": {
+      "name": "Bits Allocated",
+      "type": "1"
+    },
+    "(0028,0101)": {
+      "name": "Bits Stored",
+      "type": "1"
+    },
+    "(0028,0102)": {
+      "name": "High Bit",
+      "type": "1"
+    },
+    "(0028,0103)": {
+      "name": "Pixel Representation",
+      "type": "1"
+    },
+    "(0028,0301)": {
+      "name": "Burned In Annotation",
+      "type": "1"
+    },
+    "(0028,1052)": {
       "cond": {
-        "type": "U"
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,0004)",
+        "type": "MU",
+        "values": [
+          "MONOCHROME2"
+        ]
       },
-      "name": "Green Palette Color Lookup Table Data",
+      "name": "Rescale Intercept",
       "type": "1C"
     },
-    "(0028,1203)": {
+    "(0028,1053)": {
       "cond": {
-        "type": "U"
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,0004)",
+        "type": "MU",
+        "values": [
+          "MONOCHROME2"
+        ]
       },
-      "name": "Blue Palette Color Lookup Table Data",
+      "name": "Rescale Slope",
       "type": "1C"
     },
-    "(0028,1221)": {
+    "(0028,2110)": {
+      "name": "Lossy Image Compression",
+      "type": "1"
+    },
+    "(0028,2112)": {
       "cond": {
-        "type": "U"
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,2110)",
+        "type": "MU",
+        "values": [
+          "01"
+        ]
       },
-      "name": "Segmented Red Palette Color Lookup Table Data",
+      "name": "Lossy Image Compression Ratio",
       "type": "1C"
     },
-    "(0028,1222)": {
+    "(0028,2114)": {
       "cond": {
-        "type": "U"
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,2110)",
+        "type": "MU",
+        "values": [
+          "01"
+        ]
       },
-      "name": "Segmented Green Palette Color Lookup Table Data",
+      "name": "Lossy Image Compression Method",
       "type": "1C"
     },
-    "(0028,1223)": {
+    "(0048,0001)": {
+      "cond": {
+        "index": 2,
+        "op": "=",
+        "tag": "(0008,0008)",
+        "type": "MU",
+        "values": [
+          "VOLUME"
+        ]
+      },
+      "name": "Imaged Volume Width",
+      "type": "1C"
+    },
+    "(0048,0002)": {
+      "cond": {
+        "index": 2,
+        "op": "=",
+        "tag": "(0008,0008)",
+        "type": "MU",
+        "values": [
+          "VOLUME"
+        ]
+      },
+      "name": "Imaged Volume Height",
+      "type": "1C"
+    },
+    "(0048,0003)": {
+      "cond": {
+        "index": 2,
+        "op": "=",
+        "tag": "(0008,0008)",
+        "type": "MU",
+        "values": [
+          "VOLUME"
+        ]
+      },
+      "name": "Imaged Volume Depth",
+      "type": "1C"
+    },
+    "(0048,0010)": {
+      "name": "Specimen Label in Image",
+      "type": "1"
+    },
+    "(0048,0011)": {
+      "name": "Focus Method",
+      "type": "1"
+    },
+    "(0048,0012)": {
+      "name": "Extended Depth of Field",
+      "type": "1"
+    },
+    "(0048,0013)": {
       "cond": {
         "type": "U"
       },
-      "name": "Segmented Blue Palette Color Lookup Table Data",
+      "name": "Number of Focal Planes",
+      "type": "1C"
+    },
+    "(0048,0014)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0048,0012)",
+        "type": "MU",
+        "values": [
+          "YES"
+        ]
+      },
+      "name": "Distance Between Focal Planes",
+      "type": "1C"
+    },
+    "(0048,0015)": {
+      "name": "Recommended Absent Pixel CIELab Value",
+      "type": "3"
+    },
+    "(2050,0020)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0028,0004)",
+        "type": "MU",
+        "values": [
+          "MONOCHROME2"
+        ]
+      },
+      "name": "Presentation LUT Shape",
       "type": "1C"
     }
   },
@@ -5936,7 +5905,7 @@
                 "tag": "(0048,0120)"
               }
             ],
-            "type": "MN"
+            "type": "MU"
           },
           "name": "ICC Profile",
           "type": "1C"
@@ -6022,17 +5991,77 @@
       "type": "1C"
     }
   },
-  "C.8-131": {
-    "(0008,9205)": {
-      "name": "Pixel Presentation",
+  "C.8.12.6.1": {
+    "(0048,021A)": {
+      "items": {
+        "(0040,072A)": {
+          "name": "X Offset in Slide Coordinate System",
+          "type": "1"
+        },
+        "(0040,073A)": {
+          "name": "Y Offset in Slide Coordinate System",
+          "type": "1"
+        },
+        "(0040,074A)": {
+          "name": "Z Offset in Slide Coordinate System",
+          "type": "1"
+        },
+        "(0048,021E)": {
+          "name": "Column Position In Total Image Pixel Matrix",
+          "type": "1"
+        },
+        "(0048,021F)": {
+          "name": "Row Position In Total Image Pixel Matrix",
+          "type": "1"
+        }
+      },
+      "name": "Plane Position (Slide) Sequence",
       "type": "1"
-    },
-    "(0008,9206)": {
-      "name": "Volumetric Properties",
+    }
+  },
+  "C.8.12.6.2": {
+    "(0048,0207)": {
+      "items": {
+        "(0048,0106)": {
+          "name": "Optical Path Identifier",
+          "type": "1"
+        }
+      },
+      "name": "Optical Path Identification Sequence",
       "type": "1"
+    }
+  },
+  "C.8.12.6.3": {
+    "(0048,0110)": {
+      "items": {
+        "(0040,0554)": {
+          "name": "Specimen UID",
+          "type": "1"
+        }
+      },
+      "name": "Specimen Reference Sequence",
+      "type": "2"
+    }
+  },
+  "C.8.12.8": {
+    "(2200,0002)": {
+      "name": "Label Text",
+      "type": "2"
     },
-    "(0008,9207)": {
-      "name": "Volume Based Calculation Technique",
+    "(2200,0005)": {
+      "name": "Barcode Value",
+      "type": "2"
+    }
+  },
+  "C.8.12.9": {
+    "(0040,0710)": {
+      "items": {
+        "(0008,9007)": {
+          "name": "Frame Type",
+          "type": "1"
+        }
+      },
+      "name": "Whole Slide Microscopy Image Frame Type Sequence",
       "type": "1"
     }
   },
@@ -6084,7 +6113,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0008,1140)",
-        "type": "MN"
+        "type": "MU"
       },
       "items": {
         "include": [
@@ -6112,7 +6141,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0008,2112)",
-        "type": "MN"
+        "type": "MU"
       },
       "items": {
         "include": [
@@ -6221,7 +6250,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0028,2110)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "01"
         ]
@@ -6234,7 +6263,7 @@
         "index": 0,
         "op": "=",
         "tag": "(0028,2110)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "01"
         ]
@@ -6272,6 +6301,1039 @@
         "ref": "10-27"
       }
     ]
+  },
+  "C.8.15.3.1": {
+    "(0018,9329)": {
+      "items": {
+        "(0008,9007)": {
+          "name": "Frame Type",
+          "type": "1"
+        },
+        "include": [
+          {
+            "ref": "C.8-131"
+          }
+        ]
+      },
+      "name": "CT Image Frame Type Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.10": {
+    "(0028,9145)": {
+      "items": {
+        "(0028,1052)": {
+          "name": "Rescale Intercept",
+          "type": "1"
+        },
+        "(0028,1053)": {
+          "name": "Rescale Slope",
+          "type": "1"
+        },
+        "(0028,1054)": {
+          "name": "Rescale Type",
+          "type": "1"
+        }
+      },
+      "name": "Pixel Value Transformation Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.11": {
+    "(0018,9360)": {
+      "items": {
+        "(0018,0060)": {
+          "name": "KVP",
+          "type": "1"
+        },
+        "(0018,0090)": {
+          "name": "Data Collection Diameter",
+          "type": "1"
+        },
+        "(0018,1160)": {
+          "name": "Filter Type",
+          "type": "1"
+        },
+        "(0018,1190)": {
+          "name": "Focal Spot(s)",
+          "type": "1"
+        },
+        "(0018,7050)": {
+          "name": "Filter Material",
+          "type": "1"
+        },
+        "(0018,9330)": {
+          "name": "X-Ray Tube Current in mA",
+          "type": "1"
+        },
+        "(0018,9332)": {
+          "name": "Exposure in mAs",
+          "type": "1"
+        },
+        "(0018,9353)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Energy Weighting Factor",
+          "type": "1C"
+        }
+      },
+      "name": "CT Additional X-Ray Source Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.2": {
+    "(0018,9301)": {
+      "items": {
+        "(0018,9302)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Acquisition Type",
+          "type": "1C"
+        },
+        "(0018,9303)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Tube Angle",
+          "type": "1C"
+        },
+        "(0018,9333)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Constant Volume Flag",
+          "type": "1C"
+        },
+        "(0018,9334)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Fluoroscopy Flag",
+          "type": "1C"
+        }
+      },
+      "name": "CT Acquisition Type Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.3": {
+    "(0018,9304)": {
+      "items": {
+        "(0018,0090)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Data Collection Diameter",
+          "type": "1C"
+        },
+        "(0018,1120)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Gantry/Detector Tilt",
+          "type": "1C"
+        },
+        "(0018,1130)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Table Height",
+          "type": "1C"
+        },
+        "(0018,1140)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Rotation Direction",
+          "type": "1C"
+        },
+        "(0018,9305)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Revolution Time",
+          "type": "1C"
+        },
+        "(0018,9306)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Single Collimation Width",
+          "type": "1C"
+        },
+        "(0018,9307)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Total Collimation Width",
+          "type": "1C"
+        }
+      },
+      "name": "CT Acquisition Details Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.4": {
+    "(0018,9308)": {
+      "items": {
+        "(0018,9309)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Table Speed",
+          "type": "1C"
+        },
+        "(0018,9310)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Table Feed per Rotation",
+          "type": "1C"
+        },
+        "(0018,9311)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Spiral Pitch Factor",
+          "type": "1C"
+        }
+      },
+      "name": "CT Table Dynamics Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.5": {
+    "(0018,9326)": {
+      "items": {
+        "(0018,9313)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Data Collection Center (Patient)",
+          "type": "1C"
+        },
+        "(0018,9318)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Reconstruction Target Center (Patient)",
+          "type": "1C"
+        },
+        "(0018,9327)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Table Position",
+          "type": "1C"
+        }
+      },
+      "name": "CT Position Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.6": {
+    "(0018,9312)": {
+      "items": {
+        "(0018,1110)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Distance Source to Detector",
+          "type": "1C"
+        },
+        "(0018,9335)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Distance Source to Data Collection Center",
+          "type": "1C"
+        }
+      },
+      "name": "CT Geometry Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.7": {
+    "(0018,9314)": {
+      "items": {
+        "(0018,1100)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Reconstruction Diameter",
+          "type": "1C"
+        },
+        "(0018,1210)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Convolution Kernel",
+          "type": "1C"
+        },
+        "(0018,9315)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Reconstruction Algorithm",
+          "type": "1C"
+        },
+        "(0018,9316)": {
+          "cond": {
+            "index": 0,
+            "op": "+",
+            "tag": "(0018,1210)",
+            "type": "MU"
+          },
+          "name": "Convolution Kernel Group",
+          "type": "1C"
+        },
+        "(0018,9317)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Reconstruction Field of View",
+          "type": "1C"
+        },
+        "(0018,9319)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Reconstruction Angle",
+          "type": "1C"
+        },
+        "(0018,9320)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Image Filter",
+          "type": "1C"
+        },
+        "(0018,9322)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Reconstruction Pixel Spacing",
+          "type": "1C"
+        }
+      },
+      "name": "CT Reconstruction Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.8": {
+    "(0018,9321)": {
+      "items": {
+        "(0018,1271)": {
+          "name": "Water Equivalent Diameter",
+          "type": "3"
+        },
+        "(0018,1272)": {
+          "cond": {
+            "index": 0,
+            "op": "+",
+            "tag": "(0018,1271)",
+            "type": "MU"
+          },
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Water Equivalent Diameter Method Code Sequence",
+          "type": "1C"
+        },
+        "(0018,9323)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Exposure Modulation Type",
+          "type": "1C"
+        },
+        "(0018,9324)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Estimated Dose Saving",
+          "type": "2C"
+        },
+        "(0018,9328)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Exposure Time in ms",
+          "type": "1C"
+        },
+        "(0018,9330)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "X-Ray Tube Current in mA",
+          "type": "1C"
+        },
+        "(0018,9332)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Exposure in mAs",
+          "type": "1C"
+        },
+        "(0018,9345)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "CTDIvol",
+          "type": "2C"
+        },
+        "(0018,9346)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "CTDI Phantom Type Code Sequence",
+          "type": "3"
+        }
+      },
+      "name": "CT Exposure Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.15.3.9": {
+    "(0018,9325)": {
+      "items": {
+        "(0018,0060)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "KVP",
+          "type": "1C"
+        },
+        "(0018,1160)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Filter Type",
+          "type": "1C"
+        },
+        "(0018,1190)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Focal Spot(s)",
+          "type": "1C"
+        },
+        "(0018,7050)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Filter Material",
+          "type": "1C"
+        },
+        "(0018,9351)": {
+          "name": "Calcium Scoring Mass Factor Patient",
+          "type": "3"
+        },
+        "(0018,9352)": {
+          "name": "Calcium Scoring Mass Factor Device",
+          "type": "3"
+        },
+        "(0018,9353)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Energy Weighting Factor",
+          "type": "1C"
+        }
+      },
+      "name": "CT X-Ray Details Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.1": {
+    "(0018,9412)": {
+      "items": {
+        "(0008,2111)": {
+          "name": "Derivation Description",
+          "type": "3"
+        },
+        "(0008,9215)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Derivation Code Sequence",
+          "type": "3"
+        },
+        "(0018,1400)": {
+          "name": "Acquisition Device Processing Description",
+          "type": "3"
+        },
+        "(0018,1401)": {
+          "name": "Acquisition Device Processing Code",
+          "type": "3"
+        }
+      },
+      "name": "XA/XRF Frame Characteristics Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.10": {
+    "(0018,9405)": {
+      "items": {
+        "(0018,1510)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1508)",
+            "type": "MU",
+            "values": [
+              "CARM"
+            ]
+          },
+          "name": "Positioner Primary Angle",
+          "type": "1C"
+        },
+        "(0018,1511)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1508)",
+            "type": "MU",
+            "values": [
+              "CARM"
+            ]
+          },
+          "name": "Positioner Secondary Angle",
+          "type": "1C"
+        },
+        "(0018,9447)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1508)",
+            "type": "MU",
+            "values": [
+              "COLUMN"
+            ]
+          },
+          "name": "Column Angulation (Patient)",
+          "type": "1C"
+        }
+      },
+      "name": "Positioner Position Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.11": {
+    "(0018,9406)": {
+      "items": {
+        "(0018,9469)": {
+          "name": "Table Horizontal Rotation Angle",
+          "type": "1"
+        },
+        "(0018,9470)": {
+          "name": "Table Head Tilt Angle",
+          "type": "1"
+        },
+        "(0018,9471)": {
+          "name": "Table Cradle Tilt Angle",
+          "type": "1"
+        },
+        "(300A,0128)": {
+          "name": "Table Top Vertical Position",
+          "type": "1"
+        },
+        "(300A,0129)": {
+          "name": "Table Top Longitudinal Position",
+          "type": "1"
+        },
+        "(300A,012A)": {
+          "name": "Table Top Lateral Position",
+          "type": "1"
+        }
+      },
+      "name": "Table Position Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.12": {
+    "(0018,9407)": {
+      "items": {
+        "(0018,1700)": {
+          "name": "Collimator Shape",
+          "type": "1"
+        },
+        "(0018,1702)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MU",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Collimator Left Vertical Edge",
+          "type": "1C"
+        },
+        "(0018,1704)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MU",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Collimator Right Vertical Edge",
+          "type": "1C"
+        },
+        "(0018,1706)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MU",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Collimator Upper Horizontal Edge",
+          "type": "1C"
+        },
+        "(0018,1708)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MU",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Collimator Lower Horizontal Edge",
+          "type": "1C"
+        },
+        "(0018,1710)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MU",
+            "values": [
+              "CIRCULAR"
+            ]
+          },
+          "name": "Center of Circular Collimator",
+          "type": "1C"
+        },
+        "(0018,1712)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MU",
+            "values": [
+              "CIRCULAR"
+            ]
+          },
+          "name": "Radius of Circular Collimator",
+          "type": "1C"
+        },
+        "(0018,1720)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,1700)",
+            "type": "MU",
+            "values": [
+              "POLYGONAL"
+            ]
+          },
+          "name": "Vertices of the Polygonal Collimator",
+          "type": "1C"
+        }
+      },
+      "name": "Collimator Shape Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.13": {
+    "(0018,9462)": {
+      "items": {
+        "(0018,9463)": {
+          "name": "Positioner Isocenter Primary Angle",
+          "type": "1"
+        },
+        "(0018,9464)": {
+          "name": "Positioner Isocenter Secondary Angle",
+          "type": "1"
+        },
+        "(0018,9465)": {
+          "name": "Positioner Isocenter Detector Rotation Angle",
+          "type": "1"
+        },
+        "(0018,9466)": {
+          "name": "Table X Position to Isocenter",
+          "type": "1"
+        },
+        "(0018,9467)": {
+          "name": "Table Y Position to Isocenter",
+          "type": "1"
+        },
+        "(0018,9468)": {
+          "name": "Table Z Position to Isocenter",
+          "type": "1"
+        },
+        "(0018,9469)": {
+          "name": "Table Horizontal Rotation Angle",
+          "type": "1"
+        },
+        "(0018,9470)": {
+          "name": "Table Head Tilt Angle",
+          "type": "1"
+        },
+        "(0018,9471)": {
+          "name": "Table Cradle Tilt Angle",
+          "type": "1"
+        }
+      },
+      "name": "Isocenter Reference System Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.14": {
+    "(0018,9476)": {
+      "items": {
+        "(0018,1110)": {
+          "name": "Distance Source to Detector",
+          "type": "1"
+        },
+        "(0018,9402)": {
+          "name": "Distance Source to Isocenter",
+          "type": "1"
+        }
+      },
+      "name": "X-Ray Geometry Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.2": {
+    "(0018,9432)": {
+      "items": {
+        "(0018,1147)": {
+          "name": "Field of View Shape",
+          "type": "3"
+        },
+        "(0018,7030)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9420)",
+            "type": "MU",
+            "values": [
+              "DIGITAL_DETECTOR"
+            ]
+          },
+          "name": "Field of View Origin",
+          "type": "1C"
+        },
+        "(0018,7032)": {
+          "name": "Field of View Rotation",
+          "type": "1"
+        },
+        "(0018,7034)": {
+          "name": "Field of View Horizontal Flip",
+          "type": "1"
+        },
+        "(0018,9433)": {
+          "name": "Field of View Description",
+          "type": "3"
+        },
+        "(0018,9461)": {
+          "name": "Field of View Dimension(s) in Float",
+          "type": "3"
+        }
+      },
+      "name": "Field of View Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.3": {
+    "(0018,9434)": {
+      "items": {
+        "(0018,9435)": {
+          "name": "Exposure Control Sensing Region Shape",
+          "type": "1"
+        },
+        "(0018,9436)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MU",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Exposure Control Sensing Region Left Vertical Edge",
+          "type": "1C"
+        },
+        "(0018,9437)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MU",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Exposure Control Sensing Region Right Vertical Edge",
+          "type": "1C"
+        },
+        "(0018,9438)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MU",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Exposure Control Sensing Region Upper Horizontal Edge",
+          "type": "1C"
+        },
+        "(0018,9439)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MU",
+            "values": [
+              "RECTANGULAR"
+            ]
+          },
+          "name": "Exposure Control Sensing Region Lower Horizontal Edge",
+          "type": "1C"
+        },
+        "(0018,9440)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MU",
+            "values": [
+              "CIRCULAR"
+            ]
+          },
+          "name": "Center of Circular Exposure Control Sensing Region",
+          "type": "1C"
+        },
+        "(0018,9441)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MU",
+            "values": [
+              "CIRCULAR"
+            ]
+          },
+          "name": "Radius of Circular Exposure Control Sensing Region",
+          "type": "1C"
+        },
+        "(0018,9442)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0018,9435)",
+            "type": "MU",
+            "values": [
+              "POLYGONAL"
+            ]
+          },
+          "name": "Vertices of the Polygonal Exposure Control Sensing Region",
+          "type": "1C"
+        }
+      },
+      "name": "Exposure Control Sensing Regions Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.4": {
+    "(0028,9443)": {
+      "items": {
+        "(0008,9007)": {
+          "name": "Frame Type",
+          "type": "1"
+        },
+        "(0018,1164)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0008)",
+            "type": "MU",
+            "values": [
+              "ORIGINAL"
+            ]
+          },
+          "name": "Imager Pixel Spacing",
+          "type": "1C"
+        },
+        "(0018,7036)": {
+          "name": "Pixel Data Area Origin Relative To FOV",
+          "type": "3"
+        },
+        "(0018,7038)": {
+          "name": "Pixel Data Area Rotation Angle Relative To FOV",
+          "type": "3"
+        },
+        "(0028,1040)": {
+          "name": "Pixel Intensity Relationship",
+          "type": "1"
+        },
+        "(0028,1041)": {
+          "name": "Pixel Intensity Relationship Sign",
+          "type": "1"
+        },
+        "(0028,9444)": {
+          "name": "Geometrical Properties",
+          "type": "1"
+        },
+        "(0028,9445)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0028,9444)",
+            "type": "MU",
+            "values": [
+              "NON_UNIFORM"
+            ]
+          },
+          "name": "Geometric Maximum Distortion",
+          "type": "2C"
+        },
+        "(0028,9446)": {
+          "name": "Image Processing Applied",
+          "type": "1"
+        }
+      },
+      "name": "Frame Pixel Data Properties Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.5": {
+    "(0018,9451)": {
+      "items": {
+        "(0018,7014)": {
+          "name": "Detector Active Time",
+          "type": "3"
+        },
+        "(0018,7016)": {
+          "name": "Detector Activation Offset From Exposure",
+          "type": "3"
+        }
+      },
+      "name": "Frame Detector Parameters Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.6": {
+    "(0018,9455)": {
+      "items": {
+        "(0050,0004)": {
+          "name": "Calibration Image",
+          "type": "1"
+        }
+      },
+      "name": "Calibration Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.7": {
+    "(0018,9456)": {
+      "items": {
+        "(0018,9452)": {
+          "name": "Calculated Anatomy Thickness",
+          "type": "1"
+        }
+      },
+      "name": "Object Thickness Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.8": {
+    "(0018,9417)": {
+      "items": {
+        "(0018,0060)": {
+          "name": "KVP",
+          "type": "1"
+        },
+        "(0018,9330)": {
+          "name": "X-Ray Tube Current in mA",
+          "type": "1"
+        }
+      },
+      "name": "Frame Acquisition Sequence",
+      "type": "1"
+    }
+  },
+  "C.8.19.6.9": {
+    "(0018,9401)": {
+      "items": {
+        "(0018,1130)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0008)",
+            "type": "MU",
+            "values": [
+              "ORIGINAL"
+            ]
+          },
+          "name": "Table Height",
+          "type": "1C"
+        },
+        "(0018,9403)": {
+          "name": "Distance Object to Table Top",
+          "type": "2"
+        },
+        "(0018,9404)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Object Pixel Spacing in Center of Beam",
+          "type": "1C"
+        },
+        "(0018,9449)": {
+          "cond": {
+            "index": 0,
+            "op": "=",
+            "tag": "(0008,0008)",
+            "type": "MU",
+            "values": [
+              "ORIGINAL"
+            ]
+          },
+          "name": "Beam Angle",
+          "type": "1C"
+        }
+      },
+      "name": "Projection Pixel Calibration Sequence",
+      "type": "1"
+    }
   },
   "C.8.2.1": {
     "(0008,0008)": {
@@ -6355,7 +7417,7 @@
         "index": 0,
         "op": "+",
         "tag": "(0018,1271)",
-        "type": "MN"
+        "type": "MU"
       },
       "items": {
         "include": [
@@ -6613,6 +7675,39 @@
     ]
   },
   "C.8.8.3": {
+    "(0008,114A)": {
+      "items": {
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "1"
+        },
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Instance Sequence",
+      "type": "3"
+    },
+    "(0008,9215)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Derivation Code Sequence",
+      "type": "3"
+    },
     "(0020,0013)": {
       "name": "Instance Number",
       "type": "3"
@@ -6622,7 +7717,7 @@
         "index": 0,
         "op": "+",
         "tag": "(7FE0,0010)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Samples per Pixel",
       "type": "1C"
@@ -6632,7 +7727,7 @@
         "index": 0,
         "op": "+",
         "tag": "(7FE0,0010)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Photometric Interpretation",
       "type": "1C"
@@ -6649,7 +7744,7 @@
         "index": 0,
         "op": "+",
         "tag": "(7FE0,0010)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "Bits Stored",
       "type": "1C"
@@ -6659,7 +7754,7 @@
         "index": 0,
         "op": "+",
         "tag": "(7FE0,0010)",
-        "type": "MN"
+        "type": "MU"
       },
       "name": "High Bit",
       "type": "1C"
@@ -6709,12 +7804,66 @@
       "name": "Dose Summation Type",
       "type": "1"
     },
+    "(3004,000C)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Grid Frame Offset Vector",
+      "type": "1C"
+    },
+    "(3004,000E)": {
+      "cond": {
+        "index": 0,
+        "op": "+",
+        "tag": "(7FE0,0010)",
+        "type": "MU"
+      },
+      "name": "Dose Grid Scaling",
+      "type": "1C"
+    },
+    "(3004,0014)": {
+      "name": "Tissue Heterogeneity Correction",
+      "type": "3"
+    },
+    "(3008,0030)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(3004,000A)",
+        "type": "MU",
+        "values": [
+          "RECORD"
+        ]
+      },
+      "items": {
+        "(300C,0004)": {
+          "cond": {
+            "type": "U"
+          },
+          "items": {
+            "(300C,0006)": {
+              "name": "Referenced Beam Number",
+              "type": "1"
+            }
+          },
+          "name": "Referenced Beam Sequence",
+          "type": "1C"
+        },
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Treatment Record Sequence",
+      "type": "1C"
+    },
     "(300C,0002)": {
       "cond": {
         "index": 0,
         "op": "=",
         "tag": "(3004,000A)",
-        "type": "MN",
+        "type": "MU",
         "values": [
           "PLAN",
           "MULTI_PLAN",
@@ -6733,7 +7882,7 @@
             "index": 0,
             "op": "=",
             "tag": "(3004,000A)",
-            "type": "MN",
+            "type": "MU",
             "values": [
               "FRACTION",
               "BEAM",
@@ -6750,7 +7899,7 @@
                 "index": 0,
                 "op": "=",
                 "tag": "(3004,000A)",
-                "type": "MN",
+                "type": "MU",
                 "values": [
                   "BEAM",
                   "BEAM_SESSION",
@@ -6758,123 +7907,16 @@
                 ]
               },
               "items": {
-                "(3008,0030)": {
-                  "cond": {
-                    "index": 0,
-                    "op": "=",
-                    "tag": "(3004,000A)",
-                    "type": "MN",
-                    "values": [
-                      "RECORD"
-                    ]
-                  },
-                  "items": {
-                    "(0008,114A)": {
-                      "items": {
-                        "(0040,A170)": {
-                          "items": {
-                            "include": [
-                              {
-                                "ref": "8.8-1"
-                              }
-                            ]
-                          },
-                          "name": "Purpose of Reference Code Sequence",
-                          "type": "1"
-                        },
-                        "include": [
-                          {
-                            "ref": "10-11"
-                          }
-                        ]
-                      },
-                      "name": "Referenced Instance Sequence",
-                      "type": "3"
-                    },
-                    "(0008,9215)": {
-                      "items": {
-                        "include": [
-                          {
-                            "ref": "8.8-1"
-                          }
-                        ]
-                      },
-                      "name": "Derivation Code Sequence",
-                      "type": "3"
-                    },
-                    "(3004,000C)": {
-                      "cond": {
-                        "type": "U"
-                      },
-                      "name": "Grid Frame Offset Vector",
-                      "type": "1C"
-                    },
-                    "(3004,000E)": {
-                      "cond": {
-                        "index": 0,
-                        "op": "+",
-                        "tag": "(7FE0,0010)",
-                        "type": "MN"
-                      },
-                      "name": "Dose Grid Scaling",
-                      "type": "1C"
-                    },
-                    "(3004,0014)": {
-                      "name": "Tissue Heterogeneity Correction",
-                      "type": "3"
-                    },
-                    "(300C,0004)": {
-                      "cond": {
-                        "type": "U"
-                      },
-                      "items": {
-                        "(300C,0006)": {
-                          "name": "Referenced Beam Number",
-                          "type": "1"
-                        }
-                      },
-                      "name": "Referenced Beam Sequence",
-                      "type": "1C"
-                    },
-                    "include": [
-                      {
-                        "ref": "10-11"
-                      }
-                    ]
-                  },
-                  "name": "Referenced Treatment Record Sequence",
-                  "type": "1C"
-                },
                 "(300C,0006)": {
                   "name": "Referenced Beam Number",
                   "type": "1"
-                },
-                "(300C,000A)": {
-                  "cond": {
-                    "index": 0,
-                    "op": "=",
-                    "tag": "(3004,000A)",
-                    "type": "MN",
-                    "values": [
-                      "BRACHY",
-                      "BRACHY_SESSION"
-                    ]
-                  },
-                  "items": {
-                    "(300C,000C)": {
-                      "name": "Referenced Brachy Application Setup Number",
-                      "type": "1"
-                    }
-                  },
-                  "name": "Referenced Brachy Application Setup Sequence",
-                  "type": "1C"
                 },
                 "(300C,00F2)": {
                   "cond": {
                     "index": 0,
                     "op": "=",
                     "tag": "(3004,000A)",
-                    "type": "MN",
+                    "type": "MU",
                     "values": [
                       "CONTROL_POINT"
                     ]
@@ -6894,6 +7936,26 @@
                 }
               },
               "name": "Referenced Beam Sequence",
+              "type": "1C"
+            },
+            "(300C,000A)": {
+              "cond": {
+                "index": 0,
+                "op": "=",
+                "tag": "(3004,000A)",
+                "type": "MU",
+                "values": [
+                  "BRACHY",
+                  "BRACHY_SESSION"
+                ]
+              },
+              "items": {
+                "(300C,000C)": {
+                  "name": "Referenced Brachy Application Setup Number",
+                  "type": "1"
+                }
+              },
+              "name": "Referenced Brachy Application Setup Sequence",
               "type": "1C"
             },
             "(300C,0022)": {
@@ -7044,62 +8106,6 @@
                   },
                   "name": "Contour Image Sequence",
                   "type": "1"
-                },
-                "(3006,0020)": {
-                  "items": {
-                    "(0008,9215)": {
-                      "items": {
-                        "include": [
-                          {
-                            "ref": "8.8-1"
-                          }
-                        ]
-                      },
-                      "name": "Derivation Code Sequence",
-                      "type": "3"
-                    },
-                    "(3006,0018)": {
-                      "items": {
-                        "include": [
-                          {
-                            "ref": "10-11"
-                          }
-                        ]
-                      },
-                      "name": "Predecessor Structure Set Sequence",
-                      "type": "3"
-                    },
-                    "(3006,0022)": {
-                      "name": "ROI Number",
-                      "type": "1"
-                    },
-                    "(3006,0024)": {
-                      "name": "Referenced Frame of Reference UID",
-                      "type": "1"
-                    },
-                    "(3006,0026)": {
-                      "name": "ROI Name",
-                      "type": "2"
-                    },
-                    "(3006,0028)": {
-                      "name": "ROI Description",
-                      "type": "3"
-                    },
-                    "(3006,002C)": {
-                      "name": "ROI Volume",
-                      "type": "3"
-                    },
-                    "(3006,0036)": {
-                      "name": "ROI Generation Algorithm",
-                      "type": "2"
-                    },
-                    "(3006,0038)": {
-                      "name": "ROI Generation Description",
-                      "type": "3"
-                    }
-                  },
-                  "name": "Structure Set ROI Sequence",
-                  "type": "1"
                 }
               },
               "name": "RT Referenced Series Sequence",
@@ -7117,6 +8123,62 @@
       },
       "name": "Referenced Frame of Reference Sequence",
       "type": "3"
+    },
+    "(3006,0018)": {
+      "items": {
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Predecessor Structure Set Sequence",
+      "type": "3"
+    },
+    "(3006,0020)": {
+      "items": {
+        "(0008,9215)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Derivation Code Sequence",
+          "type": "3"
+        },
+        "(3006,0022)": {
+          "name": "ROI Number",
+          "type": "1"
+        },
+        "(3006,0024)": {
+          "name": "Referenced Frame of Reference UID",
+          "type": "1"
+        },
+        "(3006,0026)": {
+          "name": "ROI Name",
+          "type": "2"
+        },
+        "(3006,0028)": {
+          "name": "ROI Description",
+          "type": "3"
+        },
+        "(3006,002C)": {
+          "name": "ROI Volume",
+          "type": "3"
+        },
+        "(3006,0036)": {
+          "name": "ROI Generation Algorithm",
+          "type": "2"
+        },
+        "(3006,0038)": {
+          "name": "ROI Generation Description",
+          "type": "3"
+        }
+      },
+      "name": "Structure Set ROI Sequence",
+      "type": "1"
     }
   },
   "C.8.8.6": {
@@ -7188,335 +8250,6 @@
       "type": "1"
     }
   },
-  "C.8.8.7": {
-    "(3004,0010)": {
-      "items": {
-        "(3004,0002)": {
-          "name": "Dose Units",
-          "type": "1"
-        },
-        "(3004,0012)": {
-          "name": "Dose Value",
-          "type": "1"
-        },
-        "(3006,0084)": {
-          "name": "Referenced ROI Number",
-          "type": "1"
-        }
-      },
-      "name": "RT Dose ROI Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.12.3": {
-    "(0008,0060)": {
-      "name": "Modality",
-      "type": "1"
-    },
-    "(0008,1111)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "include": [
-          {
-            "ref": "10-11"
-          }
-        ]
-      },
-      "name": "Referenced Performed Procedure Step Sequence",
-      "type": "1C"
-    }
-  },
-  "C.8.12.4": {
-    "(0008,0008)": {
-      "name": "Image Type",
-      "type": "1"
-    },
-    "(0008,002A)": {
-      "name": "Acquisition DateTime",
-      "type": "1"
-    },
-    "(0008,9206)": {
-      "name": "Volumetric Properties",
-      "type": "1"
-    },
-    "(0018,1210)": {
-      "name": "Convolution Kernel",
-      "type": "3"
-    },
-    "(0018,1400)": {
-      "name": "Acquisition Device Processing Description",
-      "type": "3"
-    },
-    "(0018,9073)": {
-      "name": "Acquisition Duration",
-      "type": "3"
-    },
-    "(0028,0002)": {
-      "name": "Samples Per Pixel",
-      "type": "1"
-    },
-    "(0028,0004)": {
-      "name": "Photometric Interpretation",
-      "type": "1"
-    },
-    "(0028,0006)": {
-      "cond": {
-        "index": 0,
-        "op": ">",
-        "tag": "(0028,0002)",
-        "type": "MN",
-        "values": [
-          "1"
-        ]
-      },
-      "name": "Planar Configuration",
-      "type": "1C"
-    },
-    "(0028,0008)": {
-      "name": "Number of Frames",
-      "type": "1"
-    },
-    "(0028,0100)": {
-      "name": "Bits Allocated",
-      "type": "1"
-    },
-    "(0028,0101)": {
-      "name": "Bits Stored",
-      "type": "1"
-    },
-    "(0028,0102)": {
-      "name": "High Bit",
-      "type": "1"
-    },
-    "(0028,0103)": {
-      "name": "Pixel Representation",
-      "type": "1"
-    },
-    "(0028,0301)": {
-      "name": "Burned In Annotation",
-      "type": "1"
-    },
-    "(0028,1052)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "MONOCHROME2"
-        ]
-      },
-      "name": "Rescale Intercept",
-      "type": "1C"
-    },
-    "(0028,1053)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "MONOCHROME2"
-        ]
-      },
-      "name": "Rescale Slope",
-      "type": "1C"
-    },
-    "(0028,2110)": {
-      "name": "Lossy Image Compression",
-      "type": "1"
-    },
-    "(0028,2112)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,2110)",
-        "type": "MN",
-        "values": [
-          "01"
-        ]
-      },
-      "name": "Lossy Image Compression Ratio",
-      "type": "1C"
-    },
-    "(0028,2114)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,2110)",
-        "type": "MN",
-        "values": [
-          "01"
-        ]
-      },
-      "name": "Lossy Image Compression Method",
-      "type": "1C"
-    },
-    "(0048,0001)": {
-      "cond": {
-        "index": 2,
-        "op": "=",
-        "tag": "(0008,0008)",
-        "type": "MU",
-        "values": [
-          "VOLUME"
-        ]
-      },
-      "name": "Imaged Volume Width",
-      "type": "1C"
-    },
-    "(0048,0002)": {
-      "cond": {
-        "index": 2,
-        "op": "=",
-        "tag": "(0008,0008)",
-        "type": "MU",
-        "values": [
-          "VOLUME"
-        ]
-      },
-      "name": "Imaged Volume Height",
-      "type": "1C"
-    },
-    "(0048,0003)": {
-      "cond": {
-        "index": 2,
-        "op": "=",
-        "tag": "(0008,0008)",
-        "type": "MU",
-        "values": [
-          "VOLUME"
-        ]
-      },
-      "name": "Imaged Volume Depth",
-      "type": "1C"
-    },
-    "(0048,0010)": {
-      "name": "Specimen Label in Image",
-      "type": "1"
-    },
-    "(0048,0011)": {
-      "name": "Focus Method",
-      "type": "1"
-    },
-    "(0048,0012)": {
-      "name": "Extended Depth of Field",
-      "type": "1"
-    },
-    "(0048,0013)": {
-      "cond": {
-        "type": "U"
-      },
-      "name": "Number of Focal Planes",
-      "type": "1C"
-    },
-    "(0048,0014)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0048,0012)",
-        "type": "MN",
-        "values": [
-          "YES"
-        ]
-      },
-      "name": "Distance Between Focal Planes",
-      "type": "1C"
-    },
-    "(0048,0015)": {
-      "name": "Recommended Absent Pixel CIELab Value",
-      "type": "3"
-    },
-    "(2050,0020)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0028,0004)",
-        "type": "MN",
-        "values": [
-          "MONOCHROME2"
-        ]
-      },
-      "name": "Presentation LUT Shape",
-      "type": "1C"
-    }
-  },
-  "C.8.12.6.1": {
-    "(0048,021A)": {
-      "items": {
-        "(0040,072A)": {
-          "name": "X Offset in Slide Coordinate System",
-          "type": "1"
-        },
-        "(0040,073A)": {
-          "name": "Y Offset in Slide Coordinate System",
-          "type": "1"
-        },
-        "(0040,074A)": {
-          "name": "Z Offset in Slide Coordinate System",
-          "type": "1"
-        },
-        "(0048,021E)": {
-          "name": "Column Position In Total Image Pixel Matrix",
-          "type": "1"
-        },
-        "(0048,021F)": {
-          "name": "Row Position In Total Image Pixel Matrix",
-          "type": "1"
-        }
-      },
-      "name": "Plane Position (Slide) Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.12.6.2": {
-    "(0048,0207)": {
-      "items": {
-        "(0048,0106)": {
-          "name": "Optical Path Identifier",
-          "type": "1"
-        }
-      },
-      "name": "Optical Path Identification Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.12.6.3": {
-    "(0048,0110)": {
-      "items": {
-        "(0040,0554)": {
-          "name": "Specimen UID",
-          "type": "1"
-        }
-      },
-      "name": "Specimen Reference Sequence",
-      "type": "2"
-    }
-  },
-  "C.8.12.8": {
-    "(2200,0002)": {
-      "name": "Label Text",
-      "type": "2"
-    },
-    "(2200,0005)": {
-      "name": "Barcode Value",
-      "type": "2"
-    }
-  },
-  "C.8.12.9": {
-    "(0040,0710)": {
-      "items": {
-        "(0008,9007)": {
-          "name": "Frame Type",
-          "type": "1"
-        }
-      },
-      "name": "Whole Slide Microscopy Image Frame Type Sequence",
-      "type": "1"
-    }
-  },
   "C.8.12.14": {
     "(0048,0006)": {
       "name": "Total Pixel Matrix Columns",
@@ -7568,583 +8301,23 @@
       "type": "1C"
     }
   },
-  "C.8.19.6.1": {
-    "(0018,9412)": {
+  "C.8.8.7": {
+    "(3004,0010)": {
       "items": {
-        "(0008,2111)": {
-          "name": "Derivation Description",
-          "type": "3"
-        },
-        "(0008,9215)": {
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Derivation Code Sequence",
-          "type": "3"
-        },
-        "(0018,1400)": {
-          "name": "Acquisition Device Processing Description",
-          "type": "3"
-        },
-        "(0018,1401)": {
-          "name": "Acquisition Device Processing Code",
-          "type": "3"
-        }
-      },
-      "name": "XA/XRF Frame Characteristics Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.2": {
-    "(0018,9432)": {
-      "items": {
-        "(0018,1147)": {
-          "name": "Field of View Shape",
-          "type": "3"
-        },
-        "(0018,7030)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9420)",
-            "type": "MU",
-            "values": [
-              "DIGITAL_DETECTOR"
-            ]
-          },
-          "name": "Field of View Origin",
-          "type": "1C"
-        },
-        "(0018,7032)": {
-          "name": "Field of View Rotation",
+        "(3004,0002)": {
+          "name": "Dose Units",
           "type": "1"
         },
-        "(0018,7034)": {
-          "name": "Field of View Horizontal Flip",
+        "(3004,0012)": {
+          "name": "Dose Value",
           "type": "1"
         },
-        "(0018,9433)": {
-          "name": "Field of View Description",
-          "type": "3"
-        },
-        "(0018,9461)": {
-          "name": "Field of View Dimension(s) in Float",
-          "type": "3"
-        }
-      },
-      "name": "Field of View Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.3": {
-    "(0018,9434)": {
-      "items": {
-        "(0018,9435)": {
-          "name": "Exposure Control Sensing Region Shape",
-          "type": "1"
-        },
-        "(0018,9436)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9435)",
-            "type": "MN",
-            "values": [
-              "RECTANGULAR"
-            ]
-          },
-          "name": "Exposure Control Sensing Region Left Vertical Edge",
-          "type": "1C"
-        },
-        "(0018,9437)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9435)",
-            "type": "MN",
-            "values": [
-              "RECTANGULAR"
-            ]
-          },
-          "name": "Exposure Control Sensing Region Right Vertical Edge",
-          "type": "1C"
-        },
-        "(0018,9438)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9435)",
-            "type": "MN",
-            "values": [
-              "RECTANGULAR"
-            ]
-          },
-          "name": "Exposure Control Sensing Region Upper Horizontal Edge",
-          "type": "1C"
-        },
-        "(0018,9439)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9435)",
-            "type": "MN",
-            "values": [
-              "RECTANGULAR"
-            ]
-          },
-          "name": "Exposure Control Sensing Region Lower Horizontal Edge",
-          "type": "1C"
-        },
-        "(0018,9440)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9435)",
-            "type": "MN",
-            "values": [
-              "CIRCULAR"
-            ]
-          },
-          "name": "Center of Circular Exposure Control Sensing Region",
-          "type": "1C"
-        },
-        "(0018,9441)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9435)",
-            "type": "MN",
-            "values": [
-              "CIRCULAR"
-            ]
-          },
-          "name": "Radius of Circular Exposure Control Sensing Region",
-          "type": "1C"
-        },
-        "(0018,9442)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,9435)",
-            "type": "MN",
-            "values": [
-              "POLYGONAL"
-            ]
-          },
-          "name": "Vertices of the Polygonal Exposure Control Sensing Region",
-          "type": "1C"
-        }
-      },
-      "name": "Exposure Control Sensing Regions Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.4": {
-    "(0028,9443)": {
-      "items": {
-        "(0008,9007)": {
-          "name": "Frame Type",
-          "type": "1"
-        },
-        "(0018,1164)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0008,0008)",
-            "type": "MU",
-            "values": [
-              "ORIGINAL"
-            ]
-          },
-          "name": "Imager Pixel Spacing",
-          "type": "1C"
-        },
-        "(0018,7036)": {
-          "name": "Pixel Data Area Origin Relative To FOV",
-          "type": "3"
-        },
-        "(0018,7038)": {
-          "name": "Pixel Data Area Rotation Angle Relative To FOV",
-          "type": "3"
-        },
-        "(0028,1040)": {
-          "name": "Pixel Intensity Relationship",
-          "type": "1"
-        },
-        "(0028,1041)": {
-          "name": "Pixel Intensity Relationship Sign",
-          "type": "1"
-        },
-        "(0028,9444)": {
-          "name": "Geometrical Properties",
-          "type": "1"
-        },
-        "(0028,9445)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0028,9444)",
-            "type": "MN",
-            "values": [
-              "NON_UNIFORM"
-            ]
-          },
-          "name": "Geometric Maximum Distortion",
-          "type": "2C"
-        },
-        "(0028,9446)": {
-          "name": "Image Processing Applied",
+        "(3006,0084)": {
+          "name": "Referenced ROI Number",
           "type": "1"
         }
       },
-      "name": "Frame Pixel Data Properties Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.5": {
-    "(0018,9451)": {
-      "items": {
-        "(0018,7014)": {
-          "name": "Detector Active Time",
-          "type": "3"
-        },
-        "(0018,7016)": {
-          "name": "Detector Activation Offset From Exposure",
-          "type": "3"
-        }
-      },
-      "name": "Frame Detector Parameters Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.6": {
-    "(0018,9455)": {
-      "items": {
-        "(0050,0004)": {
-          "name": "Calibration Image",
-          "type": "1"
-        }
-      },
-      "name": "Calibration Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.7": {
-    "(0018,9456)": {
-      "items": {
-        "(0018,9452)": {
-          "name": "Calculated Anatomy Thickness",
-          "type": "1"
-        }
-      },
-      "name": "Object Thickness Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.8": {
-    "(0018,9417)": {
-      "items": {
-        "(0018,0060)": {
-          "name": "KVP",
-          "type": "1"
-        },
-        "(0018,9330)": {
-          "name": "X-Ray Tube Current in mA",
-          "type": "1"
-        }
-      },
-      "name": "Frame Acquisition Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.9": {
-    "(0018,9401)": {
-      "items": {
-        "(0018,1130)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0008,0008)",
-            "type": "MU",
-            "values": [
-              "ORIGINAL"
-            ]
-          },
-          "name": "Table Height",
-          "type": "1C"
-        },
-        "(0018,9403)": {
-          "name": "Distance Object to Table Top",
-          "type": "2"
-        },
-        "(0018,9404)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Object Pixel Spacing in Center of Beam",
-          "type": "1C"
-        },
-        "(0018,9449)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0008,0008)",
-            "type": "MU",
-            "values": [
-              "ORIGINAL"
-            ]
-          },
-          "name": "Beam Angle",
-          "type": "1C"
-        }
-      },
-      "name": "Projection Pixel Calibration Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.10": {
-    "(0018,9405)": {
-      "items": {
-        "(0018,1510)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1508)",
-            "type": "MN",
-            "values": [
-              "CARM"
-            ]
-          },
-          "name": "Positioner Primary Angle",
-          "type": "1C"
-        },
-        "(0018,1511)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1508)",
-            "type": "MN",
-            "values": [
-              "CARM"
-            ]
-          },
-          "name": "Positioner Secondary Angle",
-          "type": "1C"
-        },
-        "(0018,9447)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1508)",
-            "type": "MN",
-            "values": [
-              "COLUMN"
-            ]
-          },
-          "name": "Column Angulation (Patient)",
-          "type": "1C"
-        }
-      },
-      "name": "Positioner Position Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.11": {
-    "(0018,9406)": {
-      "items": {
-        "(0018,9469)": {
-          "name": "Table Horizontal Rotation Angle",
-          "type": "1"
-        },
-        "(0018,9470)": {
-          "name": "Table Head Tilt Angle",
-          "type": "1"
-        },
-        "(0018,9471)": {
-          "name": "Table Cradle Tilt Angle",
-          "type": "1"
-        },
-        "(300A,0128)": {
-          "name": "Table Top Vertical Position",
-          "type": "1"
-        },
-        "(300A,0129)": {
-          "name": "Table Top Longitudinal Position",
-          "type": "1"
-        },
-        "(300A,012A)": {
-          "name": "Table Top Lateral Position",
-          "type": "1"
-        }
-      },
-      "name": "Table Position Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.12": {
-    "(0018,9407)": {
-      "items": {
-        "(0018,1700)": {
-          "name": "Collimator Shape",
-          "type": "1"
-        },
-        "(0018,1702)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1700)",
-            "type": "MN",
-            "values": [
-              "RECTANGULAR"
-            ]
-          },
-          "name": "Collimator Left Vertical Edge",
-          "type": "1C"
-        },
-        "(0018,1704)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1700)",
-            "type": "MN",
-            "values": [
-              "RECTANGULAR"
-            ]
-          },
-          "name": "Collimator Right Vertical Edge",
-          "type": "1C"
-        },
-        "(0018,1706)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1700)",
-            "type": "MN",
-            "values": [
-              "RECTANGULAR"
-            ]
-          },
-          "name": "Collimator Upper Horizontal Edge",
-          "type": "1C"
-        },
-        "(0018,1708)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1700)",
-            "type": "MN",
-            "values": [
-              "RECTANGULAR"
-            ]
-          },
-          "name": "Collimator Lower Horizontal Edge",
-          "type": "1C"
-        },
-        "(0018,1710)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1700)",
-            "type": "MN",
-            "values": [
-              "CIRCULAR"
-            ]
-          },
-          "name": "Center of Circular Collimator",
-          "type": "1C"
-        },
-        "(0018,1712)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1700)",
-            "type": "MN",
-            "values": [
-              "CIRCULAR"
-            ]
-          },
-          "name": "Radius of Circular Collimator",
-          "type": "1C"
-        },
-        "(0018,1720)": {
-          "cond": {
-            "index": 0,
-            "op": "=",
-            "tag": "(0018,1700)",
-            "type": "MN",
-            "values": [
-              "POLYGONAL"
-            ]
-          },
-          "name": "Vertices of the Polygonal Collimator",
-          "type": "1C"
-        }
-      },
-      "name": "Collimator Shape Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.13": {
-    "(0018,9462)": {
-      "items": {
-        "(0018,9463)": {
-          "name": "Positioner Isocenter Primary Angle",
-          "type": "1"
-        },
-        "(0018,9464)": {
-          "name": "Positioner Isocenter Secondary Angle",
-          "type": "1"
-        },
-        "(0018,9465)": {
-          "name": "Positioner Isocenter Detector Rotation Angle",
-          "type": "1"
-        },
-        "(0018,9466)": {
-          "name": "Table X Position to Isocenter",
-          "type": "1"
-        },
-        "(0018,9467)": {
-          "name": "Table Y Position to Isocenter",
-          "type": "1"
-        },
-        "(0018,9468)": {
-          "name": "Table Z Position to Isocenter",
-          "type": "1"
-        },
-        "(0018,9469)": {
-          "name": "Table Horizontal Rotation Angle",
-          "type": "1"
-        },
-        "(0018,9470)": {
-          "name": "Table Head Tilt Angle",
-          "type": "1"
-        },
-        "(0018,9471)": {
-          "name": "Table Cradle Tilt Angle",
-          "type": "1"
-        }
-      },
-      "name": "Isocenter Reference System Sequence",
-      "type": "1"
-    }
-  },
-  "C.8.19.6.14": {
-    "(0018,9476)": {
-      "items": {
-        "(0018,1110)": {
-          "name": "Distance Source to Detector",
-          "type": "1"
-        },
-        "(0018,9402)": {
-          "name": "Distance Source to Isocenter",
-          "type": "1"
-        }
-      },
-      "name": "X-Ray Geometry Sequence",
+      "name": "RT Dose ROI Sequence",
       "type": "1"
     }
   },
@@ -8268,7 +8441,7 @@
             "index": 0,
             "op": "=",
             "tag": "(0028,135A)",
-            "type": "MN",
+            "type": "MU",
             "values": [
               "REORIENTED_ONLY"
             ]
@@ -8332,359 +8505,6 @@
       },
       "name": "Source Instance Sequence",
       "type": "3"
-    }
-  },
-  "C.18.1-1": {
-    "(0040,A300)": {
-      "items": {
-        "(0040,08EA)": {
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Measurement Units Code Sequence",
-          "type": "1"
-        },
-        "(0040,A161)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Floating Point Value",
-          "type": "1C"
-        },
-        "(0040,A162)": {
-          "cond": {
-            "type": "U"
-          },
-          "name": "Rational Numerator Value",
-          "type": "1C"
-        },
-        "(0040,A163)": {
-          "cond": {
-            "index": 0,
-            "op": "+",
-            "tag": "(0040,A162)",
-            "type": "MU"
-          },
-          "name": "Rational Denominator Value",
-          "type": "1C"
-        },
-        "(0040,A30A)": {
-          "name": "Numeric Value",
-          "type": "1"
-        }
-      },
-      "name": "Measured Value Sequence",
-      "type": "2"
-    },
-    "(0040,A301)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "include": [
-          {
-            "ref": "8.8-1"
-          }
-        ]
-      },
-      "name": "Numeric Value Qualifier Code Sequence",
-      "type": "1C"
-    }
-  },
-  "C.17.1": {
-    "(0008,0021)": {
-      "name": "Series Date",
-      "type": "3"
-    },
-    "(0008,0031)": {
-      "name": "Series Time",
-      "type": "3"
-    },
-    "(0008,0060)": {
-      "name": "Modality",
-      "type": "1"
-    },
-    "(0008,103E)": {
-      "name": "Series Description",
-      "type": "3"
-    },
-    "(0008,103F)": {
-      "items": {
-        "include": [
-          {
-            "ref": "8.8-1"
-          }
-        ]
-      },
-      "name": "Series Description Code Sequence",
-      "type": "3"
-    },
-    "(0008,1111)": {
-      "items": {
-        "include": [
-          {
-            "ref": "10-11"
-          }
-        ]
-      },
-      "name": "Referenced Performed Procedure Step Sequence",
-      "type": "2"
-    },
-    "(0018,1030)": {
-      "name": "Protocol Name",
-      "type": "3"
-    },
-    "(0020,000E)": {
-      "name": "Series Instance UID",
-      "type": "1"
-    },
-    "(0020,0011)": {
-      "name": "Series Number",
-      "type": "1"
-    },
-    "(300A,0700)": {
-      "name": "Treatment Session UID",
-      "type": "3"
-    }
-  },
-  "C.17.2": {
-    "(0008,0023)": {
-      "name": "Content Date",
-      "type": "1"
-    },
-    "(0008,0033)": {
-      "name": "Content Time",
-      "type": "1"
-    },
-    "(0008,114A)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "(0040,A170)": {
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Purpose of Reference Code Sequence",
-          "type": "1"
-        },
-        "include": [
-          {
-            "ref": "10-11"
-          }
-        ]
-      },
-      "name": "Referenced Instance Sequence",
-      "type": "1C"
-    },
-    "(0020,0013)": {
-      "name": "Instance Number",
-      "type": "1"
-    },
-    "(0040,A073)": {
-      "cond": {
-        "index": 0,
-        "op": "=",
-        "tag": "(0040,A493)",
-        "type": "MU",
-        "values": [
-          "VERIFIED"
-        ]
-      },
-      "items": {
-        "(0040,A027)": {
-          "name": "Verifying Organization",
-          "type": "1"
-        },
-        "(0040,A030)": {
-          "name": "Verification DateTime",
-          "type": "1"
-        },
-        "(0040,A075)": {
-          "name": "Verifying Observer Name",
-          "type": "1"
-        },
-        "(0040,A088)": {
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Verifying Observer Identification Code Sequence",
-          "type": "2"
-        }
-      },
-      "name": "Verifying Observer Sequence",
-      "type": "1C"
-    },
-    "(0040,A078)": {
-      "items": {
-        "include": [
-          {
-            "ref": "C.17-3b"
-          }
-        ]
-      },
-      "name": "Author Observer Sequence",
-      "type": "3"
-    },
-    "(0040,A07A)": {
-      "items": {
-        "(0040,A080)": {
-          "name": "Participation Type",
-          "type": "1"
-        },
-        "(0040,A082)": {
-          "name": "Participation DateTime",
-          "type": "2"
-        },
-        "include": [
-          {
-            "ref": "C.17-3b"
-          }
-        ]
-      },
-      "name": "Participant Sequence",
-      "type": "3"
-    },
-    "(0040,A07C)": {
-      "items": {
-        "(0008,0080)": {
-          "name": "Institution Name",
-          "type": "2"
-        },
-        "(0008,0082)": {
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Institution Code Sequence",
-          "type": "2"
-        },
-        "(0008,0220)": {
-          "items": {
-            "include": [
-              {
-                "ref": "8.8-1"
-              }
-            ]
-          },
-          "name": "Responsible Group Code Sequence",
-          "type": "3"
-        }
-      },
-      "name": "Custodial Organization Sequence",
-      "type": "3"
-    },
-    "(0040,A360)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "include": [
-          {
-            "ref": "C.17-3"
-          }
-        ]
-      },
-      "name": "Predecessor Documents Sequence",
-      "type": "1C"
-    },
-    "(0040,A370)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "include": [
-          {
-            "ref": "C.17-3c"
-          }
-        ]
-      },
-      "name": "Referenced Request Sequence",
-      "type": "1C"
-    },
-    "(0040,A372)": {
-      "items": {
-        "include": [
-          {
-            "ref": "8.8-1"
-          }
-        ]
-      },
-      "name": "Performed Procedure Code Sequence",
-      "type": "2"
-    },
-    "(0040,A375)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "include": [
-          {
-            "ref": "C.17-3"
-          }
-        ]
-      },
-      "name": "Current Requested Procedure Evidence Sequence",
-      "type": "1C"
-    },
-    "(0040,A385)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "include": [
-          {
-            "ref": "C.17-3"
-          }
-        ]
-      },
-      "name": "Pertinent Other Evidence Sequence",
-      "type": "1C"
-    },
-    "(0040,A491)": {
-      "name": "Completion Flag",
-      "type": "1"
-    },
-    "(0040,A492)": {
-      "name": "Completion Flag Description",
-      "type": "3"
-    },
-    "(0040,A493)": {
-      "name": "Verification Flag",
-      "type": "1"
-    },
-    "(0040,A496)": {
-      "name": "Preliminary Flag",
-      "type": "3"
-    },
-    "(0040,A525)": {
-      "cond": {
-        "type": "U"
-      },
-      "items": {
-        "include": [
-          {
-            "ref": "C.17-3"
-          }
-        ]
-      },
-      "name": "Identical Documents Sequence",
-      "type": "1C"
     }
   },
   "C.17-3b": {
@@ -9052,7 +8872,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "NUM"
           ]
@@ -9064,7 +8884,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "CODE"
           ]
@@ -9076,7 +8896,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "COMPOSITE"
           ]
@@ -9088,7 +8908,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "IMAGE"
           ]
@@ -9100,7 +8920,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "WAVEFORM"
           ]
@@ -9112,7 +8932,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "SCOORD"
           ]
@@ -9124,7 +8944,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "SCOORD3D"
           ]
@@ -9136,7 +8956,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "TCOORD"
           ]
@@ -9148,7 +8968,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "CONTAINER"
           ]
@@ -9160,7 +8980,7 @@
           "index": 0,
           "op": "=",
           "tag": "(0040,A040)",
-          "type": "MU",
+          "type": "MN",
           "values": [
             "TABLE"
           ]
@@ -9168,5 +8988,406 @@
         "ref": "C.18.10-1"
       }
     ]
+  },
+  "C.17-6": {
+    "(0040,A032)": {
+      "cond": {
+        "type": "U"
+      },
+      "name": "Observation DateTime",
+      "type": "1C"
+    },
+    "(0040,A171)": {
+      "name": "Observation UID",
+      "type": "3"
+    },
+    "(0040,A730)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "(0040,A010)": {
+          "name": "Relationship Type",
+          "type": "1"
+        },
+        "(0040,DB73)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Referenced Content Item Identifier",
+          "type": "1C"
+        },
+        "include": [
+          {
+            "ref": "C.17-5"
+          }
+        ]
+      },
+      "name": "Content Sequence",
+      "type": "1C"
+    }
+  },
+  "C.17.1": {
+    "(0008,0021)": {
+      "name": "Series Date",
+      "type": "3"
+    },
+    "(0008,0031)": {
+      "name": "Series Time",
+      "type": "3"
+    },
+    "(0008,0060)": {
+      "name": "Modality",
+      "type": "1"
+    },
+    "(0008,103E)": {
+      "name": "Series Description",
+      "type": "3"
+    },
+    "(0008,103F)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Series Description Code Sequence",
+      "type": "3"
+    },
+    "(0008,1111)": {
+      "items": {
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Performed Procedure Step Sequence",
+      "type": "2"
+    },
+    "(0018,1030)": {
+      "name": "Protocol Name",
+      "type": "3"
+    },
+    "(0020,000E)": {
+      "name": "Series Instance UID",
+      "type": "1"
+    },
+    "(0020,0011)": {
+      "name": "Series Number",
+      "type": "1"
+    },
+    "(300A,0700)": {
+      "name": "Treatment Session UID",
+      "type": "3"
+    }
+  },
+  "C.17.2": {
+    "(0008,0023)": {
+      "name": "Content Date",
+      "type": "1"
+    },
+    "(0008,0033)": {
+      "name": "Content Time",
+      "type": "1"
+    },
+    "(0008,114A)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "(0040,A170)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Purpose of Reference Code Sequence",
+          "type": "1"
+        },
+        "include": [
+          {
+            "ref": "10-11"
+          }
+        ]
+      },
+      "name": "Referenced Instance Sequence",
+      "type": "1C"
+    },
+    "(0020,0013)": {
+      "name": "Instance Number",
+      "type": "1"
+    },
+    "(0040,A073)": {
+      "cond": {
+        "index": 0,
+        "op": "=",
+        "tag": "(0040,A493)",
+        "type": "MU",
+        "values": [
+          "VERIFIED"
+        ]
+      },
+      "items": {
+        "(0040,A027)": {
+          "name": "Verifying Organization",
+          "type": "1"
+        },
+        "(0040,A030)": {
+          "name": "Verification DateTime",
+          "type": "1"
+        },
+        "(0040,A075)": {
+          "name": "Verifying Observer Name",
+          "type": "1"
+        },
+        "(0040,A088)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Verifying Observer Identification Code Sequence",
+          "type": "2"
+        }
+      },
+      "name": "Verifying Observer Sequence",
+      "type": "1C"
+    },
+    "(0040,A078)": {
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3b"
+          }
+        ]
+      },
+      "name": "Author Observer Sequence",
+      "type": "3"
+    },
+    "(0040,A07A)": {
+      "items": {
+        "(0040,A080)": {
+          "name": "Participation Type",
+          "type": "1"
+        },
+        "(0040,A082)": {
+          "name": "Participation DateTime",
+          "type": "2"
+        },
+        "include": [
+          {
+            "ref": "C.17-3b"
+          }
+        ]
+      },
+      "name": "Participant Sequence",
+      "type": "3"
+    },
+    "(0040,A07C)": {
+      "items": {
+        "(0008,0080)": {
+          "name": "Institution Name",
+          "type": "2"
+        },
+        "(0008,0082)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Institution Code Sequence",
+          "type": "2"
+        },
+        "(0008,0220)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Responsible Group Code Sequence",
+          "type": "3"
+        }
+      },
+      "name": "Custodial Organization Sequence",
+      "type": "3"
+    },
+    "(0040,A360)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3"
+          }
+        ]
+      },
+      "name": "Predecessor Documents Sequence",
+      "type": "1C"
+    },
+    "(0040,A370)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3c"
+          }
+        ]
+      },
+      "name": "Referenced Request Sequence",
+      "type": "1C"
+    },
+    "(0040,A372)": {
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Performed Procedure Code Sequence",
+      "type": "2"
+    },
+    "(0040,A375)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3"
+          }
+        ]
+      },
+      "name": "Current Requested Procedure Evidence Sequence",
+      "type": "1C"
+    },
+    "(0040,A385)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3"
+          }
+        ]
+      },
+      "name": "Pertinent Other Evidence Sequence",
+      "type": "1C"
+    },
+    "(0040,A491)": {
+      "name": "Completion Flag",
+      "type": "1"
+    },
+    "(0040,A492)": {
+      "name": "Completion Flag Description",
+      "type": "3"
+    },
+    "(0040,A493)": {
+      "name": "Verification Flag",
+      "type": "1"
+    },
+    "(0040,A496)": {
+      "name": "Preliminary Flag",
+      "type": "3"
+    },
+    "(0040,A525)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "C.17-3"
+          }
+        ]
+      },
+      "name": "Identical Documents Sequence",
+      "type": "1C"
+    }
+  },
+  "C.17.3": {
+    "include": [
+      {
+        "ref": "C.17-5"
+      },
+      {
+        "ref": "C.17-6"
+      }
+    ]
+  },
+  "C.18.1-1": {
+    "(0040,A300)": {
+      "items": {
+        "(0040,08EA)": {
+          "items": {
+            "include": [
+              {
+                "ref": "8.8-1"
+              }
+            ]
+          },
+          "name": "Measurement Units Code Sequence",
+          "type": "1"
+        },
+        "(0040,A161)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Floating Point Value",
+          "type": "1C"
+        },
+        "(0040,A162)": {
+          "cond": {
+            "type": "U"
+          },
+          "name": "Rational Numerator Value",
+          "type": "1C"
+        },
+        "(0040,A163)": {
+          "cond": {
+            "index": 0,
+            "op": "+",
+            "tag": "(0040,A162)",
+            "type": "MU"
+          },
+          "name": "Rational Denominator Value",
+          "type": "1C"
+        },
+        "(0040,A30A)": {
+          "name": "Numeric Value",
+          "type": "1"
+        }
+      },
+      "name": "Measured Value Sequence",
+      "type": "2"
+    },
+    "(0040,A301)": {
+      "cond": {
+        "type": "U"
+      },
+      "items": {
+        "include": [
+          {
+            "ref": "8.8-1"
+          }
+        ]
+      },
+      "name": "Numeric Value Qualifier Code Sequence",
+      "type": "1C"
+    }
   }
 }
