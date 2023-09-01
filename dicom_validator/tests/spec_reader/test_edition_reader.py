@@ -1,6 +1,8 @@
 import os
+import shutil
 import time
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -153,13 +155,6 @@ def test_current_revision(base_path):
     assert reader.get_edition("current") == "2015e"
 
 
-def test_check_none_revision():
-    reader = MemoryEditionReader("/foo/bar", "")
-    revision, path = reader.check_revision("none")
-    assert revision is None
-    assert path == Path("/", "foo", "bar")
-
-
 def test_check_revision_existing(fs):
     base_path = Path("base")
     reader = MemoryEditionReader(base_path, "")
@@ -241,9 +236,11 @@ def test_recreate_json_if_needed(fs, base_path, edition_path):
         MemoryEditionReader.create_json_files = create_json_files
         reader = MemoryEditionReader(base_path, "")
         fs.create_file(edition_path, contents='["2014a", "2014c", "2015a"]')
-        reader.get_revision("2014a")
+        assert reader.get_revision("2014e") is None
+        assert reader.get_revision("2014a") is not None
         assert create_json_files_called == 1
         reader.get_revision("2014a")
+        assert create_json_files_called == 2
         assert create_json_files_called == 2
         json_path = base_path / "2014a" / "json"
         EditionReader.write_current_version(json_path)
@@ -253,3 +250,55 @@ def test_recreate_json_if_needed(fs, base_path, edition_path):
         assert create_json_files_called == 3
     finally:
         MemoryEditionReader.create_json_files = orig_create_json_files
+
+
+@patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
+def test_get_non_existing_revision(retrieve_mock, fs, fixture_path, edition_path):
+    def retrieve(url, path):
+        # copy over the data from the existing fixture as fake download
+        source = str(path).replace("2014c", "2021d")
+        shutil.copy(source, str(path))
+
+    root_path = Path(fs.add_real_directory(fixture_path).path)
+    reader = EditionReader(root_path)
+    retrieve_mock.side_effect = lambda url, path: retrieve(url, path)
+    json_path = root_path / "2014c" / "json"
+    assert not json_path.exists()
+    reader.get_revision("2014c")
+    assert json_path.exists()
+    assert (json_path / "dict_info.json").exists()
+    assert (json_path / "iod_info.json").exists()
+    assert (json_path / "module_info.json").exists()
+    assert (json_path / "uid_info.json").exists()
+
+
+@patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
+def test_failing_download(retrieve_mock, fs, base_path, edition_path, caplog):
+    reader = MemoryEditionReader(base_path, "")
+    fs.create_file(edition_path, contents='["2014a", "2014c", "2015a"]')
+    retrieve_mock.side_effect = BaseException
+    assert reader.get_revision("2014c") is None
+    assert "Failed to download" in caplog.text
+
+
+@patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
+def test_partial_download(retrieve_mock, fs, base_path, edition_path):
+    part3_path = base_path / "2014c" / "docbook" / "part03.xml"
+
+    def partial_download(url, file_path):
+        fs.create_file(part3_path)
+        raise AttributeError()
+
+    reader = MemoryEditionReader(base_path, "")
+    fs.create_file(edition_path, contents='["2014a", "2014c", "2015a"]')
+    retrieve_mock.side_effect = lambda url, path: partial_download(url, path)
+    assert reader.get_revision("2014c") is None
+    assert not os.path.exists(part3_path)
+
+
+@patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
+def test_failing_retrieval(retrieve_mock, base_path, edition_path, caplog):
+    retrieve_mock.side_effect = AttributeError
+    reader = EditionReader(base_path)
+    assert reader.get_editions() is None
+    assert "Failed to get DICOM editions" in caplog.text

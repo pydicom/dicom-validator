@@ -58,9 +58,7 @@ class EditionReader:
             self.retrieve(self.path / self.html_filename)
             self.write_to_json()
         except BaseException as exception:
-            self.logger.warning(
-                "Failed to get DICOM read_from_html: %s", str(exception)
-            )
+            self.logger.warning("Failed to get DICOM editions: %s", str(exception))
 
     def retrieve(self, html_path):
         html_path.parent.mkdir(exist_ok=True)
@@ -135,21 +133,15 @@ class EditionReader:
         return False
 
     def check_revision(self, revision):
-        # none revision is used if an existing path points to the specs
-        if revision != "none":
-            revision = self.get_edition(revision)
-            if revision:
-                return revision, self.path / revision
-            return None, None
-        return None, self.path
+        revision = self.get_edition(revision)
+        if revision:
+            return revision, self.path / revision
+        return None, None
 
     def get_chapter(self, revision, chapter, destination, is_current):
         file_path = destination / f"part{chapter:02}.xml"
         if file_path.exists():
             return True
-        elif not revision:
-            print(f"Chapter {chapter} not present at {file_path}.")
-            return False
         revision_dir = "current" if is_current else revision
         url = "{0}{1}/source/docbook/part{2:02}/part{2:02}.xml".format(
             self.base_url, revision_dir, chapter
@@ -159,12 +151,14 @@ class EditionReader:
             urlretrieve(url, file_path)
             return True
         except BaseException as exception:
-            print(f"Failed to download {url}: {exception}")
+            self.logger.error(f"Failed to download {url}: {exception}")
             if file_path.exists():
                 try:
                     file_path.unlink()
                 except OSError:
-                    print(f"Failed to remove incomplete file {file_path}.")
+                    self.logger.warning(
+                        f"Failed to remove incomplete file {file_path}."
+                    )
             return False
 
     @staticmethod
@@ -224,7 +218,7 @@ class EditionReader:
     def get_revision(self, revision, recreate_json=False):
         revision, destination = self.check_revision(revision)
         if destination is None:
-            print(f"DICOM revision {revision} not found.")
+            self.logger.error(f"DICOM revision {revision} not found.")
             return
 
         docbook_path = destination / "docbook"
