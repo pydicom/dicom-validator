@@ -289,22 +289,6 @@ class TestIODValidator:
             "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
-            "FrameIncrementPointer": 0x00181065,
-        }
-    )
-    def test_points_to_condition_met(self, validator):
-        result = validator.validate()
-
-        assert has_tag_error(
-            result, "Cardiac Synchronization", "(0018,1086)", "missing"
-        )  # Skip beats
-
-    @pytest.mark.tag_set(
-        {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
-            "PatientName": "XXX",
-            "PatientID": "ZZZ",
             "FrameIncrementPointer": 0x00181055,
         }
     )

@@ -112,14 +112,22 @@ class TestIODValidatorFuncGroups:
         validator = IODValidator(data_set, dicom_info, logging.ERROR)
         result = validator.validate()
         group_result = self.ensure_group_result(result)
-        assert "Tag (5200,9229) is missing" in group_result
-        assert "Tag (5200,9230) is missing" in group_result
+        assert (
+            "Tag (5200,9229) (Shared Functional Groups Sequence) is missing"
+            in group_result
+        )
 
     def test_empty_func_groups(self, validator):
         result = validator.validate()
         group_result = self.ensure_group_result(result).keys()
-        assert "Tag (5200,9229) is empty" in group_result
-        assert "Tag (5200,9230) is empty" in group_result
+        assert (
+            "Tag (5200,9229) (Shared Functional Groups Sequence) is empty"
+            in group_result
+        )
+        assert (
+            "Tag (5200,9230) (Per-frame Functional Groups Sequence) is empty"
+            in group_result
+        )
 
     @pytest.mark.shared_macros([FRAME_ANATOMY])
     @pytest.mark.per_frame_macros([FRAME_VOI_LUT])

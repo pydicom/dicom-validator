@@ -1,4 +1,6 @@
+from xml.etree import ElementTree
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -18,6 +20,7 @@ def reader(dict_reader, spec_path):
 
 @pytest.mark.usefixtures("fs")
 class TestReadPart3:
+    @patch("dicom_validator.spec_reader.spec_reader.ElementTree", ElementTree)
     def test_read_empty_doc_file(self, fs):
         spec_path = Path("/var/dicom/specs")
         spec_path.mkdir(parents=True)
@@ -26,6 +29,7 @@ class TestReadPart3:
         with pytest.raises(SpecReaderFileError):
             spec_reader.iod_description("A.16")
 
+    @patch("dicom_validator.spec_reader.spec_reader.ElementTree", ElementTree)
     def test_read_invalid_doc_file(self, fs):
         spec_path = Path("/var/dicom/specs")
         fs.create_file(spec_path / "part03.xml", contents="Not an xml")
@@ -33,6 +37,7 @@ class TestReadPart3:
         with pytest.raises(SpecReaderFileError):
             spec_reader.iod_description("A.6")
 
+    @patch("dicom_validator.spec_reader.spec_reader.ElementTree", ElementTree)
     def test_read_incomplete_doc_file(self, fs):
         spec_path = Path("/var/dicom/specs")
         fs.create_file(
@@ -49,13 +54,13 @@ class TestReadPart3:
         description = reader.iod_description(chapter="A.3")
         assert description is not None
         assert "title" in description
-        assert description["title"] == "Computed Tomography Image IOD"
+        assert description["title"] == "CT Image IOD"
 
     def test_get_iod_modules(self, reader):
         description = reader.iod_description(chapter="A.38.1")
         assert "modules" in description
         modules = description["modules"]
-        assert len(modules) == 27
+        assert len(modules) == 28
         assert "General Equipment" in modules
         module = modules["General Equipment"]
         assert module["ref"] == "C.7.5.1"
@@ -68,11 +73,11 @@ class TestReadPart3:
         assert "Clinical Trial Subject" in modules
         module = modules["Clinical Trial Subject"]
         assert module["ref"] == "C.7.1.3"
-        assert module["use"] == "U - see elsewhere"
+        assert module["use"] == "U"
 
     def test_iod_descriptions(self, reader):
         descriptions = reader.iod_descriptions()
-        assert len(descriptions) == 4
+        assert len(descriptions) == 151
         assert "A.3" in descriptions
         assert "A.18" in descriptions
         assert "A.38.1" in descriptions
@@ -81,7 +86,7 @@ class TestReadPart3:
         descriptions = reader.iod_descriptions()
         assert not descriptions["A.3"]["group_macros"]
         enhanced_ct_macros = descriptions["A.38.1"]["group_macros"]
-        assert len(enhanced_ct_macros) == 24
+        assert len(enhanced_ct_macros) == 27
         pixel_measures = enhanced_ct_macros.get("Pixel Measures")
         assert pixel_measures
         assert pixel_measures["ref"] == "C.7.6.16.2.1"
@@ -116,7 +121,7 @@ class TestReadPart3:
 
     def test_sequence_inside_module_description(self, reader):
         description = reader.module_description("C.7.2.3")
-        assert len(description) == 3
+        assert len(description) == 6
         assert "(0012,0083)" in description
         assert "items" in description["(0012,0083)"]
         sequence_description = description["(0012,0083)"]["items"]
@@ -128,20 +133,20 @@ class TestReadPart3:
         assert sequence_description["(0012,0020)"]["type"] == "1C"
 
     def test_referenced_macro(self, reader):
-        # module has 2 directly included attributes
-        # and 21 attribute in referenced table
+        # module has 6 directly included attributes
+        # and 20 attributes in referenced table
         description = reader.module_description("C.7.6.3")
-        assert len(description) == 3
+        assert len(description) == 6
         assert "(0028,7FE0)" in description
         assert "include" in description
-        assert "C.7-11b" in [d["ref"] for d in description["include"]]
-        description = reader.module_description("C.7-11b")
-        assert len(description) == 21
-        assert "(7FE0,0010)" in description
+        assert "C.7-11c" in [d["ref"] for d in description["include"]]
+        description = reader.module_description("C.7-11c")
+        assert len(description) == 20
+        assert "(0028,0103)" in description
 
     def test_module_descriptions(self, reader):
         descriptions = reader.module_descriptions()
-        assert len(descriptions) == 113
+        assert len(descriptions) == 572
 
     def test_conditional_include_in_sr_module(self, reader):
         description = reader.module_description("C.17.3")

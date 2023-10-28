@@ -3,7 +3,10 @@ SpecReader reads information from DICOM standard files in docbook format as
 provided by ACR-NEMA.
 """
 
-import xml.etree.ElementTree as ElementTree
+try:
+    import lxml.etree as ElementTree
+except ImportError:
+    import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
 

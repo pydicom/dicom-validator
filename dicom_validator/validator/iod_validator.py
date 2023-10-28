@@ -384,7 +384,7 @@ class IODValidator:
             error_kind = "missing"
         elif has_tag and not tag_allowed:
             error_kind = "not allowed"
-        elif tag_required and value_required:
+        elif has_tag and value_required:
             value = self._dataset_stack[-1].dataset[tag_id].value
             if value is None or isinstance(value, Sequence) and not value:
                 error_kind = "empty"
