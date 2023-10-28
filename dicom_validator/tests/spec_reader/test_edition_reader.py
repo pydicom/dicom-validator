@@ -3,6 +3,7 @@ import shutil
 import time
 from pathlib import Path
 from unittest.mock import patch
+from xml.etree import ElementTree
 
 import pytest
 
@@ -37,8 +38,6 @@ def base_path(fs):
 @pytest.fixture
 def edition_path(base_path):
     path = base_path / EditionReader.json_filename
-    # if not path.exists():
-    #     path.write_bytes(b'')
     yield path
 
 
@@ -253,10 +252,11 @@ def test_recreate_json_if_needed(fs, base_path, edition_path):
 
 
 @patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
+@patch("dicom_validator.spec_reader.spec_reader.ElementTree", ElementTree)
 def test_get_non_existing_revision(retrieve_mock, fs, fixture_path, edition_path):
     def retrieve(url, path):
         # copy over the data from the existing fixture as fake download
-        source = str(path).replace("2014c", "2021d")
+        source = str(path).replace("2014c", "dummy")
         shutil.copy(source, str(path))
 
     root_path = Path(fs.add_real_directory(fixture_path).path)

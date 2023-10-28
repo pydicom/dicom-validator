@@ -1,6 +1,19 @@
 import logging
+from pathlib import Path
+
+import pytest
 
 from dicom_validator.validate_iods import main
+
+
+@pytest.fixture(scope="session")
+def fixture_path():
+    yield Path(__file__).parent / "fixtures"
+
+
+@pytest.fixture
+def dicom_fixture_path(fixture_path):
+    yield fixture_path / "dicom"
 
 
 def test_validate_sr(caplog, fixture_path, dicom_fixture_path):

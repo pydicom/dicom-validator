@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pytest
 from pydicom import write_file
@@ -12,6 +13,11 @@ pytestmark = pytest.mark.usefixtures("disable_logging")
 @pytest.fixture
 def validator(dicom_info):
     yield DicomFileValidator(dicom_info)
+
+
+@pytest.fixture(scope="module")
+def dicom_fixture_path():
+    yield Path(__file__).parent.parent / "fixtures" / "dicom"
 
 
 @pytest.mark.usefixtures("fs")

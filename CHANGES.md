@@ -9,8 +9,17 @@ The released versions correspond to PyPi releases.
 ### Features
 * added handling of conditional includes (needed for SR documents)
   (see [#39](../.. /issues/39))
+
+### Fixes
+* an empty tag with type 1C was not handled as an error
+
+### Changes
+* `lxml` is used instead of `xml` to speedup the xml parsing
+
 ### Infrastructure
-*  use `pyproject.toml` instead of `setup.py`
+* use `pyproject.toml` instead of `setup.py`
+* fixed possibility to run single tests
+* use downloaded standard instead of fixture files for tests
 
 ## [Version 0.4.0](https://pypi.python.org/pypi/dicom-validator/0.4.0) (2023-08-13)
 Adds support for functional group macros.

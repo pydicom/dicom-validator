@@ -1,4 +1,6 @@
+from xml.etree import ElementTree
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -25,6 +27,7 @@ def reader(fs, doc_contents):
 
 
 @pytest.mark.usefixtures("fs")
+@patch("dicom_validator.spec_reader.spec_reader.ElementTree", ElementTree)
 class TestPart4Reader:
     def test_read_incomplete_doc_file(self, fs):
         spec_path = Path("/var/dicom/specs")
