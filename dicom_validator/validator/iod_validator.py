@@ -575,12 +575,11 @@ class IODValidator:
         if operator == ConditionOperator.EqualsTag:
             return tag_value in values
         return False
-        
+
     @staticmethod
     def _value_basetag_conversion(values):
         values = [
-            int(f"0x{''.join(re.findall('[0-9]+', value))}", 16)
-            for value in values
+            int(f"0x{''.join(re.findall('[0-9]+', value))}", 16) for value in values
         ]
         return values
 
