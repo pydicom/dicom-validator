@@ -1,10 +1,11 @@
 import json
 import logging
+import re
 import sys
 from dataclasses import dataclass
 
 from pydicom import Sequence
-from pydicom.tag import Tag
+from pydicom.tag import BaseTag, Tag
 
 from dicom_validator.spec_reader.condition import (
     Condition,
@@ -560,6 +561,8 @@ class IODValidator:
 
     @staticmethod
     def _tag_matches(tag_value, operator, values):
+        if type(tag_value) == BaseTag:
+            values = IODValidator._value_basetag_conversion(values)
         values = [type(tag_value)(value) for value in values]
         if operator == ConditionOperator.EqualsValue:
             return tag_value in values
@@ -572,6 +575,14 @@ class IODValidator:
         if operator == ConditionOperator.EqualsTag:
             return tag_value in values
         return False
+        
+    @staticmethod
+    def _value_basetag_conversion(values):
+        values = [
+            int(f"0x{''.join(re.findall('[0-9]+', value))}", 16)
+            for value in values
+        ]
+        return values
 
     def _get_module_info(self, module_ref, group_macros=None):
         return self._expanded_module_info(
