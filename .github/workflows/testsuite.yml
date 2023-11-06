@@ -32,8 +32,9 @@ jobs:
       id: cache-dicom
       uses: actions/cache@v3
       with:
-        path: dicom_validator/test/fixtures
+        path: dicom_validator/tests/fixtures
         key: ${{ matrix.dicom-version }}
+        enableCrossOsArchive: true
 
     - name: Download DICOM standard
       if: steps.cache-dicom.outputs.cache-hit != 'true'
