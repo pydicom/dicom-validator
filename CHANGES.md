@@ -12,6 +12,10 @@ The released versions correspond to PyPi releases.
 
 ### Fixes
 * an empty tag with type 1C was not handled as an error
+* Condition parser: the value index for some expressions is now correctly parsed
+* Condition parser: the parsing is now stricter to avoid some false positives
+* Condition parser: condition for AT values have not been correctly parsed if
+  the condition used equality comparison (see [#58](../.. /issues/58))
 
 ### Changes
 * `lxml` is used instead of `xml` to speedup the xml parsing
