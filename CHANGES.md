@@ -3,6 +3,9 @@ The released versions correspond to PyPi releases.
 
 ## [Version 0.5.0] (Unreleased)
 
+## [Version 0.4.1](https://pypi.python.org/pypi/dicom-validator/0.4.1) (2023-11-09)
+Mostly a bugfix release for the condition parser.
+
 ### Changes
 * removed official support for Python 3.7 which has reached end of life
 
@@ -18,7 +21,7 @@ The released versions correspond to PyPi releases.
   the condition used equality comparison (see [#58](../.. /issues/58))
 
 ### Changes
-* `lxml` is used instead of `xml` to speedup the xml parsing
+* `lxml` is used instead of `xml` to speed up the xml parsing
 
 ### Infrastructure
 * use `pyproject.toml` instead of `setup.py`
