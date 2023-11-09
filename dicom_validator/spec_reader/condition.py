@@ -1,7 +1,10 @@
 import enum
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 
 from dicom_validator.tag_tools import tag_name_from_id
+
+
+ValuesType = List[Union[str, int]]
 
 
 class ConditionType(str, enum.Enum):  # replace later with StrEnum from Python 3.11
@@ -94,13 +97,13 @@ class Condition:
         operator: Optional[ConditionOperator] = None,
         tag: Optional[str] = None,
         index: int = 0,
-        values: Optional[List[str]] = None,
+        values: Optional[ValuesType] = None,
     ) -> None:
         self.type = ctype
         self.operator = operator
         self.tag = tag
         self.index = index
-        self.values = values or []
+        self.values: ValuesType = values or []
         self.and_conditions: List[Condition] = []
         self.or_conditions: List[Condition] = []
         self.other_condition: Optional[Condition] = None
@@ -204,19 +207,19 @@ class Condition:
             # and ignore it for the time being
             return result
         elif self.operator == ConditionOperator.EqualsValue:
-            values = ['"' + value + '"' for value in self.values]
+            values = ['"' + str(value) + '"' for value in self.values]
             result += " is equal to "
             if len(values) > 1:
                 result += ", ".join(values[:-1]) + " or "
             result += values[-1]
         elif self.operator == ConditionOperator.NotEqualsValue:
-            values = ['"' + value + '"' for value in self.values]
+            values = ['"' + str(value) + '"' for value in self.values]
             result += " is not equal to "
             if len(values) > 1:
                 result += ", ".join(values[:-1]) + " and "
             result += values[-1]
         elif self.operator == ConditionOperator.LessValue:
-            result += " is less than " + self.values[0]
+            result += " is less than " + str(self.values[0])
         elif self.operator == ConditionOperator.GreaterValue:
-            result += " is greater than " + self.values[0]
+            result += " is greater than " + str(self.values[0])
         return result

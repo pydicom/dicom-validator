@@ -37,6 +37,13 @@ class TestInvalidConditionParser:
         )
         assert result.type == ConditionType.UserDefined
 
+    def test_ignore_condition_with_tag_and_unparsable_text(self, parser):
+        result = parser.parse(
+            "Required if Pixel Intensity Relationship (0028,1040) is not LOG for "
+            "frames included in this Item of the Mask Subtraction Sequence (0028,6100)"
+        )
+        assert result.type == ConditionType.UserDefined
+
 
 class TestSimpleConditionParser:
     def test_not_present(self, parser):
@@ -211,8 +218,22 @@ class TestValueConditionParser:
         assert result.index == 0
         assert result.operator == ConditionOperator.EqualsValue
         assert result.values == [
-            "Frame Time (0018,1063)",
-            "Frame Time Vector (0018,1065)",
+            1577059,
+            1577061,
+        ]
+
+    def test_random_text_with_tag_ids_is_ignored(self, parser):
+        result = parser.parse(
+            "C - Required if Frame Increment Pointer (0028,0009) "
+            "is Frame Time (0018,1063) or Frame Time Vector (0018,1065)"
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.tag == "(0028,0009)"
+        assert result.index == 0
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.values == [
+            1577059,
+            1577061,
         ]
 
     def test_has_a_value_of(self, parser):
@@ -449,6 +470,91 @@ class TestValueConditionParser:
         result = parser.parse("U - May not be used as a Shared Functional Group.")
         assert result.type == ConditionType.UserDefinedPerFrame
 
+    def test_the_before_tag_name(self, parser):
+        result = parser.parse(
+            "Required if the Image Type (0008,0008) Value 1 equals DERIVED."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.tag == "(0008,0008)"
+        assert result.index == 0
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.values == ["DERIVED"]
+
+    def test_value_of_before_tag_name(self, parser):
+        result = parser.parse(
+            "Required if value of Reformatting Operation Type (0072,0510) "
+            "is SLAB or MPR."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.tag == "(0072,0510)"
+        assert result.values == ["SLAB", "MPR"]
+
+    def test_attribute_before_tag_name(self, parser):
+        result = parser.parse(
+            "Required if Attribute Corneal Topography Surface (0046,0201) "
+            "is A (Anterior)."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.tag == "(0046,0201)"
+        assert result.values == ["A"]
+
+    def test_the_value_for_before_tag_name(self, parser):
+        result = parser.parse(
+            "Required if the value for Foveal Sensitivity Measured (0024,0086) is YES "
+            "and Foveal Point Normative Data Flag (0024,0117) is YES."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.and_conditions
+        assert result.and_conditions[0].operator == ConditionOperator.EqualsValue
+        assert result.and_conditions[0].tag == "(0024,0086)"
+        assert result.and_conditions[0].values == ["YES"]
+
+    def test_condition_with_hyphen(self, parser):
+        result = parser.parse(
+            "Required if Image Type (0008,0008) Value 1 is ORIGINAL or MIXED and "
+            "Geometry of k-Space Traversal (0018,9032) equals RECTILINEAR. Otherwise "
+            "may be present if Image Type (0008,0008) Value 1 is DERIVED and Geometry "
+            "of k-Space Traversal (0018,9032) equals RECTILINEAR."
+        )
+        assert result.type == ConditionType.MandatoryOrConditional
+        assert result.and_conditions
+        assert result.and_conditions[0].operator == ConditionOperator.EqualsValue
+        assert result.and_conditions[0].values == ["ORIGINAL", "MIXED"]
+        assert result.and_conditions[1].values == ["RECTILINEAR"]
+        assert result.other_condition
+
+    def test_incorrect_tag_name(self, parser):
+        result = parser.parse(
+            "Required if Annotation Generation Type (006A,0007) "
+            "is AUTOMATIC or SEMIAUTOMATIC."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.tag == "(006A,0007)"
+        assert result.values == ["AUTOMATIC", "SEMIAUTOMATIC"]
+
+    def test_third_value(self, parser):
+        result = parser.parse(
+            "Required if the third value of Image Type (0008,0008) is FLUENCE."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.tag == "(0008,0008)"
+        assert result.values == ["FLUENCE"]
+        assert result.index == 2
+
+    def test_value_3(self, parser):
+        result = parser.parse(
+            "Required if Value 3 of Image Type (0008,0008) is SIMULATOR or PORTAL."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.tag == "(0008,0008)"
+        assert result.values == ["SIMULATOR", "PORTAL"]
+        assert result.index == 2
+
 
 class TestNotMandatoryConditionParser:
     def test_default(self, parser):
@@ -670,11 +776,15 @@ class TestCompositeConditionParser:
 
     def test_or_condition_with_comma(self, parser):
         result = parser.parse(
-            '"Required if Photometric Interpretation '
-            "(0028,0004) has a value of PALETTE COLOR, "
-            "or Pixel Presentation (0008,9205) equals COLOR or MIXED."
+            "Required if the Rescale Type is not HU (Hounsfield Units), or "
+            "Multi-energy CT Acquisition (0018,9361) is YES."
         )
-        self.check_or_condition(result)
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.or_conditions) == 2
+        assert result.or_conditions[0].operator == ConditionOperator.NotEqualsValue
+        assert result.or_conditions[0].values[0] == "HU"
+        assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[1].values == ["YES"]
 
 
 class TestComplicatedConditionParser:

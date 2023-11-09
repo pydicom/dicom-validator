@@ -26,7 +26,6 @@
         * several "Required" statements
         * tests for different types
     * unsupported tags
-    * functional groups
     * repeating groups (60xx)
 * add modules requiring missing attributes to result
 * allow additional user input specs (fixed name)
@@ -42,4 +41,3 @@
 
 #### Dump
 * add tag length
-* add image tag (length only)

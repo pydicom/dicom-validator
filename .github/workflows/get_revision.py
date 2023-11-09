@@ -5,8 +5,8 @@ from dicom_validator.spec_reader.edition_reader import EditionReader
 
 def get_revision(revision, path):
     reader = EditionReader(path)
-    # we want to recreate the json files for each test run
-    # so we don't want them cached
+    # we want to recreate the json files for each test run,
+    # so we don't need them cached
     reader.get_revision(revision, create_json=False)
 
 

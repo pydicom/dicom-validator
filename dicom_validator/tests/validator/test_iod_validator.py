@@ -301,6 +301,23 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
+            # Multi-frame Single Bit Secondary Capture Image Storage
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.7.1",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "FrameIncrementPointer": 0x00181065,
+        }
+    )
+    def test_for_frame_pointer_condition_not_met(self, validator):
+        # regression test for #58
+        result = validator.validate()
+
+        assert has_tag_error(
+            result, "Cine", "(0018,1065)", "missing"
+        )  # Frame Time Vector
+
+    @pytest.mark.tag_set(
+        {
             # Enhanced X-Ray Angiographic Image
             "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "PatientName": "XXX",

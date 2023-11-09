@@ -142,7 +142,6 @@ version of the standard used for parsing are not considered at all.
 #### Unsupported cases (support may be added in future versions)
 - SOP classes not in the table in PS3.3 such as Presentation States are not
   handled
-- functional groups in EnhancedXXX SOP classes are not handled
 
 
 ## dump_dcm_info

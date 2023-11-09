@@ -6,6 +6,7 @@ from dicom_validator.spec_reader.condition import (
     Condition,
     ConditionType,
     ConditionOperator,
+    ValuesType,
 )
 
 
@@ -20,9 +21,16 @@ class ConditionParser:
     other data sets) are ignored.
     """
 
-    tag_expression = re.compile(
-        r"(the value of )?(?P<name>[a-zA-Z1-9 \'\-]+)"
-        r"(?P<id>\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?(,? Value (?P<index>\d))?$"
+    tagname_expression = (
+        r"(?P<name>[a-zA-Z1-9 \'\-]+)(?P<id>\([\dA-Fa-f]{4},[\dA-Fa-f]{4}\))?"
+    )
+    tag_expression1 = re.compile(
+        rf"(the (?P<index>first|second|third) value of ){tagname_expression}"
+    )
+    tag_expression2 = re.compile(rf"Value (?P<index>\d) of {tagname_expression}")
+    tag_expression3 = re.compile(
+        r"((((the|a) )?value ((of|for) )?)|(the )|(either )|Attribute )?"
+        rf"{tagname_expression}(,? Value (?P<index>\d))?$"
     )
 
     operators = OrderedDict(
@@ -132,14 +140,15 @@ class ConditionParser:
             values, rest = self._parse_tag_values(rest)
             # fixup special values
             if values:
-                if values[0].startswith("non-zero"):
-                    operator = ConditionOperator.NotEqualsValue
-                    values = ["0"] if values[0] == "non-zero" else [""]
-                elif values[0].startswith("non-null"):
-                    operator = ConditionOperator.NotEmpty
-                    values = []
-                elif values[0].startswith("zero-length"):
-                    values = [""]
+                if isinstance(values[0], str):
+                    if values[0].startswith("non-zero"):
+                        operator = ConditionOperator.NotEqualsValue
+                        values = ["0"] if values[0] == "non-zero" else [""]
+                    elif values[0].startswith("non-null"):  # type:ignore[union-attr]
+                        operator = ConditionOperator.NotEmpty
+                        values = []
+                    elif values[0].startswith("zero-length"):  # type:ignore[union-attr]
+                        values = [""]
             else:
                 # failed to parse mandatory values - ignore the condition
                 return Condition(ctype=ConditionType.UserDefined), None
@@ -160,6 +169,15 @@ class ConditionParser:
             if "not be present otherwise" in condition[op_offset:].lower()
             else ConditionType.MandatoryOrUserDefined
         )
+        # special handling for AT tags - values are saved as numbers
+        if (
+            result.tag
+            and result.values
+            and operator == ConditionOperator.EqualsValue
+            and result.tag in self._dict_info
+            and self._dict_info[result.tag]["vr"] == "AT"
+        ):
+            result.values = [self._tag_id(str(v)) for v in result.values]
         return result, rest
 
     def _get_other_condition(self, condition_string: str) -> Optional[Condition]:
@@ -177,26 +195,80 @@ class ConditionParser:
         group, element = tag_id_string[1:-1].split(",")
         return (int(group, 16) << 16) + int(element, 16)
 
-    def _parse_tag(self, tag_string: str) -> Tuple[Optional[str], Optional[int]]:
-        match = self.tag_expression.match(tag_string.strip())
-        if match:
-            value_index = (
-                0 if match.group("index") is None else int(match.group("index")) - 1
-            )
-            if match.group("id") is not None:
-                return match.group("id"), value_index
-            tag_name = match.group("name").strip()
+    def _tag_id_from_id_and_name(self, tag_id, tag_name):
+        if not tag_name:
+            return tag_id
+
+        if not tag_id:
+            # tag name only - look it up
             for tag_id, entry in self._dict_info.items():
                 if entry["name"] == tag_name:
-                    return tag_id, value_index
+                    return tag_id
             for tag_id, entry in self._uid_dict_info.items():
                 if entry["name"] == tag_name:
-                    return tag_id, value_index
+                    return tag_id
+            return None
+
+        # we have both tag name and ID
+        id_entry = self._dict_info.get(tag_id)
+        if not id_entry:
+            return None
+        name_from_id = id_entry["name"]
+        if name_from_id == tag_name:
+            # tag name matched tag ID
+            return tag_id
+
+        # tag name does not match tag ID
+        # this may be either because the used tag name is not the
+        # correct one, or there is additional text that we cannot parse
+
+        # space may be used instead of hyphen
+        real_name_parts = name_from_id.replace("-", " ").split()
+        name_parts = tag_name.replace("-", " ").split()
+
+        # first part of name may be omitted
+        len_diff = len(real_name_parts) - len(name_parts)
+        if len_diff < 0:
+            return None
+
+        # special case: missing second name part
+        if " ".join([real_name_parts[0]] + real_name_parts[2:]) == tag_name:
+            return tag_id
+
+        # special case: name parts moved around
+        if len_diff == 0 and sorted(real_name_parts) == sorted(name_parts):
+            return tag_id
+
+        # simple heuristic: just compare the first letters of each name part
+        if any(a[0] != b[0] for a, b in zip(real_name_parts[len_diff:], name_parts)):
+            # print(f"## Unreadable: {tag_name}, id: {tag_id}")
+            return None
+        return tag_id
+
+    def _parse_tag(self, tag_string: str) -> Tuple[Optional[str], Optional[int]]:
+        tag_string = tag_string.strip()
+        match = (
+            self.tag_expression1.match(tag_string)
+            or self.tag_expression2.match(tag_string)
+            or self.tag_expression3.match(tag_string)
+        )
+        if match:
+            index_match = match.group("index")
+            value_index = 0
+            if index_match is not None:
+                if index_match in ("first", "second", "third"):
+                    value_index = ("first", "second", "third").index(index_match)
+                else:
+                    value_index = int(index_match) - 1
+            tag_name = match.group("name").strip()
+            tag_id = match.group("id")
+            return self._tag_id_from_id_and_name(tag_id, tag_name), value_index
+
         return None, None
 
-    def _parse_tag_values(self, value_string: str) -> Tuple[List[str], str]:
+    def _parse_tag_values(self, value_string: str) -> Tuple[ValuesType, str]:
         value_part, rest = self._split_value_part(value_string)
-        values: List[str] = []
+        values: ValuesType = []
         value_index = 0
         last_or = None
         while value_index >= 0:
@@ -274,7 +346,7 @@ class ConditionParser:
             return match.group(1), match.group(2)
         tag, index = self._parse_tag(value)
         if tag is not None:
-            return value, ""
+            return tag, ""
         return None, ""
 
     def _end_index_for_stop_chars(self, value: str, stop_chars: List[str]) -> int:
@@ -331,7 +403,7 @@ class ConditionParser:
         return result
 
     def _parse_tags(
-        self, condition: str, operator: ConditionOperator, values: List[str]
+        self, condition: str, operator: ConditionOperator, values: ValuesType
     ) -> Optional[Condition]:
         # this handles only a few cases that are actually found
         if ", and " in condition:
@@ -348,7 +420,7 @@ class ConditionParser:
         self,
         condition_str: str,
         operator: ConditionOperator,
-        values: List[str],
+        values: ValuesType,
         logical_op: str,
     ) -> Optional[Condition]:
         split_string = f", {logical_op} "
@@ -373,7 +445,7 @@ class ConditionParser:
         self,
         condition: str,
         operator: ConditionOperator,
-        values: List[str],
+        values: ValuesType,
         logical_op: str,
     ) -> Optional[Condition]:
         condition = condition.replace(f" {logical_op} ", ", ")
@@ -395,10 +467,13 @@ class ConditionParser:
         return cond_list
 
     def _result_from_tag_string(
-        self, tag_string: str, operator: ConditionOperator, values: List[str]
+        self,
+        tag_string: str,
+        operator: ConditionOperator,
+        values: ValuesType,
     ) -> Optional[Condition]:
         tag, index = self._parse_tag(tag_string)
-        if index is not None:
+        if tag is not None and index is not None:
             result = Condition(tag=tag, index=index, operator=operator)
             if values:
                 result.values = values
