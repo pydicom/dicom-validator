@@ -18,7 +18,16 @@ def dicom_fixture_path(fixture_path):
 
 def test_validate_sr(caplog, fixture_path, dicom_fixture_path):
     rtdose_path = dicom_fixture_path / "rtdose.dcm"
-    cmd_line_args = ["-src", str(fixture_path), "-r", "local", str(rtdose_path)]
+    # recreate json files to avoid getting the cached ones
+    # relies on the fact that this test is run first
+    cmd_line_args = [
+        "-src",
+        str(fixture_path),
+        "-r",
+        "local",
+        "--recreate-json",
+        str(rtdose_path),
+    ]
     with caplog.at_level(logging.INFO):
         main(cmd_line_args)
 

@@ -401,7 +401,7 @@ class TestIODValidator:
     def test_conditional_includes(self, validator):
         result = validator.validate()
 
-        # condition met (ValuesType is NUM) - error because of missing tag
+        # condition met (ValueType is NUM) - error because of missing tag
         assert has_tag_error(
             result, "SR Document Content", "(0040,A300)", "missing"
         )  # Measured Value Sequence
