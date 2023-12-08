@@ -1,5 +1,4 @@
 import os
-import shutil
 import time
 from pathlib import Path
 from unittest.mock import patch
@@ -253,13 +252,17 @@ def test_recreate_json_if_needed(fs, base_path, edition_path):
 
 @patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
 @patch("dicom_validator.spec_reader.spec_reader.ElementTree", ElementTree)
-def test_get_non_existing_revision(retrieve_mock, fs, fixture_path, edition_path):
+def test_get_non_existing_revision(
+    retrieve_mock, fs, fixture_path, standard_path, edition_path
+):
     def retrieve(url, path):
-        # copy over the data from the existing fixture as fake download
-        source = str(path).replace("2014c", "dummy")
-        shutil.copy(source, str(path))
+        # map the data from the existing fixture as fake download
+        source = str(path).replace("2014c", "dummy").replace("standard" + os.sep, "")
+        fs.add_real_file(source, target_path=path)
 
-    root_path = Path(fs.add_real_directory(fixture_path).path)
+    root_dir = fs.add_real_directory(standard_path).path
+    fs.add_real_directory(fixture_path / "dummy", target_path=standard_path / "dummy")
+    root_path = Path(root_dir)
     reader = EditionReader(root_path)
     retrieve_mock.side_effect = lambda url, path: retrieve(url, path)
     json_path = root_path / "2014c" / "json"

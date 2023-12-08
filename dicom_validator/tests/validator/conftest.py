@@ -24,8 +24,13 @@ def pytest_configure(config):
 
 
 @pytest.fixture(scope="session")
-def json_fixture_path():
-    yield Path(__file__).parent.parent / "fixtures" / CURRENT_REVISION / "json"
+def standard_path():
+    yield Path(__file__).parent.parent / "fixtures" / "standard"
+
+
+@pytest.fixture(scope="session")
+def json_fixture_path(standard_path):
+    yield standard_path / CURRENT_REVISION / "json"
 
 
 @pytest.fixture(scope="session")
