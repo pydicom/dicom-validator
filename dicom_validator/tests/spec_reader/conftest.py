@@ -19,15 +19,20 @@ def fixture_path():
 
 
 @pytest.fixture(scope="session")
-def spec_fixture_path(fixture_path):
-    yield fixture_path / CURRENT_REVISION / "docbook"
+def standard_path(fixture_path):
+    yield fixture_path / "standard"
 
 
 @pytest.fixture(scope="session")
-def dict_info(fixture_path):
+def spec_fixture_path(standard_path):
+    yield standard_path / CURRENT_REVISION / "docbook"
+
+
+@pytest.fixture(scope="session")
+def dict_info(standard_path):
     from dicom_validator.spec_reader.edition_reader import EditionReader
 
-    json_fixture_path = fixture_path / CURRENT_REVISION / "json"
+    json_fixture_path = standard_path / CURRENT_REVISION / "json"
     with open(json_fixture_path / EditionReader.dict_info_json) as info_file:
         info = json.load(info_file)
     yield info

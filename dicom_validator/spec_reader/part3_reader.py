@@ -87,7 +87,7 @@ class Part3Reader(SpecReader):
         """
         if section not in self._module_descriptions:
             section_node = self._get_section_node(section)
-            if section_node:
+            if section_node is not None:
                 description = self._parse_module_description(section_node)
                 self._module_descriptions[section] = description
         try:

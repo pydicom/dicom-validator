@@ -43,8 +43,10 @@ class SpecReader:
                 raise SpecReaderFileError(f"Missing docbook file {doc_name}")
             try:
                 self._doc_trees[self.part_nr] = ElementTree.parse(doc_name)
-            except ElementTree.ParseError:
-                raise SpecReaderFileError(f"Parse error in docbook file {doc_name}")
+            except ElementTree.ParseError as e:
+                raise SpecReaderFileError(
+                    f"Parse error in docbook file {doc_name}: {e}"
+                )
         return self._doc_trees.get(self.part_nr)
 
     def _get_doc_root(self):
