@@ -18,9 +18,6 @@
 ## Validator
 
 #### IOD Validator
-* module checks
-    * check condition for conditional modules :on:
-    * check optional modules for consistence
 * check tags
     * check condition for 1C/2C attributes
         * several "Required" statements

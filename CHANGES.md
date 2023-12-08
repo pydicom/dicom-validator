@@ -3,6 +3,9 @@ The released versions correspond to PyPi releases.
 
 ## [Version 0.5.0] (Unreleased)
 
+### Infrastructure
+* add CI tests for Python 3.12
+
 ## [Version 0.4.1](https://pypi.python.org/pypi/dicom-validator/0.4.1) (2023-11-09)
 Mostly a bugfix release for the condition parser.
 
@@ -11,14 +14,14 @@ Mostly a bugfix release for the condition parser.
 
 ### Features
 * added handling of conditional includes (needed for SR documents)
-  (see [#39](../.. /issues/39))
+  (see [#39](../../issues/39))
 
 ### Fixes
 * an empty tag with type 1C was not handled as an error
 * Condition parser: the value index for some expressions is now correctly parsed
 * Condition parser: the parsing is now stricter to avoid some false positives
 * Condition parser: condition for AT values have not been correctly parsed if
-  the condition used equality comparison (see [#58](../.. /issues/58))
+  the condition used equality comparison (see [#58](../../issues/58))
 
 ### Changes
 * `lxml` is used instead of `xml` to speed up the xml parsing
@@ -32,14 +35,14 @@ Mostly a bugfix release for the condition parser.
 Adds support for functional group macros.
 
 ### Features
-* added support for validating functional group macros, see [#27](../.. /issues/27)
+* added support for validating functional group macros, see [#27](../../issues/27)
 * added option `--recreate-json` for testing purposes (per default, the json files are only
   recreated after a `dicom-validator` version change)
 
 ### Fixes
-* fixed handling of unverifiable and condition, see [#32](../.. /issues/32)
-* fixed too broad matching for "otherwise" condition, see [#29](../.. /issues/29)
-* fixed too strict handling without "otherwise" condition, see [#38](../.. /issues/38)
+* fixed handling of unverifiable and condition, see [#32](../../issues/32)
+* fixed too broad matching for "otherwise" condition, see [#29](../../issues/29)
+* fixed too strict handling without "otherwise" condition, see [#38](../../issues/38)
 * ignore private tags during validation (had been flagged as unexpected)
 
 ### Infrastructure
@@ -52,12 +55,12 @@ Fixes several issues with the condition parser.
 * Condition parser: multiple or expressions handled correctly
 * Condition parser: handle a few more complicated conditions
 * Condition parser: handle conditions without values,
-  see [#15](../.. /issues/15)
-* Condition parser: fixed handling of "zero" and "non-zero" values
-  see [#17](../.. /issues/17)
+  see [#15](../../issues/15)
+* Condition parser: fixed handling of "zero" and "non-zero" values,
+  see [#17](../../issues/17)
 * Condition parser: handle a few more simple expressions
 * Condition parser: ignore equality conditions with missing values
-  (caused crash, see [#20](../.. /issues/20)
+  (caused crash, see [#20](../../issues/20))
 
 ### Changes
 * Removed support for Python 3.6, added support for Python 3.11
@@ -70,14 +73,14 @@ Fixes a regression introduced with the last release.
 
 ### Fixes
 - fixed regression that broke the validator command line tool,
-  see [#9](../../issues/9))
+  see [#9](../../issues/9)
 
 ## [Version 0.3.3](https://pypi.python.org/pypi/dicom-validator/0.3.3) (2021-11-20)
 This is a bugfix release.
 
 ### Fixes
 - all tags including PixelData are now loaded to account for dependencies on PixelData
-  see [#6](../../issues/6))
+  (see [#6](../../issues/6))
 
 ## [Version 0.3.2](https://pypi.python.org/pypi/dicom-validator/0.3.2) (2021-07-30)
 Renamed from dcm-spec-tools to dicom-validator and moved into pydicom organization.
@@ -97,7 +100,7 @@ No functional changes have been made in this release.
 
 ### Fixes
 * handled empty rows in some editions (caused crash for 2019 edition)
-* account for added columns in IOD and UID tables see [#3](../../issues/3))
+* account for added columns in IOD and UID tables (see [#3](../../issues/3))
 
 ### Infrastructure
 * changed CI to GitHub actions
