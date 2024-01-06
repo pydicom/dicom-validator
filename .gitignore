@@ -14,3 +14,9 @@ dist/
 
 # Tox environments
 .tox/
+
+# pytest
+.pytest_cache
+
+# DICOM standard (downloaded on demand)
+dicom_validator/tests/fixtures/standard/

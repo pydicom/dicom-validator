@@ -168,3 +168,20 @@ class TestReadPart3:
         assert condition.operator == ConditionOperator.EqualsValue
         assert condition.tag == "(0040,A040)"
         assert condition.values == ["NUM"]
+
+    def test_parsed_enum_values(self, reader):
+        description = reader.module_description("10.25")
+        assert "(0082,0036)" in description
+        assert "enums" in description["(0082,0036)"]
+        enums = description["(0082,0036)"]["enums"]
+        assert enums == ["FAILURE", "WARNING", "INFORMATIVE"]
+
+    def test_linked_enum_values(self, reader):
+        description = reader.module_description("10.24")
+        assert "(300A,0450)" in description  # Device Motion Control Sequence
+        assert "items" in description["(300A,0450)"]
+        assert "(300A,0451)" in description["(300A,0450)"]["items"]
+        # Device Motion Execution Mode
+        tag = description["(300A,0450)"]["items"]["(300A,0451)"]
+        assert "enums" in tag
+        assert tag["enums"] == ["CONTINUOUS", "TRIGGERED", "AUTOMATIC"]

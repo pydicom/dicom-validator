@@ -10,6 +10,7 @@ import sys
 
 from dicom_validator.spec_reader.condition import ConditionType, ConditionOperator
 from dicom_validator.spec_reader.condition_parser import ConditionParser
+from dicom_validator.spec_reader.enum_parser import EnumParser
 from dicom_validator.spec_reader.spec_reader import (
     SpecReader,
     SpecReaderParseError,
@@ -23,7 +24,6 @@ class Part3Reader(SpecReader):
     def __init__(self, spec_dir, dict_info):
         super(Part3Reader, self).__init__(spec_dir)
         self.part_nr = 3
-        self._condition_parser = None
         self._dict_info = dict_info
         self._iod_descriptions = {}
         self._iod_nodes = {}
@@ -33,6 +33,10 @@ class Part3Reader(SpecReader):
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self._condition_parser = ConditionParser(self._dict_info)
+        self._enum_parser = EnumParser(self.find_section)
+
+    def find_section(self, name):
+        return self.get_doc_root().find(f".//{self.docbook_ns}section[@label='{name}']")
 
     def iod_description(self, chapter):
         """Return the IOD information for the given chapter.
@@ -108,7 +112,7 @@ class Part3Reader(SpecReader):
 
     def _get_iod_nodes(self):
         if not self._iod_nodes:
-            chapter_a = self._find(self._get_doc_root(), ['chapter[@label="A"]'])
+            chapter_a = self._find(self.get_doc_root(), ['chapter[@label="A"]'])
             if chapter_a is None:
                 raise SpecReaderParseError("Chapter A in Part 3 not found")
             # ignore A.1
@@ -142,7 +146,7 @@ class Part3Reader(SpecReader):
         for section_part in section_parts[1:]:
             section_name = section_name + "." + section_part
             search_path.append(f'section[@label="{section_name}"]')
-        section_node = self._find(self._get_doc_root(), search_path)
+        section_node = self._find(self.get_doc_root(), search_path)
         # handle incorrect nesting in specific section
         if (
             section_node is None
@@ -150,7 +154,7 @@ class Part3Reader(SpecReader):
             and int(section_parts[-1]) > 6
         ):
             search_path.insert(-1, 'section[@label="C.8.31.6"]')
-            section_node = self._find(self._get_doc_root(), search_path)
+            section_node = self._find(self.get_doc_root(), search_path)
         return section_node
 
     def _parse_iod_node(self, iod_node):
@@ -250,6 +254,11 @@ class Part3Reader(SpecReader):
                 current_descriptions[-1][tag_id]["cond"] = self._condition_parser.parse(
                     self._find_all_text(columns[3])
                 )
+            info = self._dict_info.get(tag_id)
+            if info:
+                enum_values = self._enum_parser.parse(columns[3], info["vr"])
+                if enum_values:
+                    current_descriptions[-1][tag_id]["enums"] = enum_values
 
             last_tag_id = tag_id
         return last_tag_id

@@ -44,7 +44,7 @@ class Part6Reader(SpecReader):
     def _read_element_table(self):
         self._data_elements = {}
         table = self._find(
-            self._get_doc_root(), ['chapter[@label="6"]', "table", "tbody"]
+            self.get_doc_root(), ['chapter[@label="6"]', "table", "tbody"]
         )
         if table is None:
             raise SpecReaderParseError(
@@ -96,7 +96,7 @@ class Part6Reader(SpecReader):
         if self._uids is None:
             self._uids = {}
             table = self._find(
-                self._get_doc_root(), ['chapter[@label="A"]', "table", "tbody"]
+                self.get_doc_root(), ['chapter[@label="A"]', "table", "tbody"]
             )
             if table is None:
                 raise SpecReaderParseError(

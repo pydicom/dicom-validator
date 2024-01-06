@@ -49,7 +49,7 @@ class SpecReader:
                 )
         return self._doc_trees.get(self.part_nr)
 
-    def _get_doc_root(self):
+    def get_doc_root(self):
         doc_tree = self._get_doc_tree()
         if doc_tree:
             return doc_tree.getroot()

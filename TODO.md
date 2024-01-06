@@ -6,7 +6,6 @@
 #### Parse attribute description
 * add number of allowed sequences items (1 vs 1-n)
 * add restriction for number of items where available
-* allowed enum values
 
 #### Parse attribute and module conditions
 * collect all used styles for tests :on:
