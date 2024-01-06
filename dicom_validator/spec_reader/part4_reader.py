@@ -38,7 +38,7 @@ class Part4Reader(SpecReader):
 
     def _read_sop_table(self, chapter):
         table = self._find(
-            self._get_doc_root(),
+            self.get_doc_root(),
             ['chapter[@label="B"]', f'section[@label="{chapter}"]', "table", "tbody"],
         )
         if table is None:

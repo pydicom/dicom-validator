@@ -380,19 +380,27 @@ class IODValidator:
         else:
             tag_required, tag_allowed = False, True
         error_kind = None
+        extra_msg = ""
         if not has_tag and tag_required:
             error_kind = "missing"
         elif has_tag and not tag_allowed:
             error_kind = "not allowed"
-        elif has_tag and value_required:
+        elif has_tag and (value_required or "enums" in attribute):
             value = self._dataset_stack[-1].dataset[tag_id].value
-            if value is None or isinstance(value, Sequence) and not value:
-                error_kind = "empty"
+            if value_required:
+                if value is None or isinstance(value, Sequence) and not value:
+                    error_kind = "empty"
+            if value is not None and "enums" in attribute:
+                if value not in attribute["enums"]:
+                    error_kind = "value is not allowed"
+                    extra_msg = (
+                        f" (value: {value}, allowed: "
+                        f"{', '.join([str(e) for e in attribute['enums']])})"
+                    )
+
         if error_kind is not None:
-            msg = self._incorrect_tag_message(
-                tag_id, error_kind, self._condition_message(condition_dict)
-            )
-            return msg
+            extra_msg = extra_msg or self._condition_message(condition_dict)
+            return self._incorrect_tag_message(tag_id, error_kind, extra_msg)
 
     def _object_is_required_or_allowed(self, condition):
         """Checks if an attribute is required or allowed in the current dataset,
@@ -624,7 +632,9 @@ class IODValidator:
 
     def _incorrect_tag_message(self, tag_id, error_kind, extra_message=""):
         tag_name = tag_name_from_id(tag_id, self._dicom_info.dictionary)
-        msg = f"Tag {tag_name} is {error_kind}{self._tag_context_message()}"
+        if " is " not in error_kind:
+            error_kind = f"is {error_kind}"
+        msg = f"Tag {tag_name} {error_kind}{self._tag_context_message()}"
         if len(extra_message) != 0:
             msg = f"{msg} {extra_message}"
         return msg

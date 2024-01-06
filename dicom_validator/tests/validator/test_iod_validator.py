@@ -416,3 +416,42 @@ class TestIODValidator:
         assert not has_tag_error(
             result, "SR Document Content", "(0070,0022)", "missing"
         )  # Graphic Data
+
+    @pytest.mark.tag_set(
+        {
+            # Enhanced XA Image
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ImageType": "DERIVED",
+            "PresentationLUTShape": "INVALID",
+            "ContentQualification": "PRODUCT",
+            "BitsStored": 1,
+        }
+    )
+    def test_enum_value(self, validator):
+        result = validator.validate()
+        print(result)
+
+        # Presentation LUT Shape: incorrect enum value
+        assert has_tag_error(
+            result,
+            "Enhanced XA/XRF Image",
+            "(2050,0020)",
+            "value is not allowed",
+            "(value: INVALID, allowed: IDENTITY, INVERSE)",
+        )
+
+        # Content Qualification: correct enum value
+        assert not has_tag_error(
+            result, "Enhanced XA/XRF Image", "(0018,9004)", "value is not allowed"
+        )
+
+        # Bits Stored: incorrect int enum value
+        assert has_tag_error(
+            result,
+            "Enhanced XA/XRF Image",
+            "(0028,0101)",
+            "value is not allowed",
+            "(value: 1, allowed: 8, 9, 10, 11, 12, 13, 14, 15, 16)",
+        )

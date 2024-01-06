@@ -73,9 +73,10 @@ the first time.
 ## validate_iods
 
 This checks a given DICOM file, or all DICOM files recursively in a given
-directory, for correct tags for the related SOP class. Only the presence or
-absence of the tag, and the presence of a tag value is checked, not the
-contained value itself (a check for correct enumerated values may be added later).
+directory, for correct tags for the related SOP class. The presence or
+absence of the tag and the presence of a tag value are checked, and in the
+case of an enumeration defined for the value, the value is also check for validity.
+More checks may be added later.
 This is done by looking up all required and optional modules for this
 SOP class, and checking the tags for these modules. Tags that are not allowed or
 missing in a module are listed. Parts 3 and 4 of the DICOM standard are used

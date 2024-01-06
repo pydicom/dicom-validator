@@ -3,8 +3,11 @@ The released versions correspond to PyPi releases.
 
 ## [Version 0.5.0] (Unreleased)
 
+### Features
+* added checking of most enumerated values (see [#54](../../issues/54))
+
 ### Infrastructure
-* add CI tests for Python 3.12
+* added CI tests for Python 3.12
 
 ## [Version 0.4.1](https://pypi.python.org/pypi/dicom-validator/0.4.1) (2023-11-09)
 Mostly a bugfix release for the condition parser.
