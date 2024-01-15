@@ -53,7 +53,7 @@ class Part3Reader(SpecReader):
         """
         if chapter not in self._iod_descriptions:
             iod_node = self._get_iod_nodes().get(chapter)
-            if iod_node:
+            if iod_node is not None and len(iod_node) > 0:
                 description = self._parse_iod_node(iod_node)
                 self._iod_descriptions[chapter] = description
         try:
@@ -192,7 +192,7 @@ class Part3Reader(SpecReader):
                     tag_name, columns, current_descriptions
                 )
             else:
-                # todo: other entries
+                # not a valid entry, no need to handle
                 pass
         return current_descriptions[0]
 
