@@ -71,7 +71,7 @@ class DataElementDumper:
 
     def print_dataelement(self, _, dataelement):
         tag_id = f"({dataelement.tag.group:04X},{dataelement.tag.element:04X})"
-        description = self.dict_info.get(tag_id)
+        description = self.dicom_info.dictionary.get(tag_id)
         if description is None:
             name = "[Unknown]"
             vr = dataelement.VR

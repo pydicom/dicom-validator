@@ -14,6 +14,8 @@ class EnumParser:
     """Parses enumerated values for a tag."""
 
     docbook_ns = "{http://docbook.org/ns/docbook}"
+    nr_direct_enums = 0
+    nr_linked_enums = 0
 
     def __init__(
         self, find_section: Callable[[str], Optional[ElementTree.Element]]
@@ -32,6 +34,10 @@ class EnumParser:
             enums = self.parse_linked_variablelist(node)
         if enums:
             if vr == VR.AT:
+                # print(
+                #     f"Ignoring enum values: "
+                #     f"{', '.join([str(e) for e in enums])} with VR {vr}"
+                # )
                 return []  # this is included in INT_VRs, but won't work
             if vr in INT_VR:
                 int_enums: ValuesType = []
@@ -41,14 +47,16 @@ class EnumParser:
                         int_enums.append(int(e[:-1], 16))
                     else:
                         int_enums.append(int(e))
+                self.__class__.nr_direct_enums += 1
                 return int_enums
             if vr in STR_VR:
+                self.__class__.nr_direct_enums += 1
                 return enums
             # any other VR does not make sense here
-            print(
-                f"Ignoring enum values: "
-                f"{', '.join([str(e) for e in enums])} with VR {vr}"
-            )
+            # print(
+            #     f"Ignoring enum values: "
+            #     f"{', '.join([str(e) for e in enums])} with VR {vr}"
+            # )
         return []
 
     def parse_variable_list(self, var_list) -> ValuesType:
@@ -56,10 +64,7 @@ class EnumParser:
         # we ignore defined terms, as they do not limit the possible values
         title = var_list.find(self.docbook_ns + "title")
         # TODO: handle cases with conditions
-        if title is None or title.text.lower() not in (
-            "enumerated values",
-            "enumerated values:",
-        ):
+        if title is None or title.text.lower() not in ("enumerated values:",):
             return []
         terms = []
         for item in var_list.findall(self.docbook_ns + "varlistentry"):
@@ -79,5 +84,8 @@ class EnumParser:
                     var_list = section.find(f"{self.docbook_ns}variablelist")
                     if var_list is not None:
                         self._enum_cache[link] = self.parse_variable_list(var_list)
+                        if self._enum_cache[link]:
+                            self.__class__.nr_linked_enums += 1
+                            # print("LINK:", link, self._enum_cache[link])
                         return self._enum_cache[link]
         return []

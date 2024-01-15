@@ -6,6 +6,9 @@ The released versions correspond to PyPi releases.
 ### Features
 * added checking of most enumerated values (see [#54](../../issues/54))
 
+### Fixes
+* fixed a regression that causes an exception in the DICOM dump tool
+
 ### Infrastructure
 * added CI tests for Python 3.12
 
