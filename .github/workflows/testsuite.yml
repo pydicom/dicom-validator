@@ -30,7 +30,7 @@ jobs:
 
     - name: Cache DICOM standard
       id: cache-dicom
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: dicom_validator/tests/fixtures/standard
         key: ${{ matrix.dicom-version }}
