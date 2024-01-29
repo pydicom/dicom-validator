@@ -3,6 +3,7 @@ Chapter6Reader collects DICOM Data Element information.
 The information is taken from DICOM dictionary (PS3.6) in docbook format
 as provided by ACR NEMA.
 """
+
 from dicom_validator.spec_reader.spec_reader import SpecReader, SpecReaderParseError
 
 
@@ -119,7 +120,7 @@ class Part6Reader(SpecReader):
                         # spaces inside the UIDs
                         # we remove them hoping this is the only such problem
                         uid_value = self.cleaned_value(uid_attributes[0])
-                        self._uids.setdefault(uid_type, {})[
-                            uid_value
-                        ] = self.cleaned_value(uid_attributes[1])
+                        self._uids.setdefault(uid_type, {})[uid_value] = (
+                            self.cleaned_value(uid_attributes[1])
+                        )
         return self._uids
