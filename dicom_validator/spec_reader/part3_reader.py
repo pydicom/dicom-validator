@@ -3,6 +3,7 @@ Chapter3Reader collects DICOM Information Object Definition information
 for specific Storage SOP Classes.
 The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 """
+
 import logging
 from itertools import groupby
 
