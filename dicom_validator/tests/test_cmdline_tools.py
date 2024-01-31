@@ -6,8 +6,6 @@ import pytest
 from dicom_validator.spec_reader.enum_parser import EnumParser
 from dicom_validator.validate_iods import main
 
-CURRENT_REVISION = "2023c"
-
 
 @pytest.fixture(scope="session")
 def fixture_path():
@@ -24,7 +22,10 @@ def dicom_fixture_path(fixture_path):
     yield fixture_path / "dicom"
 
 
-def test_validate_sr(caplog, standard_path, dicom_fixture_path):
+@pytest.mark.order(0)
+@pytest.mark.parametrize("revision", ["2015b", "2023c"])
+def test_validate_sr(revision, caplog, standard_path, dicom_fixture_path):
+    # test also for 2015b to test an issue causing an exception
     rtdose_path = dicom_fixture_path / "rtdose.dcm"
     # recreate json files to avoid getting the cached ones
     # relies on the fact that this test is run first
@@ -32,7 +33,7 @@ def test_validate_sr(caplog, standard_path, dicom_fixture_path):
         "-src",
         str(standard_path),
         "-r",
-        CURRENT_REVISION,
+        revision,
         "--recreate-json",
         str(rtdose_path),
     ]

@@ -24,15 +24,29 @@ def standard_path(fixture_path):
 
 
 @pytest.fixture(scope="session")
-def spec_fixture_path(standard_path):
-    yield standard_path / CURRENT_REVISION / "docbook"
+def revision(request):
+    if hasattr(request, "param"):
+        revision = request.param
+    else:
+        revision = CURRENT_REVISION
+    yield revision
 
 
 @pytest.fixture(scope="session")
-def dict_info(standard_path):
+def revision_path(standard_path, revision):
+    yield standard_path / revision
+
+
+@pytest.fixture(scope="session")
+def spec_fixture_path(revision_path):
+    yield revision_path / "docbook"
+
+
+@pytest.fixture(scope="session")
+def dict_info(revision_path):
     from dicom_validator.spec_reader.edition_reader import EditionReader
 
-    json_fixture_path = standard_path / CURRENT_REVISION / "json"
+    json_fixture_path = revision_path / "json"
     with open(json_fixture_path / EditionReader.dict_info_json) as info_file:
         info = json.load(info_file)
     yield info
@@ -40,7 +54,8 @@ def dict_info(standard_path):
 
 @pytest.fixture(scope="module")
 def spec_path(fs_module, spec_fixture_path):
-    fs_module.add_real_directory(spec_fixture_path)
+    if not fs_module.exists(spec_fixture_path):
+        fs_module.add_real_directory(spec_fixture_path)
     yield spec_fixture_path
 
 

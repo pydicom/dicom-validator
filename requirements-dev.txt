@@ -2,3 +2,4 @@ pydicom>=2.3.0
 pyfakefs>=3.4.1
 pytest
 pytest-cov
+pytest-order

@@ -1,6 +1,11 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
+## Unreleased
+
+### Fixes
+* fixed exception on parsing some older DICOM standard versions
+
 ## [Version 0.5.0](https://pypi.python.org/pypi/dicom-validator/0.5.0) (2024-01-25)
 Adds enum checks and fixes a regression.
 
