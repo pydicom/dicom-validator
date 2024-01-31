@@ -301,6 +301,8 @@ class Part3Reader(SpecReader):
             # Pop off (delete) the last level_delta items.
             level_delta = current_level - level
             del current_descriptions[-level_delta:]
+            if not current_descriptions:
+                current_descriptions.append({})
         return tag_name, level
 
     def _collect_modules(self, table_section, check_rowspan):
