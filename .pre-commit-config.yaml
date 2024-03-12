@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/crate-ci/typos
-    rev: typos-v0.10.21
+    rev: v1.19.0
     hooks:
       - id: typos
         exclude: _*.xml
@@ -23,11 +23,11 @@ repos:
       - id: debug-statements
         language_version: python3
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.2.2
+    rev: v0.3.2
     hooks:
       - id: ruff
         args: [dicom_validator, --fix, --exit-non-zero-on-fix]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.9.0
     hooks:
       - id: mypy
