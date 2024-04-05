@@ -429,9 +429,8 @@ class TestIODValidator:
             "BitsStored": 1,
         }
     )
-    def test_enum_value(self, validator):
+    def test_invalid_enum_value(self, validator):
         result = validator.validate()
-        print(result)
 
         # Presentation LUT Shape: incorrect enum value
         assert has_tag_error(
@@ -454,4 +453,107 @@ class TestIODValidator:
             "(0028,0101)",
             "value is not allowed",
             "(value: 1, allowed: 8, 9, 10, 11, 12, 13, 14, 15, 16)",
+        )
+
+    @pytest.mark.tag_set(
+        {
+            # MR Image Storage
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.4",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ScanningSequence": ["SE", "EP"],
+        }
+    )
+    def test_valid_multi_valued_enum(self, validator):
+        result = validator.validate()
+
+        # Scanning Sequence - all values allowed
+        assert not has_tag_error(
+            result,
+            "MR Image",
+            "(0018,0020)",
+            "value is not allowed",
+        )
+
+    @pytest.mark.tag_set(
+        {
+            # MR Image Storage
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.4",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ScanningSequence": ["SE", "EP", "IV"],
+        }
+    )
+    def test_invalid_multi_valued_enum(self, validator):
+        result = validator.validate()
+
+        # Scanning Sequence - IV not allowed
+        assert has_tag_error(
+            result,
+            "MR Image",
+            "(0018,0020)",
+            "value is not allowed",
+            "(value: IV, allowed: SE, IR, GR, EP, RM)",
+        )
+
+    @pytest.mark.tag_set(
+        {
+            # Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.77.1.5.8",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ImageType": ["ORIGINAL", "PRIMARY"],
+        }
+    )
+    def test_valid_indexed_enum(self, validator):
+        result = validator.validate()
+
+        # Image Type - both values correct
+        assert not has_tag_error(
+            result,
+            "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Image",
+            "(0008,0008)",
+            "value is not allowed",
+        )
+
+    @pytest.mark.tag_set(
+        {
+            # Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.77.1.5.8",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ImageType": ["ORIGINAL", "SECONDARY"],
+        }
+    )
+    def test_invalid_indexed_enum(self, validator):
+        result = validator.validate()
+
+        # Image Type - second value incorrect
+        assert has_tag_error(
+            result,
+            "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Image",
+            "(0008,0008)",
+            "value is not allowed",
+            "(value: SECONDARY, allowed: PRIMARY)",
+        )
+
+    @pytest.mark.tag_set(
+        {
+            # Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.77.1.5.8",
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ImageType": ["PRIMARY", "ORIGINAL"],
+        }
+    )
+    def test_indexed_enum_incorrect_index(self, validator):
+        result = validator.validate()
+
+        # Image Type - allowed values at incorrect index
+        assert has_tag_error(
+            result,
+            "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Image",
+            "(0008,0008)",
+            "value is not allowed",
+            "(value: ORIGINAL, allowed: PRIMARY)",
         )

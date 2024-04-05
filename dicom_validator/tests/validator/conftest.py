@@ -35,21 +35,27 @@ def json_fixture_path(standard_path):
 
 @pytest.fixture(scope="session")
 def iod_info(json_fixture_path):
-    with open(json_fixture_path / EditionReader.iod_info_json) as info_file:
+    with open(
+        json_fixture_path / EditionReader.iod_info_json, encoding="utf8"
+    ) as info_file:
         info = json.load(info_file)
     yield info
 
 
 @pytest.fixture(scope="session")
 def dict_info(json_fixture_path):
-    with open(json_fixture_path / EditionReader.dict_info_json) as info_file:
+    with open(
+        json_fixture_path / EditionReader.dict_info_json, encoding="utf8"
+    ) as info_file:
         info = json.load(info_file)
     yield info
 
 
 @pytest.fixture(scope="session")
 def module_info(json_fixture_path):
-    with open(json_fixture_path / EditionReader.module_info_json) as info_file:
+    with open(
+        json_fixture_path / EditionReader.module_info_json, encoding="utf8"
+    ) as info_file:
         info = json.load(info_file)
     yield info
 

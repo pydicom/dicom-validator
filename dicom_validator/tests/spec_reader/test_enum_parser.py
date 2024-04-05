@@ -65,7 +65,7 @@ class TestEnumParser:
         <term>NO</term>
         </varlistentry>
         </variablelist>"""
-        assert parser.parse(section(content), VR.SH) == ["NO"]
+        assert parser.parse(section(content), VR.SH) == [{"val": ["NO"]}]
 
     def test_single_enum_with_extra_tag(self, parser):
         content = """<variablelist>
@@ -77,7 +77,7 @@ class TestEnumParser:
         <term>NO</term>
         </varlistentry>
         </variablelist>"""
-        assert parser.parse(section(content), VR.SH) == ["NO"]
+        assert parser.parse(section(content), VR.SH) == [{"val": ["NO"]}]
 
     def test_two_enums(self, parser):
         content = """<variablelist>
@@ -89,7 +89,7 @@ class TestEnumParser:
         <term>NO</term>
         </varlistentry>
         </variablelist>"""
-        assert parser.parse(section(content), VR.SH) == ["YES", "NO"]
+        assert parser.parse(section(content), VR.SH) == [{"val": ["YES", "NO"]}]
 
     def test_int_enums(self, parser):
         content = """<variablelist>
@@ -101,7 +101,7 @@ class TestEnumParser:
         <term>0001</term>
         </varlistentry>
         </variablelist>"""
-        assert parser.parse(section(content), VR.US) == [0, 1]
+        assert parser.parse(section(content), VR.US) == [{"val": [0, 1]}]
 
     def test_hex_enums(self, parser):
         content = """<variablelist>
@@ -113,7 +113,7 @@ class TestEnumParser:
         <term>0011H</term>
         </varlistentry>
         </variablelist>"""
-        assert parser.parse(section(content), VR.US) == [16, 17]
+        assert parser.parse(section(content), VR.US) == [{"val": [16, 17]}]
 
     def test_linked_enum(self):
         content = """<para>Bla blah, see
@@ -139,4 +139,32 @@ class TestEnumParser:
         </variablelist>
         """
         parser = EnumParser(lambda s: section(linked, s))
-        assert parser.parse(section(content), VR.SH) == ["GEOMETRY", "FIDUCIAL"]
+        assert parser.parse(section(content), VR.SH) == [
+            {"val": ["GEOMETRY", "FIDUCIAL"]}
+        ]
+
+    def test_value_for_value(self, parser):
+        content = """
+        <variablelist spacing="compact">
+            <title>Enumerated Values for Value 1:</title>
+            <varlistentry>
+                <term>DERIVED</term>
+                <listitem>
+                    <para xml:id="para_34ae991b-705a-4ffc-992e-6f97e657d0d0"/>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+        <variablelist spacing="compact">
+            <title>Enumerated Values for Value 2:</title>
+            <varlistentry>
+                <term>PRIMARY</term>
+                <listitem>
+                    <para xml:id="para_c6dbc4cc-fdd6-499f-ab90-9dc7f4ee13a9"/>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+        """
+        assert parser.parse(section(content), VR.CS) == [
+            {"index": 1, "val": ["DERIVED"]},
+            {"index": 2, "val": ["PRIMARY"]},
+        ]

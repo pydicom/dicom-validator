@@ -4,6 +4,7 @@ import sys
 from dataclasses import dataclass
 
 from pydicom import Sequence
+from pydicom.multival import MultiValue
 from pydicom.tag import Tag
 
 from dicom_validator.spec_reader.condition import (
@@ -391,12 +392,20 @@ class IODValidator:
                 if value is None or isinstance(value, Sequence) and not value:
                     error_kind = "empty"
             if value is not None and "enums" in attribute:
-                if value not in attribute["enums"]:
-                    error_kind = "value is not allowed"
-                    extra_msg = (
-                        f" (value: {value}, allowed: "
-                        f"{', '.join([str(e) for e in attribute['enums']])})"
-                    )
+                if not isinstance(value, MultiValue):
+                    value = [value]
+                for i, v in enumerate(value):
+                    for enums in attribute["enums"]:
+                        # if an index is there, we only check the value for the
+                        # correct index; otherwise there will only be one entry
+                        if "index" in enums and int(enums["index"]) != i + 1:
+                            continue
+                        if v not in enums["val"]:
+                            error_kind = "value is not allowed"
+                            extra_msg = (
+                                f" (value: {v}, allowed: "
+                                f"{', '.join([str(e) for e in enums['val']])})"
+                            )
 
         if error_kind is not None:
             extra_msg = extra_msg or self._condition_message(condition_dict)

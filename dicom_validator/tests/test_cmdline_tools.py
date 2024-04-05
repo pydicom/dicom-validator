@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 
-from dicom_validator.spec_reader.enum_parser import EnumParser
 from dicom_validator.validate_iods import main
 
 
@@ -43,5 +42,3 @@ def test_validate_sr(revision, caplog, standard_path, dicom_fixture_path):
     # regression test for #9
     assert "Unknown SOPClassUID" not in caplog.text
     assert "Tag (0008,1070) (Operators' Name) is missing" in caplog.text
-
-    print(f"Direct: {EnumParser.nr_direct_enums}, linked: {EnumParser.nr_linked_enums}")

@@ -23,7 +23,7 @@ class MemoryEditionReader(EditionReader):
         self.html_contents = contents
 
     def retrieve(self, html_path):
-        with open(html_path, "w") as html_file:
+        with open(html_path, "w", encoding="utf8") as html_file:
             html_file.write(self.html_contents)
 
 
