@@ -75,19 +75,19 @@ class EditionReader:
                 # no need to update the edition dir more than once a month
                 update = (today - modified_date).days > 30
             else:
-                with open(editions_path) as f:
+                with open(editions_path, encoding="utf8") as f:
                     update = not json.load(f)
         else:
             update = True
         if update:
             self.update_edition()
         if editions_path.exists():
-            with open(editions_path) as json_file:
+            with open(editions_path, encoding="utf8") as json_file:
                 return json.load(json_file)
 
     def read_from_html(self):
         html_path = self.path / self.html_filename
-        with open(html_path) as html_file:
+        with open(html_path, encoding="utf8") as html_file:
             contents = html_file.read()
         parser = EditionParser()
         parser.feed(contents)
@@ -98,7 +98,7 @@ class EditionReader:
         editions = self.read_from_html()
         if editions:
             json_path = self.path / self.json_filename
-            with open(json_path, "w") as json_file:
+            with open(json_path, "w", encoding="utf8") as json_file:
                 json_file.write(json.dumps(editions))
 
     def get_edition(self, revision):
@@ -163,7 +163,7 @@ class EditionReader:
 
     @staticmethod
     def load_info(json_path, info_json):
-        with open(json_path / info_json) as info_file:
+        with open(json_path / info_json, encoding="utf8") as info_file:
             return json.load(info_file)
 
     @classmethod
@@ -204,13 +204,13 @@ class EditionReader:
             if chapter in chapter_info:
                 for uid in chapter_info[chapter]:
                     definition[uid] = iod_info[chapter]
-        with open(json_path / cls.iod_info_json, "w") as info_file:
+        with open(json_path / cls.iod_info_json, "w", encoding="utf8") as info_file:
             info_file.write(cls.dump_description(definition))
-        with open(json_path / cls.module_info_json, "w") as info_file:
+        with open(json_path / cls.module_info_json, "w", encoding="utf8") as info_file:
             info_file.write(cls.dump_description(part3reader.module_descriptions()))
-        with open(json_path / cls.dict_info_json, "w") as info_file:
+        with open(json_path / cls.dict_info_json, "w", encoding="utf8") as info_file:
             info_file.write(cls.dump_description(dict_info))
-        with open(json_path / cls.uid_info_json, "w") as info_file:
+        with open(json_path / cls.uid_info_json, "w", encoding="utf8") as info_file:
             info_file.write(cls.dump_description(part6reader.all_uids()))
         cls.write_current_version(json_path)
         print("Done!")
@@ -250,11 +250,11 @@ class EditionReader:
         version_path = json_path / "version"
         if not version_path.exists():
             return False
-        with open(version_path) as f:
+        with open(version_path, encoding="utf8") as f:
             return f.read() >= __version__
 
     @staticmethod
     def write_current_version(json_path):
         version_path = json_path / "version"
-        with open(version_path, "w") as f:
+        with open(version_path, "w", encoding="utf8") as f:
             f.write(__version__)

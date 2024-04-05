@@ -47,7 +47,9 @@ def dict_info(revision_path):
     from dicom_validator.spec_reader.edition_reader import EditionReader
 
     json_fixture_path = revision_path / "json"
-    with open(json_fixture_path / EditionReader.dict_info_json) as info_file:
+    with open(
+        json_fixture_path / EditionReader.dict_info_json, encoding="utf8"
+    ) as info_file:
         info = json.load(info_file)
     yield info
 

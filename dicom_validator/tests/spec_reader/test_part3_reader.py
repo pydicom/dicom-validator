@@ -223,7 +223,7 @@ class TestReadPart3:
         assert "(0082,0036)" in description
         assert "enums" in description["(0082,0036)"]
         enums = description["(0082,0036)"]["enums"]
-        assert enums == ["FAILURE", "WARNING", "INFORMATIVE"]
+        assert enums == [{"val": ["FAILURE", "WARNING", "INFORMATIVE"]}]
 
     @pytest.mark.parametrize(
         "revision", ["2015b", "2023c"], indirect=True, scope="session"
@@ -236,4 +236,4 @@ class TestReadPart3:
         # Device Motion Execution Mode
         tag = description["(300A,0450)"]["items"]["(300A,0451)"]
         assert "enums" in tag
-        assert tag["enums"] == ["CONTINUOUS", "TRIGGERED", "AUTOMATIC"]
+        assert tag["enums"] == [{"val": ["CONTINUOUS", "TRIGGERED", "AUTOMATIC"]}]

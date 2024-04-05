@@ -3,8 +3,12 @@ The released versions correspond to PyPi releases.
 
 ## Unreleased
 
+### Features
+* added checking of enumerated values defined for a specific index
+
 ### Fixes
 * fixed exception on parsing some older DICOM standard versions
+* fixed checking of multi-valued tags with defined enum values (see [#87](../../issues/87))
 
 ## [Version 0.5.0](https://pypi.python.org/pypi/dicom-validator/0.5.0) (2024-01-25)
 Adds enum checks and fixes a regression.
