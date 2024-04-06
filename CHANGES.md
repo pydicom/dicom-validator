@@ -1,7 +1,8 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## Unreleased
+## [Version 0.5.1](https://pypi.python.org/pypi/dicom-validator/0.5.0) (2024-04-06)
+Fixes for enum checks.
 
 ### Features
 * added checking of enumerated values defined for a specific index
