@@ -36,7 +36,7 @@ class Part6Reader(SpecReader):
         as key.
         The values of the returned dict are dicts with the following entries:
             'name': The human-readable tag name
-            'vr': The tag value representation (e.g. 'PN')
+            'vr': The tag value representation (e.g. 'ON')
             'vm': The tag multiplicity (e.g. '1-N')
             'prop': Additional properties, like 'RET' for retired
         """

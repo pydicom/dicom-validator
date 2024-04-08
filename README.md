@@ -166,12 +166,12 @@ c:\dev\DICOM Data\SR\image12.dcm
 (0008,0050) Accession Number                         SH    1  [ACN000001]
 (0008,0060) Modality                                 CS    1  [US]
 (0008,0070) Manufacturer                             LO    1  [Acuson]
-(0008,0090) Referring Physician's Name               PN    1  []
+(0008,0090) Referring Physician's Name               ON    1  []
 (0008,1010) Station Name                             SH    1  [QV-00775]
 (0008,1030) Study Description                        LO    1  [ABDOMEN]
-(0008,1050) Performing Physician's Name              PN    1  [DOE,JOHN]
-(0008,1060) Name of Physician(s) Reading Study       PN    1  []
-(0008,1070) Operators' Name                          PN    1  [DO]
+(0008,1050) Performing Physician's Name              ON    1  [DOE,JOHN]
+(0008,1060) Name of Physician(s) Reading Study       ON    1  []
+(0008,1070) Operators' Name                          ON    1  [DO]
 (0008,1080) Admitting Diagnoses Description          LO    1  [RSNA'95 Data Not Delete]
 (0009,0010) [Unknown]                                LO    1  [AEGIS_DICOM_2.00]
 ...
@@ -182,6 +182,6 @@ If you want to show only specific tags, you can use the option `--show-tags`:
 (py3_test) c:\dev\GitHub\dicom-validator>dump_dcm_info "c:\dev\DICOM Data\SR\image12.dcm" --show-tags 0010,0010 PatientID
 
 c:\dev\DICOM Data\SR\image12.dcm
-(0010,0010) Patient's Name                           PN    1  [DOE^JANE]
+(0010,0010) Patient's Name                           ON    1  [DOE^JANE]
 (0010,0020) Patient ID                               LO    1  [ACN000001]
 ```
