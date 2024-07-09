@@ -388,7 +388,7 @@ class IODValidator:
             error_kind = "missing"
         elif has_tag and not tag_allowed:
             error_kind = "not allowed"
-        elif has_tag: #and (value_required or "enums" in attribute):
+        elif has_tag:
             value = self._dataset_stack[-1].dataset[tag_id].value
             vr = self._dataset_stack[-1].dataset[tag_id].VR
             if value_required:
@@ -411,13 +411,12 @@ class IODValidator:
                                     f"{', '.join([str(e) for e in enums['val']])})"
                                 )
                     if not self._suppress_vr_warnings and error_kind is None:
-                        if True: #not self._suppress_vr_warnings:
-                            vv = str(v) if vr in ("DS", "IS") else v
-                            try:
-                                validate_value(vr, vv, config.RAISE)
-                            except Exception as _:
-                                error_kind = "conflicting with VR"
-                                extra_msg = f" (value: {vv}, VR: {vr})"
+                        vv = str(v) if vr in ("DS", "IS") else v
+                        try:
+                            validate_value(vr, vv, config.RAISE)
+                        except Exception as _:
+                            error_kind = "conflicting with VR"
+                            extra_msg = f" (value: {vv}, VR: {vr})"
 
         if error_kind is not None:
             extra_msg = extra_msg or self._condition_message(condition_dict)
