@@ -10,7 +10,7 @@ def validate(args, base_path):
     json_path = Path(base_path, "json")
     dicom_info = EditionReader.load_dicom_info(json_path)
     log_level = logging.DEBUG if args.verbose else logging.INFO
-    validator = DicomFileValidator(dicom_info, log_level, args.force_read)
+    validator = DicomFileValidator(dicom_info, log_level, args.force_read, args.suppress_vr_warnings)
     error_nr = 0
     for dicom_path in args.dicomfiles:
         error_nr += sum(
@@ -50,6 +50,13 @@ def main(args=None):
         "--recreate-json",
         action="store_true",
         help="Force recreating the JSON information from the DICOM specs",
+        default=False,
+    )
+    parser.add_argument(
+        "--suppress-vr-warnings",
+        "-svr",
+        action="store_true",
+        help="Suppress warnings for values not matching value representation (VR)",
         default=False,
     )
     parser.add_argument(
