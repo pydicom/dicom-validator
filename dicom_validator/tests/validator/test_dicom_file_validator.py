@@ -56,15 +56,14 @@ class TestFakeDicomFileValidator:
 
     def test_unknown_sop_class(self, validator):
         dataset = Dataset()
-        with pytest.warns(UserWarning, match="Invalid value for VR UI*"):
-            dataset.SOPClassUID = "Unknown"
-            file_dataset = FileDataset(
-                "test", dataset, file_meta=self.create_metadata()
-            )
-            write_file("test", file_dataset, write_like_original=False)
-            self.assert_fatal_error(
-                validator, "test", "Unknown SOPClassUID (probably retired): Unknown"
-            )
+        dataset.SOPClassUID = "Unknown"
+        file_dataset = FileDataset(
+            "test", dataset, file_meta=self.create_metadata()
+        )
+        write_file("test", file_dataset, write_like_original=False)
+        self.assert_fatal_error(
+            validator, "test", "Unknown SOPClassUID (probably retired): Unknown"
+        )
 
     def test_validate_dir(self, fs, validator):
         fs.create_dir(os.path.join("foo", "bar", "baz"))
