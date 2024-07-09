@@ -107,7 +107,9 @@ class InvalidParameterError(Exception):
 
 
 class IODValidator:
-    def __init__(self, dataset, dicom_info, log_level=logging.INFO, suppress_vr_warnings=False):
+    def __init__(
+        self, dataset, dicom_info, log_level=logging.INFO, suppress_vr_warnings=False
+    ):
         self._dataset = dataset
         self._dataset_stack = [DatasetStackItem(self._dataset, None)]
         self._dicom_info = dicom_info

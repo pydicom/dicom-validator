@@ -10,7 +10,9 @@ def validate(args, base_path):
     json_path = Path(base_path, "json")
     dicom_info = EditionReader.load_dicom_info(json_path)
     log_level = logging.DEBUG if args.verbose else logging.INFO
-    validator = DicomFileValidator(dicom_info, log_level, args.force_read, args.suppress_vr_warnings)
+    validator = DicomFileValidator(
+        dicom_info, log_level, args.force_read, args.suppress_vr_warnings
+    )
     error_nr = 0
     for dicom_path in args.dicomfiles:
         error_nr += sum(

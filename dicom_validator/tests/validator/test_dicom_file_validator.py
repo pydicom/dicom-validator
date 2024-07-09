@@ -57,9 +57,7 @@ class TestFakeDicomFileValidator:
     def test_unknown_sop_class(self, validator):
         dataset = Dataset()
         dataset.SOPClassUID = "Unknown"
-        file_dataset = FileDataset(
-            "test", dataset, file_meta=self.create_metadata()
-        )
+        file_dataset = FileDataset("test", dataset, file_meta=self.create_metadata())
         write_file("test", file_dataset, write_like_original=False)
         self.assert_fatal_error(
             validator, "test", "Unknown SOPClassUID (probably retired): Unknown"

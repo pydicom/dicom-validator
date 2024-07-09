@@ -45,7 +45,7 @@ class DicomFileValidator:
 
     def validate_file(self, file_path):
         self.logger.info('\nProcessing DICOM file "%s"', file_path)
-        try:            
+        try:
             # dcmread calls validate_value by default. If values don't match
             # required VR (value representation), it emits a warning but
             # not provide the tag and value that caused the warning.
@@ -65,6 +65,3 @@ class DicomFileValidator:
                 suppress_vr_warnings=self._suppress_vr_warnings,
             ).validate()
         }
-
-
-                    
