@@ -1,9 +1,6 @@
-from dataclasses import dataclass
 import logging
 import os
 import sys
-from typing import Any
-import warnings
 
 from pydicom import config, dcmread
 from pydicom.errors import InvalidDicomError
