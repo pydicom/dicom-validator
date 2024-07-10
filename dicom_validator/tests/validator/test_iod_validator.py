@@ -91,6 +91,20 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
+            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",  # CT
+            "TypeOfPatientID": "lowercase",  # VR is CS, which is required to be uppercase
+            "Modality": None,
+        }
+    )
+    def test_vr_conflict(self, validator):
+        result = validator.validate()
+
+        assert "fatal" not in result
+        assert "CT Image" in result
+        assert has_tag_error(result, "Patient", "(0010,0022)", "conflicting")
+
+    @pytest.mark.tag_set(
+        {
             # Enhanced X-Ray Angiographic Image
             "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
             "CArmPositionerTabletopRelationship": "YES",

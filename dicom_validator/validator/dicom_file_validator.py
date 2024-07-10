@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-from pydicom import dcmread
+from pydicom import config, dcmread
 from pydicom.errors import InvalidDicomError
 
 from dicom_validator.validator.iod_validator import IODValidator
@@ -14,6 +14,7 @@ class DicomFileValidator:
         dicom_info,
         log_level=logging.INFO,
         force_read=False,
+        suppress_vr_warnings=False,
     ):
         self._dicom_info = dicom_info
         self.logger = logging.getLogger()
@@ -21,6 +22,7 @@ class DicomFileValidator:
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self._force_read = force_read
+        self._suppress_vr_warnings = suppress_vr_warnings
 
     def validate(self, path):
         errors = {}
@@ -44,7 +46,14 @@ class DicomFileValidator:
     def validate_file(self, file_path):
         self.logger.info('\nProcessing DICOM file "%s"', file_path)
         try:
+            # dcmread calls validate_value by default. If values don't match
+            # required VR (value representation), it emits a warning but
+            # not provide the tag and value that caused the warning.
+            # We will handle it later (optionally) by calling validate_value
+            # directly.
+            config.settings.reading_validation_mode = config.IGNORE
             data_set = dcmread(file_path, defer_size=1024, force=self._force_read)
+
         except InvalidDicomError:
             self.logger.error(f"Invalid DICOM file: {file_path}")
             return {file_path: {"fatal": "Invalid DICOM file"}}
@@ -53,5 +62,6 @@ class DicomFileValidator:
                 data_set,
                 self._dicom_info,
                 self.logger.level,
+                suppress_vr_warnings=self._suppress_vr_warnings,
             ).validate()
         }

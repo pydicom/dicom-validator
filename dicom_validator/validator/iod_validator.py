@@ -3,8 +3,9 @@ import logging
 import sys
 from dataclasses import dataclass
 
-from pydicom import Sequence
+from pydicom import config, Sequence
 from pydicom.multival import MultiValue
+from pydicom.valuerep import validate_value
 from pydicom.tag import Tag
 
 from dicom_validator.spec_reader.condition import (
@@ -106,11 +107,14 @@ class InvalidParameterError(Exception):
 
 
 class IODValidator:
-    def __init__(self, dataset, dicom_info, log_level=logging.INFO):
+    def __init__(
+        self, dataset, dicom_info, log_level=logging.INFO, suppress_vr_warnings=False
+    ):
         self._dataset = dataset
         self._dataset_stack = [DatasetStackItem(self._dataset, None)]
         self._dicom_info = dicom_info
         self._func_group_info = FunctionalGroupInfo({}, set())
+        self._suppress_vr_warnings = suppress_vr_warnings
         self.errors = {}
         self.logger = logging.getLogger("validator")
         self.logger.level = log_level
@@ -386,26 +390,35 @@ class IODValidator:
             error_kind = "missing"
         elif has_tag and not tag_allowed:
             error_kind = "not allowed"
-        elif has_tag and (value_required or "enums" in attribute):
+        elif has_tag:
             value = self._dataset_stack[-1].dataset[tag_id].value
+            vr = self._dataset_stack[-1].dataset[tag_id].VR
             if value_required:
                 if value is None or isinstance(value, Sequence) and not value:
                     error_kind = "empty"
-            if value is not None and "enums" in attribute:
+            if value is not None:
                 if not isinstance(value, MultiValue):
                     value = [value]
                 for i, v in enumerate(value):
-                    for enums in attribute["enums"]:
-                        # if an index is there, we only check the value for the
-                        # correct index; otherwise there will only be one entry
-                        if "index" in enums and int(enums["index"]) != i + 1:
-                            continue
-                        if v not in enums["val"]:
-                            error_kind = "value is not allowed"
-                            extra_msg = (
-                                f" (value: {v}, allowed: "
-                                f"{', '.join([str(e) for e in enums['val']])})"
-                            )
+                    if "enums" in attribute:
+                        for enums in attribute["enums"]:
+                            # if an index is there, we only check the value for the
+                            # correct index; otherwise there will only be one entry
+                            if "index" in enums and int(enums["index"]) != i + 1:
+                                continue
+                            if v not in enums["val"]:
+                                error_kind = "value is not allowed"
+                                extra_msg = (
+                                    f" (value: {v}, allowed: "
+                                    f"{', '.join([str(e) for e in enums['val']])})"
+                                )
+                    if not self._suppress_vr_warnings and error_kind is None:
+                        vv = str(v) if vr in ("DS", "IS") else v
+                        try:
+                            validate_value(vr, vv, config.RAISE)
+                        except Exception as _:
+                            error_kind = "conflicting with VR"
+                            extra_msg = f" (value: {vv}, VR: {vr})"
 
         if error_kind is not None:
             extra_msg = extra_msg or self._condition_message(condition_dict)
