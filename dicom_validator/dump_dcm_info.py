@@ -114,7 +114,7 @@ class DataElementDumper:
         try:
             # dcmread calls validate_value by default. If values don't match
             # required VR (value representation), it emits a warning but
-            # not provide the tag and value that caused the warning.
+            # does not provide the tag and value that caused the warning.
             # There is no point in warning the user when dumping the tags.
             # The validate_iods.py script handles these separately.
             config.settings.reading_validation_mode = config.IGNORE

@@ -48,7 +48,7 @@ class DicomFileValidator:
         try:
             # dcmread calls validate_value by default. If values don't match
             # required VR (value representation), it emits a warning but
-            # not provide the tag and value that caused the warning.
+            # does not provide the tag and value that caused the warning.
             # We will handle it later (optionally) by calling validate_value
             # directly.
             config.settings.reading_validation_mode = config.IGNORE
