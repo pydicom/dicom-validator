@@ -6,8 +6,9 @@ import argparse
 import os
 import re
 from pathlib import Path
+import sys
 
-from pydicom import dcmread
+from pydicom import config, dcmread
 from pydicom.errors import InvalidDicomError
 
 from dicom_validator.spec_reader.edition_reader import EditionReader
@@ -111,6 +112,12 @@ class DataElementDumper:
 
     def dump_file(self, file_path):
         try:
+            # dcmread calls validate_value by default. If values don't match
+            # required VR (value representation), it emits a warning but
+            # not provide the tag and value that caused the warning.
+            # There is no point in warning the user when dumping the tags.
+            # The validate_iods.py script handles these separately.
+            config.settings.reading_validation_mode = config.IGNORE
             print("\n" + file_path)
             dataset = dcmread(
                 file_path, stop_before_pixels=self.show_image_data, force=True
@@ -199,4 +206,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

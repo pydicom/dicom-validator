@@ -1,14 +1,14 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## [Version TBD](https://pypi.python.org/pypi/dicom-validator/TBD) (TBD)
+## [Version 0.6.0](https://pypi.python.org/pypi/dicom-validator/0.6.0) (0.6.0)
 
 ### Features
 * iod_validator: added validation of values against value representations, with
   a new option `-svr` to suppress the above check
 
 ### Fixes
-* ???
+* * dump_dcm_info: suppressed invalid value warnings from dicomread
 
 ## [Version 0.5.1](https://pypi.python.org/pypi/dicom-validator/0.5.1) (2024-04-06)
 Fixes for enum checks.
