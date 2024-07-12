@@ -1,6 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
+import sys
 
 from dicom_validator.spec_reader.edition_reader import EditionReader
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
@@ -76,4 +77,4 @@ def main(args=None):
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
