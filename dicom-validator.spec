@@ -1,5 +1,7 @@
 # This file tells PyInstaller how to compile.
-# From PowerShell prompt, use "build.ps1 exe"
+# From PowerShell prompt, use:
+# pyinstaller dicom-validator.spec -y
+
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_submodules
 from PyInstaller.utils.hooks import collect_all
