@@ -185,3 +185,22 @@ c:\dev\DICOM Data\SR\image12.dcm
 (0010,0010) Patient's Name                           ON    1  [DOE^JANE]
 (0010,0020) Patient ID                               LO    1  [ACN000001]
 ```
+
+## Build executable on Windows
+
+Here is a sample workflow:
+```powershell
+# Clone the repository
+git clone git@github.com:pydicom/dicom-validator.git
+
+# Create a virtual environment and activate it
+cd dicom-validator
+virtualenv venv
+venv\Scripts\activate
+
+# Install dependencies for development
+pip install -r requirements-dev.txt
+
+# Build executables. They will be placed in the `dist` subfolder.
+pyinstaller dicom-validator.spec -y
+```
