@@ -2,10 +2,9 @@ name: build-windows-exe
 
 on:
   pull_request:
-
-  # TODO: Add a release event to trigger the workflow
-  # release:
-  #   types: [ published ]
+    # This workflow is to make sure that the Windows executables are built correctly.
+    # The artifacts are for this pull request only.
+    # The 'release' versions of artifacts are deployed from the release-deploy workflow.
 
 jobs:
 
@@ -36,9 +35,4 @@ jobs:
       with:
         name: windows_exe
         path: dist/*.exe
-    # TODO: How to Publish?
-    # - name: Publish package to PyPI
-    #   uses: pypa/gh-action-pypi-publish@release/v1
-    #   with:
-    #     user: __token__
-    #     password: ${{ secrets.PYPI_TOKEN_VALIDATOR }}
+    #
