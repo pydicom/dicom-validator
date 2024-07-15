@@ -1,17 +1,22 @@
 name: release-deploy
 
 on:
-  release:
-    types: [ published ]
+  pull_request:
+
+  # release:
+  #   types: [ published ]
 
 jobs:
 
   deploy:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         python-version: [ '3.10' ]
+        os: [  'ubuntu-latest', 'windows-latest' ]
+
+    runs-on: ${{ matrix.os }}
+    name: Deploy to ${{ matrix.os }} with Python ${{ matrix.python-version }}
 
     steps:
     - uses: actions/checkout@v4
@@ -26,9 +31,20 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install build
         python -m build
+        pyinstaller dicom-validator.spec -y
 
-    - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+    # - name: Publish package to PyPI
+    #   uses: pypa/gh-action-pypi-publish@release/v1
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.PYPI_TOKEN_VALIDATOR }}
+
+    - name: Publish Windows executables on GitHub
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: matrix.os == 'windows-latest'
       with:
-        user: __token__
-        password: ${{ secrets.PYPI_TOKEN_VALIDATOR }}
+        files: |
+          - dist/validate_iods.exe
+          - dist/dump_dcm_info.exe
