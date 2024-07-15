@@ -2,6 +2,7 @@
 The released versions correspond to PyPi releases.
 
 ## [Version 0.6.0](https://pypi.python.org/pypi/dicom-validator/0.6.0) (0.6.0)
+Adds Windows executable to GitHub release.
 
 ### Features
 * iod_validator: added validation of values against value representations, with
