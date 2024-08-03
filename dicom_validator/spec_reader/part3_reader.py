@@ -9,7 +9,11 @@ from itertools import groupby
 
 import sys
 
-from dicom_validator.spec_reader.condition import ConditionType, ConditionOperator
+from dicom_validator.spec_reader.condition import (
+    Condition,
+    ConditionType,
+    ConditionOperator,
+)
 from dicom_validator.spec_reader.condition_parser import ConditionParser
 from dicom_validator.spec_reader.enum_parser import EnumParser
 from dicom_validator.spec_reader.spec_reader import (
@@ -17,6 +21,25 @@ from dicom_validator.spec_reader.spec_reader import (
     SpecReaderParseError,
     SpecReaderLookupError,
 )
+
+
+# Some conditions from the spec are hard to parse with a few general rules.
+# Instead of implementing a full parser for these cases, we define them here.
+SPECIAL_CASES = {
+    # (0070,0024) Graphic Filled condition:
+    #       Required if Graphic Data (0070,0022) is "closed",
+    #       that is Graphic Type (0070,0023) is CIRCLE or ELLIPSE,
+    #       or Graphic Type (0070,0023) is POLYLINE or INTERPOLATED
+    #       and the first data point is the same as the last data point.
+    # The second part of the condition is not possible to implement with
+    # the current implementation, so it is ignored instead.
+    "(0070,0024)": Condition(
+        ctype=ConditionType.MandatoryOrUserDefined,
+        operator=ConditionOperator.EqualsValue,
+        tag="(0070,0023)",
+        values=["CIRCLE", "ELLIPSE"],
+    ),
+}
 
 
 class Part3Reader(SpecReader):
@@ -251,7 +274,9 @@ class Part3Reader(SpecReader):
                 "name": tag_name,
                 "type": tag_type,
             }
-            if tag_type in ("1C", "2C"):
+            if tag_id in SPECIAL_CASES:
+                current_descriptions[-1][tag_id]["cond"] = SPECIAL_CASES[tag_id]
+            elif tag_type in ("1C", "2C"):
                 current_descriptions[-1][tag_id]["cond"] = self._condition_parser.parse(
                     self._find_all_text(columns[3])
                 )
