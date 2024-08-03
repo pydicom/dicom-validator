@@ -237,3 +237,24 @@ class TestReadPart3:
         tag = description["(300A,0450)"]["items"]["(300A,0451)"]
         assert "enums" in tag
         assert tag["enums"] == [{"val": ["CONTINUOUS", "TRIGGERED", "AUTOMATIC"]}]
+
+    @pytest.mark.parametrize(
+        "revision", ["2015b", "2023c"], indirect=True, scope="session"
+    )
+    def test_graphic_annotation_sequence(self, reader):
+        description = reader.module_description("C.10.5")
+        assert "(0070,0001)" in description
+        assert "items" in description["(0070,0001)"]
+
+        graphic_object_sequence = "(0070,0009)"
+        compound_graphic_sequence = "(0070,0209)"
+        for sequence_tag in (graphic_object_sequence, compound_graphic_sequence):
+            assert sequence_tag in description["(0070,0001)"]["items"]
+            sequence = description["(0070,0001)"]["items"][sequence_tag]
+            graphic_filled_cond = sequence["items"]["(0070,0024)"]["cond"]
+            assert graphic_filled_cond.type == ConditionType.MandatoryOrUserDefined
+            assert graphic_filled_cond.operator == ConditionOperator.EqualsValue
+            assert graphic_filled_cond.values == ["CIRCLE", "ELLIPSE"]
+            assert graphic_filled_cond.and_conditions == []
+            assert graphic_filled_cond.or_conditions == []
+            assert graphic_filled_cond.other_condition is None
