@@ -1,7 +1,7 @@
 import logging
 
 import pytest
-from pydicom import Sequence
+from pydicom import Sequence, uid
 from pydicom.dataset import Dataset, FileMetaDataset
 
 from dicom_validator.tests.utils import has_tag_error
@@ -13,8 +13,7 @@ pytestmark = pytest.mark.usefixtures("disable_logging")
 def new_data_set(shared_macros, per_frame_macros):
     """Create a DICOM data set with the given attributes"""
     data_set = Dataset()
-    # Enhanced X-Ray Angiographic Image
-    data_set.SOPClassUID = "1.2.840.10008.5.1.4.1.1.12.1.1"
+    data_set.SOPClassUID = uid.EnhancedXAImageStorage
     data_set.PatientName = "XXX"
     data_set.PatientID = "ZZZ"
     data_set.ImageType = "DERIVED\\SECONDARY"
@@ -101,7 +100,8 @@ PIXEL_MEASURES = {"PixelMeasuresSequence": [{"PixelSpacing": "0.1\\0.1"}]}
 class TestIODValidatorFuncGroups:
     """Tests IODValidator for functional groups."""
 
-    def ensure_group_result(self, result):
+    @staticmethod
+    def ensure_group_result(result):
         assert "Multi-frame Functional Groups" in result
         return result["Multi-frame Functional Groups"]
 
@@ -168,8 +168,7 @@ class TestIODValidatorFuncGroups:
     @pytest.mark.shared_macros([])
     @pytest.mark.per_frame_macros([PIXEL_MEASURES])
     def test_macro_not_allowed_in_per_frame_group(self, validator):
-        # VL Whole Slide Microscopy Image IOD
-        validator._dataset.SOPClassUID = "1.2.840.10008.5.1.4.1.1.77.1.6"
+        validator._dataset.SOPClassUID = uid.VLWholeSlideMicroscopyImageStorage
         result = validator.validate()
         # Frame Anatomy Sequence (present in shared groups)
         assert has_tag_error(result, "Pixel Measures", "(0028,9110)", "not allowed")

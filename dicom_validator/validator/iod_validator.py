@@ -588,9 +588,13 @@ class IODValidator:
         tag = Tag(tag_id)
         return str(tag).replace(" ", "")
 
-    @staticmethod
-    def _tag_matches(tag_value, operator, values):
-        values = [type(tag_value)(value) for value in values]
+    def _tag_matches(self, tag_value, operator, values):
+        try:
+            values = [type(tag_value)(value) for value in values]
+        except ValueError:
+            self.logger.debug(f"type for '{values}' does not match '{tag_value}'")
+            # the values are of the wrong type - ignore them
+            return False
         if operator == ConditionOperator.EqualsValue:
             return tag_value in values
         if operator == ConditionOperator.NotEqualsValue:

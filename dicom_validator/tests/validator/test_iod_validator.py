@@ -1,8 +1,11 @@
 import logging
+from typing import Optional
 
 import pytest
-from pydicom import DataElement
+from pydicom import DataElement, uid, Sequence
+from pydicom.datadict import dictionary_VR
 from pydicom.dataset import Dataset, FileMetaDataset
+from pydicom.tag import Tag
 
 from dicom_validator.tests.utils import has_tag_error
 from dicom_validator.validator.iod_validator import IODValidator
@@ -10,15 +13,22 @@ from dicom_validator.validator.iod_validator import IODValidator
 pytestmark = pytest.mark.usefixtures("disable_logging")
 
 
-def new_data_set(tags):
+def new_data_set(tags, ds: Optional[Dataset] = None):
     """Create a DICOM data set with the given attributes"""
     tags = tags or {}
-    data_set = Dataset()
+    data_set = ds or Dataset()
     for tag, value in tags.items():
-        if isinstance(tag, int):
-            data_set[tag] = DataElement(tag, "LO", value)
-        else:
-            setattr(data_set, tag, value)
+        tag = Tag(tag)  # raises for invalid tag
+        try:
+            vr = dictionary_VR(tag)
+        except KeyError:
+            vr = "LO"
+        if vr == "SQ":
+            items = []
+            for item_tags in value:
+                items.append(new_data_set(item_tags, data_set))
+            value = Sequence(items)
+        data_set[tag] = DataElement(tag, vr, value)
     data_set.file_meta = FileMetaDataset()
     data_set.is_implicit_VR = False
     data_set.is_little_endian = True
@@ -52,7 +62,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",  # CT
+            "SOPClassUID": uid.CTImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
         }
@@ -74,7 +84,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",  # CT
+            "SOPClassUID": uid.CTImageStorage,
             "PatientName": "",
             "Modality": None,
         }
@@ -91,7 +101,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",  # CT
+            "SOPClassUID": uid.CTImageStorage,
             "TypeOfPatientID": "lowercase",  # VR is CS, which is required to be uppercase
             "Modality": None,
         }
@@ -105,8 +115,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "CArmPositionerTabletopRelationship": "YES",
             "SynchronizationTrigger": "SET",
             "FrameOfReferenceUID": "1.2.3.4.5.6.7.8",
@@ -125,8 +134,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "CArmPositionerTabletopRelationship": "YES",
             "PatientName": "XXX",
             "PatientID": "ZZZ",
@@ -140,8 +148,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
         }
@@ -156,7 +163,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             0x00191001: "unknown",
@@ -168,8 +175,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "SECONDARY",
@@ -190,8 +196,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "PRIMARY",
@@ -212,8 +217,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "MIXED",
@@ -234,8 +238,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "PixelPaddingRangeLimit": "10",
@@ -251,8 +254,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "PixelPaddingRangeLimit": "10",
@@ -267,8 +269,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "SamplesPerPixel": 3,
@@ -283,8 +284,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "SamplesPerPixel": 1,
@@ -299,8 +299,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "FrameIncrementPointer": 0x00181055,
@@ -315,8 +314,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Multi-frame Single Bit Secondary Capture Image Storage
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.7.1",
+            "SOPClassUID": uid.MultiFrameSingleBitSecondaryCaptureImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "FrameIncrementPointer": 0x00181065,
@@ -332,8 +330,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "ORIGINAL",
@@ -349,8 +346,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "ORIGINAL",
@@ -367,8 +363,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "DERIVED",
@@ -385,8 +380,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced X-Ray Angiographic Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "DERIVED",
@@ -404,8 +398,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # X-Ray Radiation Dose SR Storage
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.88.67",
+            "SOPClassUID": uid.XRayRadiationDoseSRStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "DERIVED",
@@ -433,8 +426,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Enhanced XA Image
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.12.1.1",
+            "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": "DERIVED",
@@ -471,8 +463,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # MR Image Storage
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.4",
+            "SOPClassUID": uid.MRImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ScanningSequence": ["SE", "EP"],
@@ -491,8 +482,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # MR Image Storage
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.4",
+            "SOPClassUID": uid.MRImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ScanningSequence": ["SE", "EP", "IV"],
@@ -512,8 +502,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.77.1.5.8",
+            "SOPClassUID": uid.OphthalmicOpticalCoherenceTomographyBscanVolumeAnalysisStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": ["ORIGINAL", "PRIMARY"],
@@ -532,8 +521,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.77.1.5.8",
+            "SOPClassUID": uid.OphthalmicOpticalCoherenceTomographyBscanVolumeAnalysisStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": ["ORIGINAL", "SECONDARY"],
@@ -553,8 +541,7 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
-            # Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Storage
-            "SOPClassUID": "1.2.840.10008.5.1.4.1.1.77.1.5.8",
+            "SOPClassUID": uid.OphthalmicOpticalCoherenceTomographyBscanVolumeAnalysisStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
             "ImageType": ["PRIMARY", "ORIGINAL"],
@@ -571,3 +558,41 @@ class TestIODValidator:
             "value is not allowed",
             "(value: ORIGINAL, allowed: PRIMARY)",
         )
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.GrayscaleSoftcopyPresentationStateStorage,
+            "GraphicAnnotationSequence": [
+                {
+                    "GraphicLayer": "TEST_LAYER",
+                    "GraphicObjectSequence": [
+                        {
+                            "GraphicAnnotationUnits": "PIXEL",
+                            "GraphicDimensions": 2,
+                            "GraphicData": [318, 1555, 714, 1778],
+                            "GraphicType": "POLYLINE",
+                            "GraphicFilled": "N",
+                        }
+                    ],
+                }
+            ],
+            "GraphicLayerSequence": [
+                {
+                    "GraphicLayer": "TEST_LAYER",
+                }
+            ],
+        }
+    )
+    def test_incorrect_parsed_type(self, validator):
+        # regression test for exception, see #115
+        modules = validator._dicom_info.modules
+        modules["C.10.5"]["(0070,0001)"]["items"]["(0070,0009)"]["items"][
+            "(0070,0024)"
+        ]["cond"] = {
+            "index": 0,
+            "op": "=",
+            "tag": "(0070,0022)",
+            "type": "MU",
+            "values": ["closed"],
+        }
+        assert validator.validate()
