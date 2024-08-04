@@ -1,6 +1,15 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
+## Unreleased
+
+### Features
+* Attribute conditions that are hard to parse from the spec can be now defined 
+  manually.
+
+### Fixes
+* Fixed `(0070,0024) Graphic Filled` condition (see [#115](../../issues/115)).
+
 ## [Version 0.6.0](https://pypi.python.org/pypi/dicom-validator/0.6.0) (0.6.0)
 Adds Windows executable to GitHub release.
 
