@@ -796,13 +796,40 @@ class TestComplicatedConditionParser:
             "and the first data point is the same as the last data point."
         )
         assert result.type == ConditionType.MandatoryOrUserDefined
-        assert len(result.or_conditions) == 3
+        assert len(result.or_conditions) == 2
         assert result.or_conditions[0].operator == ConditionOperator.EqualsValue
-        assert result.or_conditions[0].values == ["closed"]
-        assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
-        assert result.or_conditions[1].values == ["CIRCLE", "ELLIPSE"]
-        assert result.or_conditions[2].operator == ConditionOperator.EqualsValue
-        assert result.or_conditions[2].values == ["POLYLINE", "INTERPOLATED"]
+        assert result.or_conditions[0].tag == "(0070,0023)"
+        assert result.or_conditions[0].values == ["CIRCLE", "ELLIPSE"]
+        and_conditions = result.or_conditions[1].and_conditions
+        assert and_conditions[0].operator == ConditionOperator.EqualsValue
+        assert and_conditions[0].tag == "(0070,0023)"
+        assert and_conditions[0].values == ["POLYLINE", "INTERPOLATED"]
+        assert and_conditions[1].operator == ...
+        assert and_conditions[1].tag == "(0070,0022)"
+        assert and_conditions[1].values == ...
+
+    def test_ispresent_with_value_incorrect(self, parser):
+        """
+        ATTENTION: This test is here only to ensure that the parser results does not
+        change unexpectedly.
+        The result of this test is incorrect and will be (hopefully) fixed in the
+        future. To see the expected correct result, see the test
+        `disabled_test_ispresent_with_value` above.
+        """
+        result = parser.parse(
+            'Required if Graphic Data (0070,0022) is "closed", '
+            "that is Graphic Type (0070,0023) is CIRCLE or ELLIPSE, "
+            "or Graphic Type (0070,0023) is POLYLINE or INTERPOLATED "
+            "and the first data point is the same as the last data point."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.tag == "(0070,0022)"
+        # This is not correct. "closed" is not an actual value, but a description of
+        # the state that the `Graphic Type (0070, 0023)` attribute should be in.
+        assert result.values == ["closed"]
+        assert result.or_conditions == result.and_conditions == []
+        assert result.other_condition is None
 
     def test_other_condition1(self, parser):
         result = parser.parse(
