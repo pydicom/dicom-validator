@@ -246,15 +246,13 @@ class TestReadPart3:
         assert "(0070,0001)" in description
         assert "items" in description["(0070,0001)"]
 
-        graphic_object_sequence = "(0070,0009)"
-        compound_graphic_sequence = "(0070,0209)"
-        for sequence_tag in (graphic_object_sequence, compound_graphic_sequence):
-            assert sequence_tag in description["(0070,0001)"]["items"]
-            sequence = description["(0070,0001)"]["items"][sequence_tag]
-            graphic_filled_cond = sequence["items"]["(0070,0024)"]["cond"]
-            assert graphic_filled_cond.type == ConditionType.MandatoryOrUserDefined
-            assert graphic_filled_cond.operator == ConditionOperator.EqualsValue
-            assert graphic_filled_cond.values == ["CIRCLE", "ELLIPSE"]
-            assert graphic_filled_cond.and_conditions == []
-            assert graphic_filled_cond.or_conditions == []
-            assert graphic_filled_cond.other_condition is None
+        sequence_tag = "(0070,0009)"  # Graphic Object Sequence
+        assert sequence_tag in description["(0070,0001)"]["items"]
+        sequence = description["(0070,0001)"]["items"][sequence_tag]
+        graphic_filled_cond = sequence["items"]["(0070,0024)"]["cond"]
+        assert graphic_filled_cond.type == ConditionType.MandatoryOrUserDefined
+        assert graphic_filled_cond.operator == ConditionOperator.EqualsValue
+        assert graphic_filled_cond.values == ["CIRCLE", "ELLIPSE"]
+        assert graphic_filled_cond.and_conditions == []
+        assert graphic_filled_cond.or_conditions == []
+        assert graphic_filled_cond.other_condition is None

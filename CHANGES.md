@@ -9,6 +9,8 @@ The released versions correspond to PyPi releases.
 
 ### Fixes
 * Fixed `(0070,0024) Graphic Filled` condition (see [#115](../../issues/115)).
+* Fixed a case of mixed ORed values and conditions.
+* Handle ", that is " clause in condition.
 
 ## [Version 0.6.0](https://pypi.python.org/pypi/dicom-validator/0.6.0) (0.6.0)
 Adds Windows executable to GitHub release.

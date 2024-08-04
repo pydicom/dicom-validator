@@ -32,6 +32,7 @@ class ConditionParser:
         r"((((the|a) )?value ((of|for) )?)|(the )|(either )|Attribute )?"
         rf"{tagname_expression}(,? Value (?P<index>\d))?$"
     )
+    start_with_tagname_expression = re.compile(f"^{tagname_expression}")
 
     operators = OrderedDict(
         [
@@ -266,6 +267,16 @@ class ConditionParser:
 
         return None, None
 
+    def _startswith_any_tag(self, tag_string: str) -> bool:
+        tag_string = tag_string.strip()
+        match = self.start_with_tagname_expression.match(tag_string)
+        if match:
+            tag_name = match.group("name").strip()
+            tag_id = match.group("id")
+            return self._tag_id_from_id_and_name(tag_id, tag_name) is not None
+
+        return False
+
     def _parse_tag_values(self, value_string: str) -> Tuple[ValuesType, str]:
         value_part, rest = self._split_value_part(value_string)
         values: ValuesType = []
@@ -300,6 +311,18 @@ class ConditionParser:
         end_index = self._end_index_for_stop_chars(
             value_string, [";", ".", ", and ", " and ", ":"]
         )
+        # ", or" can be between values or between conditions
+        start_index = 0
+        while True:
+            or_index = value_string.find(", or ", start_index, end_index)
+            if or_index < 0:
+                break
+            start_index = or_index + 5
+            if value_string[start_index:].startswith("if ") or self._startswith_any_tag(
+                value_string[start_index:]
+            ):
+                end_index = or_index
+                break
         return value_string[:end_index], value_string[end_index:]
 
     @staticmethod
@@ -489,4 +512,7 @@ class ConditionParser:
                 condition = condition[: index - 1] + "." + condition[index:]
             elif condition[index - 1] != ".":
                 condition = condition[:index] + "." + condition[index:]
+        index = condition.lower().find(", that is ")
+        if index > 0:
+            condition = condition[index + 10 :]
         return condition

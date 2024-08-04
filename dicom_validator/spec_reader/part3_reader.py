@@ -8,6 +8,7 @@ import logging
 from itertools import groupby
 
 import sys
+from typing import Dict
 
 from dicom_validator.spec_reader.condition import (
     Condition,
@@ -24,22 +25,10 @@ from dicom_validator.spec_reader.spec_reader import (
 
 
 # Some conditions from the spec are hard to parse with a few general rules.
-# Instead of implementing a full parser for these cases, we define them here.
-SPECIAL_CASES = {
-    # (0070,0024) Graphic Filled condition:
-    #       Required if Graphic Data (0070,0022) is "closed",
-    #       that is Graphic Type (0070,0023) is CIRCLE or ELLIPSE,
-    #       or Graphic Type (0070,0023) is POLYLINE or INTERPOLATED
-    #       and the first data point is the same as the last data point.
-    # The second part of the condition is not possible to implement with
-    # the current implementation, so it is ignored instead.
-    "(0070,0024)": Condition(
-        ctype=ConditionType.MandatoryOrUserDefined,
-        operator=ConditionOperator.EqualsValue,
-        tag="(0070,0023)",
-        values=["CIRCLE", "ELLIPSE"],
-    ),
-}
+# Instead of implementing a full parser for these cases, we may define them here.
+# CAUTION: The same tag may appear with different conditions in different contexts
+# (different sequences), which will not be handled automatically by SPECIAL_CASES
+SPECIAL_CASES: Dict[str, Condition] = {}
 
 
 class Part3Reader(SpecReader):

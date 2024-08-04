@@ -129,6 +129,15 @@ class TestSimpleConditionParser:
         )
         assert result.type == ConditionType.UserDefined
 
+    def test_ignore_before_that_is(self, parser):
+        result = parser.parse(
+            'Required if Graphic Data (0070,0022) is "closed", '
+            "that is Graphic Type (0070,0023) is CIRCLE or ELLIPSE."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.values == ["CIRCLE", "ELLIPSE"]
+
 
 class TestValueConditionParser:
     def test_equality_tag(self, parser):
@@ -786,9 +795,21 @@ class TestCompositeConditionParser:
         assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
         assert result.or_conditions[1].values == ["YES"]
 
+    def test_or_condition_with_or_values(self, parser):
+        result = parser.parse(
+            "Required if Graphic Type (0070,0023) is CIRCLE or ELLIPSE, "
+            "or Graphic Type (0070,0023) is POLYLINE or INTERPOLATED."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.or_conditions) == 2
+        assert result.or_conditions[0].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[0].values == ["CIRCLE", "ELLIPSE"]
+        assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[1].values == ["POLYLINE", "INTERPOLATED"]
+
 
 class TestComplicatedConditionParser:
-    def disabled_test_ispresent_with_value(self, parser):
+    def disabled_test_data_points_check(self, parser):
         result = parser.parse(
             'Required if Graphic Data (0070,0022) is "closed", '
             "that is Graphic Type (0070,0023) is CIRCLE or ELLIPSE, "
@@ -804,17 +825,15 @@ class TestComplicatedConditionParser:
         assert and_conditions[0].operator == ConditionOperator.EqualsValue
         assert and_conditions[0].tag == "(0070,0023)"
         assert and_conditions[0].values == ["POLYLINE", "INTERPOLATED"]
-        assert and_conditions[1].operator == ...
+        assert and_conditions[1].operator == ...  # some special operator
         assert and_conditions[1].tag == "(0070,0022)"
-        assert and_conditions[1].values == ...
 
-    def test_ispresent_with_value_incorrect(self, parser):
+    def test_incomplete_and_condition(self, parser):
         """
-        ATTENTION: This test is here only to ensure that the parser results does not
-        change unexpectedly.
-        The result of this test is incorrect and will be (hopefully) fixed in the
-        future. To see the expected correct result, see the test
-        `disabled_test_ispresent_with_value` above.
+        The last condition is not parseable and therefore ignored
+        together with the condition that is ANDead with.
+        To see the expected correct result, see the test
+        `disabled_test_data_points_check` above.
         """
         result = parser.parse(
             'Required if Graphic Data (0070,0022) is "closed", '
@@ -824,11 +843,30 @@ class TestComplicatedConditionParser:
         )
         assert result.type == ConditionType.MandatoryOrUserDefined
         assert result.operator == ConditionOperator.EqualsValue
-        assert result.tag == "(0070,0022)"
-        # This is not correct. "closed" is not an actual value, but a description of
-        # the state that the `Graphic Type (0070, 0023)` attribute should be in.
-        assert result.values == ["closed"]
+        assert result.tag == "(0070,0023)"
+        assert result.values == ["CIRCLE", "ELLIPSE"]
         assert result.or_conditions == result.and_conditions == []
+        assert result.other_condition is None
+
+    def test_incomplete_or_condition(self, parser):
+        """
+        The last condition is not parseable and therefore ignored,
+        as it is ORed with the other conditions.
+        """
+        result = parser.parse(
+            'Required if Graphic Data (0070,0022) is "closed", '
+            "that is Graphic Type (0070,0023) is CIRCLE or ELLIPSE, "
+            "or Graphic Type (0070,0023) is POLYLINE or INTERPOLATED "
+            "or the first data point is the same as the last data point."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.or_conditions) == 2
+        assert result.or_conditions[0].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[0].tag == "(0070,0023)"
+        assert result.or_conditions[0].values == ["CIRCLE", "ELLIPSE"]
+        assert result.or_conditions[1].tag == "(0070,0023)"
+        assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[1].values == ["POLYLINE", "INTERPOLATED"]
         assert result.other_condition is None
 
     def test_other_condition1(self, parser):
