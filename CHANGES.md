@@ -4,7 +4,7 @@ The released versions correspond to PyPi releases.
 ## Unreleased
 
 ### Features
-* Attribute conditions that are hard to parse from the spec can be now defined 
+* Attribute conditions that are hard to parse from the spec can be now defined
   manually.
 
 ### Fixes
