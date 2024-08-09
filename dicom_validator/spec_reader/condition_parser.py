@@ -350,6 +350,8 @@ class ConditionParser:
 
     def _get_const_value(self, value: str) -> Tuple[Optional[str], str]:
         value = value.strip()
+        if not value:
+            return None, ""
         if value[0] == value[-1] == '"':
             return value[1:-1], ""
         if re.match("^[A-Z0-9][A-Za-z0-9_ ]*$", value) is not None:
