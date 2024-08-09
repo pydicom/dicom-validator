@@ -955,3 +955,12 @@ class TestComplicatedConditionParser:
         ]
         other_cond = result.other_condition
         assert other_cond is None
+
+    def test_empty_value_handled(self, parser):
+        # regression test for an exception that happened due to a wrongly
+        # read in condition, see #119
+        result = parser.parse(
+            "Required if segmented data is NOT used in an Image IOD "
+            "or , or if the IOD is a Presentation State IOD."
+        )
+        assert result.type == ConditionType.UserDefined
