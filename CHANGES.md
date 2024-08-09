@@ -1,7 +1,8 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## Unreleased
+## [Version 0.6.2](https://pypi.python.org/pypi/dicom-validator/0.6.2) (2024-08-09)
+Fixes a regression in version 0.6.1.
 
 ### Fixes
 * Fixed a regression bug introduced in 0.6.1, leading to an exception during docbook parsing
