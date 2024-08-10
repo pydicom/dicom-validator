@@ -125,7 +125,7 @@ class TestIODValidatorFuncGroups:
             in group_result
         )
         assert (
-            "Tag (5200,9230) (Per-frame Functional Groups Sequence) is empty"
+            "Tag (5200,9230) (Per-Frame Functional Groups Sequence) is empty"
             in group_result
         )
 

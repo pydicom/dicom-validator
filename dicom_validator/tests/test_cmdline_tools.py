@@ -22,7 +22,7 @@ def dicom_fixture_path(fixture_path):
 
 
 @pytest.mark.order(0)
-@pytest.mark.parametrize("revision", ["2015b", "2023c"])
+@pytest.mark.parametrize("revision", ["2015b", "2024c"])
 def test_validate_sr(revision, caplog, standard_path, dicom_fixture_path):
     # test also for 2015b to test an issue causing an exception
     rtdose_path = dicom_fixture_path / "rtdose.dcm"

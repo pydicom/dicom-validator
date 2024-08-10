@@ -1,12 +1,17 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
+## Unreleased
+
+### Infrastructure
+* use the current DICOM standard (2024c) for testing
+
 ## [Version 0.6.2](https://pypi.python.org/pypi/dicom-validator/0.6.2) (2024-08-09)
 Fixes a regression in version 0.6.1.
 
 ### Fixes
-* Fixed a regression bug introduced in 0.6.1, leading to an exception during docbook parsing
-  (see [#119](../../issues/119)).
+* fixed a regression bug introduced in 0.6.1, leading to an exception during docbook parsing
+  (see [#119](../../issues/119))
 
 ## [Version 0.6.1](https://pypi.python.org/pypi/dicom-validator/0.6.1) (2024-08-05)
 Some condition parser fixes.
@@ -16,9 +21,9 @@ Some condition parser fixes.
   manually.
 
 ### Fixes
-* Fixed `(0070,0024) Graphic Filled` condition (see [#115](../../issues/115)).
-* Fixed a case of mixed ORed values and conditions.
-* Handle ", that is " clause in condition.
+* fixed `(0070,0024) Graphic Filled` condition (see [#115](../../issues/115))
+* fixed a case of mixed ORed values and conditions
+* handle ", that is " clause in condition
 
 ## [Version 0.6.0](https://pypi.python.org/pypi/dicom-validator/0.6.0) (2024-07-15)
 Adds Windows executable to GitHub release.
