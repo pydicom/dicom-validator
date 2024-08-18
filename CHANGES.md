@@ -3,6 +3,9 @@ The released versions correspond to PyPi releases.
 
 ## Unreleased
 
+### Fixes
+* fixed possible `KeyError` while checking functional group macros
+
 ### Infrastructure
 * use the current DICOM standard (2024c) for testing
 
