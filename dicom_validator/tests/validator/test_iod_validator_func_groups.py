@@ -96,6 +96,10 @@ FRAME_CONTENT = {"FrameContentSequence": [{"FrameReferenceDateTime": "2000010112
 
 PIXEL_MEASURES = {"PixelMeasuresSequence": [{"PixelSpacing": "0.1\\0.1"}]}
 
+TIMING_RELATED_PARAMS = {
+    "MRTimingAndRelatedParametersSequence": [{"RFEchoTrainLength": None}]
+}
+
 
 class TestIODValidatorFuncGroups:
     """Tests IODValidator for functional groups."""
@@ -172,3 +176,15 @@ class TestIODValidatorFuncGroups:
         result = validator.validate()
         # Frame Anatomy Sequence (present in shared groups)
         assert has_tag_error(result, "Pixel Measures", "(0028,9110)", "not allowed")
+
+    @pytest.mark.shared_macros([TIMING_RELATED_PARAMS])
+    @pytest.mark.per_frame_macros([FRAME_CONTENT])
+    def test_empty_tag_in_shared_group(self, validator):
+        # regression test for KeyError in this case
+        validator._dataset.SOPClassUID = uid.MRSpectroscopyStorage
+        validator._dataset.ImageType = "ORIGINAL\\PRIMARY"
+        result = validator.validate()
+        # RF Echo Train Length
+        assert has_tag_error(
+            result, "MR Timing and Related Parameters", "(0018,9240)", "empty"
+        )

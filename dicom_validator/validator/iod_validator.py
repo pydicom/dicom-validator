@@ -79,7 +79,7 @@ class FunctionalGroupInfo:
                         break
             else:
                 # other errors (unexpected tag, missing value) shall always remain
-                result[error] = per_frame[error]
+                result[error] = shared[error]
 
         for error in per_frame:
             if "missing" in error:
