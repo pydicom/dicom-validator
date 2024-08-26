@@ -35,6 +35,38 @@ class TestConditionRead:
         assert len(condition.and_conditions) == nr_and_cond
         assert len(condition.or_conditions) == nr_or_cond
 
+    def test_repr_for_simple_condition(self):
+        cond_dict = {
+            "type": ConditionType.MandatoryOrUserDefined,
+            "op": ConditionOperator.EqualsValue,
+            "tag": "(0008,0008)",
+            "index": 1,
+            "values": ["SECONDARY"],
+        }
+        condition = Condition.read_condition(cond_dict)
+        assert repr(condition) == (
+            "Condition type=MU op='=' tag=(0008,0008)[1] values=['SECONDARY']"
+        )
+
+    def test_repr_for_complex_condition(self):
+        cond_dict = {
+            "type": ConditionType.MandatoryOrUserDefined,
+            "and": [
+                {"tag": "(0010,0010)", "op": ConditionOperator.Present},
+                {
+                    "or": [
+                        {"tag": "(0010,0020)", "op": ConditionOperator.Absent},
+                        {"tag": "(0010,0030)", "op": ConditionOperator.Absent},
+                    ]
+                },
+            ],
+        }
+        condition = Condition.read_condition(cond_dict)
+        assert repr(condition) == (
+            "Condition type=MU (op='+' tag=(0010,0010) AND "
+            "(op='-' tag=(0010,0020) OR op='-' tag=(0010,0030)))"
+        )
+
     def test_read_type_only(self):
         self.check_condition(
             {"type": ConditionType.UserDefined}, ConditionType.UserDefined
