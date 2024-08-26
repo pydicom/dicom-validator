@@ -99,6 +99,7 @@ class ConditionParser:
             "shall be present if ",
             "required for images where ",
             "required only if",
+            "shall not be present if",
         )
         condition_lower = condition_str.lower()
         for prefix in condition_prefixes:
@@ -107,6 +108,9 @@ class ConditionParser:
                 condition_str = condition_str[len(prefix) + index :]
                 condition_str = self._fix_condition(condition_str)
                 condition = self._parse_tag_expressions(condition_str)
+                if prefix.startswith("shall not"):
+                    if condition.type == ConditionType.MandatoryOrUserDefined:
+                        condition.type = ConditionType.NotAllowedOrUserDefined
                 return condition
         # special handling for functional group restrictions
         if " not be used as a shared functional group" in condition_lower:

@@ -265,10 +265,12 @@ class Part3Reader(SpecReader):
             }
             if tag_id in SPECIAL_CASES:
                 current_descriptions[-1][tag_id]["cond"] = SPECIAL_CASES[tag_id]
-            elif tag_type in ("1C", "2C"):
-                current_descriptions[-1][tag_id]["cond"] = self._condition_parser.parse(
-                    self._find_all_text(columns[3])
-                )
+            # include type 3 as there may be conditions for not allowed tags
+            elif tag_type in ("1C", "2C", "3"):
+                cond = self._condition_parser.parse(self._find_all_text(columns[3]))
+                if cond.type != ConditionType.UserDefined:
+                    # no need to save user defined - it means no condition
+                    current_descriptions[-1][tag_id]["cond"] = cond
             info = self._dict_info.get(tag_id)
             if info:
                 enum_values = self._enum_parser.parse(columns[3], info["vr"])

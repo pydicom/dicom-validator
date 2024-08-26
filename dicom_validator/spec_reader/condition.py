@@ -21,6 +21,8 @@ class ConditionType(str, enum.Enum):  # replace later with StrEnum from Python 3
     # mandatory if the condition is fulfilled,
     # otherwise another condition will be checked
     MandatoryOrConditional = "MC"
+    # not allowed if the condition is fulfilled, may be present otherwise
+    NotAllowedOrUserDefined = "NU"
     # mandatory in the per-frame functional groups,
     # not allowed in the shared functional groups
     MandatoryPerFrame = "MF"

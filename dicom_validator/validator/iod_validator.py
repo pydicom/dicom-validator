@@ -374,14 +374,11 @@ class IODValidator:
         condition_dict = None
         if attribute_type in ("1", "2"):
             tag_required, tag_allowed = True, True
-        elif attribute_type in ("1C", "2C"):
-            if "cond" in attribute:
-                condition_dict = attribute["cond"]
-                tag_required, tag_allowed = self._object_is_required_or_allowed(
-                    condition_dict
-                )
-            else:
-                tag_required, tag_allowed = False, True
+        elif "cond" in attribute:
+            condition_dict = attribute["cond"]
+            tag_required, tag_allowed = self._object_is_required_or_allowed(
+                condition_dict
+            )
         else:
             tag_required, tag_allowed = False, True
         error_kind = None
@@ -445,57 +442,60 @@ class IODValidator:
         """
         if isinstance(condition, str):
             condition = json.loads(condition)
-        if ConditionType(condition["type"]).user_defined:
+        condition_type = condition["type"]
+        if ConditionType(condition_type).user_defined:
             return False, True
-        required = self._composite_object_is_required(condition)
-        if required:
+        matches = self._composite_object_matches_condition(condition)
+        if matches:
+            if condition_type == ConditionType.NotAllowedOrUserDefined:
+                return False, False
             return True, True
         allowed = (
-            condition["type"] == ConditionType.MandatoryOrUserDefined
-            or condition["type"] == ConditionType.MandatoryOrConditional
-            and self._composite_object_is_required(condition["other_cond"])
+            condition_type == ConditionType.MandatoryOrUserDefined
+            or condition_type == ConditionType.MandatoryOrConditional
+            and self._composite_object_matches_condition(condition["other_cond"])
         )
         return False, allowed
 
-    def _composite_object_is_required(self, condition):
-        """Checks if an attribute with a composite condition is required or allowed
-         in the current dataset.
+    def _composite_object_matches_condition(self, condition):
+        """Checks if an attribute matches the given composite condition.
 
         Parameters
         ----------
         condition : dict
-            The condition dict defining if the object shall be present.
+            The condition dictionary.
 
         Returns
         -------
         bool
-            `True` if the attribute is required in the dataset.
+            `True` if the attribute matches the condition.
         """
         if "and" in condition:
-            required = all(
-                self._composite_object_is_required(cond) for cond in condition["and"]
+            matches = all(
+                self._composite_object_matches_condition(cond)
+                for cond in condition["and"]
             )
         elif "or" in condition:
-            required = any(
-                self._composite_object_is_required(cond) for cond in condition["or"]
+            matches = any(
+                self._composite_object_matches_condition(cond)
+                for cond in condition["or"]
             )
         else:
-            required = self._object_is_required(condition)
-        return required
+            matches = self._matches_condition(condition)
+        return matches
 
-    def _object_is_required(self, condition):
-        """Checks if an attribute is required in the current dataset,
-         depending on the given condition.
+    def _matches_condition(self, condition):
+        """Checks if an attribute matches the given condition.
 
         Parameters
         ----------
         condition : dict
-            The condition dict defining if the object shall be present.
+            The condition dict.
 
         Returns
         -------
         bool
-            `True` if the attribute is required in the dataset.
+            `True` if the attribute matches the condition in the dataset.
         """
         tag_id = self._tag_id(condition["tag"])
         tag_value = None

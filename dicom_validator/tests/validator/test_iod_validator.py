@@ -85,6 +85,21 @@ class TestIODValidator:
     @pytest.mark.tag_set(
         {
             "SOPClassUID": uid.CTImageStorage,
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "MultienergyCTAcquisition": "YES",
+            "CTAdditionalXRaySourceSequence": [],
+        }
+    )
+    def test_not_allowed_tag(self, validator):
+        result = validator.validate()
+
+        assert "fatal" not in result
+        assert has_tag_error(result, "CT Image", "(0018,9360)", "not allowed")
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.CTImageStorage,
             "PatientName": "",
             "Modality": None,
         }
