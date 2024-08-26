@@ -111,10 +111,28 @@ class Condition:
         self.other_condition: Optional[Condition] = None
 
     def __repr__(self):
-        return (
-            f"Condition type={self.type} op='{self.operator}'"
-            f" tag={self.tag} values={self.values}"
-        )
+        attribs = []
+        if self.type:
+            attribs.append(f"Condition type={self.type.value}")
+        if self.and_conditions:
+            attribs.append(
+                f"({' AND '.join([repr(cond) for cond in self.and_conditions])})"
+            )
+        elif self.or_conditions:
+            attribs.append(
+                f"({' OR '.join([repr(cond) for cond in self.or_conditions])})"
+            )
+        else:
+            if self.operator is not None:
+                attribs.append(f"op='{self.operator.value}'")
+            if self.tag:
+                tag = f"tag={self.tag}"
+                if self.index:
+                    tag += f"[{self.index}]"
+                attribs.append(tag)
+            if self.values:
+                attribs.append(f"values={self.values}")
+        return " ".join(attribs)
 
     @classmethod
     def read_condition(
