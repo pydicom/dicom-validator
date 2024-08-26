@@ -5,6 +5,7 @@ The released versions correspond to PyPi releases.
 
 ### Fixes
 * fixed possible `KeyError` while checking functional group macros
+* handle conditions for not allowed tags ("Shall not be present if...")
 
 ### Infrastructure
 * use the current DICOM standard (2024c) for testing

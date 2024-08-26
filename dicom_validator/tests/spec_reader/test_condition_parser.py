@@ -138,6 +138,14 @@ class TestSimpleConditionParser:
         assert result.operator == ConditionOperator.EqualsValue
         assert result.values == ["CIRCLE", "ELLIPSE"]
 
+    def test_not_allowed_on_condition(self, parser):
+        result = parser.parse(
+            "Shall not be present if Rescale Intercept (0028,1052) is present."
+        )
+        assert result.type == ConditionType.NotAllowedOrUserDefined
+        assert result.operator == ConditionOperator.Present
+        assert result.tag == "(0028,1052)"
+
 
 class TestValueConditionParser:
     def test_equality_tag(self, parser):
