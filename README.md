@@ -21,7 +21,7 @@ DICOM standard.
 
 *Disclaimer:*
 No guarantees are given for the correctness of the results.
-This is alpha-stage software and mostly thought as a proof of concept.
+This is beta-stage software which is mostly developed as a proof of concept.
 Also check the limitations for `validate_iods` described below.
 
 *Note:*
@@ -40,18 +40,18 @@ pip install dicom-validator
 
 ## Usage
 ```
-validate_iods.py [-h] [--standard-path STANDARD_PATH]
-                      [--revision REVISION] [--force-read] [--recreate-json]
-                      [--verbose]
-                      dicomfiles [dicomfiles ...]
+validate_iods [-h] [--standard-path STANDARD_PATH]
+              [--revision REVISION] [--force-read] [--recreate-json]
+              [--suppress-vr-warnings] [--verbose]
+              dicomfiles [dicomfiles ...]
 
-dump_dcm_info.py [-h] [--standard-path STANDARD_PATH]
-                      [--revision REVISION] [--max-value-len MAX_VALUE_LEN]
-                      [--show-tags [SHOW_TAGS [SHOW_TAGS ...]]]
-                      [--show-image-data] [--recreate-json]
-                      dicomfiles [dicomfiles ...]
+dump_dcm_info [-h] [--standard-path STANDARD_PATH]
+              [--revision REVISION] [--max-value-len MAX_VALUE_LEN]
+              [--show-tags [SHOW_TAGS [SHOW_TAGS ...]]]
+              [--show-image-data] [--recreate-json]
+              dicomfiles [dicomfiles ...]
 ```
-Use the `--help` option for each script do get usage info.
+Use the `--help` option for each script do get more specific usage info.
 
 ## Access to the DICOM standard
 
@@ -128,17 +128,24 @@ Process finished with exit code 6
 As mentioned, if the evaluation of conditions fails, the related module or
 tag is considered optional, which may hide some non-conformity.
 Condition evaluation may fail if:
-- the needed information is not contained in the DICOM file (e.g. verbose
-  descriptions like "if the Patient is an animal")
+- the needed information is not directly contained in the DICOM file (e.g. verbose
+  descriptions like "if the Patient is an animal", "if the image has been calibrated" etc.)
 - the information is related to other DICOM files (e.g. referenced images)
 - the parsing failed because the condition is too complicated, unexpected,
   or due to a bug (please write an issue if you encounter such a problem)
 
 #### Retired tags
-Also note that only the given standard is used to evaluate the files. If
+Only the given standard is used to evaluate the files. If
 the DICOM file has been written using an older standard, it may conform to
 that standard, but not to the newest one. Tags that are retired in the
 version of the standard used for parsing are not considered at all.
+You can always check against an older standard by using the `--revision` option.
+
+#### Enumerated values and defined terms
+Most enumerated values are checked against, but some are ignored due to parsing issues.
+Support for more cases may be added in the future.
+Defined terms are _not_ checked, because they are allowed to be user-defined, which means
+that any value may be valid.
 
 #### Unsupported cases (support may be added in future versions)
 - SOP classes not in the table in PS3.3 such as Presentation States are not
@@ -188,7 +195,9 @@ c:\dev\DICOM Data\SR\image12.dcm
 
 ## Build executable on Windows
 
-Here is a sample workflow:
+A self-contained Windows executable is contained in the release artifacts.
+
+Here is a sample workflow to build such an executable yourself:
 ```powershell
 # Clone the repository
 git clone git@github.com:pydicom/dicom-validator.git
@@ -204,3 +213,7 @@ pip install -r requirements-dev.txt
 # Build executables. They will be placed in the `dist` subfolder.
 pyinstaller dicom-validator.spec -y
 ```
+
+## Contributing
+Contributions are very welcome. If you submit a pull request for a bugfix
+or a new feature, please make sure to also write respective tests.
