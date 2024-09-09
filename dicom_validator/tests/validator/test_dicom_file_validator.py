@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
-from pydicom import write_file
+from pydicom import dcmwrite
 from pydicom.dataset import Dataset, FileDataset, FileMetaDataset
 
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
@@ -51,14 +51,14 @@ class TestFakeDicomFileValidator:
         file_dataset = FileDataset(
             filename, Dataset(), file_meta=self.create_metadata()
         )
-        write_file(filename, file_dataset, write_like_original=False)
+        dcmwrite(filename, file_dataset, write_like_original=False)
         self.assert_fatal_error(validator, filename, "Missing SOPClassUID")
 
     def test_unknown_sop_class(self, validator):
         dataset = Dataset()
         dataset.SOPClassUID = "Unknown"
         file_dataset = FileDataset("test", dataset, file_meta=self.create_metadata())
-        write_file("test", file_dataset, write_like_original=False)
+        dcmwrite("test", file_dataset, write_like_original=False)
         self.assert_fatal_error(
             validator, "test", "Unknown SOPClassUID (probably retired): Unknown"
         )
@@ -79,7 +79,7 @@ class TestFakeDicomFileValidator:
         dataset = Dataset()
         dataset.SOPClassUID = "1.2.840.10008.5.1.4.1.1.2"  # CT Image Storage
         file_dataset = FileDataset("test", dataset, file_meta=self.create_metadata())
-        write_file("test", file_dataset, write_like_original=False)
+        dcmwrite("test", file_dataset, write_like_original=False)
         error_dict = validator.validate("test")
         assert len(error_dict) == 1
         errors = error_dict["test"]
