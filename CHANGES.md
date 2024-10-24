@@ -10,6 +10,7 @@ The released versions correspond to PyPi releases.
 ### Infrastructure
 * use the current DICOM standard (2024c) for testing
 * make the package compatible to `pydicom` 3.0
+* use trusted publisher for release (see https://docs.pypi.org/trusted-publishers/)
 
 ## [Version 0.6.2](https://pypi.python.org/pypi/dicom-validator/0.6.2) (2024-08-09)
 Fixes a regression in version 0.6.1.
