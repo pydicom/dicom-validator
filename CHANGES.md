@@ -1,7 +1,8 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## Unreleased
+## [Version 0.6.3](https://pypi.python.org/pypi/dicom-validator/0.6.3) (2024-10-24)
+Bugfix release.
 
 ### Fixes
 * fixed possible `KeyError` while checking functional group macros
