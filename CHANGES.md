@@ -1,6 +1,9 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
+### Infrastructure
+* update the tests for current version 2024e
+
 ## [Version 0.6.3](https://pypi.python.org/pypi/dicom-validator/0.6.3) (2024-10-24)
 Bugfix release.
 
