@@ -1,6 +1,9 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
+### Fixes
+* fixed handling of empty type 2 enumerated values (see [#147](../../issues/147))
+
 ### Infrastructure
 * update the tests for current version 2024e
 

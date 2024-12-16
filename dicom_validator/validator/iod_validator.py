@@ -391,9 +391,9 @@ class IODValidator:
             value = self._dataset_stack[-1].dataset[tag_id].value
             vr = self._dataset_stack[-1].dataset[tag_id].VR
             if value_required:
-                if value is None or isinstance(value, Sequence) and not value:
+                if value is None or isinstance(value, (Sequence, str)) and not value:
                     error_kind = "empty"
-            if value is not None:
+            if value is not None and (not isinstance(value, str) or value):
                 if not isinstance(value, MultiValue):
                     value = [value]
                 for i, v in enumerate(value):
