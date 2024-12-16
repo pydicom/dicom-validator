@@ -478,6 +478,53 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
+            "SOPClassUID": uid.EnhancedXAImageStorage,
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ImageType": "DERIVED",
+            "PresentationLUTShape": "",
+        }
+    )
+    def test_empty_type_1_enum_value(self, validator):
+        result = validator.validate()
+
+        # Presentation LUT Shape: incorrect enum value
+        assert has_tag_error(
+            result,
+            "Enhanced XA/XRF Image",
+            "(2050,0020)",
+            "is empty",
+        )
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.OphthalmicPhotography8BitImageStorage,
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "PatientEyeMovementCommanded": "",
+            "PupilDilated": "",
+        }
+    )
+    def test_empty_type_2_enum_value(self, validator):
+        # regression test for #147
+        result = validator.validate()
+
+        assert not has_tag_error(
+            result,
+            "Ophthalmic Photography Acquisition Parameters",
+            "(0022,0005)",
+            "value is not allowed",
+        )
+
+        assert not has_tag_error(
+            result,
+            "Ophthalmic Photography Acquisition Parameters",
+            "(0022,000D)",
+            "value is not allowed",
+        )
+
+    @pytest.mark.tag_set(
+        {
             "SOPClassUID": uid.MRImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
