@@ -54,6 +54,7 @@ Fixes for enum checks.
 
 ### Features
 * added checking of enumerated values defined for a specific index
+* added CI tests for Python 3.13
 
 ### Fixes
 * fixed exception on parsing some older DICOM standard versions

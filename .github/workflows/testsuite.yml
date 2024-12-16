@@ -13,46 +13,50 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+        exclude:
+          # exclude while some tests fail due to a known issue in pyfakefs
+          - python-version: "3.13"
+            os: macOS-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Cache DICOM standard
-      id: cache-dicom
-      uses: actions/cache@v4
-      with:
-        path: dicom_validator/tests/fixtures/standard
-        key: "2015b_2024e"
-        enableCrossOsArchive: true
+      - name: Cache DICOM standard
+        id: cache-dicom
+        uses: actions/cache@v4
+        with:
+          path: dicom_validator/tests/fixtures/standard
+          key: "2015b_2024e"
+          enableCrossOsArchive: true
 
-    - name: Download DICOM standard
-      if: steps.cache-dicom.outputs.cache-hit != 'true'
-      run: |
-        pip install -e .
-        python .github/workflows/get_revision.py 2015b "`pwd`/dicom_validator/tests/fixtures/standard"
-        python .github/workflows/get_revision.py 2024e "`pwd`/dicom_validator/tests/fixtures/standard"
+      - name: Download DICOM standard
+        if: steps.cache-dicom.outputs.cache-hit != 'true'
+        run: |
+          pip install -e .
+          python .github/workflows/get_revision.py 2015b "`pwd`/dicom_validator/tests/fixtures/standard"
+          python .github/workflows/get_revision.py 2024e "`pwd`/dicom_validator/tests/fixtures/standard"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
-        pip install -e .
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -e .
 
-    - name: Run tests with coverage
-      run: |
-        if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.10' ]]
-        then
-          python -m pytest --cov=dicom_validator --cov-config=.coveragerc dicom_validator
-        else
-          python -m pytest dicom_validator
-        fi
+      - name: Run tests with coverage
+        run: |
+          if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.10' ]]
+          then
+            python -m pytest --cov=dicom_validator --cov-config=.coveragerc dicom_validator
+          else
+            python -m pytest dicom_validator
+          fi
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5
-      if: ${{ success() && matrix.python-version == '3.10' && matrix.os == 'ubuntu-latest' }}
-      with:
-        name: codecov-dicom-validator
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: ${{ success() && matrix.python-version == '3.10' && matrix.os == 'ubuntu-latest' }}
+        with:
+          name: codecov-dicom-validator
