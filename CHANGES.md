@@ -1,11 +1,15 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
+## [Version 0.6.4](https://pypi.python.org/pypi/dicom-validator/0.6.4) (2024-12-19)
+Bugfix release.
+
 ### Fixes
 * fixed handling of empty type 2 enumerated values (see [#147](../../issues/147))
 
 ### Infrastructure
 * update the tests for current version 2024e
+* added CI tests for Python 3.13
 
 ## [Version 0.6.3](https://pypi.python.org/pypi/dicom-validator/0.6.3) (2024-10-24)
 Bugfix release.
