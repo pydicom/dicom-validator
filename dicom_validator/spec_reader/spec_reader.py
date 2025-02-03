@@ -73,7 +73,7 @@ class SpecReader:
 
     @staticmethod
     def cleaned_value(value):
-        return value.replace("\u200B", "")
+        return value.replace("\u200b", "")
 
     @staticmethod
     def _find_all_text(node):
