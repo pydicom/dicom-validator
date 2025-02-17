@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/crate-ci/typos
-    rev: typos-dict-v0.12.4
+    rev: typos-dict-v0.12.5
     hooks:
       - id: typos
         exclude: _*.xml
