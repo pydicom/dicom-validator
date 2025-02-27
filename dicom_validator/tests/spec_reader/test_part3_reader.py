@@ -50,7 +50,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,iod_name",
-        [("2015b", "Computed Tomography Image IOD"), ("2024e", "CT Image IOD")],
+        [("2015b", "Computed Tomography Image IOD"), ("2025a", "CT Image IOD")],
         indirect=["revision"],
         scope="session",
     )
@@ -64,7 +64,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,module_nr",
-        [("2015b", 27), ("2024e", 29)],
+        [("2015b", 27), ("2025a", 29)],
         indirect=["revision"],
         scope="session",
     )
@@ -78,7 +78,7 @@ class TestReadPart3:
         assert module["ref"] == "C.7.5.1"
         assert module["use"] == "M"
 
-    @pytest.mark.parametrize("revision", ["2015b", "2024e"], indirect=True)
+    @pytest.mark.parametrize("revision", ["2015b", "2025a"], indirect=True)
     def test_optional_iod_module(self, reader):
         description = reader.iod_description(chapter="A.38.1")
         assert "modules" in description
@@ -90,7 +90,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,desc_nr",
-        [("2015b", 110), ("2024e", 155)],
+        [("2015b", 110), ("2025a", 157)],
         indirect=["revision"],
         scope="session",
     )
@@ -103,7 +103,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,macro_nr",
-        [("2015b", 24), ("2024e", 28)],
+        [("2015b", 24), ("2025a", 28)],
         indirect=["revision"],
         scope="session",
     )
@@ -137,7 +137,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,desc_nr",
-        [("2015b", 9), ("2024e", 14)],
+        [("2015b", 9), ("2025a", 14)],
         indirect=["revision"],
         scope="session",
     )
@@ -152,7 +152,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,desc_nr, seq_desc_nr",
-        [("2015b", 3, 3), ("2024e", 7, 4)],
+        [("2015b", 3, 3), ("2025a", 7, 4)],
         indirect=["revision"],
         scope="session",
     )
@@ -183,7 +183,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,desc_nr",
-        [("2015b", 451), ("2024e", 583)],
+        [("2015b", 451), ("2025a", 591)],
         indirect=["revision"],
         scope="session",
     )
@@ -193,7 +193,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,include_nr",
-        [("2015b", 9), ("2024e", 10)],
+        [("2015b", 9), ("2025a", 10)],
         indirect=["revision"],
         scope="session",
     )
@@ -226,7 +226,7 @@ class TestReadPart3:
         assert enums == [{"val": ["FAILURE", "WARNING", "INFORMATIVE"]}]
 
     @pytest.mark.parametrize(
-        "revision", ["2015b", "2024e"], indirect=True, scope="session"
+        "revision", ["2015b", "2025a"], indirect=True, scope="session"
     )
     def test_linked_enum_values(self, reader):
         description = reader.module_description("10.24")
@@ -239,7 +239,7 @@ class TestReadPart3:
         assert tag["enums"] == [{"val": ["CONTINUOUS", "TRIGGERED", "AUTOMATIC"]}]
 
     @pytest.mark.parametrize(
-        "revision", ["2015b", "2024e"], indirect=True, scope="session"
+        "revision", ["2015b", "2025a"], indirect=True, scope="session"
     )
     def test_graphic_annotation_sequence(self, reader):
         description = reader.module_description("C.10.5")
