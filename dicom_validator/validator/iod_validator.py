@@ -394,7 +394,7 @@ class IODValidator:
                 if value is None or isinstance(value, (Sequence, str)) and not value:
                     error_kind = "empty"
             if value is not None and (not isinstance(value, str) or value):
-                if not isinstance(value, MultiValue):
+                if not isinstance(value, (MultiValue, list)):
                     value = [value]
                 for i, v in enumerate(value):
                     if "enums" in attribute:
