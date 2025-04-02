@@ -1,6 +1,11 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
+## Version TBD
+
+### Fixes
+* support values of type list in addition to MultiValue (see [#165](../../issues/165))
+
 ### Infrastructure
 * update the tests for current version 2025a
 
