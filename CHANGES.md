@@ -1,7 +1,8 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## Version TBD
+## [Version 0.6.5](https://pypi.python.org/pypi/dicom-validator/0.6.5) (2025-04-02)
+Fixes an incompatibility with newer pydicom versions.
 
 ### Fixes
 * support values of type list in addition to MultiValue (see [#165](../../issues/165))
