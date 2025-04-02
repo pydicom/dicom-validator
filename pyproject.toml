@@ -15,7 +15,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -26,13 +25,17 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
 ]
-dependencies = ["pydicom", "lxml"]
+dependencies = [
+    "pydicom; python_version < '3.14'",
+    "pydicom@git+https://github.com/pydicom/pydicom ; python_version >= '3.14'",
+    "lxml; python_version < '3.14'"
+]
 description = "Python DICOM validator using input from DICOM specs in docbook format"
 keywords = ["dicom, python"]
 license = {text = "MIT"}
 name = "dicom-validator"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version"]
 
 [project.optional-dependencies]

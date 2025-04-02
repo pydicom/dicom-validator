@@ -3,11 +3,15 @@ The released versions correspond to PyPi releases.
 
 ## Version TBD
 
+### Changes
+* Python 3.8 has reached EOL and is no longer officially supported
+
 ### Fixes
 * support values of type list in addition to MultiValue (see [#165](../../issues/165))
 
 ### Infrastructure
 * update the tests for current version 2025a
+* remove Python 3.18, add Python 3.14 to CI (needs development version of `pydicom`)
 
 ## [Version 0.6.4](https://pypi.python.org/pypi/dicom-validator/0.6.4) (2024-12-19)
 Bugfix release.
