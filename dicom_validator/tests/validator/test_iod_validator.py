@@ -1,10 +1,12 @@
 import logging
 from typing import Optional
 
+import pydicom
 import pytest
-from pydicom import DataElement, uid, Sequence
+from pydicom import DataElement, uid, Sequence, dcmwrite, dcmread
 from pydicom.datadict import dictionary_VR
-from pydicom.dataset import Dataset, FileMetaDataset
+from pydicom.dataset import Dataset
+from pydicom.filebase import DicomBytesIO
 from pydicom.tag import Tag
 
 from dicom_validator.tests.utils import has_tag_error
@@ -17,6 +19,8 @@ def new_data_set(tags, ds: Optional[Dataset] = None):
     """Create a DICOM data set with the given attributes"""
     tags = tags or {}
     data_set = ds or Dataset()
+    if not tags:
+        return data_set
     for tag, value in tags.items():
         tag = Tag(tag)  # raises for invalid tag
         try:
@@ -29,10 +33,20 @@ def new_data_set(tags, ds: Optional[Dataset] = None):
                 items.append(new_data_set(item_tags, data_set))
             value = Sequence(items)
         data_set[tag] = DataElement(tag, vr, value)
-    data_set.file_meta = FileMetaDataset()
-    data_set.is_implicit_VR = False
+    # write the dataset into a file and read it back to ensure the real behavior
+    if "SOPInstanceUID" not in data_set:
+        data_set.SOPInstanceUID = "1.2.3"
     data_set.is_little_endian = True
-    return data_set
+    data_set.is_implicit_VR = True
+    fp = DicomBytesIO()
+    kwargs = (
+        {"write_like_original": False}
+        if int(pydicom.__version_info__[0]) < 3
+        else {"enforce_file_format": True}
+    )
+    dcmwrite(fp, data_set, **kwargs)
+    fp.seek(0)
+    return dcmread(fp)
 
 
 @pytest.fixture
@@ -256,7 +270,7 @@ class TestIODValidator:
             "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
-            "PixelPaddingRangeLimit": "10",
+            "PixelPaddingRangeLimit": 10,
             "PixelDataProviderURL": "https://dataprovider",
         }
     )
@@ -272,7 +286,7 @@ class TestIODValidator:
             "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
-            "PixelPaddingRangeLimit": "10",
+            "PixelPaddingRangeLimit": 10,
         }
     )
     def test_presence_condition_not_met(self, validator):
@@ -474,6 +488,26 @@ class TestIODValidator:
             "(0028,0101)",
             "value is not allowed",
             "(value: 1, allowed: 8, 9, 10, 11, 12, 13, 14, 15, 16)",
+        )
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.CTImageStorage,
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ReconstructionTargetCenterPatient": [0, -188, -1179.45],
+        }
+    )
+    def test_multilist_fd(self, validator):
+        # regression test for #166
+        result = validator.validate()
+        # Reconstruction Target Center Patient has a list as value
+        # that shall be handled like MultiValue
+        assert not has_tag_error(
+            result,
+            "CT Image",
+            "(0018,9318)",
+            "is conflicting with VR",
         )
 
     @pytest.mark.tag_set(
