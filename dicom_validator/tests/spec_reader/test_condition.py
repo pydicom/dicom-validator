@@ -150,7 +150,7 @@ class TestConditionRead:
             "op": ConditionOperator.EqualsTag,
             "tag": "(0028,0009)",
             "type": "MN",
-            "values": ["1577061"],
+            "values": [1577061],
         }
 
         def test_condition():
@@ -159,7 +159,7 @@ class TestConditionRead:
                 cond_type=ConditionType.MandatoryOrNotAllowed,
                 op=ConditionOperator.EqualsTag,
                 tag="(0028,0009)",
-                values=["1577061"],
+                values=[1577061],
             )
 
         condition = test_condition()

@@ -4,6 +4,7 @@ import json
 import logging
 import re
 import sys
+import time
 from abc import ABC
 from pathlib import Path
 from urllib.request import urlretrieve
@@ -192,7 +193,8 @@ class EditionReader:
 
     @classmethod
     def create_json_files(cls, docbook_path, json_path):
-        print("Creating JSON excerpts from docbook files...")
+        print("Creating JSON excerpts from docbook files - this may take a while...")
+        start_time = time.time()
         part6reader = Part6Reader(docbook_path)
         dict_info = part6reader.data_elements()
         part3reader = Part3Reader(docbook_path, dict_info)
@@ -204,6 +206,8 @@ class EditionReader:
             if chapter in chapter_info:
                 for uid in chapter_info[chapter]:
                     definition[uid] = iod_info[chapter]
+        print(f"Parsing docbooks took {time.time() - start_time:.1f} seconds.")
+        start_time = time.time()
         with open(json_path / cls.iod_info_json, "w", encoding="utf8") as info_file:
             info_file.write(cls.dump_description(definition))
         with open(json_path / cls.module_info_json, "w", encoding="utf8") as info_file:
@@ -213,6 +217,7 @@ class EditionReader:
         with open(json_path / cls.uid_info_json, "w", encoding="utf8") as info_file:
             info_file.write(cls.dump_description(part6reader.all_uids()))
         cls.write_current_version(json_path)
+        print(f"Writing json files took {time.time() - start_time:.1f} seconds.")
         print("Done!")
 
     def get_revision(self, revision, recreate_json=False, create_json=True):

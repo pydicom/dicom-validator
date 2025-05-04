@@ -53,6 +53,20 @@ class ConditionType(str, enum.Enum):  # replace later with StrEnum from Python 3
         return cls.MandatoryShared if is_mandatory else cls.UserDefinedShared
 
 
+class ConditionMeaning(str, enum.Enum):
+    """Defines how the condition shall be interpreted if fulfilled."""
+
+    TagShallBePresent = "present"
+    TagShallBeAbsent = "absent"
+
+
+class ConditionAlternative(str, enum.Enum):
+    """Defines what is expected if the condition is not fulfilled."""
+
+    TagMayBePresent = "user-def"
+    TagShallNotBePresent = "not-allowed"
+
+
 class ConditionOperator(str, enum.Enum):
     """The operator used in the condition in that defines if the related tag
     is required."""
@@ -73,6 +87,18 @@ class ConditionOperator(str, enum.Enum):
     LessValue = "<"
     # tag points to one of the given tag IDs
     EqualsTag = "=>"
+    # tag has a non-zero value
+    NonZero = "!0"
+
+
+def is_binary_condition(op: ConditionOperator) -> bool:
+    return op in (
+        ConditionOperator.EqualsValue,
+        ConditionOperator.NotEqualsValue,
+        ConditionOperator.GreaterValue,
+        ConditionOperator.LessValue,
+        ConditionOperator.EqualsTag,
+    )
 
 
 class Condition:
@@ -220,26 +246,25 @@ class Condition:
         elif self.operator == ConditionOperator.Absent:
             result += " is not present"
         elif self.operator == ConditionOperator.EqualsTag:
-            tag_value = int(self.values[0])
-            result += " points to " + tag_name_from_id(tag_value, dict_info)
+            result += f" points to {tag_name_from_id(self.values[0], dict_info)}"
         elif not self.values:
             # if no values are found here, we have some unhandled condition
             # and ignore it for the time being
             return result
         elif self.operator == ConditionOperator.EqualsValue:
-            values = ['"' + str(value) + '"' for value in self.values]
+            values = [f'"{value}"' for value in self.values]
             result += " is equal to "
             if len(values) > 1:
                 result += ", ".join(values[:-1]) + " or "
             result += values[-1]
         elif self.operator == ConditionOperator.NotEqualsValue:
-            values = ['"' + str(value) + '"' for value in self.values]
+            values = [f'"{value}"' for value in self.values]
             result += " is not equal to "
             if len(values) > 1:
                 result += ", ".join(values[:-1]) + " and "
             result += values[-1]
         elif self.operator == ConditionOperator.LessValue:
-            result += " is less than " + str(self.values[0])
+            result += f" is less than {self.values[0]}"
         elif self.operator == ConditionOperator.GreaterValue:
-            result += " is greater than " + str(self.values[0])
+            result += f" is greater than {self.values[0]}"
         return result
