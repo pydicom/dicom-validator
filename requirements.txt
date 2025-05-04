@@ -1,3 +1,4 @@
 pydicom>=2.3.0 ; python_version < "3.14"
 pydicom@git+https://github.com/pydicom/pydicom ; python_version >= "3.14"
 lxml ; python_version < "3.14"
+pyparsing>=3.2

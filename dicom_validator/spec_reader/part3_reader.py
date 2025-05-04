@@ -337,6 +337,9 @@ class Part3Reader(SpecReader):
             else:
                 name_index = 0
             name = self._find_text(columns[name_index])
+            if not name:
+                # happens due to an error in the 2020 standard
+                continue
             modules[name] = {}
             try:
                 ref_section = (
