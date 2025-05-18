@@ -5,7 +5,7 @@ import pydicom
 import pytest
 from pydicom import DataElement, uid, Sequence, dcmwrite, dcmread
 from pydicom.datadict import dictionary_VR
-from pydicom.dataset import Dataset
+from pydicom.dataset import Dataset, FileMetaDataset
 from pydicom.filebase import DicomBytesIO
 from pydicom.tag import Tag
 
@@ -36,8 +36,8 @@ def new_data_set(tags, ds: Optional[Dataset] = None):
     # write the dataset into a file and read it back to ensure the real behavior
     if "SOPInstanceUID" not in data_set:
         data_set.SOPInstanceUID = "1.2.3"
-    data_set.is_little_endian = True
-    data_set.is_implicit_VR = True
+    data_set.file_meta = FileMetaDataset()
+    data_set.file_meta.TransferSyntaxUID = pydicom.uid.ExplicitVRLittleEndian
     fp = DicomBytesIO()
     kwargs = (
         {"write_like_original": False}

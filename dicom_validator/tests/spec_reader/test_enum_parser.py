@@ -36,7 +36,6 @@ def section(contents, label="C.42.3.5") -> Optional[ElementTree.Element]:
 
 
 class TestEmptyEnumParser:
-    @pytest.mark.section_content("")
     def test_empty_description(self, parser):
         assert parser.parse(section(""), VR.SH) == []
 
@@ -57,7 +56,6 @@ class TestEmptyEnumParser:
 
 
 class TestEnumParser:
-    @pytest.mark.section_content()
     def test_single_enum(self, parser):
         content = """<variablelist>
         <title>Enumerated Values:</title>

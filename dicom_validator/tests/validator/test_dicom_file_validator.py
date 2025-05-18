@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import pydicom
 import pytest
 from pydicom import dcmwrite
 from pydicom.dataset import Dataset, FileDataset, FileMetaDataset
@@ -31,6 +32,14 @@ class TestFakeDicomFileValidator:
         metadata.ImplementationClassUID = "1.3.6.1.4.1.5962.2"
         return metadata
 
+    @staticmethod
+    def enforce_file_format():
+        return (
+            {"write_like_original": False}
+            if int(pydicom.__version_info__[0]) < 3
+            else {"enforce_file_format": True}
+        )
+
     def assert_fatal_error(self, validator, filename, error_string):
         error_dict = validator.validate(filename)
         assert len(error_dict) == 1
@@ -51,14 +60,14 @@ class TestFakeDicomFileValidator:
         file_dataset = FileDataset(
             filename, Dataset(), file_meta=self.create_metadata()
         )
-        dcmwrite(filename, file_dataset, write_like_original=False)
+        dcmwrite(filename, file_dataset, **self.enforce_file_format())
         self.assert_fatal_error(validator, filename, "Missing SOPClassUID")
 
     def test_unknown_sop_class(self, validator):
         dataset = Dataset()
         dataset.SOPClassUID = "Unknown"
         file_dataset = FileDataset("test", dataset, file_meta=self.create_metadata())
-        dcmwrite("test", file_dataset, write_like_original=False)
+        dcmwrite("test", file_dataset, **self.enforce_file_format())
         self.assert_fatal_error(
             validator, "test", "Unknown SOPClassUID (probably retired): Unknown"
         )
@@ -79,7 +88,7 @@ class TestFakeDicomFileValidator:
         dataset = Dataset()
         dataset.SOPClassUID = "1.2.840.10008.5.1.4.1.1.2"  # CT Image Storage
         file_dataset = FileDataset("test", dataset, file_meta=self.create_metadata())
-        dcmwrite("test", file_dataset, write_like_original=False)
+        dcmwrite("test", file_dataset, **self.enforce_file_format())
         error_dict = validator.validate("test")
         assert len(error_dict) == 1
         errors = error_dict["test"]

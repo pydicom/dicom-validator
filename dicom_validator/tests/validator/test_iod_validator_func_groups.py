@@ -41,8 +41,7 @@ def new_data_set(shared_macros, per_frame_macros):
     data_set.PerFrameFunctionalGroupsSequence = per_frame_groups
 
     data_set.file_meta = FileMetaDataset()
-    data_set.is_implicit_VR = False
-    data_set.is_little_endian = True
+    data_set.file_meta.TransferSyntaxUID = uid.ExplicitVRLittleEndian
     return data_set
 
 
