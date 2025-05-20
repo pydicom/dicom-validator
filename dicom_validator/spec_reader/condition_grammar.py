@@ -1,4 +1,5 @@
 import string
+from re import RegexFlag
 from typing import Tuple, Optional
 from urllib.parse import ParseResult
 
@@ -27,6 +28,7 @@ from dicom_validator.spec_reader.condition import (
     ConditionMeaning,
     Condition,
     is_binary_condition,
+    ConditionType,
 )
 
 
@@ -52,9 +54,8 @@ class ConditionGrammar:
         # we use packrat parsing for caching, and Regex where possible
         # to reduce the number of function calls
         ParserElement.enablePackrat()
-
-        tag_expr = self._tag_expression()
-        values_expr = self._value_expression(tag_expr)
+        values_expr = self._value_expression(self._tag_expression(is_value=True))
+        tag_expr = self._tag_expression(is_value=False)
         simple_condition = (
             self._simple_condition(tag_expr, values_expr) + self._in_module_expression()
         )
@@ -64,24 +65,21 @@ class ConditionGrammar:
         )
 
         return {
-            "prefix": self._condition_prefix(),
+            "prefix": AtLineStart(self._condition_prefix()),
             "condition_expr": AtLineStart(condition_expr),
             "other_condition": other_condition_prefix + condition_expr,
         }
 
     @staticmethod
     def _condition_prefix() -> ParserElement:
-        required_cond = (
-            CaselessKeyword("required if")
-            | CaselessKeyword("shall be present if")
-            | CaselessKeyword("required for images where")
-            | CaselessKeyword("required only if")
+        required_cond = Regex(
+            r".*(required if|shall be present if|required for images where|required only if)",
+            flags=RegexFlag.IGNORECASE,
         ).set_parse_action(lambda: ConditionMeaning.TagShallBePresent)
-        absent_cond = CaselessKeyword("shall not be present if").set_parse_action(
-            lambda: ConditionMeaning.TagShallBeAbsent
-        )
-        condition_prefix = required_cond | absent_cond
-        return condition_prefix
+        absent_cond = Regex(
+            ".*shall not be present if", flags=RegexFlag.IGNORECASE
+        ).set_parse_action(lambda: ConditionMeaning.TagShallBeAbsent)
+        return required_cond | absent_cond
 
     def _condition_expression(self, simple_condition: ParserElement) -> ParserElement:
         and_op = Regex(r"(?!, )and( whose| if)?").set_parse_action(lambda: "and")
@@ -116,8 +114,7 @@ class ConditionGrammar:
 
     @staticmethod
     def _combined_conditions(result: ParserElement) -> Condition:
-        # print(f"_combined_conditions: {result}")
-        combined_condition = Condition()
+        combined_condition = Condition(ctype=ConditionType.MandatoryOrUserDefined)
         if result[0][1] == "or":
             conditions = combined_condition.or_conditions
         else:
@@ -136,6 +133,9 @@ class ConditionGrammar:
             raise ParseException("Missing condition operator")
         if is_binary_condition(condition.operator) and not condition.values:
             raise ParseException("Missing condition value")
+        if condition.operator == ConditionOperator.NonZero:
+            condition.operator = ConditionOperator.NotEqualsValue
+            condition.values = ["0"]
         return condition
 
     def _simple_condition(
@@ -164,10 +164,10 @@ class ConditionGrammar:
         )
 
     def condition_from_tag_expression(self, result: ParseResult) -> Condition:
-        def condition_from_tag(tag) -> Condition:
+        def condition_from_tag(tag, ctype=None) -> Condition:
             return self._validate_condition(
                 Condition(
-                    None,
+                    ctype=ctype,
                     operator=result[0][1],  # type: ignore[arg-type]
                     tag=tag[0],
                     index=tag[1],
@@ -186,7 +186,7 @@ class ConditionGrammar:
             else:
                 # OR / AND condition
                 conditions = [condition_from_tag(tag) for tag in result[0][0]]
-            condition = Condition()
+            condition = Condition(ctype=ConditionType.MandatoryOrUserDefined)
             if result[0].and_tags:  # type: ignore[attr-defined]
                 condition.and_conditions = conditions
             else:
@@ -194,7 +194,9 @@ class ConditionGrammar:
             return condition
 
         # single tag expression
-        return condition_from_tag(result[0][0])
+        return condition_from_tag(
+            result[0][0], ctype=ConditionType.MandatoryOrUserDefined
+        )
 
     @staticmethod
     def _operators() -> ParserElement:
@@ -278,7 +280,7 @@ class ConditionGrammar:
             | tag_op
         )
 
-    def _tag_expression(self) -> ParserElement:
+    def _tag_expression(self, is_value: bool) -> ParserElement:
         tag_id = Regex(r"\([\da-fA-F]{4},[\da-fA-F]{4}\)")
         # some special handling for less common tag names,
         # may need to be adapted for new tags
@@ -318,13 +320,16 @@ class ConditionGrammar:
             tag_expr_prefix + Opt(Keyword("value") | "the value") + Opt(tag_id)
         )
         tag_name_expr = Opt(value_index1 | value_index2 | tag_expr_prefix) + tag_name
+        action = (
+            self._tag_value_from_expression if is_value else self._tag_from_expression
+        )
         tag_expr = Group(
             tag_name_expr
             + Opt(tag_id)
             + Opt(value_index3)
             + Suppress(Opt("of this frame"))
             + self._in_module_expression()
-        ).set_parse_action(lambda result: self._tag_from_expression(result[0]))
+        ).set_parse_action(lambda result: action(result[0]))
         return tag_expr
 
     @staticmethod
@@ -405,6 +410,11 @@ class ConditionGrammar:
         )
 
         return values_expr
+
+    def _tag_value_from_expression(self, tag_expr: ParseResult) -> int:
+        tag, _ = self._tag_from_expression(tag_expr)
+        group, element = tag[1:-1].split(",")
+        return (int(group, 16) << 16) + int(element, 16)
 
     def _tag_from_expression(self, tag_expr: ParseResult) -> Tuple[str, int]:
         def is_index(item):

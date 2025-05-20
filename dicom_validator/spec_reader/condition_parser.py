@@ -5,7 +5,6 @@ from pyparsing import ParseException
 from dicom_validator.spec_reader.condition import (
     Condition,
     ConditionType,
-    ConditionOperator,
     ConditionMeaning,
 )
 from dicom_validator.spec_reader.condition_grammar import ConditionGrammar
@@ -48,23 +47,6 @@ class ConditionParser:
             self._condition_cache[cache_key] = condition
         return condition
 
-    def _fix_condition_result(self, condition: Condition) -> Condition:
-        """Some fix-ups to the condition returned as parse result."""
-        # TODO: move to grammar?
-        if (
-            condition.values
-            and isinstance(condition.values[0], tuple)
-            and len(condition.values[0]) == 2
-        ):
-            # value is a tag expression
-            condition.values = [self._tag_id(v[0]) for v in condition.values]
-
-        if condition.operator == ConditionOperator.NonZero:
-            condition.operator = ConditionOperator.NotEqualsValue
-            condition.values = ["0"]
-        condition.type = ConditionType.MandatoryOrUserDefined
-        return condition
-
     def _parse_with_grammar(
         self, condition_str: str, grammar: dict, debug: bool = False
     ) -> Condition:
@@ -94,8 +76,7 @@ class ConditionParser:
             tokens, _, end = next(grammar["condition_expr"].scan_string(condition_str))
             if debug:
                 print(f"Grammar parse result: {tokens}")
-
-            condition = self._fix_condition_result(tokens[0])
+            condition = tokens[0]
             if debug:
                 print(f"Created condition: {condition}")
 
@@ -123,7 +104,7 @@ class ConditionParser:
 
         try:
             tokens, _, _ = next(grammar["other_condition"].scan_string(condition_str))
-            other_condition = self._fix_condition_result(tokens[0])
+            other_condition = tokens[0]
             if other_condition.type == ConditionType.UserDefined:
                 if condition.type != ConditionType.UserDefined:
                     condition.type = ConditionType.MandatoryOrUserDefined
@@ -161,13 +142,6 @@ class ConditionParser:
                 return Condition(ctype=ConditionType.UserDefined)
 
         return condition
-
-    @staticmethod
-    def _tag_id(tag_id_string: str) -> int:
-        if tag_id_string is None:
-            return 0
-        group, element = tag_id_string[1:-1].split(",")
-        return (int(group, 16) << 16) + int(element, 16)
 
     @staticmethod
     def _fix_condition(condition: str) -> str:
