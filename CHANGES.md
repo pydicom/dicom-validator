@@ -9,7 +9,7 @@ The released versions correspond to PyPi releases.
   but also slower
 
 ### Fixes
-* Condition parser: several more conditions are now parsed correctly,
+* Condition parser: almost all parsable conditions are now correctly parsed,
   some conditions which contain unparsable parts are now correctly ignored
 
 ### Infrastructure
