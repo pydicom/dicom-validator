@@ -102,6 +102,9 @@ class ConditionParser:
                 print(f"Error parsing condition {condition_str}: {e}")
             return Condition(ctype=ConditionType.UserDefined)
 
+        # we can safely ignore shorter strings
+        if len(condition_str) < 36:
+            return condition
         try:
             tokens, _, _ = next(grammar["other_condition"].scan_string(condition_str))
             other_condition = tokens[0]

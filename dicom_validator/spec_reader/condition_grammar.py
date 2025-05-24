@@ -54,24 +54,27 @@ class ConditionGrammar:
         # we use packrat parsing for caching, and Regex where possible
         # to reduce the number of function calls
         ParserElement.enablePackrat()
-        values_expr = self._value_expression(self._tag_expression(is_value=True))
-        tag_expr = self._tag_expression(is_value=False)
-        simple_condition = (
-            self._simple_condition(tag_expr, values_expr) + self._in_module_expression()
+        value_grammar = self._value_grammar(self._tag_expression_grammar(is_value=True))
+        tag_expression_grammar = self._tag_expression_grammar(is_value=False)
+        simple_condition_grammar = (
+            self._simple_condition_grammar(tag_expression_grammar, value_grammar)
+            + self._in_module_grammar()
         )
-        condition_expr = self._condition_expression(simple_condition)
+        condition_grammar = self._tag_condition_grammar(
+            simple_condition_grammar, value_grammar
+        )
         other_condition_prefix = Suppress(
             CaselessKeyword("may be present") + Opt("otherwise") + Opt("only") + "if"
         )
 
         return {
-            "prefix": AtLineStart(self._condition_prefix()),
-            "condition_expr": AtLineStart(condition_expr),
-            "other_condition": other_condition_prefix + condition_expr,
+            "prefix": AtLineStart(self._condition_prefix_grammar()),
+            "condition_expr": AtLineStart(condition_grammar),
+            "other_condition": other_condition_prefix + condition_grammar,
         }
 
     @staticmethod
-    def _condition_prefix() -> ParserElement:
+    def _condition_prefix_grammar() -> ParserElement:
         required_cond = Regex(
             r".*(required if|shall be present if|required for images where|required only if)",
             flags=RegexFlag.IGNORECASE,
@@ -81,28 +84,41 @@ class ConditionGrammar:
         ).set_parse_action(lambda: ConditionMeaning.TagShallBeAbsent)
         return required_cond | absent_cond
 
-    def _condition_expression(self, simple_condition: ParserElement) -> ParserElement:
+    def _tag_condition_grammar(
+        self, simple_condition: ParserElement, value_grammar: ParserElement
+    ) -> ParserElement:
         and_op = Regex(r"(?!, )and( whose| if)?").set_parse_action(lambda: "and")
         comma_and_op = Regex(r", and( whose| if)?").set_parse_action(lambda: "and")
         or_op = Regex(r"(?!, )or( if)?").set_parse_action(lambda: "or")
         comma_or_op = Regex(r", or( if)?").set_parse_action(lambda: "or")
         # Compound conditions
+        value_prefix = Opt(
+            Suppress(Keyword("Value")) + (Keyword("1") | "2" | "3" | "4")
+        )
+        condition_without_tag = Group(
+            value_prefix + self._condition_grammar(value_grammar)
+        ).set_parse_action(lambda r: self._condition_from_condition_expression(r[0]))
+        or_conditions = Group(
+            simple_condition + OneOrMore((or_op | comma_or_op) + condition_without_tag)
+        ).set_parse_action(lambda r: self._combined_condition(r[0]))
+        and_conditions = Group(
+            simple_condition
+            + OneOrMore((and_op | comma_and_op) + condition_without_tag)
+        ).set_parse_action(lambda r: self._combined_condition(r[0]))
+        tag_condition = and_conditions | or_conditions | simple_condition
         combined_condition = (
             Group(
-                simple_condition
-                + (
-                    OneOrMore(and_op + simple_condition)
-                    | OneOrMore(or_op + simple_condition)
-                )
-            ).set_parse_action(lambda r: self._combined_conditions(r))
-            | simple_condition
+                tag_condition
+                + (OneOrMore(and_op + tag_condition) | OneOrMore(or_op + tag_condition))
+            ).set_parse_action(lambda r: self._combined_condition(r[0]))
+            | tag_condition
         )
         and_condition = Group(
             combined_condition + OneOrMore(comma_and_op + combined_condition)
-        ).set_parse_action(lambda r: self._combined_conditions(r))
+        ).set_parse_action(lambda r: self._combined_condition(r[0]))
         or_condition = Group(
             combined_condition + OneOrMore(comma_or_op + combined_condition)
-        ).set_parse_action(lambda r: self._combined_conditions(r))
+        ).set_parse_action(lambda r: self._combined_condition(r[0]))
 
         # anything else after a comma and before a period or semicolon
         # is considered an explanation or clarification
@@ -113,16 +129,39 @@ class ConditionGrammar:
         return condition_expr
 
     @staticmethod
-    def _combined_conditions(result: ParserElement) -> Condition:
+    def _combined_condition(result: ParserElement) -> Condition:
         combined_condition = Condition(ctype=ConditionType.MandatoryOrUserDefined)
-        if result[0][1] == "or":
+        if result[1] == "or":
             conditions = combined_condition.or_conditions
         else:
             conditions = combined_condition.and_conditions
 
-        for index, condition in enumerate(result[0]):
+        for index, condition in enumerate(result):
             if index % 2 == 0:
+                if (
+                    not condition.tag
+                    and not condition.or_conditions
+                    and not condition.and_conditions
+                ):
+                    condition.tag = conditions[0].tag
                 conditions.append(condition)
+
+        # special case: transform (c1 or c2) and c3 to c1 or (c2 and c3)
+        if (
+            len(combined_condition.and_conditions) == 2
+            and len(combined_condition.and_conditions[0].or_conditions) == 2
+        ):
+            combined_condition.or_conditions.append(
+                combined_condition.and_conditions[0].or_conditions[0]
+            )
+            and_condition = Condition()
+            and_condition.and_conditions = [
+                combined_condition.and_conditions[0].or_conditions[1],
+                combined_condition.and_conditions[1],
+            ]
+            combined_condition.or_conditions.append(and_condition)
+            combined_condition.and_conditions = []
+
         return combined_condition
 
     @staticmethod
@@ -138,11 +177,9 @@ class ConditionGrammar:
             condition.values = ["0"]
         return condition
 
-    def _simple_condition(
+    def _simple_condition_grammar(
         self, tag_expr: ParserElement, values_expr: ParserElement
     ) -> ParserElement:
-
-        condition_operators = self._operators()
         or_expressions = Group(
             tag_expr
             + ZeroOrMore(Suppress(",") + tag_expr)
@@ -153,17 +190,39 @@ class ConditionGrammar:
             + ZeroOrMore(Suppress(",") + tag_expr)
             + OneOrMore(Suppress(Keyword("and") | ", and") + tag_expr)
         ).set_results_name("and_tags")
+
         tag_expressions = and_expressions | or_expressions | tag_expr
-        condition_expression = (
-            Suppress(Opt(Keyword("value") | "the value"))
-            + condition_operators
-            + Opt(values_expr)
-        )
+        condition_expression = self._condition_grammar(values_expr)
         return Group(tag_expressions + condition_expression).set_parse_action(
-            lambda result: self.condition_from_tag_expression(result)
+            lambda result: self._condition_from_tag_expression(result)
         )
 
-    def condition_from_tag_expression(self, result: ParseResult) -> Condition:
+    def _condition_grammar(self, values_grammar):
+        operator_grammar = self._operator_grammar()
+        condition_expression = (
+            Suppress(Opt(Keyword("value") | "the value"))
+            + operator_grammar
+            + Opt(values_grammar)
+        )
+        return condition_expression
+
+    def _condition_from_condition_expression(self, result: ParseResult) -> Condition:
+        tag_index = 0
+        index = 0
+        if result[0] in ("1", "2", "3", "4"):
+            tag_index = int(result[0]) - 1
+            index += 1
+        values: list = result[index + 1 :]  # type: ignore[assignment]
+        return self._validate_condition(
+            Condition(
+                tag="",
+                index=tag_index,
+                operator=result[index],  # type: ignore[arg-type]
+                values=values,
+            )
+        )
+
+    def _condition_from_tag_expression(self, result: ParseResult) -> Condition:
         def condition_from_tag(tag, ctype=None) -> Condition:
             return self._validate_condition(
                 Condition(
@@ -199,7 +258,7 @@ class ConditionGrammar:
         )
 
     @staticmethod
-    def _operators() -> ParserElement:
+    def _operator_grammar() -> ParserElement:
         absent_op = (
             Keyword("is not sent")
             | Keyword("is not present in this Sequence Item")
@@ -214,7 +273,10 @@ class ConditionGrammar:
             Keyword("equals other than")
             | Keyword("value is not")
             | Keyword("is not equal to")
+            | Keyword("is not any of")
+            | Keyword("is not:")
             | Keyword("is not")
+            | Keyword("not")
             | Keyword("is other than")
             | Keyword("is present with a value other than")
         ).set_parse_action(lambda: ConditionOperator.NotEqualsValue)
@@ -233,12 +295,15 @@ class ConditionGrammar:
         equals_op = (
             Keyword("is present and the value is")
             | Keyword("is present and has a value of")
+            | Keyword("is present and has the value")
+            | Keyword("is present and is either")
             | Keyword("is present with value")
             | Keyword("is present and equals")
             | Keyword("is present with a value of")
             | Keyword("is set to")
             | Keyword("equals one of the following values:")
             | Keyword("has a value of")
+            | Keyword("has value")
             | Keyword("=")
             | Keyword("at the image level equals")
             | Keyword("equals")
@@ -280,13 +345,13 @@ class ConditionGrammar:
             | tag_op
         )
 
-    def _tag_expression(self, is_value: bool) -> ParserElement:
+    def _tag_expression_grammar(self, is_value: bool) -> ParserElement:
         tag_id = Regex(r"\([\da-fA-F]{4},[\da-fA-F]{4}\)")
         # some special handling for less common tag names,
         # may need to be adapted for new tags
         tag_name_capitalized = Regex(r"(2D|3D|[A-Z][A-Za-z'\-]+)")
         unit_name = Regex(r"ms|mAs|mA|mGy|uS|uA|ppm|yyy|zzz")
-        tag_name_inner = ~(Regex("is|not|or") | unit_name) + Word(
+        tag_name_inner = ~(Regex("is|not|or|equals") | unit_name) + Word(
             string.ascii_lowercase + nums, alphanums + "'-", as_keyword=True
         )
         tag_name = (
@@ -323,21 +388,20 @@ class ConditionGrammar:
         action = (
             self._tag_value_from_expression if is_value else self._tag_from_expression
         )
-        tag_expr = Group(
+        return Group(
             tag_name_expr
             + Opt(tag_id)
             + Opt(value_index3)
             + Suppress(Opt("of this frame"))
-            + self._in_module_expression()
+            + self._in_module_grammar()
         ).set_parse_action(lambda result: action(result[0]))
-        return tag_expr
 
     @staticmethod
-    def _in_module_expression() -> ParserElement:
+    def _in_module_grammar() -> ParserElement:
         return Suppress(Regex(r"(in the [a-zA-Z ]+ Module)?"))
 
     @staticmethod
-    def _value_expression(tag_expression: ParserElement) -> ParserElement:
+    def _value_grammar(tag_expression: ParserElement) -> ParserElement:
         # handle some special values
         zero_length_value = Regex("zero[- ]length").set_parse_action(lambda: "")
         zero_value = Keyword("zero").set_parse_action(lambda: "0")
@@ -367,9 +431,9 @@ class ConditionGrammar:
         )
 
         # UIDs are always quoted and may be followed by an explanation
-        uid_value = Regex(r'"(?P<uid>\d+(\.\d+)+)"( \([a-zA-Z ]+\))?').set_parse_action(
-            lambda r: r.uid
-        )
+        uid_value = Regex(
+            r'"(?P<uid>\d+(\.\d+)+)( \([a-zA-Z ]+\))?"( \([a-zA-Z ]+\))?'
+        ).set_parse_action(lambda r: r.uid)
         # SOP Class UIDs may be written by the name followed by the UID in parentheses
         sop_class_value = (
             Suppress(
@@ -395,7 +459,7 @@ class ConditionGrammar:
                 value_type
                 + ZeroOrMore(Suppress(",") + value_type)
                 + ZeroOrMore(Suppress("or") + value_type)
-                + Opt(Suppress(", or") + value_type)
+                + ZeroOrMore(Suppress(", or") + value_type)
             )
 
         values_expr = (

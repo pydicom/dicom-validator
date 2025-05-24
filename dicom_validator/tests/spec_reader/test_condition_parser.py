@@ -646,6 +646,16 @@ class TestValueConditionParser:
         assert result.operator == ConditionOperator.EqualsValue
         assert result.values == ["YES"]
 
+    def test_is_either(self, parser):
+        result = parser.parse(
+            "Required if the value of Ophthalmic Axial Length Measurements Type "
+            "(0022,1010) is present and is either SEGMENTAL LENGTH or LENGTH SUMMATION."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.tag == "(0022,1010)"
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.values == ["SEGMENTAL LENGTH", "LENGTH SUMMATION"]
+
     def test_mandatory_no_shared_group(self, parser):
         result = parser.parse("M - May not be used as a Shared Functional Group.")
         assert result.type == ConditionType.MandatoryPerFrame
@@ -738,6 +748,31 @@ class TestValueConditionParser:
         assert result.tag == "(0008,0008)"
         assert result.values == ["SIMULATOR", "PORTAL"]
         assert result.index == 2
+
+    def test_is_not_and_not(self, parser):
+        result = parser.parse(
+            "Required if SOP Class UID (0008,0016) is not "
+            '"1.2.840.10008.5.1.4.1.1.2.2" '
+            "(Legacy Converted Enhanced CT Image Storage) "
+            'and not "1.2.840.10008.5.1.4.1.1.4.4" '
+            "(Legacy Converted Enhanced MR Image Storage) "
+            'and not "1.2.840.10008.5.1.4.1.1.128.1" '
+            "(Legacy Converted Enhanced PET Image Storage)."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.and_conditions) == 3
+        result1 = result.and_conditions[0]
+        assert result1.operator == ConditionOperator.NotEqualsValue
+        assert result1.tag == "(0008,0016)"
+        assert result1.values == ["1.2.840.10008.5.1.4.1.1.2.2"]
+        result2 = result.and_conditions[1]
+        assert result2.operator == ConditionOperator.NotEqualsValue
+        assert result2.tag == "(0008,0016)"
+        assert result2.values == ["1.2.840.10008.5.1.4.1.1.4.4"]
+        result3 = result.and_conditions[2]
+        assert result3.operator == ConditionOperator.NotEqualsValue
+        assert result3.tag == "(0008,0016)"
+        assert result3.values == ["1.2.840.10008.5.1.4.1.1.128.1"]
 
 
 class TestNotMandatoryConditionParser:
@@ -997,7 +1032,6 @@ class TestCompositeConditionParser:
             assert result_part.operator == ConditionOperator.Present
         assert result.and_conditions[1].operator == ConditionOperator.Present
 
-    @pytest.mark.skip("Not yet implemented")
     def test_mixed_or_value_and_tag_conditions(self, parser):
         result = parser.parse(
             "Required if the Image Type (0008,0008) Value 1 equals DERIVED or "
@@ -1010,18 +1044,64 @@ class TestCompositeConditionParser:
         assert len(result.or_conditions) == 2
         assert result.or_conditions[0].operator == ConditionOperator.EqualsValue
         assert result.or_conditions[0].tag == "(0008,0008)"
-        assert result.or_conditions[0].index == 1
+        assert result.or_conditions[0].index == 0
         assert result.or_conditions[0].values == ["DERIVED"]
         and_conditions = result.or_conditions[1].and_conditions
         assert len(and_conditions) == 2
         assert and_conditions[0].operator == ConditionOperator.EqualsValue
         assert and_conditions[0].tag == "(0008,0008)"
-        assert and_conditions[0].index == 1
+        assert and_conditions[0].index == 0
         assert and_conditions[0].values == ["ORIGINAL"]
         assert and_conditions[1].operator == ConditionOperator.EqualsValue
-        assert and_conditions[1].values == ["ORIGINAL"]
         assert and_conditions[1].tag == "(0008,0068)"
-        assert and_conditions[1].values == ["FOR_PRESENTATION"]
+        assert and_conditions[1].values == ["FOR PRESENTATION"]
+
+    def test_or_without_tag(self, parser):
+        result = parser.parse(
+            "Required if Compensator Surface Representation Flag (300A,02EC) "
+            "is absent or has value NO."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.or_conditions) == 2
+        assert result.or_conditions[0].tag == "(300A,02EC)"
+        assert result.or_conditions[0].operator == ConditionOperator.Absent
+        assert result.or_conditions[1].tag == "(300A,02EC)"
+        assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[1].values == ["NO"]
+
+    def test_comma_or_without_tag(self, parser):
+        result = parser.parse(
+            "Required if Enhanced RT Beam Limiting Device Definition Flag (3008,00A3) "
+            "is absent, or is present and has the value NO."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.or_conditions) == 2
+        assert result.or_conditions[0].tag == "(3008,00A3)"
+        assert result.or_conditions[0].operator == ConditionOperator.Absent
+        assert result.or_conditions[1].tag == "(3008,00A3)"
+        assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[1].values == ["NO"]
+
+    def test_and_condition_without_tag_with_value(self, parser):
+        result = parser.parse(
+            "Required if Image Type (0008,0008) Value 4 is TRANSMISSION and Value 3 "
+            "is not any of TOMO, GATED TOMO, RECON TOMO or RECON GATED TOMO."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.and_conditions) == 2
+        assert result.and_conditions[0].tag == "(0008,0008)"
+        assert result.and_conditions[0].operator == ConditionOperator.EqualsValue
+        assert result.and_conditions[0].index == 3
+        assert result.and_conditions[0].values == ["TRANSMISSION"]
+        assert result.and_conditions[1].tag == "(0008,0008)"
+        assert result.and_conditions[1].operator == ConditionOperator.NotEqualsValue
+        assert result.and_conditions[1].index == 2
+        assert result.and_conditions[1].values == [
+            "TOMO",
+            "GATED TOMO",
+            "RECON TOMO",
+            "RECON GATED TOMO",
+        ]
 
     def test_mixed_or_and_tag_presence(self, parser):
         result = parser.parse(
@@ -1078,7 +1158,7 @@ class TestCompositeConditionParser:
             assert result_part.values
             assert result_part.values[0] == "1"
 
-    def test_ispresent_with_value(self, parser):
+    def test_is_present_with_value(self, parser):
         result = parser.parse(
             "Required if Patient Identity Removed (0012,0062) is present and "
             "has a value of YES and De-identification Method Code Sequence "
@@ -1090,21 +1170,18 @@ class TestCompositeConditionParser:
         assert result.and_conditions[0].values[0] == "YES"
         assert result.and_conditions[1].operator == ConditionOperator.Absent
 
-    def check_or_condition(self, result):
-        assert result.type == ConditionType.MandatoryOrUserDefined
-        assert len(result.or_conditions) == 2
-        assert result.or_conditions[0].operator == ConditionOperator.EqualsValue
-        assert result.or_conditions[0].values[0] == "PALETTE COLOR"
-        assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
-        assert result.or_conditions[1].values == ["COLOR", "MIXED"]
-
     def test_or_condition_with_space(self, parser):
         result = parser.parse(
             '"Required if Photometric Interpretation '
             "(0028,0004) has a value of PALETTE COLOR "
             "or Pixel Presentation (0008,9205) equals COLOR or MIXED."
         )
-        self.check_or_condition(result)
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.or_conditions) == 2
+        assert result.or_conditions[0].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[0].values[0] == "PALETTE COLOR"
+        assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
+        assert result.or_conditions[1].values == ["COLOR", "MIXED"]
 
     def test_or_condition_with_comma(self, parser):
         result = parser.parse(
@@ -1129,6 +1206,19 @@ class TestCompositeConditionParser:
         assert result.or_conditions[0].values == ["CIRCLE", "ELLIPSE"]
         assert result.or_conditions[1].operator == ConditionOperator.EqualsValue
         assert result.or_conditions[1].values == ["POLYLINE", "INTERPOLATED"]
+
+    def test_or_condition_with_not_only(self, parser):
+        result = parser.parse(
+            "Required if Dimension Organization Type (0020,9311) is absent or "
+            "not TILED_FULL."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.or_conditions) == 2
+        assert result.or_conditions[0].tag == "(0020,9311)"
+        assert result.or_conditions[0].operator == ConditionOperator.Absent
+        assert result.or_conditions[1].tag == "(0020,9311)"
+        assert result.or_conditions[1].operator == ConditionOperator.NotEqualsValue
+        assert result.or_conditions[1].values[0] == "TILED_FULL"
 
 
 class TestComplicatedConditionParser:
@@ -1301,7 +1391,6 @@ class TestComplicatedConditionParser:
         assert result.tag == "(0070,0002)"
         assert result.operator == ConditionOperator.Present
 
-    @pytest.mark.skip(reason="not implemented")
     def test_or_value_with_and_condition(self, parser):
         result = parser.parse(
             "Required if the Image Type (0008,0008) Value 1 equals DERIVED or "
@@ -1330,3 +1419,51 @@ class TestComplicatedConditionParser:
             "or , or if the IOD is a Presentation State IOD."
         )
         assert result.type == ConditionType.UserDefined
+
+    def test_and_with_or_condition_without_tag(self, parser):
+        result = parser.parse(
+            "Required if Respiratory Motion Compensation Technique (0018,9170) "
+            "equals other than NONE or REALTIME and "
+            "Respiratory Trigger Type (0020,9250) is absent or "
+            "has a value of TIME or BOTH."
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.and_conditions) == 2
+        assert result.and_conditions[0].tag == "(0018,9170)"
+        assert result.and_conditions[0].operator == ConditionOperator.NotEqualsValue
+        assert result.and_conditions[0].values == ["NONE", "REALTIME"]
+        assert len(result.and_conditions[1].or_conditions) == 2
+        cond1 = result.and_conditions[1].or_conditions[0]
+        assert cond1.tag == "(0020,9250)"
+        assert cond1.operator == ConditionOperator.Absent
+        cond2 = result.and_conditions[1].or_conditions[1]
+        assert cond2.tag == "(0020,9250)"
+        assert cond2.operator == ConditionOperator.EqualsValue
+        assert cond2.values == ["TIME", "BOTH"]
+
+    def test_and_condition_with_list_and_incorrect_apostrophe(self, parser):
+        result = parser.parse(
+            "Required if Frame Type (0008,9007) Value 1 of this frame is ORIGINAL, "
+            "and Dimension Organization Type (0020,9311) is not TILED_FULL, "
+            "and the SOP Class UID (0008,0016) is not: "
+            '"1.2.840.10008.5.1.4.1.1.2.2 (Legacy Converted Enhanced CT Image Storage)", '
+            'or "1.2.840.10008.5.1.4.1.1.4.4" (Legacy Converted Enhanced MR Image Storage), '
+            'or "1.2.840.10008.5.1.4.1.1.128.1" (Legacy Converted Enhanced PET Image Storage), '
+            'or "1.2.840.10008.5.1.4.1.1.77.1.6" (VL Whole Slide Microscopy Image Storage).'
+        )
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.and_conditions) == 3
+        assert result.and_conditions[0].tag == "(0008,9007)"
+        assert result.and_conditions[0].operator == ConditionOperator.EqualsValue
+        assert result.and_conditions[0].values == ["ORIGINAL"]
+        assert result.and_conditions[1].tag == "(0020,9311)"
+        assert result.and_conditions[1].operator == ConditionOperator.NotEqualsValue
+        assert result.and_conditions[1].values == ["TILED_FULL"]
+        assert result.and_conditions[2].tag == "(0008,0016)"
+        assert result.and_conditions[2].operator == ConditionOperator.NotEqualsValue
+        assert result.and_conditions[2].values == [
+            "1.2.840.10008.5.1.4.1.1.2.2",
+            "1.2.840.10008.5.1.4.1.1.4.4",
+            "1.2.840.10008.5.1.4.1.1.128.1",
+            "1.2.840.10008.5.1.4.1.1.77.1.6",
+        ]
