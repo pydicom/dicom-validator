@@ -200,7 +200,7 @@ class ConditionGrammar:
     def _condition_grammar(self, values_grammar):
         operator_grammar = self._operator_grammar()
         condition_expression = (
-            Suppress(Opt(Keyword("value") | "the value"))
+            Suppress(Opt(Keyword("value") | "the value" | "the Value"))
             + operator_grammar
             + Opt(values_grammar)
         )
@@ -261,65 +261,65 @@ class ConditionGrammar:
     def _operator_grammar() -> ParserElement:
         absent_op = (
             Keyword("is not sent")
-            | Keyword("is not present in this Sequence Item")
+            | CaselessKeyword("is not present in this Sequence Item")
             | Keyword("is not present")
             | Keyword("is absent")
             | Keyword("are not present")
         ).set_parse_action(lambda: ConditionOperator.Absent)
         not_empty_op1 = (
-            Keyword("is non-null") | Keyword("is non-zero length")
+            CaselessKeyword("is non-null") | CaselessKeyword("is non-zero length")
         ).set_parse_action(lambda: ConditionOperator.NotEmpty)
         not_equals_op = (
             Keyword("equals other than")
-            | Keyword("value is not")
+            | CaselessKeyword("value is not")
             | Keyword("is not equal to")
             | Keyword("is not any of")
             | Keyword("is not:")
             | Keyword("is not")
             | Keyword("not")
             | Keyword("is other than")
-            | Keyword("is present with a value other than")
+            | CaselessKeyword("is present with a value other than")
         ).set_parse_action(lambda: ConditionOperator.NotEqualsValue)
         greater_op = (
-            Keyword("has a value of more than")
+            CaselessKeyword("has a value of more than")
             | Keyword("is greater than")
-            | Keyword("has a value greater than")
-            | Keyword("is present and has a value greater than")
+            | CaselessKeyword("has a value greater than")
+            | CaselessKeyword("is present and has a value greater than")
         ).set_parse_action(lambda: ConditionOperator.GreaterValue)
         less_op = (Keyword("is less than")).set_parse_action(
             lambda: ConditionOperator.LessValue
         )
-        non_zero_op = Keyword("is non-zero").set_parse_action(
+        non_zero_op = CaselessKeyword("is non-zero").set_parse_action(
             lambda: ConditionOperator.NonZero
         )
         equals_op = (
-            Keyword("is present and the value is")
-            | Keyword("is present and has a value of")
-            | Keyword("is present and has the value")
+            CaselessKeyword("is present and the value is")
+            | CaselessKeyword("is present and has a value of")
+            | CaselessKeyword("is present and has the value")
             | Keyword("is present and is either")
-            | Keyword("is present with value")
+            | CaselessKeyword("is present with value")
             | Keyword("is present and equals")
-            | Keyword("is present with a value of")
+            | CaselessKeyword("is present with a value of")
             | Keyword("is set to")
-            | Keyword("equals one of the following values:")
-            | Keyword("has a value of")
-            | Keyword("has value")
+            | CaselessKeyword("equals one of the following values:")
+            | CaselessKeyword("has a value of")
+            | CaselessKeyword("has value")
             | Keyword("=")
-            | Keyword("at the image level equals")
+            | CaselessKeyword("at the image level equals")
             | Keyword("equals")
             | Keyword("is one of the following:")
-            | Keyword("value is")
+            | CaselessKeyword("value is")
             | Keyword("is equal to")
             | Keyword("equals")
-            | Keyword("has the value")
+            | CaselessKeyword("has the value")
         ).set_parse_action(lambda: ConditionOperator.EqualsValue)
         not_empty_op2 = (
-            Keyword("is present and has a value")
-            | Keyword("is present with a value")
-            | Keyword("has a value")
+            CaselessKeyword("is present and has a value")
+            | CaselessKeyword("is present with a value")
+            | CaselessKeyword("has a value")
         ).set_parse_action(lambda: ConditionOperator.NotEmpty)
         present_op = (
-            Keyword("is present in this Sequence Item")
+            CaselessKeyword("is present in this Sequence Item")
             | Keyword("is present")
             | Keyword("exists")
             | Keyword("is sent")
@@ -364,13 +364,13 @@ class ConditionGrammar:
         ).set_parse_action(" ".join)
         # Tag value number
         value_index1 = (
-            Suppress("the")
+            Suppress(CaselessKeyword("the"))
             + (
                 Keyword("first").set_parse_action(lambda: "1")
                 | Keyword("second").set_parse_action(lambda: "2")
                 | Keyword("third").set_parse_action(lambda: "3")
             )
-            + Suppress("value of")
+            + Suppress(CaselessKeyword("value") + "of")
         )
         value_index2 = Regex(r"Value (?P<index>\d) of").set_parse_action(
             lambda r: r.index
@@ -378,12 +378,11 @@ class ConditionGrammar:
         value_index3 = Regex(r"(, )?Value (?P<index>\d)").set_parse_action(
             lambda r: r.index
         )
-        tag_expr_prefix1 = Regex("((the|a) )?value( (of|for))?")
-        tag_expr_prefix2 = Regex("(the|either|Attribute)?")
-        tag_expr_prefix = Suppress(tag_expr_prefix1 | tag_expr_prefix2)
-        tag_expr_prefix = (
-            tag_expr_prefix + Opt(Keyword("value") | "the value") + Opt(tag_id)
-        )
+        prefix1_regex = "((the|a) )?[vV]alue( (of|for))?"
+        prefix2_regex = "(the|either|Attribute)?"
+        tag_expr_prefix = Suppress(
+            Regex(f"({prefix1_regex}|{prefix2_regex})( the( [vV]alue))?")
+        ) + Opt(tag_id)
         tag_name_expr = Opt(value_index1 | value_index2 | tag_expr_prefix) + tag_name
         action = (
             self._tag_value_from_expression if is_value else self._tag_from_expression
@@ -392,7 +391,7 @@ class ConditionGrammar:
             tag_name_expr
             + Opt(tag_id)
             + Opt(value_index3)
-            + Suppress(Opt("of this frame"))
+            + Suppress(Opt(Keyword("of this frame") | "of this Frame"))
             + self._in_module_grammar()
         ).set_parse_action(lambda result: action(result[0]))
 
