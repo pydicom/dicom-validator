@@ -15,11 +15,11 @@ class TestPart6Reader:
 
     def test_data_elements(self, dict_reader):
         elements = dict_reader.data_elements()
-        assert len(elements) == 5221
+        assert len(elements) == 5249
 
     def test_sop_class_uids(self, dict_reader):
         sop_class_uids = dict_reader.sop_class_uids()
-        assert len(sop_class_uids) == 310
+        assert len(sop_class_uids) == 311
         assert "1.2.840.10008.1.1" in sop_class_uids
         assert sop_class_uids["1.2.840.10008.1.1"] == "Verification SOP Class"
 
@@ -38,7 +38,7 @@ class TestPart6Reader:
         assert "Transfer Syntax" in uids
         assert "SOP Class" in uids
         uid_nr = sum([len(uid_dict) for uid_dict in uids.values()])
-        assert uid_nr == 464
+        assert uid_nr == 465
 
     def test_sop_class_name(self, dict_reader):
         assert (

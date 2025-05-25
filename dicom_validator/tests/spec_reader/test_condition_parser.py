@@ -392,12 +392,38 @@ class TestValueConditionParser:
         assert result.operator == ConditionOperator.EqualsValue
         assert result.values == ["CONSTANT"]
 
+    def test_value_type_is(self, parser):
+        result = parser.parse("Required if Value Type (0040,A040) is DATETIME")
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.tag == "(0040,A040)"
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.values == ["DATETIME"]
+
     def test_value_is(self, parser):
         result = parser.parse("Required if Observer Type value is DEV")
         assert result.type == ConditionType.MandatoryOrUserDefined
         assert result.tag == "(0040,A084)"
         assert result.operator == ConditionOperator.EqualsValue
         assert result.values == ["DEV"]
+
+    @staticmethod
+    def check_the_value_of_is(result):
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert result.tag == "(0008,010B)"
+        assert result.operator == ConditionOperator.EqualsValue
+        assert result.values == ["Y"]
+
+    def test_the_value_of_is(self, parser):
+        result = parser.parse(
+            'Required if the value of Context Group Extension Flag (0008,010B) is "Y".'
+        )
+        self.check_the_value_of_is(result)
+
+    def test_the_uppercase_value_of_is(self, parser):
+        result = parser.parse(
+            'Required if the Value of Context Group Extension Flag (0008,010B) is "Y".'
+        )
+        self.check_the_value_of_is(result)
 
     def test_present_with_value_other_than(self, parser):
         result = parser.parse(
@@ -729,15 +755,25 @@ class TestValueConditionParser:
         assert result.tag == "(006A,0007)"
         assert result.values == ["AUTOMATIC", "SEMIAUTOMATIC"]
 
-    def test_third_value(self, parser):
-        result = parser.parse(
-            "Required if the third value of Image Type (0008,0008) is FLUENCE."
-        )
+    @staticmethod
+    def check_third_value(result):
         assert result.type == ConditionType.MandatoryOrUserDefined
         assert result.operator == ConditionOperator.EqualsValue
         assert result.tag == "(0008,0008)"
         assert result.values == ["FLUENCE"]
         assert result.index == 2
+
+    def test_third_value(self, parser):
+        result = parser.parse(
+            "Required if the third value of Image Type (0008,0008) is FLUENCE."
+        )
+        self.check_third_value(result)
+
+    def test_third_value_uppercase(self, parser):
+        result = parser.parse(
+            "Required if The third Value of Image Type (0008,0008) is FLUENCE."
+        )
+        self.check_third_value(result)
 
     def test_value_3(self, parser):
         result = parser.parse(
@@ -934,13 +970,8 @@ class TestCompositeConditionParser:
         assert result2.operator == ConditionOperator.NotEqualsValue
         assert result2.values == ["MANUAL", "PDR"]
 
-    def test_combined_or_plus_and_with_of_this_frame(self, parser):
-        result = parser.parse(
-            "Required if Frame Type (0008,9007) Value 1 of this frame is ORIGINAL, "
-            "or if Image Type (0008,0008) Value 1 is ORIGINAL and "
-            "Multi-energy CT Acquisition (0018,9361) is YES. "
-            "May be present otherwise."
-        )
+    @staticmethod
+    def check_combined_or_plus_and_with_of_this_frame(result):
         assert result.type == ConditionType.MandatoryOrUserDefined
         assert len(result.or_conditions) == 2
         result1 = result.or_conditions[0]
@@ -957,6 +988,24 @@ class TestCompositeConditionParser:
         assert and_result2.tag == "(0018,9361)"
         assert and_result2.operator == ConditionOperator.EqualsValue
         assert and_result2.values == ["YES"]
+
+    def test_combined_or_plus_and_with_of_this_frame(self, parser):
+        result = parser.parse(
+            "Required if Frame Type (0008,9007) Value 1 of this frame is ORIGINAL, "
+            "or if Image Type (0008,0008) Value 1 is ORIGINAL and "
+            "Multi-energy CT Acquisition (0018,9361) is YES. "
+            "May be present otherwise."
+        )
+        self.check_combined_or_plus_and_with_of_this_frame(result)
+
+    def test_combined_or_plus_and_with_of_this_frame_uppercase(self, parser):
+        result = parser.parse(
+            "Required if Frame Type (0008,9007) Value 1 of this Frame is ORIGINAL, "
+            "or if Image Type (0008,0008) Value 1 is ORIGINAL and "
+            "Multi-energy CT Acquisition (0018,9361) is YES. "
+            "May be present otherwise."
+        )
+        self.check_combined_or_plus_and_with_of_this_frame(result)
 
     def test_and_with_multiple_values(self, parser):
         result = parser.parse(
@@ -1158,17 +1207,29 @@ class TestCompositeConditionParser:
             assert result_part.values
             assert result_part.values[0] == "1"
 
+    @staticmethod
+    def check_is_present_with_value(result):
+        assert result.type == ConditionType.MandatoryOrUserDefined
+        assert len(result.and_conditions) == 2
+        assert result.and_conditions[0].operator == ConditionOperator.EqualsValue
+        assert result.and_conditions[0].values[0] == "YES"
+        assert result.and_conditions[1].operator == ConditionOperator.Absent
+
     def test_is_present_with_value(self, parser):
         result = parser.parse(
             "Required if Patient Identity Removed (0012,0062) is present and "
             "has a value of YES and De-identification Method Code Sequence "
             "(0012,0064) is not present."
         )
-        assert result.type == ConditionType.MandatoryOrUserDefined
-        assert len(result.and_conditions) == 2
-        assert result.and_conditions[0].operator == ConditionOperator.EqualsValue
-        assert result.and_conditions[0].values[0] == "YES"
-        assert result.and_conditions[1].operator == ConditionOperator.Absent
+        self.check_is_present_with_value(result)
+
+    def test_is_present_with_uppercase_value(self, parser):
+        result = parser.parse(
+            "Required if Patient Identity Removed (0012,0062) is present and "
+            "has a Value of YES and De-identification Method Code Sequence "
+            "(0012,0064) is not present."
+        )
+        self.check_is_present_with_value(result)
 
     def test_or_condition_with_space(self, parser):
         result = parser.parse(
