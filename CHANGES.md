@@ -3,6 +3,12 @@ The released versions correspond to PyPi releases.
 
 ## Unreleased
 
+### Infrastructure
+* add Python 3.14 to CI (needs development version of `pydicom`)
+
+## [Version 0.7.0](https://pypi.python.org/pypi/dicom-validator/0.7.0) (2025-05-25)
+Uses a grammar parser as condition parser.
+
 ### Changes
 * Python 3.8 has reached EOL and is no longer officially supported
 * the condition parser now uses a grammar-based parser (pyparsing), which is more accurate,
@@ -10,10 +16,7 @@ The released versions correspond to PyPi releases.
 
 ### Fixes
 * Condition parser: almost all parsable conditions are now correctly parsed,
-  some conditions which contain unparsable parts are now correctly ignored
-
-### Infrastructure
-* remove Python 3.8, add Python 3.14 to CI (needs development version of `pydicom`)
+  conditions which contain unparsable parts are now correctly ignored
 
 ## [Version 0.6.5](https://pypi.python.org/pypi/dicom-validator/0.6.5) (2025-04-02)
 Fixes an incompatibility with newer pydicom versions.
