@@ -1,13 +1,13 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## Unreleased
+## [Version 0.7.1](https://pypi.python.org/pypi/dicom-validator/0.7.1) (2025-05-25)
+Fixes condition parser problems with newest DICOM standard.
 
 ### Fixes
 * fixed condition parser to work with current DICOM standard
 
 ### Infrastructure
-* add Python 3.14 to CI (needs development version of `pydicom`)
 * update the tests for current version 2025b
 
 ## [Version 0.7.0](https://pypi.python.org/pypi/dicom-validator/0.7.0) (2025-05-25)
