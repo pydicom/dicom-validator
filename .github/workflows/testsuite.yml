@@ -41,15 +41,25 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
+          pip install pytest-xdist
           pip install -e .
 
-      - name: Run tests with coverage
+      - name: Run commandline tool tests
         run: |
           if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.10' ]]
           then
-            python -m pytest --cov=dicom_validator --cov-config=.coveragerc dicom_validator
+            python -m pytest -n 2 --cov-append --cov=dicom_validator --cov-config=.coveragerc dicom_validator/tests/test_cmdline_tools.py
           else
-            python -m pytest dicom_validator
+            python -m pytest -n 2 dicom_validator/tests/test_cmdline_tools.py
+          fi
+
+      - name: Run spec-reader and validator tests
+        run: |
+          if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.10' ]]
+          then
+            python -m pytest -n auto --cov-append --cov=dicom_validator --cov-config=.coveragerc  dicom_validator/tests/spec_reader dicom_validator/tests/validator
+          else
+            python -m pytest -n auto dicom_validator/tests/spec_reader dicom_validator/tests/validator
           fi
 
       - name: Upload coverage to Codecov
