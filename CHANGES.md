@@ -4,7 +4,8 @@ The released versions correspond to PyPi releases.
 ## Unreleased
 
 ### Infrastructure
-* add Python 3.14 to CI (needs development version of `pydicom`)
+* updated the tests for current DICOM version 2025c
+* added Python 3.14 to CI (needs development version of `pydicom`)
 
 ## [Version 0.7.1](https://pypi.python.org/pypi/dicom-validator/0.7.1) (2025-05-25)
 Fixes condition parser problems with newest DICOM standard.
