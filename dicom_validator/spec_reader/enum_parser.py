@@ -1,5 +1,5 @@
 import re
-from typing import Callable, Optional, Dict, List, Any
+from typing import Callable, Optional, Any
 
 from pydicom.valuerep import VR, INT_VR, STR_VR
 
@@ -21,9 +21,9 @@ class EnumParser:
         self, find_section: Callable[[str], Optional[ElementTree.Element]]
     ) -> None:
         self._find_section = find_section
-        self._enum_cache: Dict[str, Dict] = {}
+        self._enum_cache: dict[str, dict] = {}
 
-    def parse(self, node: ElementTree.Element, vr: VR) -> List[Dict]:
+    def parse(self, node: ElementTree.Element, vr: VR) -> list[dict]:
         """Searches for enumerated values in the tag description and in linked sections.
         Returns a list of the allowed values, or an empty list if none found.
         """
@@ -56,7 +56,7 @@ class EnumParser:
             # any other VR does not make sense here
         return []
 
-    def parse_variable_list(self, var_list) -> Dict:
+    def parse_variable_list(self, var_list) -> dict:
         # we assume that a variablelist contains enumerated values or defined terms
         # we ignore defined terms, as they do not limit the possible values
         title = var_list.find(self.docbook_ns + "title")
@@ -75,7 +75,7 @@ class EnumParser:
             term = item.find(self.docbook_ns + "term")
             if term is not None:
                 terms.append(term.text)
-        result: Dict[str, Any] = {}
+        result: dict[str, Any] = {}
         if terms:
             result["val"] = terms
             if index > 0:
@@ -83,7 +83,7 @@ class EnumParser:
 
         return result
 
-    def parse_linked_variablelist(self, node) -> Dict:
+    def parse_linked_variablelist(self, node) -> dict:
         for xref in node.findall(f"{self.docbook_ns}para/{self.docbook_ns}xref"):
             link = xref.attrib.get("linkend")
             if link and link.startswith("sect_"):

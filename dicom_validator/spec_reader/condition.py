@@ -1,10 +1,10 @@
 import enum
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional, Any, Union
 
 from dicom_validator.tag_tools import tag_name_from_id
 
 
-ValuesType = List[Union[str, int]]
+ValuesType = list[Union[str, int]]
 
 
 class ConditionType(str, enum.Enum):  # replace later with StrEnum from Python 3.11
@@ -132,8 +132,8 @@ class Condition:
         self.tag = tag
         self.index = index
         self.values: ValuesType = values or []
-        self.and_conditions: List[Condition] = []
-        self.or_conditions: List[Condition] = []
+        self.and_conditions: list[Condition] = []
+        self.or_conditions: list[Condition] = []
         self.other_condition: Optional[Condition] = None
 
     def __repr__(self):
@@ -162,7 +162,7 @@ class Condition:
 
     @classmethod
     def read_condition(
-        cls, condition_dict: Dict, condition: Optional["Condition"] = None
+        cls, condition_dict: dict, condition: Optional["Condition"] = None
     ) -> "Condition":
         """Create or update a Condition object from a condition dict.
         Parameters
@@ -194,14 +194,14 @@ class Condition:
             condition.other_condition.type = condition_dict["other_cond"].get("type")
         return condition
 
-    def dict(self) -> Dict[str, Any]:
+    def result_dict(self) -> dict[str, Any]:
         result = {"type": self.type}
         result.update(self.write_condition(self))
         return result
 
     @classmethod
-    def write_condition(cls, condition: "Condition") -> Dict[str, Any]:
-        result: Dict[str, Any] = {}
+    def write_condition(cls, condition: "Condition") -> dict[str, Any]:
+        result: dict[str, Any] = {}
         if condition.operator is not None:
             result["op"] = condition.operator
         if condition.tag is not None:
@@ -218,10 +218,10 @@ class Condition:
             for or_condition in condition.or_conditions:
                 result["or"].append(cls.write_condition(or_condition))
         if condition.other_condition is not None:
-            result["other_cond"] = condition.other_condition.dict()
+            result["other_cond"] = condition.other_condition.result_dict()
         return result
 
-    def to_string(self, dict_info: Dict) -> str:
+    def to_string(self, dict_info: dict) -> str:
         """Return a condition readable as part of a sentence."""
         result = ""
         if self.and_conditions:

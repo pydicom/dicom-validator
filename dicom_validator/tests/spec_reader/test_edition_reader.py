@@ -19,7 +19,7 @@ class MemoryEditionReader(EditionReader):
     """
 
     def __init__(self, path, contents=""):
-        super(MemoryEditionReader, self).__init__(path=path)
+        super().__init__(path=path)
         self.html_contents = contents
 
     def retrieve(self, html_path):

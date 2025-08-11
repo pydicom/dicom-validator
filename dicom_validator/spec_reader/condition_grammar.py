@@ -1,6 +1,6 @@
 import string
 from re import RegexFlag
-from typing import Tuple, Optional
+from typing import Optional
 from urllib.parse import ParseResult
 
 from pyparsing import (
@@ -479,7 +479,7 @@ class ConditionGrammar:
         group, element = tag[1:-1].split(",")
         return (int(group, 16) << 16) + int(element, 16)
 
-    def _tag_from_expression(self, tag_expr: ParseResult) -> Tuple[str, int]:
+    def _tag_from_expression(self, tag_expr: ParseResult) -> tuple[str, int]:
         def is_index(item):
             return len(item) == 1 and item.isnumeric()
 
