@@ -1,4 +1,5 @@
-from typing import Optional, Generator
+from typing import Optional
+from collections.abc import Generator
 from xml.etree import ElementTree
 
 import pytest

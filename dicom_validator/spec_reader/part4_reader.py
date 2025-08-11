@@ -15,7 +15,7 @@ class Part4Reader(SpecReader):
     """Reads information from PS3.4 in docbook format."""
 
     def __init__(self, spec_dir):
-        super(Part4Reader, self).__init__(spec_dir)
+        super().__init__(spec_dir)
         self.part_nr = 4
         self._sop_class_uids = {}  # SOP Class UID --> chapter
         self._chapters = {}  # chapter --> SOP Class UID list

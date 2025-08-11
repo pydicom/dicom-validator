@@ -62,7 +62,7 @@ class DataElementDumper:
             value = value[: self.max_value_len] + "..."
 
         indent = 2 * self.level
-        format_string = "{{}}{{}} {{:{}}} {{}} {{:4}} {{}} [{{}}]".format(40 - indent)
+        format_string = f"{{}}{{}} {{:{40 - indent}}} {{}} {{:4}} {{}} [{{}}]"
         print(
             format_string.format(
                 " " * indent, tag_id, name[: 40 - indent], vr, vm, prop, value

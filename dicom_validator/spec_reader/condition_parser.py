@@ -1,5 +1,3 @@
-from typing import Dict
-
 from pyparsing import ParseException
 
 from dicom_validator.spec_reader.condition import (
@@ -21,7 +19,7 @@ class ConditionParser:
     other data sets) are ignored.
     """
 
-    def __init__(self, dict_info: Dict) -> None:
+    def __init__(self, dict_info: dict) -> None:
         self._dict_info = dict_info
         self._uid_dict_info = {}
         for tag, info in dict_info.items():
@@ -40,7 +38,9 @@ class ConditionParser:
         """
         cache_key = condition_str
         if not debug and cache_key in self._condition_cache:
-            return Condition.read_condition(self._condition_cache[cache_key].dict())
+            return Condition.read_condition(
+                self._condition_cache[cache_key].result_dict()
+            )
 
         condition = self._parse_with_grammar(condition_str, self._grammar, debug)
         if not debug:

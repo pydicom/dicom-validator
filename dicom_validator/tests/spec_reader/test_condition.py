@@ -91,7 +91,7 @@ class TestConditionRead:
             )
 
         condition = test_condition()
-        cond_dict = condition.dict()
+        cond_dict = condition.result_dict()
         test_condition()
         assert (
             condition.to_string(dict_info) == 'Dose Summation Type is equal to "BEAM", '
@@ -117,7 +117,7 @@ class TestConditionRead:
             )
 
         condition = test_condition()
-        cond_dict = condition.dict()
+        cond_dict = condition.result_dict()
         test_condition()
         assert condition.to_string(dict_info) == "Number of Frames is greater than 1"
 
@@ -140,7 +140,7 @@ class TestConditionRead:
             )
 
         condition = test_condition()
-        cond_dict = condition.dict()
+        cond_dict = condition.result_dict()
         test_condition()
         assert condition.to_string(dict_info) == "Number of Frames is less than 20"
 
@@ -163,7 +163,7 @@ class TestConditionRead:
             )
 
         condition = test_condition()
-        cond_dict = condition.dict()
+        cond_dict = condition.result_dict()
         test_condition()
         assert (
             condition.to_string(dict_info) == "Frame Increment Pointer points to "
@@ -187,7 +187,7 @@ class TestConditionRead:
             )
 
         condition = test_condition()
-        cond_dict = condition.dict()
+        cond_dict = condition.result_dict()
         test_condition()
         assert condition.to_string(dict_info) == "Pixel Data exists"
 
@@ -228,7 +228,7 @@ class TestConditionRead:
             return cond
 
         condition = test_condition()
-        cond_dict = condition.dict()
+        cond_dict = condition.result_dict()
         test_condition()
         assert (
             condition.to_string(dict_info)
@@ -259,7 +259,7 @@ class TestConditionRead:
             return cond
 
         condition = test_condition()
-        cond_dict = condition.dict()
+        cond_dict = condition.result_dict()
         test_condition()
         assert (
             condition.to_string(dict_info)
@@ -297,5 +297,5 @@ class TestConditionRead:
             return cond
 
         condition = test_condition()
-        cond_dict = condition.dict()
+        cond_dict = condition.result_dict()
         test_condition()

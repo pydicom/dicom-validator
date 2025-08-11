@@ -8,7 +8,6 @@ import logging
 from itertools import groupby
 
 import sys
-from typing import Dict
 
 from dicom_validator.spec_reader.condition import (
     Condition,
@@ -28,14 +27,14 @@ from dicom_validator.spec_reader.spec_reader import (
 # Instead of implementing a full parser for these cases, we may define them here.
 # CAUTION: The same tag may appear with different conditions in different contexts
 # (different sequences), which will not be handled automatically by SPECIAL_CASES
-SPECIAL_CASES: Dict[str, Condition] = {}
+SPECIAL_CASES: dict[str, Condition] = {}
 
 
 class Part3Reader(SpecReader):
     """Reads information from PS3.3 in docbook format."""
 
     def __init__(self, spec_dir, dict_info):
-        super(Part3Reader, self).__init__(spec_dir)
+        super().__init__(spec_dir)
         self.part_nr = 3
         self._dict_info = dict_info
         self._iod_descriptions = {}

@@ -11,7 +11,7 @@ class Part6Reader(SpecReader):
     """Reads information from PS3.4 in docbook format."""
 
     def __init__(self, spec_dir):
-        super(Part6Reader, self).__init__(spec_dir)
+        super().__init__(spec_dir)
         self.part_nr = 6
         self._uids = None
         self._data_elements = None
