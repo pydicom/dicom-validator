@@ -3,6 +3,11 @@ The released versions correspond to PyPi releases.
 
 ## Unreleased
 
+### Fixes
+* several IODs in newer DICOM versions (17 out of 174) have not been parsed
+* some of the IOD-specific group macros (4 of 27) have not been found
+  (see [#193](../../issues/193))
+
 ### Infrastructure
 * updated the tests for current DICOM version 2025c
 * added Python 3.14 to CI (needs development version of `pydicom`)

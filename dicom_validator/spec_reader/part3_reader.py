@@ -139,7 +139,7 @@ class Part3Reader(SpecReader):
             nodes_with_subnodes = []
             for iod_node in all_iod_nodes:
                 sub_nodes = self._find_sections_with_title_endings(
-                    iod_node, iod_def_endings
+                    iod_node, iod_def_endings, depth=2
                 )
                 if sub_nodes:
                     nodes_with_subnodes.append(iod_node)
@@ -385,13 +385,13 @@ class Part3Reader(SpecReader):
     def _get_functional_group_macros(self, iod_node):
         macros = {}
         group_macro_sections = self._find_sections_with_title_endings(
-            iod_node, (" Functional Group Macros",)
+            iod_node, (" Functional Group Macros",), depth=1
         )
         if len(group_macro_sections) == 1:
             macros = self._collect_modules(group_macro_sections[0], check_rowspan=False)
         return macros
 
-    def _find_sections_with_title_endings(self, node, title_endings):
+    def _find_sections_with_title_endings(self, node, title_endings, depth=0):
         section_nodes = self._findall(node, ["section"])
         found_nodes = []
         for sections_node in section_nodes:
@@ -402,4 +402,10 @@ class Part3Reader(SpecReader):
                     [title.endswith(title_ending) for title_ending in title_endings]
                 ):
                     found_nodes.append(sections_node)
+            if depth > 0:
+                found_nodes.extend(
+                    self._find_sections_with_title_endings(
+                        sections_node, title_endings, depth=depth - 1
+                    )
+                )
         return found_nodes

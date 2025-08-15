@@ -90,7 +90,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,desc_nr",
-        [("2015b", 110), ("2025c", 157)],
+        [("2015b", 110), ("2025c", 174)],
         indirect=["revision"],
         scope="session",
     )
@@ -134,6 +134,24 @@ class TestReadPart3:
         assert condition.operator == ConditionOperator.EqualsValue
         assert condition.tag == "(0008,0008)"
         assert condition.values == ["ORIGINAL", "MIXED"]
+
+    def test_nested_group_macros(self, reader):
+        descriptions = reader.iod_descriptions()
+        # the Ophthalmic Optical Coherence Tomography B-scan Volume Analysis IOD
+        # is found at a level below the usual one
+        macros = descriptions["A.84"]["group_macros"]
+        assert len(macros) == 9
+
+        # the RT Second Generation IODs are at a lower level than usual
+        assert "A.86.1.14" in descriptions
+        macros = descriptions["A.86.1.14"]["group_macros"]
+        assert not macros
+        assert "A.86.1.15" in descriptions
+        macros = descriptions["A.86.1.15"]["group_macros"]
+        assert len(macros) == 16
+        assert "A.86.1.16" in descriptions
+        macros = descriptions["A.86.1.16"]["group_macros"]
+        assert len(macros) == 16
 
     @pytest.mark.parametrize(
         "revision,desc_nr",
@@ -183,7 +201,7 @@ class TestReadPart3:
 
     @pytest.mark.parametrize(
         "revision,desc_nr",
-        [("2015b", 451), ("2025c", 592)],
+        [("2015b", 452), ("2025c", 667)],
         indirect=["revision"],
         scope="session",
     )
