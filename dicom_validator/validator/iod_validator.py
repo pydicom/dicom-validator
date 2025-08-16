@@ -224,10 +224,13 @@ class IODValidator:
                 is_per_frame = self._in_per_frame_group
 
         allowed = True
+        msg_postfix = ""
         if condition and "F" in condition["type"] and is_shared:
             required, allowed = False, False
+            msg_postfix = " in Shared Group"
         elif condition and "S" in condition["type"] and is_per_frame:
             required, allowed = False, False
+            msg_postfix = " in Per-Frame Group"
         elif usage[0] == "M":
             required = True
         elif usage[0] == ConditionType.UserDefined:
@@ -280,7 +283,9 @@ class IODValidator:
             for tag_id_string in module_info:
                 tag_id = self._tag_id(tag_id_string)
                 if tag_id in self._dataset_stack[-1].dataset:
-                    message = self._incorrect_tag_message(tag_id, "not allowed")
+                    message = self._incorrect_tag_message(
+                        tag_id, "not allowed" + msg_postfix
+                    )
                     errors.setdefault(message, []).append(tag_id_string)
             return errors
         return self._validate_attributes(module_info, False)
@@ -652,7 +657,7 @@ class IODValidator:
     def _tag_context_message(self):
         if len(self._dataset_stack) > 1:
             m = " > ".join([item.name for item in self._dataset_stack])
-            context = f" in  {m}"
+            context = f" in {m}"
             return context
         return ""
 

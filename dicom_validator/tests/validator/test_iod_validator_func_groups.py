@@ -166,7 +166,9 @@ class TestIODValidatorFuncGroups:
     def test_macro_not_allowed_in_shared_group(self, validator):
         result = validator.validate()
         # Frame Anatomy Sequence (present in shared groups)
-        assert has_tag_error(result, "Frame Content", "(0020,9111)", "not allowed")
+        assert has_tag_error(
+            result, "Frame Content", "(0020,9111)", "not allowed in Shared Group"
+        )
 
     @pytest.mark.shared_macros([])
     @pytest.mark.per_frame_macros([PIXEL_MEASURES])
