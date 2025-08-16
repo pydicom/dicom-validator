@@ -3,6 +3,10 @@ The released versions correspond to PyPi releases.
 
 ## Unreleased
 
+### Changes
+* the error message for tags not allowed in Shared or Per-Frame Functional Groups
+  has been made more specific
+
 ### Fixes
 * several IODs in newer DICOM versions (17 out of 174) have not been parsed
 * some of the IOD-specific group macros (4 of 27) have not been found
