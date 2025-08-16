@@ -3,6 +3,12 @@ The released versions correspond to PyPi releases.
 
 ## Unreleased
 
+### Infrastructure
+* added Python 3.14 to CI (needs development version of `pydicom`)
+
+## [Version 0.7.2](https://pypi.python.org/pypi/dicom-validator/0.7.2) (2025-08-16)
+Fixes parsing of some newer IODs and group macros.
+
 ### Changes
 * the error message for tags not allowed in Shared or Per-Frame Functional Groups
   has been made more specific
@@ -14,7 +20,6 @@ The released versions correspond to PyPi releases.
 
 ### Infrastructure
 * updated the tests for current DICOM version 2025c
-* added Python 3.14 to CI (needs development version of `pydicom`)
 
 ## [Version 0.7.1](https://pypi.python.org/pypi/dicom-validator/0.7.1) (2025-05-25)
 Fixes condition parser problems with newest DICOM standard.
