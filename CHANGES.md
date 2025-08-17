@@ -1,10 +1,16 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
+## Planned changes for 0.8 release
+
+For Python 3.14 support, we depend on the (yet unreleased) pydicom 3.1.
+In line with pydicom, support for Python 3.9 will be removed in that version.
+
 ## Unreleased
 
 ### Infrastructure
-* added Python 3.14 to CI (needs development version of `pydicom`)
+* added Python 3.14 to CI (currently needs development version of `pydicom`)
+* removed support for Python 3.9
 
 ## [Version 0.7.2](https://pypi.python.org/pypi/dicom-validator/0.7.2) (2025-08-16)
 Fixes parsing of some newer IODs and group macros.
