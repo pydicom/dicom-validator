@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import pydicom
 import pytest
@@ -15,7 +14,7 @@ from dicom_validator.validator.iod_validator import IODValidator
 pytestmark = pytest.mark.usefixtures("disable_logging")
 
 
-def new_data_set(tags, ds: Optional[Dataset] = None):
+def new_data_set(tags, ds: Dataset | None = None):
     """Create a DICOM data set with the given attributes"""
     tags = tags or {}
     data_set = ds or Dataset()

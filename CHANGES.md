@@ -8,6 +8,9 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 
 ## Unreleased
 
+### Changes
+* added typing to production code
+
 ### Infrastructure
 * added Python 3.14 to CI (currently needs development version of `pydicom`)
 * removed support for Python 3.9

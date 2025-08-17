@@ -1,5 +1,7 @@
 import re
-from typing import Callable, Optional, Any
+
+from collections.abc import Callable
+from typing import Optional
 
 from pydicom.valuerep import VR, INT_VR, STR_VR
 
@@ -10,6 +12,8 @@ except ImportError:
 
 from dicom_validator.spec_reader.condition import ValuesType
 
+OptionalElement = Optional[ElementTree.Element]
+
 
 class EnumParser:
     """Parses enumerated values for a tag."""
@@ -17,9 +21,7 @@ class EnumParser:
     docbook_ns = "{http://docbook.org/ns/docbook}"
     enum_with_value_regex = re.compile(r"Enumerated Values for Value (\d):")
 
-    def __init__(
-        self, find_section: Callable[[str], Optional[ElementTree.Element]]
-    ) -> None:
+    def __init__(self, find_section: Callable[[str], OptionalElement]) -> None:
         self._find_section = find_section
         self._enum_cache: dict[str, dict] = {}
 
@@ -75,7 +77,7 @@ class EnumParser:
             term = item.find(self.docbook_ns + "term")
             if term is not None:
                 terms.append(term.text)
-        result: dict[str, Any] = {}
+        result: dict[str, list[str] | int] = {}
         if terms:
             result["val"] = terms
             if index > 0:

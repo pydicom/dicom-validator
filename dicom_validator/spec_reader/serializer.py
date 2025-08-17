@@ -4,7 +4,7 @@ from dicom_validator.spec_reader.condition import Condition
 
 
 class DefinitionEncoder(json.JSONEncoder):
-    def default(self, obj):
+    def default(self, obj: object) -> object:
         if isinstance(obj, Condition):
             return obj.result_dict()
         return json.JSONEncoder.default(self, obj)
