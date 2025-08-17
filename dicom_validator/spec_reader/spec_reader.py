@@ -3,11 +3,15 @@ SpecReader reads information from DICOM standard files in docbook format as
 provided by ACR-NEMA.
 """
 
+from typing import Optional
+
 try:
     import lxml.etree as ElementTree
 except ImportError:
     import xml.etree.ElementTree as ElementTree
 from pathlib import Path
+
+OptionalElement = Optional[ElementTree.Element]
 
 
 class SpecReaderError(Exception):
@@ -29,14 +33,14 @@ class SpecReaderLookupError(SpecReaderError):
 class SpecReader:
     docbook_ns = "{http://docbook.org/ns/docbook}"
 
-    def __init__(self, spec_dir):
+    def __init__(self, spec_dir: str | Path) -> None:
         self.spec_dir = Path(spec_dir)
-        self.part_nr = 0
+        self.part_nr: int = 0
         if not list(self.spec_dir.iterdir()):
             raise SpecReaderFileError(f"Missing docbook files in {self.spec_dir}")
-        self._doc_trees = {}
+        self._doc_trees: dict[int, ElementTree.ElementTree] = {}
 
-    def _get_doc_tree(self):
+    def _get_doc_tree(self) -> ElementTree.ElementTree:
         if self.part_nr not in self._doc_trees:
             doc_name = self.spec_dir / f"part{self.part_nr:02}.xml"
             if doc_name not in self.spec_dir.iterdir():
@@ -49,33 +53,41 @@ class SpecReader:
                 )
         return self._doc_trees.get(self.part_nr)
 
-    def get_doc_root(self):
+    def get_doc_root(self) -> OptionalElement:
         doc_tree = self._get_doc_tree()
         if doc_tree:
             return doc_tree.getroot()
+        return None
 
-    def _find(self, node, elements):
+    def _find(self, node: ElementTree.Element, elements: list[str]) -> OptionalElement:
         search_string = "/".join([self.docbook_ns + element for element in elements])
         if node is not None:
             return node.find(search_string)
+        return None
 
-    def _findall(self, node, elements):
+    def _findall(
+        self, node: ElementTree.Element, elements: list[str]
+    ) -> list[ElementTree.Element]:
         search_string = "/".join([self.docbook_ns + element for element in elements])
         return node.findall(search_string)
 
-    def _find_text(self, node):
+    def _find_text(self, node: ElementTree.Element) -> str:
         try:
             para_node = self._find(node, ["para"])
-            text_parts = [text.strip() for text in para_node.itertext() if text.strip()]
-            return " ".join(text_parts) if text_parts else ""
+            if para_node is not None:
+                text_parts = [
+                    text.strip() for text in para_node.itertext() if text.strip()
+                ]
+                return " ".join(text_parts) if text_parts else ""
+            return ""
         except AttributeError:
             return ""
 
     @staticmethod
-    def cleaned_value(value):
+    def cleaned_value(value: str) -> str:
         return value.replace("\u200b", "")
 
     @staticmethod
-    def _find_all_text(node):
+    def _find_all_text(node: ElementTree.Element) -> str:
         text_parts = [text.strip() for text in node.itertext() if text.strip()]
         return " ".join(text_parts) if text_parts else ""

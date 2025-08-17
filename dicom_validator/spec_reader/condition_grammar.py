@@ -1,6 +1,5 @@
 import string
 from re import RegexFlag
-from typing import Optional
 from urllib.parse import ParseResult
 
 from pyparsing import (
@@ -503,9 +502,7 @@ class ConditionGrammar:
             raise ParseException(f"Not a valid tag expression: {tag_expr}")
         return tag, tag_index
 
-    def _tag_id_from_id_and_name(
-        self, tag_id: Optional[str], tag_name: str
-    ) -> Optional[str]:
+    def _tag_id_from_id_and_name(self, tag_id: str | None, tag_name: str) -> str | None:
         # print(f"_tag_id_from_id_and_name({tag_id}, {tag_name})")
         if not tag_name:
             return tag_id

@@ -7,6 +7,8 @@ import sys
 import time
 from abc import ABC
 from pathlib import Path
+
+from collections.abc import Iterable
 from urllib.request import urlretrieve
 
 from dicom_validator import __version__
@@ -20,20 +22,22 @@ from dicom_validator.validator.iod_validator import DicomInfo
 class EditionParser(html_parser.HTMLParser, ABC):
     edition_re = re.compile(r"\d\d\d\d[a-h]")
 
-    def __init__(self):
+    def __init__(self) -> None:
         html_parser.HTMLParser.__init__(self)
-        self._in_anchor = False
-        self.editions = []
+        self._in_anchor: bool = False
+        self.editions: list[str] = []
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(
+        self, tag: str, attrs: Iterable[tuple[str, str | None]]
+    ) -> None:
         if tag == "a":
             self._in_anchor = True
 
-    def handle_endtag(self, tag):
+    def handle_endtag(self, tag: str) -> None:
         if tag == "a":
             self._in_anchor = False
 
-    def handle_data(self, data):
+    def handle_data(self, data: str) -> None:
         if self._in_anchor and self.edition_re.match(data):
             self.editions.append(data)
 
@@ -47,13 +51,13 @@ class EditionReader:
     dict_info_json = "dict_info.json"
     uid_info_json = "uid_info.json"
 
-    def __init__(self, path):
+    def __init__(self, path: str) -> None:
         self.path = Path(path)
         self.logger = logging.getLogger()
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
-    def update_edition(self):
+    def update_edition(self) -> None:
         try:
             self.logger.info("Getting DICOM editions...")
             self.retrieve(self.path / self.html_filename)
@@ -61,11 +65,11 @@ class EditionReader:
         except BaseException as exception:
             self.logger.warning("Failed to get DICOM editions: %s", str(exception))
 
-    def retrieve(self, html_path):
+    def retrieve(self, html_path: Path) -> None:
         html_path.parent.mkdir(exist_ok=True)
         urlretrieve(self.base_url, html_path)
 
-    def get_editions(self, update=True):
+    def get_editions(self, update: bool = True) -> list[str] | None:
         editions_path = self.path / self.json_filename
         if editions_path.exists():
             if update:
@@ -85,8 +89,9 @@ class EditionReader:
         if editions_path.exists():
             with open(editions_path, encoding="utf8") as json_file:
                 return json.load(json_file)
+        return None
 
-    def read_from_html(self):
+    def read_from_html(self) -> list[str]:
         html_path = self.path / self.html_filename
         with open(html_path, encoding="utf8") as html_file:
             contents = html_file.read()
@@ -95,19 +100,22 @@ class EditionReader:
         parser.close()
         return parser.editions
 
-    def write_to_json(self):
+    def write_to_json(self) -> None:
         editions = self.read_from_html()
         if editions:
             json_path = self.path / self.json_filename
             with open(json_path, "w", encoding="utf8") as json_file:
                 json_file.write(json.dumps(editions))
 
-    def get_edition(self, revision):
+    def get_edition(self, revision: str) -> str | None:
         """Get the edition matching the revision or None.
         The revision can be the edition name, the year of the edition,
         'current', or 'local'.
         """
-        editions = sorted(self.get_editions(revision != "local"))
+        editions_opt = self.get_editions(revision != "local")
+        if not editions_opt:
+            return None
+        editions = sorted(editions_opt)
         if revision in editions:
             return revision
         if len(revision) == 4:
@@ -116,15 +124,19 @@ class EditionReader:
                     return edition
         if revision == "current" or revision == "local":
             return editions[-1]
+        return None
 
-    def is_current(self, revision):
+    def is_current(self, revision: str | None) -> bool:
         """Get the edition matching the revision or None.
         The revision can be the edition name, the year of the edition,
         or 'current'.
         """
         if revision is None:
             return True
-        editions = sorted(self.get_editions(revision != "local"))
+        editions_opt = self.get_editions(revision != "local")
+        if not editions_opt:
+            return False
+        editions = sorted(editions_opt)
         if revision in editions:
             return revision == editions[-1]
         if len(revision) == 4:
@@ -133,13 +145,15 @@ class EditionReader:
             return True
         return False
 
-    def check_revision(self, revision):
-        revision = self.get_edition(revision)
-        if revision:
+    def check_revision(self, revision_str: str) -> tuple[str | None, Path | None]:
+        revision = self.get_edition(revision_str)
+        if revision is not None:
             return revision, self.path / revision
         return None, None
 
-    def get_chapter(self, revision, chapter, destination, is_current):
+    def get_chapter(
+        self, revision: str, chapter: int, destination: Path, is_current: bool
+    ) -> bool:
         file_path = destination / f"part{chapter:02}.xml"
         if file_path.exists():
             return True
@@ -163,12 +177,12 @@ class EditionReader:
             return False
 
     @staticmethod
-    def load_info(json_path, info_json):
+    def load_info(json_path: Path, info_json: str) -> dict:
         with open(json_path / info_json, encoding="utf8") as info_file:
             return json.load(info_file)
 
     @classmethod
-    def load_dicom_info(cls, json_path):
+    def load_dicom_info(cls, json_path: Path) -> DicomInfo:
         return DicomInfo(
             cls.load_info(json_path, cls.dict_info_json),
             cls.load_info(json_path, cls.iod_info_json),
@@ -176,7 +190,7 @@ class EditionReader:
         )
 
     @classmethod
-    def json_files_exist(cls, json_path):
+    def json_files_exist(cls, json_path: Path) -> bool:
         for filename in (
             cls.dict_info_json,
             cls.module_info_json,
@@ -188,11 +202,11 @@ class EditionReader:
         return True
 
     @classmethod
-    def dump_description(cls, description):
+    def dump_description(cls, description: dict) -> str:
         return json.dumps(description, sort_keys=True, indent=2, cls=DefinitionEncoder)
 
     @classmethod
-    def create_json_files(cls, docbook_path, json_path):
+    def create_json_files(cls, docbook_path: Path, json_path: Path) -> None:
         print("Creating JSON excerpts from docbook files - this may take a while...")
         start_time = time.time()
         part6reader = Part6Reader(docbook_path)
@@ -220,11 +234,13 @@ class EditionReader:
         print(f"Writing json files took {time.time() - start_time:.1f} seconds.")
         print("Done!")
 
-    def get_revision(self, revision, recreate_json=False, create_json=True):
-        revision, destination = self.check_revision(revision)
-        if destination is None:
+    def get_revision(
+        self, revision_str: str, recreate_json: bool = False, create_json: bool = True
+    ) -> Path | None:
+        revision, destination = self.check_revision(revision_str)
+        if destination is None or revision is None:
             self.logger.error(f"DICOM revision {revision} not found.")
-            return
+            return None
 
         docbook_path = destination / "docbook"
         docbook_path.mkdir(parents=True, exist_ok=True)
@@ -239,7 +255,7 @@ class EditionReader:
                 destination=docbook_path,
                 is_current=self.is_current(revision),
             ):
-                return
+                return None
 
         if create_json and (
             not self.json_files_exist(json_path)
@@ -251,7 +267,7 @@ class EditionReader:
         return destination
 
     @staticmethod
-    def is_current_version(json_path):
+    def is_current_version(json_path: Path) -> bool:
         version_path = json_path / "version"
         if not version_path.exists():
             return False
@@ -259,7 +275,7 @@ class EditionReader:
             return f.read() >= __version__
 
     @staticmethod
-    def write_current_version(json_path):
+    def write_current_version(json_path: Path) -> None:
         version_path = json_path / "version"
         with open(version_path, "w", encoding="utf8") as f:
             f.write(__version__)

@@ -4,6 +4,8 @@ Storage SOP Classes.
 The information is taken from PS3.4 in docbook format as provided by ACR NEMA.
 """
 
+from pathlib import Path
+
 from dicom_validator.spec_reader.spec_reader import (
     SpecReader,
     SpecReaderLookupError,
@@ -14,13 +16,13 @@ from dicom_validator.spec_reader.spec_reader import (
 class Part4Reader(SpecReader):
     """Reads information from PS3.4 in docbook format."""
 
-    def __init__(self, spec_dir):
+    def __init__(self, spec_dir: str | Path) -> None:
         super().__init__(spec_dir)
         self.part_nr = 4
-        self._sop_class_uids = {}  # SOP Class UID --> chapter
-        self._chapters = {}  # chapter --> SOP Class UID list
+        self._sop_class_uids: dict[str, str] = {}  # SOP Class UID --> chapter
+        self._chapters: dict[str, list[str]] = {}  # chapter --> SOP Class UID list
 
-    def iod_chapter(self, sop_class_uid):
+    def iod_chapter(self, sop_class_uid: str) -> str:
         """Return the chapter in part 3 for the given SOP Class."""
         if not self._sop_class_uids:
             self._read_sop_table("B.5")  # standard SOP Classes
@@ -29,7 +31,7 @@ class Part4Reader(SpecReader):
         except KeyError:
             raise SpecReaderLookupError(f"SOP Class {sop_class_uid} not found")
 
-    def iod_chapters(self):
+    def iod_chapters(self) -> dict[str, list[str]]:
         """Return a dict of the chapter in part 3 for each SOP Class
         listed in table B.5.
         """
@@ -37,7 +39,7 @@ class Part4Reader(SpecReader):
             self._read_sop_table("B.5")
         return self._chapters
 
-    def _read_sop_table(self, chapter):
+    def _read_sop_table(self, chapter: str) -> None:
         table = self._find(
             self.get_doc_root(),
             ['chapter[@label="B"]', f'section[@label="{chapter}"]', "table", "tbody"],
@@ -58,7 +60,7 @@ class Part4Reader(SpecReader):
                     self._chapters.setdefault(chapter, []).append(uid)
         self._patch_incorrect_values()
 
-    def _patch_incorrect_values(self):
+    def _patch_incorrect_values(self) -> None:
         sc_sop_class_uid = "1.2.840.10008.5.1.4.1.1.7"
         if self._sop_class_uids.get(sc_sop_class_uid, "") == "A.8":
             self._sop_class_uids[sc_sop_class_uid] = "A.8.1"

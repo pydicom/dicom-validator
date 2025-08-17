@@ -121,11 +121,11 @@ class Condition:
 
     def __init__(
         self,
-        ctype: Optional[ConditionType] = None,
-        operator: Optional[ConditionOperator] = None,
-        tag: Optional[str] = None,
+        ctype: ConditionType | None = None,
+        operator: ConditionOperator | None = None,
+        tag: str | None = None,
         index: int = 0,
-        values: Optional[ValuesType] = None,
+        values: ValuesType | None = None,
     ) -> None:
         self.type = ctype
         self.operator = operator
@@ -134,7 +134,7 @@ class Condition:
         self.values: ValuesType = values or []
         self.and_conditions: list[Condition] = []
         self.or_conditions: list[Condition] = []
-        self.other_condition: Optional[Condition] = None
+        self.other_condition: Condition | None = None
 
     def __repr__(self):
         attribs = []
@@ -246,7 +246,7 @@ class Condition:
         elif self.operator == ConditionOperator.Absent:
             result += " is not present"
         elif self.operator == ConditionOperator.EqualsTag:
-            result += f" points to {tag_name_from_id(self.values[0], dict_info)}"
+            result += f" points to {tag_name_from_id(int(self.values[0]), dict_info)}"
         elif not self.values:
             # if no values are found here, we have some unhandled condition
             # and ignore it for the time being

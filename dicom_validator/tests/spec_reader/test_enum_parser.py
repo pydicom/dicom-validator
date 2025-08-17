@@ -1,4 +1,3 @@
-from typing import Optional
 from collections.abc import Generator
 from xml.etree import ElementTree
 
@@ -25,7 +24,7 @@ def parser() -> Generator[EnumParser, None, None]:
     yield EnumParser(find_chapter)
 
 
-def section(contents, label="C.42.3.5") -> Optional[ElementTree.Element]:
+def section(contents, label="C.42.3.5") -> ElementTree.Element | None:
     xml = f"""<?xml version="1.0" encoding="utf-8"?>
     <book xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink">
     <chapter label="C"><section label="{label}" xml:id="sect_{label}">

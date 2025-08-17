@@ -5,30 +5,38 @@ Dumps tag information from a DICOM file using information in PS3.6.
 import argparse
 import os
 import re
-from pathlib import Path
 import sys
+from collections.abc import Iterable, Sequence
+from pathlib import Path
 
-from pydicom import config, dcmread
+from pydicom import config, dcmread, Dataset, DataElement
 from pydicom.errors import InvalidDicomError
 
 from dicom_validator.spec_reader.edition_reader import EditionReader
+from dicom_validator.validator.iod_validator import DicomInfo
 
 
 class DataElementDumper:
     tag_regex = re.compile(r"(\(?[\dabcdefABCDEF]{4}), *([\dabcdefABCDEF]{4})\)?")
 
-    def __init__(self, dicom_info, max_value_len, show_image_data, tags):
+    def __init__(
+        self,
+        dicom_info: DicomInfo,
+        max_value_len: int,
+        show_image_data: bool,
+        tags: Sequence[str] | None,
+    ):
         self.dicom_info = dicom_info
         self.max_value_len = max_value_len
         self.level = 0
         self.show_image_data = show_image_data
 
-        self.uid_info = {}
+        self.uid_info: dict[str, str] = {}
         for uid_dict in dicom_info.dictionary.values():
             self.uid_info.update(uid_dict)
 
         tags = tags or []
-        self.tags = []
+        self.tags: list[str] = []
         for tag in tags:
             match = self.tag_regex.match(tag)
             if match:
@@ -44,12 +52,14 @@ class DataElementDumper:
                 else:
                     print(f"{tag} is not a valid tag expression - ignoring")
 
-    def print_dataset(self, dataset):
+    def print_dataset(self, dataset: Dataset) -> None:
         dataset.walk(
             lambda data_set, data_elem: self.print_dataelement(data_set, data_elem)
         )
 
-    def print_element(self, tag_id, name, vr, prop, value):
+    def print_element(
+        self, tag_id: str, name: str, vr: str, prop: str, value: list | bytes | str
+    ) -> bool:
         if self.tags and tag_id not in self.tags:
             return False
         vm = 1 if value else 0
@@ -70,7 +80,7 @@ class DataElementDumper:
         )
         return True
 
-    def print_dataelement(self, _, dataelement):
+    def print_dataelement(self, _: Dataset, dataelement: DataElement) -> None:
         tag_id = f"({dataelement.tag.group:04X},{dataelement.tag.element:04X})"
         description = self.dicom_info.dictionary.get(tag_id)
         if description is None:
@@ -97,7 +107,7 @@ class DataElementDumper:
         else:
             self.print_element(tag_id, name, vr, prop, value)
 
-    def print_sequence(self, sequence):
+    def print_sequence(self, sequence: Iterable[Dataset]) -> None:
         indent = 2 * self.level
         format_string = "{{}}Item {{:<{}}} [Dataset with {{}} element(s)]".format(
             56 - indent
@@ -110,7 +120,7 @@ class DataElementDumper:
             )
             self.level -= 1
 
-    def dump_file(self, file_path):
+    def dump_file(self, file_path: str) -> None:
         try:
             # dcmread calls validate_value by default. If values don't match
             # required VR (value representation), it emits a warning but
@@ -126,13 +136,13 @@ class DataElementDumper:
         except (InvalidDicomError, KeyError):
             print(f"{file_path} is not a valid DICOM file - skipping.")
 
-    def dump_directory(self, dir_path):
+    def dump_directory(self, dir_path: str) -> None:
         for root, _, names in os.walk(dir_path):
             for name in names:
                 self.dump_file(os.path.join(root, name))
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Dumps DICOM information dictionary from " "DICOM file using PS3.6"
     )

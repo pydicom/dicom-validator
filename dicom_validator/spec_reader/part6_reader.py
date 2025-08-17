@@ -4,19 +4,21 @@ The information is taken from DICOM dictionary (PS3.6) in docbook format
 as provided by ACR NEMA.
 """
 
+from pathlib import Path
+
 from dicom_validator.spec_reader.spec_reader import SpecReader, SpecReaderParseError
 
 
 class Part6Reader(SpecReader):
     """Reads information from PS3.4 in docbook format."""
 
-    def __init__(self, spec_dir):
+    def __init__(self, spec_dir: str | Path) -> None:
         super().__init__(spec_dir)
         self.part_nr = 6
-        self._uids = None
-        self._data_elements = None
+        self._uids: dict[str, dict[str, str]] | None = None
+        self._data_elements: dict[str, dict[str, str]] | None = None
 
-    def data_elements(self):
+    def data_elements(self) -> dict[str, dict[str, str]]:
         """Return the information about registered DICOM data elements.
 
         The return value is a dict with the tag ID (group/element tuple)
@@ -25,9 +27,9 @@ class Part6Reader(SpecReader):
         """
         if self._data_elements is None:
             self._read_element_table()
-        return self._data_elements
+        return self._data_elements  # type: ignore[return-value]
 
-    def data_element(self, tag_id):
+    def data_element(self, tag_id: str) -> dict[str, str] | None:
         """Return the information about the specified tag.
 
         Arguments:
@@ -42,7 +44,7 @@ class Part6Reader(SpecReader):
         """
         return self.data_elements().get(tag_id)
 
-    def _read_element_table(self):
+    def _read_element_table(self) -> None:
         self._data_elements = {}
         table = self._find(
             self.get_doc_root(), ['chapter[@label="6"]', "table", "tbody"]
@@ -69,31 +71,32 @@ class Part6Reader(SpecReader):
                             "prop": tag_attributes[3],
                         }
 
-    def uids(self, uid_type):
+    def uids(self, uid_type: str) -> dict[str, str]:
         """Return a dict of UID values (keys) and names for the given UID type."""
         return self._get_uids().get(uid_type, {})
 
-    def all_uids(self):
+    def all_uids(self) -> dict[str, dict[str, str]]:
         """Return a dict of UID types with UID value/name dicts for the
         given UID type as value.
         """
         return self._get_uids()
 
-    def sop_class_uids(self):
+    def sop_class_uids(self) -> dict[str, str]:
         """Return a dict of SOP Class UID values (keys) and names."""
         return self.uids("SOP Class")
 
-    def sop_class_name(self, uid):
+    def sop_class_name(self, uid: str) -> str | None:
         """Return the name of SOP Class corresponding to the given UID."""
         return self.uids("SOP Class").get(uid)
 
-    def sop_class_uid(self, sop_class_name):
+    def sop_class_uid(self, sop_class_name: str) -> str | None:
         """Return the name of SOP Class corresponding to the given UID."""
         for uid, name in self.sop_class_uids().items():
             if name == sop_class_name:
                 return uid
+        return None
 
-    def _get_uids(self):
+    def _get_uids(self) -> dict[str, dict[str, str]]:
         if self._uids is None:
             self._uids = {}
             table = self._find(

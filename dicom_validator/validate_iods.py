@@ -7,7 +7,10 @@ from dicom_validator.spec_reader.edition_reader import EditionReader
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
 
 
-def validate(args, base_path):
+from collections.abc import Sequence
+
+
+def validate(args: argparse.Namespace, base_path: str | Path) -> int:
     json_path = Path(base_path, "json")
     dicom_info = EditionReader.load_dicom_info(json_path)
     log_level = logging.DEBUG if args.verbose else logging.INFO
@@ -19,10 +22,10 @@ def validate(args, base_path):
         error_nr += sum(
             len(error) for error in list(validator.validate(dicom_path).values())
         )
-    return error_nr
+    return int(error_nr)
 
 
-def main(args=None):
+def main(args: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Validates DICOM file IODs")
     parser.add_argument(
         "dicomfiles",
@@ -65,15 +68,17 @@ def main(args=None):
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Outputs diagnostic information"
     )
-    args = parser.parse_args(args)
+    parsed_args = parser.parse_args(args)
 
-    edition_reader = EditionReader(args.standard_path)
-    destination = edition_reader.get_revision(args.revision, args.recreate_json)
+    edition_reader = EditionReader(parsed_args.standard_path)
+    destination = edition_reader.get_revision(
+        parsed_args.revision, parsed_args.recreate_json
+    )
     if destination is None:
-        print(f"Failed to get DICOM edition {args.revision} - aborting")
+        print(f"Failed to get DICOM edition {parsed_args.revision} - aborting")
         return 1
 
-    return validate(args, destination)
+    return validate(parsed_args, destination)
 
 
 if __name__ == "__main__":
