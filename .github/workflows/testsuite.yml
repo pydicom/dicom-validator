@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -46,7 +46,7 @@ jobs:
 
       - name: Run commandline tool tests
         run: |
-          if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.10' ]]
+          if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.13' ]]
           then
             python -m pytest -n 2 --cov-append --cov=dicom_validator --cov-config=.coveragerc dicom_validator/tests/test_cmdline_tools.py
           else
@@ -55,7 +55,7 @@ jobs:
 
       - name: Run spec-reader and validator tests
         run: |
-          if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.10' ]]
+          if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.13' ]]
           then
             python -m pytest -n auto --cov-append --cov=dicom_validator --cov-config=.coveragerc  dicom_validator/tests/spec_reader dicom_validator/tests/validator
           else
@@ -64,6 +64,6 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: ${{ success() && matrix.python-version == '3.10' && matrix.os == 'ubuntu-latest' }}
+        if: ${{ success() && matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest' }}
         with:
           name: codecov-dicom-validator
