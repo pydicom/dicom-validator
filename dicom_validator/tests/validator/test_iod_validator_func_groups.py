@@ -169,6 +169,12 @@ class TestIODValidatorFuncGroups:
         assert has_tag_error(
             result, "Frame Content", "(0020,9111)", "not allowed in Shared Group"
         )
+        assert not has_tag_error(
+            result,
+            "Multi-frame Functional Groups",
+            "(0020,9111)",
+            "unexpected",
+        )
 
     @pytest.mark.shared_macros([])
     @pytest.mark.per_frame_macros([PIXEL_MEASURES])

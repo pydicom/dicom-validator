@@ -287,6 +287,7 @@ class IODValidator:
                         tag_id, "not allowed" + msg_postfix
                     )
                     errors.setdefault(message, []).append(tag_id_string)
+                    self._dataset_stack[-1].unexpected_tags.discard(tag_id)
             return errors
         return self._validate_attributes(module_info, False)
 

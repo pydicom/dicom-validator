@@ -11,6 +11,10 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 ### Changes
 * added typing to production code
 
+### Fixes
+* tags not allowed in multi-frame functional groups have been listed
+  as errors twice (see [#196](../../issues/196))
+
 ### Infrastructure
 * added Python 3.14 to CI (currently needs development version of `pydicom`)
 * removed support for Python 3.9
