@@ -20,7 +20,7 @@ def validate(args: argparse.Namespace, base_path: str | Path) -> int:
     error_nr = 0
     for dicom_path in args.dicomfiles:
         error_nr += sum(
-            len(error) for error in list(validator.validate(dicom_path).values())
+            result.errors for result in list(validator.validate(dicom_path).values())
         )
     return int(error_nr)
 

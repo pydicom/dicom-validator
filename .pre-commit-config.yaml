@@ -24,7 +24,7 @@ repos:
     rev: v0.13.1
     hooks:
       - id: ruff
-        args: [dicom_validator, --fix, --exit-non-zero-on-fix]
+        args: [dicom_validator, --fix, --exit-non-zero-on-fix, --target-version=py310]
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.20.0
     hooks:

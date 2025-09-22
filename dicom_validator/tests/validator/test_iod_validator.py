@@ -10,6 +10,7 @@ from pydicom.tag import Tag
 
 from dicom_validator.tests.utils import has_tag_error
 from dicom_validator.validator.iod_validator import IODValidator
+from dicom_validator.validator.validation_result import Status, ErrorCode
 
 pytestmark = pytest.mark.usefixtures("disable_logging")
 
@@ -56,7 +57,7 @@ def validator(dicom_info, request):
     else:
         tag_set = marker.args[0]
     data_set = new_data_set(tag_set)
-    return IODValidator(data_set, dicom_info, logging.ERROR)
+    return IODValidator(data_set, dicom_info, logging.WARNING)
 
 
 class TestIODValidator:
@@ -64,14 +65,24 @@ class TestIODValidator:
     Note: some of the fixture data are not consistent with the DICOM Standard.
     """
 
-    def test_empty_dataset(self, validator):
+    def test_empty_dataset(self, validator, caplog):
+        caplog.set_level(logging.ERROR)
         result = validator.validate()
-        assert "fatal" in result
+        assert result.status == Status.MissingSOPClassUID
+        assert result.errors == 1
+        assert [rec.message for rec in caplog.records] == [
+            "Missing SOP Class UID - aborting"
+        ]
 
     @pytest.mark.tag_set({"SOPClassUID": "1.2.3"})
-    def test_invalid_sop_class_id(self, validator):
+    def test_invalid_sop_class_id(self, validator, caplog):
+        caplog.set_level(logging.ERROR)
         result = validator.validate()
-        assert "fatal" in result
+        assert result.status == Status.UnknownSOPClassUID
+        assert result.errors == 1
+        assert [rec.message for rec in caplog.records] == [
+            "Unknown or retired SOP Class UID: 1.2.3 - aborting"
+        ]
 
     @pytest.mark.tag_set(
         {
@@ -80,20 +91,25 @@ class TestIODValidator:
             "PatientID": "ZZZ",
         }
     )
-    def test_missing_tags(self, validator):
+    def test_missing_tags(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
         result = validator.validate()
 
-        assert "fatal" not in result
-        assert "CT Image" in result
+        assert result.status == Status.Failed
+        assert "Patient" in result.module_errors
 
         # PatientName is set
-        assert not has_tag_error(result, "Patient", "(0010,0010)", "missing")
+        assert not has_tag_error(result, "Patient", 0x0010_0010, ErrorCode.TagMissing)
         # PatientSex - type 2, missing
-        assert has_tag_error(result, "Patient", "(0010,0040)", "missing")
+        assert has_tag_error(result, "Patient", 0x0010_0040, ErrorCode.TagMissing)
         # Clinical Trial Sponsor Name -> type 1, but module usage U
-        assert not has_tag_error(result, "Patient", "(0012,0010)", "missing")
+        assert not has_tag_error(result, "Patient", 0x0012_0010, ErrorCode.TagMissing)
         # Patient Breed Description -> type 2C, but no parsable condition
-        assert not has_tag_error(result, "Patient", "(0010,2292)", "missing")
+        assert not has_tag_error(result, "Patient", 0x0010_2292, ErrorCode.TagMissing)
+
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "Patient":' in messages
+        assert "Tag (0010,0040) (Patient's Sex) is missing" in messages
 
     @pytest.mark.tag_set(
         {
@@ -104,11 +120,19 @@ class TestIODValidator:
             "CTAdditionalXRaySourceSequence": [],
         }
     )
-    def test_not_allowed_tag(self, validator):
+    def test_not_allowed_tag(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
         result = validator.validate()
 
-        assert "fatal" not in result
-        assert has_tag_error(result, "CT Image", "(0018,9360)", "not allowed")
+        assert result.status == Status.Failed
+        assert has_tag_error(result, "CT Image", 0x0018_9360, ErrorCode.TagNotAllowed)
+
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "CT Image":' in messages
+        assert (
+            "Tag (0018,9360) (CT Additional X-Ray Source Sequence) is not allowed by condition:\n"
+            '  Multi-energy CT Acquisition is equal to "YES"' in messages
+        )
 
     @pytest.mark.tag_set(
         {
@@ -117,15 +141,20 @@ class TestIODValidator:
             "Modality": None,
         }
     )
-    def test_empty_tags(self, validator):
+    def test_empty_tags(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
         result = validator.validate()
 
-        assert "fatal" not in result
-        assert "CT Image" in result
+        assert result.status == Status.Failed
+        assert "Patient" in result.module_errors
         # Modality - type 1, present but empty
-        assert has_tag_error(result, "Patient", "(0010,0040)", "missing")
+        assert has_tag_error(result, "Patient", 0x0010_0040, ErrorCode.TagMissing)
         # PatientName - type 2, empty tag is allowed
-        assert not has_tag_error(result, "Patient", "(0010,0010)", "missing")
+        assert not has_tag_error(result, "Patient", 0x0010_0010, ErrorCode.TagMissing)
+
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "Patient":' in messages
+        assert "Tag (0010,0040) (Patient's Sex) is missing" in messages
 
     @pytest.mark.tag_set(
         {
@@ -134,12 +163,20 @@ class TestIODValidator:
             "Modality": None,
         }
     )
-    def test_vr_conflict(self, validator):
+    def test_vr_conflict(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
         result = validator.validate()
 
-        assert "fatal" not in result
-        assert "CT Image" in result
-        assert has_tag_error(result, "Patient", "(0010,0022)", "conflicting")
+        assert result.status == Status.Failed
+        assert "Patient" in result.module_errors
+        assert has_tag_error(result, "Patient", 0x0010_0022, ErrorCode.InvalidValue)
+
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "Patient":' in messages
+        assert (
+            "Tag (0010,0022) (Type of Patient ID) has invalid value 'lowercase' for VR CS"
+            in messages
+        )
 
     @pytest.mark.tag_set(
         {
@@ -156,9 +193,14 @@ class TestIODValidator:
 
         # Frame Of Reference UID Is and Synchronization Trigger set
         assert not has_tag_error(
-            result, "Enhanced X-Ray Angiographic Image", "(0020,0052)", "missing"
+            result,
+            "Enhanced X-Ray Angiographic Image",
+            0x0020_0052,
+            ErrorCode.TagMissing,
         )
-        assert not has_tag_error(result, "Synchronization", "(0018,106A)", "missing")
+        assert not has_tag_error(
+            result, "Synchronization", 0x0018_106A, ErrorCode.TagMissing
+        )
 
     @pytest.mark.tag_set(
         {
@@ -168,11 +210,21 @@ class TestIODValidator:
             "PatientID": "ZZZ",
         }
     )
-    def test_fulfilled_condition_missing_tag(self, validator):
+    def test_fulfilled_condition_missing_tag(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
         result = validator.validate()
 
-        assert has_tag_error(result, "Frame of Reference", "(0020,0052)", "missing")
-        assert has_tag_error(result, "Synchronization", "(0018,106A)", "missing")
+        assert has_tag_error(
+            result, "Frame of Reference", 0x0020_0052, ErrorCode.TagMissing
+        )
+        assert has_tag_error(
+            result, "Synchronization", 0x0018_106A, ErrorCode.TagMissing
+        )
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "Frame of Reference":' in messages
+        assert "Tag (0020,0052) (Frame of Reference UID) is missing" in messages
+        assert '\nModule "Synchronization":' in messages
+        assert "Tag (0018,106A) (Synchronization Trigger) is missing" in messages
 
     @pytest.mark.tag_set(
         {
@@ -184,9 +236,11 @@ class TestIODValidator:
     def test_condition_not_met_no_tag(self, validator):
         result = validator.validate()
 
-        assert not has_tag_error(result, "Frame of Reference", "(0020,0052)", "missing")
         assert not has_tag_error(
-            result, "Frame of Reference", "(0020,0052)", "not allowed"
+            result, "Frame of Reference", 0x0020_0052, ErrorCode.TagMissing
+        )
+        assert not has_tag_error(
+            result, "Frame of Reference", 0x0020_0052, ErrorCode.TagNotAllowed
         )
 
     @pytest.mark.tag_set(
@@ -199,7 +253,9 @@ class TestIODValidator:
     )
     def test_private_tags_are_ignored(self, validator):
         result = validator.validate()
-        assert not has_tag_error(result, "Root", "(0019,1001)", "unexpected")
+        assert not has_tag_error(
+            result, "General", 0x0019_1001, ErrorCode.TagUnexpected
+        )
 
     @pytest.mark.tag_set(
         {
@@ -208,7 +264,7 @@ class TestIODValidator:
             "PatientID": "ZZZ",
             "ImageType": "SECONDARY",
             "CardiacSynchronizationTechnique": "OTHER",
-            "HighRRValue": "123",  # 0018,1082
+            "HighRRValue": "123",  # 0018_1082
         }
     )
     def test_and_condition_not_met(self, validator):
@@ -216,10 +272,10 @@ class TestIODValidator:
 
         # Both Low R-R Value and High R-R Value are not needed but allowed
         assert not has_tag_error(
-            result, "Cardiac Synchronization", "(0018,1081)", "missing"
+            result, "Cardiac Synchronization", 0x0018_1081, ErrorCode.TagMissing
         )
         assert not has_tag_error(
-            result, "Cardiac Synchronization", "(0018,1082)", "missing"
+            result, "Cardiac Synchronization", 0x0018_1082, ErrorCode.TagMissing
         )
 
     @pytest.mark.tag_set(
@@ -229,7 +285,7 @@ class TestIODValidator:
             "PatientID": "ZZZ",
             "ImageType": "PRIMARY",
             "CardiacSynchronizationTechnique": "OTHER",
-            "HighRRValue": "123",  # 0018,1082
+            "HighRRValue": "123",  # 0018_1082
         }
     )
     def test_only_one_and_condition_met(self, validator):
@@ -237,10 +293,10 @@ class TestIODValidator:
 
         # Both Low R-R Value and High R-R Value are not needed but allowed
         assert not has_tag_error(
-            result, "Cardiac Synchronization", "(0018,1081)", "missing"
+            result, "Cardiac Synchronization", 0x0018_1081, ErrorCode.TagMissing
         )
         assert not has_tag_error(
-            result, "Cardiac Synchronization", "(0018,1082)", "missing"
+            result, "Cardiac Synchronization", 0x0018_1082, ErrorCode.TagMissing
         )
 
     @pytest.mark.tag_set(
@@ -250,7 +306,7 @@ class TestIODValidator:
             "PatientID": "ZZZ",
             "ImageType": "MIXED",
             "CardiacSynchronizationTechnique": "PROSPECTIVE",
-            "HighRRValue": "123",  # 0018,1082
+            "HighRRValue": "123",  # 0018_1082
         }
     )
     def test_and_condition_met(self, validator):
@@ -258,10 +314,10 @@ class TestIODValidator:
 
         # Both Low R-R Value and High R-R Value are needed
         assert has_tag_error(
-            result, "Cardiac Synchronization", "(0018,1081)", "missing"
+            result, "Cardiac Synchronization", 0x0018_1081, ErrorCode.TagMissing
         )
         assert not has_tag_error(
-            result, "Cardiac Synchronization", "(0018,1082)", "missing"
+            result, "Cardiac Synchronization", 0x0018_1082, ErrorCode.TagMissing
         )
 
     @pytest.mark.tag_set(
@@ -277,7 +333,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert has_tag_error(
-            result, "General Equipment", "(0028,0120)", "missing"
+            result, "General Equipment", 0x0028_0120, ErrorCode.TagMissing
         )  # Pixel Padding Value
 
     @pytest.mark.tag_set(
@@ -292,7 +348,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert not has_tag_error(
-            result, "General Equipment", "(0028,0120)", "missing"
+            result, "General Equipment", 0x0028_0120, ErrorCode.TagMissing
         )  # Pixel Padding Value
 
     @pytest.mark.tag_set(
@@ -307,7 +363,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert has_tag_error(
-            result, "Image Pixel", "(0028,0006)", "missing"
+            result, "Image Pixel", 0x0028_0006, ErrorCode.TagMissing
         )  # Planar configuration
 
     @pytest.mark.tag_set(
@@ -322,7 +378,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert not has_tag_error(
-            result, "Image Pixel", "(0028,0006)", "missing"
+            result, "Image Pixel", 0x0028_0006, ErrorCode.TagMissing
         )  # Planar configuration
 
     @pytest.mark.tag_set(
@@ -337,7 +393,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert not has_tag_error(
-            result, "Cardiac Synchronization", "(0018,1086)", "missing"
+            result, "Cardiac Synchronization", 0x0018_1086, ErrorCode.TagMissing
         )  # Skip beats
 
     @pytest.mark.tag_set(
@@ -353,7 +409,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert has_tag_error(
-            result, "Cine", "(0018,1065)", "missing"
+            result, "Cine", 0x0018_1065, ErrorCode.TagMissing
         )  # Frame Time Vector
 
     @pytest.mark.tag_set(
@@ -369,7 +425,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert has_tag_error(
-            result, "Cardiac Synchronization", "(0018,9085)", "missing"
+            result, "Cardiac Synchronization", 0x0018_9085, ErrorCode.TagMissing
         )  # Cardiac signal source
 
     @pytest.mark.tag_set(
@@ -386,7 +442,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert has_tag_error(
-            result, "Cardiac Synchronization", "(0018,9085)", "not allowed"
+            result, "Cardiac Synchronization", 0x0018_9085, ErrorCode.TagNotAllowed
         )  # Cardiac signal source
 
     @pytest.mark.tag_set(
@@ -403,7 +459,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert not has_tag_error(
-            result, "Cardiac Synchronization", "(0018,9085)", "not allowed"
+            result, "Cardiac Synchronization", 0x0018_9085, ErrorCode.TagNotAllowed
         )  # Cardiac signal source
 
     @pytest.mark.tag_set(
@@ -421,7 +477,7 @@ class TestIODValidator:
         result = validator.validate()
 
         assert not has_tag_error(
-            result, "Cardiac Synchronization", "(0018,9085)", "missing"
+            result, "Cardiac Synchronization", 0x0018_9085, ErrorCode.TagMissing
         )  # Cardiac signal source
 
     @pytest.mark.tag_set(
@@ -438,18 +494,18 @@ class TestIODValidator:
 
         # condition met (ValueType is NUM) - error because of missing tag
         assert has_tag_error(
-            result, "SR Document Content", "(0040,A300)", "missing"
+            result, "SR Document Content", 0x0040_A300, ErrorCode.TagMissing
         )  # Measured Value Sequence
 
         # condition not met for other macros - no tags expected
         assert not has_tag_error(
-            result, "SR Document Content", "(0040,A168)", "missing"
+            result, "SR Document Content", 0x0040_A168, ErrorCode.TagMissing
         )  # Concept Code Sequence
         assert not has_tag_error(
-            result, "SR Document Content", "(0008,1199)", "missing"
+            result, "SR Document Content", 0x0008_1199, ErrorCode.TagMissing
         )  # Referenced SOP Sequence
         assert not has_tag_error(
-            result, "SR Document Content", "(0070,0022)", "missing"
+            result, "SR Document Content", 0x0070_0022, ErrorCode.TagMissing
         )  # Graphic Data
 
     @pytest.mark.tag_set(
@@ -463,31 +519,39 @@ class TestIODValidator:
             "BitsStored": 1,
         }
     )
-    def test_invalid_enum_value(self, validator):
+    def test_invalid_enum_value(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
         result = validator.validate()
 
         # Presentation LUT Shape: incorrect enum value
         assert has_tag_error(
             result,
             "Enhanced XA/XRF Image",
-            "(2050,0020)",
-            "value is not allowed",
-            "(value: INVALID, allowed: IDENTITY, INVERSE)",
+            0x2050_0020,
+            ErrorCode.EnumValueNotAllowed,
+            {"value": "INVALID", "allowed": ["IDENTITY", "INVERSE"]},
         )
 
         # Content Qualification: correct enum value
         assert not has_tag_error(
-            result, "Enhanced XA/XRF Image", "(0018,9004)", "value is not allowed"
+            result, "Enhanced XA/XRF Image", 0x0018_9004, ErrorCode.EnumValueNotAllowed
         )
 
         # Bits Stored: incorrect int enum value
         assert has_tag_error(
             result,
             "Enhanced XA/XRF Image",
-            "(0028,0101)",
-            "value is not allowed",
-            "(value: 1, allowed: 8, 9, 10, 11, 12, 13, 14, 15, 16)",
+            0x0028_0101,
+            ErrorCode.EnumValueNotAllowed,
+            {"value": 1, "allowed": [8, 9, 10, 11, 12, 13, 14, 15, 16]},
         )
+
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "Enhanced XA/XRF Image":' in messages
+        assert (
+            "Tag (0028,0101) (Bits Stored) - enum value '1' not allowed,\n"
+            "  allowed values: 8, 9, 10, 11, 12, 13, 14, 15, 16"
+        ) in messages
 
     @pytest.mark.tag_set(
         {
@@ -505,8 +569,8 @@ class TestIODValidator:
         assert not has_tag_error(
             result,
             "CT Image",
-            "(0018,9318)",
-            "is conflicting with VR",
+            0x0018_9318,
+            ErrorCode.InvalidValue,
         )
 
     @pytest.mark.tag_set(
@@ -518,16 +582,20 @@ class TestIODValidator:
             "PresentationLUTShape": "",
         }
     )
-    def test_empty_type_1_enum_value(self, validator):
+    def test_empty_type_1_enum_value(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
         result = validator.validate()
 
         # Presentation LUT Shape: incorrect enum value
         assert has_tag_error(
             result,
             "Enhanced XA/XRF Image",
-            "(2050,0020)",
-            "is empty",
+            0x2050_0020,
+            ErrorCode.TagEmpty,
         )
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "Enhanced XA/XRF Image":' in messages
+        assert "Tag (2050,0020) (Presentation LUT Shape) is empty" in messages
 
     @pytest.mark.tag_set(
         {
@@ -545,15 +613,15 @@ class TestIODValidator:
         assert not has_tag_error(
             result,
             "Ophthalmic Photography Acquisition Parameters",
-            "(0022,0005)",
-            "value is not allowed",
+            0x0022_0005,
+            ErrorCode.EnumValueNotAllowed,
         )
 
         assert not has_tag_error(
             result,
             "Ophthalmic Photography Acquisition Parameters",
-            "(0022,000D)",
-            "value is not allowed",
+            0x0022_000D,
+            ErrorCode.EnumValueNotAllowed,
         )
 
     @pytest.mark.tag_set(
@@ -571,8 +639,8 @@ class TestIODValidator:
         assert not has_tag_error(
             result,
             "MR Image",
-            "(0018,0020)",
-            "value is not allowed",
+            0x0018_0020,
+            ErrorCode.EnumValueNotAllowed,
         )
 
     @pytest.mark.tag_set(
@@ -590,9 +658,9 @@ class TestIODValidator:
         assert has_tag_error(
             result,
             "MR Image",
-            "(0018,0020)",
-            "value is not allowed",
-            "(value: IV, allowed: SE, IR, GR, EP, RM)",
+            0x0018_0020,
+            ErrorCode.EnumValueNotAllowed,
+            {"value": "IV", "allowed": ["SE", "IR", "GR", "EP", "RM"]},
         )
 
     @pytest.mark.tag_set(
@@ -610,8 +678,8 @@ class TestIODValidator:
         assert not has_tag_error(
             result,
             "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Image",
-            "(0008,0008)",
-            "value is not allowed",
+            0x0008_0008,
+            ErrorCode.EnumValueNotAllowed,
         )
 
     @pytest.mark.tag_set(
@@ -629,9 +697,9 @@ class TestIODValidator:
         assert has_tag_error(
             result,
             "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Image",
-            "(0008,0008)",
-            "value is not allowed",
-            "(value: SECONDARY, allowed: PRIMARY)",
+            0x0008_0008,
+            ErrorCode.EnumValueNotAllowed,
+            {"value": "SECONDARY", "allowed": ["PRIMARY"]},
         )
 
     @pytest.mark.tag_set(
@@ -649,9 +717,9 @@ class TestIODValidator:
         assert has_tag_error(
             result,
             "Ophthalmic Optical Coherence Tomography B-scan Volume Analysis Image",
-            "(0008,0008)",
-            "value is not allowed",
-            "(value: ORIGINAL, allowed: PRIMARY)",
+            0x0008_0008,
+            ErrorCode.EnumValueNotAllowed,
+            {"value": "ORIGINAL", "allowed": ["PRIMARY"]},
         )
 
     @pytest.mark.tag_set(

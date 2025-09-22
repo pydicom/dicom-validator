@@ -16,7 +16,7 @@ from dicom_validator.spec_reader.part3_reader import Part3Reader
 from dicom_validator.spec_reader.part4_reader import Part4Reader
 from dicom_validator.spec_reader.part6_reader import Part6Reader
 from dicom_validator.spec_reader.serializer import DefinitionEncoder
-from dicom_validator.validator.iod_validator import DicomInfo
+from dicom_validator.validator.dicom_info import DicomInfo
 
 
 class EditionParser(html_parser.HTMLParser, ABC):
