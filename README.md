@@ -147,11 +147,6 @@ Support for more cases may be added in the future.
 Defined terms are _not_ checked, because they are allowed to be user-defined, which means
 that any value may be valid.
 
-#### Unsupported cases (support may be added in future versions)
-- SOP classes not in the table in PS3.3 such as Presentation States are not
-  handled
-
-
 ## dump_dcm_info
 
 This is a very simple DICOM dump tool, which uses

@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from dicom_validator.spec_reader.edition_reader import EditionReader
-from dicom_validator.validator.iod_validator import DicomInfo
+from dicom_validator.validator.dicom_info import DicomInfo
 
 CURRENT_REVISION = "2025d"
 

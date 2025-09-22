@@ -3,24 +3,46 @@ import logging
 import sys
 from dataclasses import dataclass
 
-from pydicom import config, Sequence
+from pydicom import config, Sequence, Dataset
 from pydicom.multival import MultiValue
 from pydicom.valuerep import validate_value
-from pydicom.tag import Tag
 
 from dicom_validator.spec_reader.condition import (
-    Condition,
     ConditionType,
     ConditionOperator,
 )
-from dicom_validator.tag_tools import tag_name_from_id
+from dicom_validator.validator.dicom_info import DicomInfo
+from dicom_validator.validator.error_handler import (
+    LoggingResultHandler,
+    ValidationResultHandler,
+)
+from dicom_validator.validator.validation_result import (
+    ValidationResult,
+    Status,
+    TagErrors,
+    ErrorCode,
+    TagError,
+    TagType,
+    ErrorScope,
+    DicomTag,
+)
 
 
 class DatasetStackItem:
-    def __init__(self, dataset, name):
+    def __init__(
+        self, dataset: Dataset, tag: int | None = None, stack: list[int] | None = None
+    ):
         self.dataset = dataset
-        self.name = name
-        self.unexpected_tags = {int(d.tag) for d in dataset if not d.tag.is_private}
+        self.tag = tag
+        self.stack = stack
+        if tag is not None:
+            if stack is None:
+                self.stack = [tag]
+            else:
+                self.stack = stack[:] + [tag]
+        self.unexpected_tags = {
+            DicomTag(d.tag, self.stack) for d in dataset if not d.tag.is_private
+        }
 
 
 @dataclass
@@ -37,7 +59,9 @@ class FunctionalGroupInfo:
         self.shared_results.clear()
         self.checked_modules.clear()
 
-    def combined(self, module_name, seq_tag, per_frame):
+    def combined(
+        self, module_name: str, seq_tag: DicomTag, per_frame: TagErrors
+    ) -> TagErrors:
         """Return the combined error for errors from shared and per-frame groups
         for the given module.
 
@@ -45,61 +69,51 @@ class FunctionalGroupInfo:
         ----------
         module_name : str
             The name of the validated macro module.
-        seq_tag : str
-            The tag ID string of the top-level-sequence tag in the macro
-        per_frame : dict
+        seq_tag : DicomTag
+            The tag ID of the top-level-sequence tag in the macro
+        per_frame : TagErrors
             The errors from validation of the module in the per-frame group.
         """
         result = {}
-        shared = self.shared_results.get(module_name)
+        shared = self.shared_results.get(module_name, {})
         if not shared and not per_frame:
             # the module is present in both shared and per-frame groups
             # this is an error
             return {
-                f"Tag {seq_tag} is present in both Shared and Per Frame "
-                f"Functional Groups": [seq_tag]
+                seq_tag: TagError(
+                    code=ErrorCode.TagNotAllowed, scope=ErrorScope.BothFuncGroups
+                )
             }
-        for error in shared:
-            # similar errors differ by the functional group tag
-            per_frame_error = error.replace("(5200,9229)", "(5200,9230)")
-            if per_frame_error in per_frame:
+        for tag, error in shared.items():
+            # similar tags differ by the functional group parent tag
+            per_frame_tag = DicomTag(tag.tag, [0x5200_9230] + tag.parents[1:])
+            if per_frame.get(per_frame_tag) == error:
                 # if the error appears in both sequences, it is real
-                result[error] = shared[error]
-                del per_frame[per_frame_error]
-            elif "missing" in error:
+                result[tag] = shared[tag]
+                del per_frame[per_frame_tag]
+            elif error.code == ErrorCode.TagMissing:
                 # for missing tags, we also have to check if the error does not appear
                 # in the per-frame group because it is part of a missing sequence
-                for per_frame_error in per_frame:
-                    # the handling via the message is ugly and shall be replaced by
-                    # more concise data structs later...
-                    parts = per_frame_error.split(" > ")
-                    if shared[error][0] in parts[1:]:
-                        result[per_frame_error] = per_frame[per_frame_error]
-                        del per_frame[per_frame_error]
+                for per_frame_tag in per_frame:
+                    if per_frame_tag.tag in [t.tag for t in shared]:
+                        result[per_frame_tag] = per_frame[per_frame_tag]
+                        del per_frame[per_frame_tag]
                         break
             else:
                 # other errors (unexpected tag, missing value) shall always remain
-                result[error] = shared[error]
+                result[tag] = shared[tag]
 
-        for error in per_frame:
-            if "missing" in error:
+        for tag, error in per_frame.items():
+            if error.code == ErrorCode.TagMissing:
                 # same check as above
-                for shared_error in shared:
-                    parts = shared_error.split(" > ")
-                    if per_frame[error][0] in parts[1:]:
-                        result[shared_error] = shared[shared_error]
-                        del shared[shared_error]
+                for shared_tag in shared:
+                    if shared_tag.tag in [t.tag for t in per_frame]:
+                        result[shared_tag] = shared[shared_tag]
+                        del shared[shared_tag]
                         break
             else:
-                result[error] = per_frame[error]
+                result[tag] = per_frame[tag]
         return result
-
-
-@dataclass
-class DicomInfo:
-    dictionary: dict
-    iods: dict
-    modules: dict
 
 
 class InvalidParameterError(Exception):
@@ -108,98 +122,104 @@ class InvalidParameterError(Exception):
 
 class IODValidator:
     def __init__(
-        self, dataset, dicom_info, log_level=logging.INFO, suppress_vr_warnings=False
+        self,
+        dataset: Dataset,
+        dicom_info: DicomInfo,
+        log_level: int = logging.INFO,
+        suppress_vr_warnings: bool = False,
+        error_handler: ValidationResultHandler | None = None,
     ):
+        """Create an IODValidator instance.
+
+        Parameters
+        ----------
+        dataset : Dataset
+            The dataset to be validated.
+        dicom_info : dict
+            The DICOM information as extracted from the standard.
+        log_level : int
+            The log level of the used logger.
+        suppress_vr_warnings : bool
+            If True, skip the VR validation of DICOM tags.
+        error_handler : ValidationResultHandler
+            Handles errors found during validation.
+            Defaults to a handler that logs all errors to the console.
+        """
         self._dataset = dataset
-        self._dataset_stack = [DatasetStackItem(self._dataset, None)]
+        self._dataset_stack = [DatasetStackItem(self._dataset)]
         self._dicom_info = dicom_info
         self._func_group_info = FunctionalGroupInfo({}, set())
         self._suppress_vr_warnings = suppress_vr_warnings
-        self.errors = {}
+        self.result = ValidationResult()
         self.logger = logging.getLogger("validator")
         self.logger.level = log_level
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        self.handler = error_handler or LoggingResultHandler(dicom_info, self.logger)
 
-    def validate(self):
+    def validate(self) -> ValidationResult:
         """Validates current dataset.
-        All errors are shown in the console output, and are also contained
-        in the `errors` dictionary after execution.
+        All errors are contained in the `ValidationResult` object after execution.
+        By default, e.g. if no other handler has been set, all errors are
+        logged to the console.
         """
-        self.errors = {}
-        if "SOPClassUID" not in self._dataset:
-            self.errors["fatal"] = "Missing SOPClassUID"
+        self.result.reset()
+        self.result.sop_class_uid = self._dataset.get("SOPClassUID")
+        if not self.result.sop_class_uid:
+            self.result.status = Status.MissingSOPClassUID
+            self.result.errors = 1
         else:
-            sop_class_uid = self._dataset.SOPClassUID
-            if sop_class_uid not in self._dicom_info.iods:
-                self.errors["fatal"] = (
-                    f"Unknown SOPClassUID " f"(probably retired): {sop_class_uid}"
-                )
+            if self.result.sop_class_uid not in self._dicom_info.iods:
+                self.result.status = Status.UnknownSOPClassUID
+                self.result.errors = 1
             else:
-                self._validate_sop_class(sop_class_uid)
-        if "fatal" in self.errors:
-            self.logger.error("%s - aborting", self.errors["fatal"])
-        else:
-            if self.errors:
-                self.logger.info("\nErrors\n======")
-                for module_name, errors in self.errors.items():
-                    title = (
-                        "General:"
-                        if module_name == "Root"
-                        else f'Module "{module_name}":'
-                    )
-                    self.logger.warning(title)
-                    for error_msg in errors:
-                        self.logger.warning(error_msg)
-                    self.logger.warning("")
-        return self.errors
+                self._validate_sop_class()
 
-    def _validate_sop_class(self, sop_class_uid):
-        """Validate the dataset against the given SOP class.
+        self.handler.handle_validation_result(self.result)
+        return self.result
+
+    def _validate_sop_class(self) -> None:
+        """Validate the dataset against the current SOP class.
         Record all errors in the `errors` attribute.
-
-        Parameters
-        ----------
-        sop_class_uid : str
-            The SOP Class UID of the dataset.
         """
-        iod_info = self._dicom_info.iods[sop_class_uid]
-
-        self.logger.info('SOP class is "%s" (%s)', sop_class_uid, iod_info["title"])
-        self.logger.debug("Checking modules for SOP Class")
-        self.logger.debug("------------------------------")
-
+        self.handler.handle_validation_start(self.result)
+        iod_info = self._dicom_info.iods[self.result.sop_class_uid]
         maybe_existing_modules = self._get_maybe_existing_modules(iod_info["modules"])
 
         for module_name, module in iod_info["modules"].items():
-            self._dataset_stack[-1].name = module_name
+            self._dataset_stack[-1].tag = module_name
             errors = self._validate_module(
                 module, module_name, maybe_existing_modules, iod_info["group_macros"]
             )
             if errors:
-                self.errors[module_name] = errors
+                self.result.add_tag_errors(module_name, errors)
+                self.result.status = Status.Failed
 
         if len(self._dataset_stack[-1].unexpected_tags) != 0:
-            self.errors["Root"] = self._unexpected_tag_errors()
+            self.result.add_tag_errors("General", self._unexpected_tag_errors())
 
     def _validate_module(
-        self, module, module_name, maybe_existing_modules, group_macros=None
-    ):
+        self,
+        module: dict[str, dict],
+        module_name: str,
+        maybe_existing_modules: dict[str, set[DicomTag]],
+        group_macros=None,
+    ) -> TagErrors:
         """Validate the given module.
 
         Parameters
         ----------
-        module : dict
+        module : dict[str, dict]
             Contains the module reference chapter ("ref"), the usage ("use"),
             and optionally the usage condition as a dictionary (see `Condition`).
         module_name : str
             The module name as listed in the standard.
-        maybe_existing_modules : dict[set]
+        maybe_existing_modules : dict[str, set[DicomTag]]
             List of module references with contained tags that may be present
             in the dataset. Due to the fact that the same tag may belong to
             different modules, the presence of the module is only guessed at this point,
             and some of them may not actually be present.
-        group_macros : dict[dict]
+        group_macros : dict[str, dict], optional
             The modules allowed in functional group sequences, if the given module
             contains them, otherwise an empty dictionary.
             The keys are the module names, the values the module dicts as described
@@ -224,22 +244,21 @@ class IODValidator:
                 is_per_frame = self._in_per_frame_group
 
         allowed = True
-        msg_postfix = ""
+        scope = ErrorScope.General
         if condition and "F" in condition["type"] and is_shared:
             required, allowed = False, False
-            msg_postfix = " in Shared Group"
+            scope = ErrorScope.SharedFuncGroup
         elif condition and "S" in condition["type"] and is_per_frame:
             required, allowed = False, False
-            msg_postfix = " in Per-Frame Group"
+            scope = ErrorScope.PerFrameFuncGroup
         elif usage[0] == "M":
             required = True
         elif usage[0] == ConditionType.UserDefined:
             required = False
-
-        else:
+        elif condition:
             required, allowed = self._object_is_required_or_allowed(condition)
-        if group_macros is not None:
-            self._log_module_required(module_name, required, allowed, condition)
+        else:
+            required = False
 
         if required:
             # Always validate required modules.
@@ -258,7 +277,7 @@ class IODValidator:
             if is_per_frame:
                 shared_result = self._func_group_info.shared_results.get(module_name)
                 if shared_result is not None:
-                    seq_tag = list(module_info.keys())[0]
+                    seq_tag = self._tag_id(list(module_info.keys())[0])
                     return self._func_group_info.combined(module_name, seq_tag, result)
                 return result
 
@@ -282,24 +301,21 @@ class IODValidator:
             errors = {}
             for tag_id_string in module_info:
                 tag_id = self._tag_id(tag_id_string)
-                if tag_id in self._dataset_stack[-1].dataset:
-                    message = self._incorrect_tag_message(
-                        tag_id, "not allowed" + msg_postfix
-                    )
-                    errors.setdefault(message, []).append(tag_id_string)
+                if tag_id.tag in self._dataset_stack[-1].dataset:
+                    errors[tag_id] = TagError(code=ErrorCode.TagNotAllowed, scope=scope)
                     self._dataset_stack[-1].unexpected_tags.discard(tag_id)
             return errors
         return self._validate_attributes(module_info, False)
 
     @property
     def _in_per_frame_group(self):
-        return self._dataset_stack[-1].name == "(5200,9230)"
+        return self._dataset_stack[-1].tag == 0x5200_9230
 
     @property
     def _in_shared_group(self):
-        return self._dataset_stack[-1].name == "(5200,9229)"
+        return self._dataset_stack[-1].tag == 0x5200_9229
 
-    def _validate_attributes(self, attributes, report_unexpected_tags):
+    def _validate_attributes(self, attributes, report_unexpected_tags) -> TagErrors:
         """Validate the given attributes according to their type.
         Parameters
         ----------
@@ -313,29 +329,32 @@ class IODValidator:
         -------
         The dictionary of found errors.
         """
-        errors = {}
+        errors = TagErrors()
 
         for tag_id_string, attribute in attributes.items():
             if tag_id_string == "modules":
                 self._validate_func_group_modules(attribute)
             else:
                 tag_id = self._tag_id(tag_id_string)
-
-                result = self._validate_attribute(tag_id, attribute)
-                if result is not None:
-                    errors.setdefault(result, []).append(tag_id_string)
-
+                if (
+                    tag_error := self._validate_attribute(tag_id, attribute)
+                ) is not None:
+                    errors[tag_id] = tag_error
                 self._dataset_stack[-1].unexpected_tags.discard(tag_id)
 
                 if "items" in attribute:
-                    data_elem = self._dataset_stack[-1].dataset.get_item(tag_id)
+                    data_elem = self._dataset_stack[-1].dataset.get_item(tag_id.tag)
                     if data_elem is None:
                         continue
                     if data_elem.VR != "SQ":
                         raise RuntimeError(f"Not a sequence: {data_elem}")
                     for sq_item_dataset in data_elem.value:
                         self._dataset_stack.append(
-                            DatasetStackItem(sq_item_dataset, tag_id_string)
+                            DatasetStackItem(
+                                sq_item_dataset,
+                                tag_id.tag,
+                                self._dataset_stack[-1].stack,
+                            )
                         )
                         errors.update(
                             self._validate_attributes(attribute["items"], True)
@@ -354,14 +373,14 @@ class IODValidator:
         for module_name, module in modules.items():
             errors = self._validate_module(module, module_name, maybe_existing_modules)
             if errors:
-                self.errors.setdefault(module_name, {}).update(errors)
+                self.result.add_tag_errors(module_name, errors)
 
-    def _validate_attribute(self, tag_id, attribute):
+    def _validate_attribute(self, tag_id: DicomTag, attribute: dict) -> TagError | None:
         """Validate a single DICOM attribute according to its type.
 
         Parameters
         ----------
-        tag_id : int
+        tag_id : DicomTag
             The tag ID of the attribute.
         attribute : dict
             Contains the attribute type ("type"), and the optional condition ("cond")
@@ -373,32 +392,32 @@ class IODValidator:
         """
         attribute_type = attribute["type"]
         # ignore image data and larger tags for now - we don't read them
-        if tag_id >= 0x7FE00010:
-            return
-        has_tag = tag_id in self._dataset_stack[-1].dataset
+        if tag_id.tag >= 0x7FE00010:
+            return None
+        has_tag = tag_id.tag in self._dataset_stack[-1].dataset
+
+        error = TagError(attribute_type, context={})
         value_required = attribute_type in ("1", "1C")
-        condition_dict = None
         if attribute_type in ("1", "2"):
             tag_required, tag_allowed = True, True
         elif "cond" in attribute:
-            condition_dict = attribute["cond"]
+            error.context = error.context or {}
+            error.context["cond"] = attribute["cond"]
             tag_required, tag_allowed = self._object_is_required_or_allowed(
-                condition_dict
+                error.context["cond"]
             )
         else:
             tag_required, tag_allowed = False, True
-        error_kind = None
-        extra_msg = ""
         if not has_tag and tag_required:
-            error_kind = "missing"
+            error.code = ErrorCode.TagMissing
         elif has_tag and not tag_allowed:
-            error_kind = "not allowed"
+            error.code = ErrorCode.TagNotAllowed
         elif has_tag:
-            value = self._dataset_stack[-1].dataset[tag_id].value
-            vr = self._dataset_stack[-1].dataset[tag_id].VR
+            value = self._dataset_stack[-1].dataset[tag_id.tag].value
+            vr = self._dataset_stack[-1].dataset[tag_id.tag].VR
             if value_required:
                 if value is None or isinstance(value, (Sequence, str)) and not value:
-                    error_kind = "empty"
+                    error.code = ErrorCode.TagEmpty
             if value is not None and (not isinstance(value, str) or value):
                 if not isinstance(value, (MultiValue, list)):
                     value = [value]
@@ -410,30 +429,31 @@ class IODValidator:
                             if "index" in enums and int(enums["index"]) != i + 1:
                                 continue
                             if v not in enums["val"]:
-                                error_kind = "value is not allowed"
-                                extra_msg = (
-                                    f" (value: {v}, allowed: "
-                                    f"{', '.join([str(e) for e in enums['val']])})"
+                                error.code = ErrorCode.EnumValueNotAllowed
+                                error.context = error.context or {}
+                                error.context.update(
+                                    {"value": v, "allowed": enums["val"]}
                                 )
-                    if not self._suppress_vr_warnings and error_kind is None:
+                    if not self._suppress_vr_warnings and not error.is_error():
                         vv = str(v) if vr in ("DS", "IS") else v
                         try:
                             validate_value(vr, vv, config.RAISE)
-                        except Exception as _:
-                            error_kind = "conflicting with VR"
-                            extra_msg = f" (value: {vv}, VR: {vr})"
+                        except ValueError:
+                            error.code = ErrorCode.InvalidValue
+                            error.context = error.context or {}
+                            error.context.update({"value": vv, "VR": vr})
 
-        if error_kind is not None:
-            extra_msg = extra_msg or self._condition_message(condition_dict)
-            return self._incorrect_tag_message(tag_id, error_kind, extra_msg)
+        if error.is_error():
+            return error
+        return None
 
-    def _object_is_required_or_allowed(self, condition):
+    def _object_is_required_or_allowed(self, condition: dict):
         """Checks if an attribute is required or allowed in the current dataset,
          depending on the given condition.
 
         Parameters
         ----------
-        condition : str | Condition
+        condition : dict
             The condition or serialized condition defining if the object shall or
             may be present.
 
@@ -446,8 +466,6 @@ class IODValidator:
             False, True: the attribute is allowed but not required
             False, False: the attribute is not allowed.
         """
-        if isinstance(condition, str):
-            condition = json.loads(condition)
         condition_type = condition["type"]
         if ConditionType(condition_type).user_defined:
             return False, True
@@ -539,12 +557,12 @@ class IODValidator:
     # We return a dictionary, where the key is the module ref
     # and the value is the list of tags present in the dataset.
     #
-    def _get_maybe_existing_modules(self, modules):
+    def _get_maybe_existing_modules(self, modules) -> dict[str, set[DicomTag]]:
         maybe_existing_modules = {}
         for module in modules.values():
             module_info = self._get_module_info(module["ref"])
             existing_tags = self._get_existing_tags_of_module(module_info)
-            if len(existing_tags) != 0:
+            if existing_tags:
                 maybe_existing_modules[module["ref"]] = existing_tags
         return maybe_existing_modules
 
@@ -564,35 +582,31 @@ class IODValidator:
                 return False
         return True
 
-    def _get_existing_tags_of_module(self, module_info):
+    def _get_existing_tags_of_module(self, module_info) -> set[DicomTag]:
         existing_tag_ids = set()
         for tag_id_string in module_info:
             tag_id = self._tag_id(tag_id_string)
-            if tag_id in self._dataset_stack[-1].dataset:
+            if tag_id.tag in self._dataset_stack[-1].dataset:
                 existing_tag_ids.add(tag_id)
         return existing_tag_ids
 
     def _lookup_tag(self, tag_id):
         for stack_item in reversed(self._dataset_stack):
-            if tag_id in stack_item.dataset:
-                return stack_item.dataset[tag_id]
+            if tag_id.tag in stack_item.dataset:
+                return stack_item.dataset[tag_id.tag]
         return None
 
     def _tag_exists(self, tag_id):
         return self._lookup_tag(tag_id) is not None
 
-    @staticmethod
-    def _tag_id(tag_id_string):
+    def _tag_id(self, tag_id_string) -> DicomTag:
         group, element = tag_id_string[1:-1].split(",")
         # workaround for repeating tags -> special handling needed
         if group.endswith("xx"):
             group = group[:2] + "00"
-        return (int(group, 16) << 16) + int(element, 16)
 
-    @staticmethod
-    def _tag_id_string(tag_id):
-        tag = Tag(tag_id)
-        return str(tag).replace(" ", "")
+        parents = [(d.tag or 0) for d in self._dataset_stack[1:]] or None
+        return DicomTag((int(group, 16) << 16) + int(element, 16), parents)
 
     def _tag_matches(self, tag_value, operator, values):
         try:
@@ -641,47 +655,11 @@ class IODValidator:
                 expanded_mod_info[k] = v
         return expanded_mod_info
 
-    def _log_module_required(self, module_name, required, allowed, condition_dict):
-        msg = f'Module "{module_name}" is '
-        msg += "required" if required else "optional" if allowed else "not allowed"
-        if condition_dict:
-            msg += self._condition_message(condition_dict)
-        self.logger.debug(msg)
-
     def _unexpected_tag_errors(self):
         errors = {}
         for tag_id in self._dataset_stack[-1].unexpected_tags:
-            message = self._incorrect_tag_message(tag_id, "unexpected")
-            errors.setdefault(message, []).append(self._tag_id_string(tag_id))
+            errors[tag_id] = TagError(TagType.Undefined, ErrorCode.TagUnexpected)
         return errors
-
-    def _tag_context_message(self):
-        if len(self._dataset_stack) > 1:
-            m = " > ".join([item.name for item in self._dataset_stack])
-            context = f" in {m}"
-            return context
-        return ""
-
-    def _incorrect_tag_message(self, tag_id, error_kind, extra_message=""):
-        tag_name = tag_name_from_id(tag_id, self._dicom_info.dictionary)
-        if " is " not in error_kind:
-            error_kind = f"is {error_kind}"
-        msg = f"Tag {tag_name} {error_kind}{self._tag_context_message()}"
-        if len(extra_message) != 0:
-            msg = f"{msg} {extra_message}"
-        return msg
-
-    def _condition_message(self, condition_dict):
-        if condition_dict is None:
-            return ""
-        msg = ""
-        condition = Condition.read_condition(condition_dict)
-        if condition.type != ConditionType.UserDefined:
-            msg += (
-                f"due to condition:\n  "
-                f"'{condition.to_string(self._dicom_info.dictionary)}'"
-            )
-        return msg
 
     # For debugging
     @staticmethod

@@ -7,6 +7,7 @@ from pydicom import dcmwrite
 from pydicom.dataset import Dataset, FileDataset, FileMetaDataset
 
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
+from dicom_validator.validator.validation_result import Status, DicomTag, ErrorCode
 
 pytestmark = pytest.mark.usefixtures("disable_logging")
 
@@ -40,20 +41,21 @@ class TestFakeDicomFileValidator:
             else {"enforce_file_format": True}
         )
 
-    def assert_fatal_error(self, validator, filename, error_string):
-        error_dict = validator.validate(filename)
-        assert len(error_dict) == 1
-        name = list(error_dict.keys())[0]
-        assert filename == name
-        errors = error_dict[name]
-        assert errors == {"fatal": error_string}
+    @staticmethod
+    def assert_fatal_error(validator, filename, error_code):
+        result_dict = validator.validate(filename)
+        assert len(result_dict) == 1
+        assert filename in result_dict
+        result = result_dict[filename]
+        assert result.status == error_code
+        assert result.errors == 1
 
     def test_non_existing_file(self, validator):
-        self.assert_fatal_error(validator, "non_existing", error_string="File missing")
+        self.assert_fatal_error(validator, "non_existing", Status.MissingFile)
 
     def test_invalid_file(self, fs, validator):
         fs.create_file("test", contents="invalid")
-        self.assert_fatal_error(validator, "test", error_string="Invalid DICOM file")
+        self.assert_fatal_error(validator, "test", Status.InvalidFile)
 
     def test_missing_sop_class(self, validator):
         filename = "test.dcm"
@@ -61,16 +63,14 @@ class TestFakeDicomFileValidator:
             filename, Dataset(), file_meta=self.create_metadata()
         )
         dcmwrite(filename, file_dataset, **self.enforce_file_format())
-        self.assert_fatal_error(validator, filename, "Missing SOPClassUID")
+        self.assert_fatal_error(validator, filename, Status.MissingSOPClassUID)
 
     def test_unknown_sop_class(self, validator):
         dataset = Dataset()
         dataset.SOPClassUID = "Unknown"
         file_dataset = FileDataset("test", dataset, file_meta=self.create_metadata())
         dcmwrite("test", file_dataset, **self.enforce_file_format())
-        self.assert_fatal_error(
-            validator, "test", "Unknown SOPClassUID (probably retired): Unknown"
-        )
+        self.assert_fatal_error(validator, "test", Status.UnknownSOPClassUID)
 
     def test_validate_dir(self, fs, validator):
         fs.create_dir(os.path.join("foo", "bar", "baz"))
@@ -91,17 +91,20 @@ class TestFakeDicomFileValidator:
         dcmwrite("test", file_dataset, **self.enforce_file_format())
         error_dict = validator.validate("test")
         assert len(error_dict) == 1
-        errors = error_dict["test"]
-        assert "fatal" not in errors
+        result = error_dict["test"]
+        assert result.status == Status.Failed
 
 
-def test_that_pixeldata_is_read(dicom_fixture_path, validator):
+def test_that_pixeldata_is_read(dicom_fixture_path, validator: DicomFileValidator):
     # regression test for #6
     rtdose_path = dicom_fixture_path / "rtdose.dcm"
-    error_dict = validator.validate(rtdose_path)
-    assert len(error_dict) == 1
-    results = error_dict[rtdose_path]
-    assert "RT Series" in results
-    assert "Tag (0008,1070) (Operators' Name) is missing" in results["RT Series"]
+    result_dict = validator.validate(rtdose_path)
+    assert len(result_dict) == 1
+    result = result_dict[str(rtdose_path)]
+    assert result.module_errors is not None
+    assert "RT Series" in result.module_errors
+    oper_name_error = result.module_errors["RT Series"].get(DicomTag(0x0008_1070))
+    assert oper_name_error is not None
+    assert oper_name_error.code == ErrorCode.TagMissing
     # if PixelData is not read, RT Dose will show errors
-    assert "RT Dose" not in results
+    assert "RT Dose" not in result.module_errors

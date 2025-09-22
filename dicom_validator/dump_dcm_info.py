@@ -13,7 +13,7 @@ from pydicom import config, dcmread, Dataset, DataElement
 from pydicom.errors import InvalidDicomError
 
 from dicom_validator.spec_reader.edition_reader import EditionReader
-from dicom_validator.validator.iod_validator import DicomInfo
+from dicom_validator.validator.dicom_info import DicomInfo
 
 
 class DataElementDumper:
