@@ -48,9 +48,9 @@ jobs:
         run: |
           if [[ '${{ matrix.os }}' == 'ubuntu-latest' && '${{ matrix.python-version }}' == '3.13' ]]
           then
-            python -m pytest -n 2 --cov-append --cov=dicom_validator --cov-config=.coveragerc dicom_validator/tests/test_cmdline_tools.py
+            python -m pytest -n 0 --cov-append --cov=dicom_validator --cov-config=.coveragerc dicom_validator/tests/test_cmdline_tools.py
           else
-            python -m pytest -n 2 dicom_validator/tests/test_cmdline_tools.py
+            python -m pytest -n 0 dicom_validator/tests/test_cmdline_tools.py
           fi
 
       - name: Run spec-reader and validator tests
