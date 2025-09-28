@@ -7,7 +7,7 @@ import pytest
 from dicom_validator.spec_reader.edition_reader import EditionReader
 from dicom_validator.validator.iod_validator import DicomInfo
 
-CURRENT_REVISION = "2025c"
+CURRENT_REVISION = "2025d"
 
 
 def pytest_configure(config):

@@ -18,6 +18,7 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 ### Infrastructure
 * added Python 3.14 to CI (currently needs development version of `pydicom`)
 * removed support for Python 3.9
+* updated the tests for current DICOM version 2025d
 
 ## [Version 0.7.2](https://pypi.python.org/pypi/dicom-validator/0.7.2) (2025-08-16)
 Fixes parsing of some newer IODs and group macros.
