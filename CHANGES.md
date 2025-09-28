@@ -8,6 +8,9 @@ The released versions correspond to PyPi releases.
   * sequences defined recursively in the standard are now supported
   * conditions for including macros inside a sequence are now evaluated on the correct level
 
+### Infrastructure
+* updated the tests for current DICOM version 2025d
+
 ## [Version 0.7.2](https://pypi.python.org/pypi/dicom-validator/0.7.2) (2025-08-16)
 Fixes parsing of some newer IODs and group macros.
 

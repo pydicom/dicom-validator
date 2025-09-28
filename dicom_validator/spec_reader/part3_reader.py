@@ -212,9 +212,9 @@ class Part3Reader(SpecReader):
         include_node = self._find(columns[0], ["para", "emphasis", "xref"])
         if include_node is None:
             description = self._find_text(columns[0])
-            is_func_group = (
-                description
-                and "Include one or more Functional Group Macros" in description
+            is_func_group = description and (
+                "Include one or more Functional Group Macros" in description
+                or "Include zero or more Functional Group Macros" in description
             )
             if is_func_group:
                 # add a placeholder - has to be evaluated at validation time
