@@ -1,7 +1,7 @@
 import enum
 from dataclasses import dataclass
 
-from dicom_validator.tag_tools import tag_id_string
+from pydicom.tag import BaseTag
 
 
 class ErrorCode(enum.Enum):
@@ -53,19 +53,32 @@ class Status(enum.Enum):
 class DicomTag:
     """Represents a DICOM tag together with parent sequences, if any."""
 
-    tag: int
-    parents: list[int] | None = None
+    tag: BaseTag
+    parents: list[BaseTag] | None = None
 
     def __hash__(self):
-        return hash(self.tag)
+        return hash(self.tag + (sum(self.parents) if self.parents else 0))
 
     def __str__(self):
         """String representation for easier debugging."""
         if self.parents:
-            s = " / ".join(tag_id_string(tag) for tag in self.parents) + " / "
+            s = " / ".join(str(tag) for tag in self.parents) + " / "
         else:
             s = ""
-        return s + tag_id_string(self.tag)
+        return s + str(self.tag)
+
+    def __lt__(self, other):
+        """Comparison operator. Makes sure that tags with the
+        same parent sequences are ordered adjacently."""
+        if self.parents:
+            if other.parents:
+                if self.parents == other.parents:
+                    return self.tag < other.tag
+                return self.parents < other.parents
+            return self.parents[0] < other.tag
+        if other.parents:
+            return self.tag < other.parents[0]
+        return self.tag < other.tag
 
 
 @dataclass

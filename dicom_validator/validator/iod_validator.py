@@ -2,9 +2,11 @@ import json
 import logging
 import sys
 from dataclasses import dataclass
+from typing import Any, cast
 
-from pydicom import config, Sequence, Dataset
+from pydicom import config, Sequence, Dataset, DataElement
 from pydicom.multival import MultiValue
+from pydicom.tag import BaseTag, Tag
 from pydicom.valuerep import validate_value
 
 from dicom_validator.spec_reader.condition import (
@@ -30,8 +32,11 @@ from dicom_validator.validator.validation_result import (
 
 class DatasetStackItem:
     def __init__(
-        self, dataset: Dataset, tag: int | None = None, stack: list[int] | None = None
-    ):
+        self,
+        dataset: Dataset,
+        tag: BaseTag | None = None,
+        stack: list[BaseTag] | None = None,
+    ) -> None:
         self.dataset = dataset
         self.tag = tag
         self.stack = stack
@@ -41,7 +46,9 @@ class DatasetStackItem:
             else:
                 self.stack = stack[:] + [tag]
         self.unexpected_tags = {
-            DicomTag(d.tag, self.stack) for d in dataset if not d.tag.is_private
+            DicomTag(Tag(d.tag), self.stack)
+            for d in dataset
+            if not Tag(d.tag).is_private
         }
 
 
@@ -55,7 +62,7 @@ class FunctionalGroupInfo:
     shared_results: dict  # the result of the shared group validation
     checked_modules: set  # the names of already validated macro modules
 
-    def clear(self):
+    def clear(self) -> None:
         self.shared_results.clear()
         self.checked_modules.clear()
 
@@ -128,7 +135,7 @@ class IODValidator:
         log_level: int = logging.INFO,
         suppress_vr_warnings: bool = False,
         error_handler: ValidationResultHandler | None = None,
-    ):
+    ) -> None:
         """Create an IODValidator instance.
 
         Parameters
@@ -200,10 +207,10 @@ class IODValidator:
 
     def _validate_module(
         self,
-        module: dict[str, dict],
+        module: dict[str, dict | str],
         module_name: str,
         maybe_existing_modules: dict[str, set[DicomTag]],
-        group_macros=None,
+        group_macros: dict[str, dict[str, dict]] | None = None,
     ) -> TagErrors:
         """Validate the given module.
 
@@ -231,8 +238,10 @@ class IODValidator:
         The dictionary of found errors.
         """
         usage = module["use"]
-        module_info = self._get_module_info(module["ref"], group_macros)
-        condition = module["cond"] if "cond" in module else None
+        module_info = self._get_module_info(cast(str, module["ref"]), group_macros)
+        condition: dict[str, dict] | None = None
+        if "cond" in module:
+            condition = cast(dict[str, dict], module["cond"])
         is_shared = False
         is_per_frame = False
         if group_macros is None:
@@ -292,7 +301,7 @@ class IODValidator:
         # So, let's see if it exists "strongly" enough to be considered
         # for further checks.
         if maybe_existing_modules and not self._does_module_strongly_exist(
-            module["ref"], maybe_existing_modules
+            cast(str, module["ref"]), maybe_existing_modules
         ):
             return {}
 
@@ -308,14 +317,16 @@ class IODValidator:
         return self._validate_attributes(module_info, False)
 
     @property
-    def _in_per_frame_group(self):
+    def _in_per_frame_group(self) -> bool:
         return self._dataset_stack[-1].tag == 0x5200_9230
 
     @property
-    def _in_shared_group(self):
+    def _in_shared_group(self) -> bool:
         return self._dataset_stack[-1].tag == 0x5200_9229
 
-    def _validate_attributes(self, attributes, report_unexpected_tags) -> TagErrors:
+    def _validate_attributes(
+        self, attributes: dict, report_unexpected_tags: bool
+    ) -> TagErrors:
         """Validate the given attributes according to their type.
         Parameters
         ----------
@@ -366,7 +377,9 @@ class IODValidator:
 
         return errors
 
-    def _validate_func_group_modules(self, modules):
+    def _validate_func_group_modules(
+        self, modules: dict[str, dict[str, dict | str]]
+    ) -> None:
         if self._in_shared_group:
             self._func_group_info.clear()
         maybe_existing_modules = self._get_maybe_existing_modules(modules)
@@ -447,7 +460,7 @@ class IODValidator:
             return error
         return None
 
-    def _object_is_required_or_allowed(self, condition: dict):
+    def _object_is_required_or_allowed(self, condition: dict[str, Any]):
         """Checks if an attribute is required or allowed in the current dataset,
          depending on the given condition.
 
@@ -481,7 +494,7 @@ class IODValidator:
         )
         return False, allowed
 
-    def _composite_object_matches_condition(self, condition):
+    def _composite_object_matches_condition(self, condition: dict[str, Any]):
         """Checks if an attribute matches the given composite condition.
 
         Parameters
@@ -508,7 +521,7 @@ class IODValidator:
             matches = self._matches_condition(condition)
         return matches
 
-    def _matches_condition(self, condition):
+    def _matches_condition(self, condition: dict[str, Any]) -> bool:
         """Checks if an attribute matches the given condition.
 
         Parameters
@@ -523,21 +536,22 @@ class IODValidator:
         """
         tag_id = self._tag_id(condition["tag"])
         tag_value = None
-        operator = condition["op"]
+        operator = ConditionOperator(condition["op"])
         if operator == ConditionOperator.Present:
             return self._tag_exists(tag_id)
         elif operator == ConditionOperator.Absent:
             return not self._tag_exists(tag_id)
         elif self._tag_exists(tag_id):
-            tag = self._lookup_tag(tag_id)
+            data_element = self._lookup_tag(tag_id)
+            assert data_element is not None
             index = condition["index"]
             if index > 0:
-                if index <= tag.VM:
-                    tag_value = tag.value[index - 1]
-            elif tag.VM > 1:
-                tag_value = tag.value[0]
+                if index <= data_element.VM:
+                    tag_value = data_element.value[index - 1]
+            elif data_element.VM > 1:
+                tag_value = data_element.value[0]
             else:
-                tag_value = tag.value
+                tag_value = data_element.value
             if tag_value is None:
                 return False
             if operator == ConditionOperator.NotEmpty:
@@ -557,7 +571,9 @@ class IODValidator:
     # We return a dictionary, where the key is the module ref
     # and the value is the list of tags present in the dataset.
     #
-    def _get_maybe_existing_modules(self, modules) -> dict[str, set[DicomTag]]:
+    def _get_maybe_existing_modules(
+        self, modules: dict[str, dict]
+    ) -> dict[str, set[DicomTag]]:
         maybe_existing_modules = {}
         for module in modules.values():
             module_info = self._get_module_info(module["ref"])
@@ -572,7 +588,9 @@ class IODValidator:
     # that are not present in any of the other maybe-existing modules.
     #
     @staticmethod
-    def _does_module_strongly_exist(a_module_ref, maybe_existing_modules):
+    def _does_module_strongly_exist(
+        a_module_ref: str, maybe_existing_modules: dict[str, set[DicomTag]]
+    ) -> bool:
         a_tags = maybe_existing_modules[a_module_ref]
         for b_ref, b_tags in maybe_existing_modules.items():
             if b_ref == a_module_ref:
@@ -582,7 +600,9 @@ class IODValidator:
                 return False
         return True
 
-    def _get_existing_tags_of_module(self, module_info) -> set[DicomTag]:
+    def _get_existing_tags_of_module(
+        self, module_info: dict[str, dict]
+    ) -> set[DicomTag]:
         existing_tag_ids = set()
         for tag_id_string in module_info:
             tag_id = self._tag_id(tag_id_string)
@@ -590,25 +610,27 @@ class IODValidator:
                 existing_tag_ids.add(tag_id)
         return existing_tag_ids
 
-    def _lookup_tag(self, tag_id):
+    def _lookup_tag(self, tag_id: DicomTag) -> DataElement | None:
         for stack_item in reversed(self._dataset_stack):
             if tag_id.tag in stack_item.dataset:
                 return stack_item.dataset[tag_id.tag]
         return None
 
-    def _tag_exists(self, tag_id):
+    def _tag_exists(self, tag_id: DicomTag) -> bool:
         return self._lookup_tag(tag_id) is not None
 
-    def _tag_id(self, tag_id_string) -> DicomTag:
+    def _tag_id(self, tag_id_string: str) -> DicomTag:
         group, element = tag_id_string[1:-1].split(",")
         # workaround for repeating tags -> special handling needed
         if group.endswith("xx"):
             group = group[:2] + "00"
 
         parents = [(d.tag or 0) for d in self._dataset_stack[1:]] or None
-        return DicomTag((int(group, 16) << 16) + int(element, 16), parents)
+        return DicomTag(BaseTag((int(group, 16) << 16) + int(element, 16)), parents)
 
-    def _tag_matches(self, tag_value, operator, values):
+    def _tag_matches(
+        self, tag_value: Any, operator: ConditionOperator, values: list
+    ) -> bool:
         try:
             values = [type(tag_value)(value) for value in values]
         except ValueError:
@@ -627,13 +649,20 @@ class IODValidator:
             return tag_value in values
         return False
 
-    def _get_module_info(self, module_ref, group_macros=None):
+    def _get_module_info(
+        self, module_ref: str, group_macros: dict[str, dict[str, dict]] | None = None
+    ) -> dict[str, dict]:
         return self._expanded_module_info(
-            self._dicom_info.modules[module_ref], group_macros
+            module_ref, self._dicom_info.modules[module_ref], group_macros
         )
 
-    def _expanded_module_info(self, module_info, group_macros):
-        expanded_mod_info = {}
+    def _expanded_module_info(
+        self,
+        module_ref: str,
+        module_info: dict[str, dict],
+        group_macros: dict[str, dict[str, dict]] | None,
+    ):
+        expanded_mod_info: dict[str, dict | str] = {}
         for k, v in module_info.items():
             if k == "include":
                 for info in module_info["include"]:
@@ -650,12 +679,14 @@ class IODValidator:
                             self._get_module_info(ref, group_macros)
                         )
             elif isinstance(v, dict):
-                expanded_mod_info[k] = self._expanded_module_info(v, group_macros)
+                expanded_mod_info[k] = self._expanded_module_info(
+                    module_ref, v, group_macros
+                )
             else:
                 expanded_mod_info[k] = v
         return expanded_mod_info
 
-    def _unexpected_tag_errors(self):
+    def _unexpected_tag_errors(self) -> dict[DicomTag, TagError]:
         errors = {}
         for tag_id in self._dataset_stack[-1].unexpected_tags:
             errors[tag_id] = TagError(TagType.Undefined, ErrorCode.TagUnexpected)

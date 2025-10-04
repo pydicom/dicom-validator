@@ -1,6 +1,8 @@
 import enum
 from typing import Optional, Any, Union
 
+from pydicom.tag import BaseTag
+
 from dicom_validator.tag_tools import tag_name_from_id
 
 
@@ -246,7 +248,9 @@ class Condition:
         elif self.operator == ConditionOperator.Absent:
             result += " is not present"
         elif self.operator == ConditionOperator.EqualsTag:
-            result += f" points to {tag_name_from_id(int(self.values[0]), dict_info)}"
+            result += (
+                f" points to {tag_name_from_id(BaseTag(self.values[0]), dict_info)}"
+            )
         elif not self.values:
             # if no values are found here, we have some unhandled condition
             # and ignore it for the time being
