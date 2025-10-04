@@ -2,6 +2,8 @@ import logging
 from abc import abstractmethod
 from typing import Protocol
 
+from pydicom.tag import BaseTag
+
 from dicom_validator.spec_reader.condition import Condition, ConditionType
 from dicom_validator.tag_tools import tag_name_from_id
 from dicom_validator.validator.dicom_info import DicomInfo
@@ -76,29 +78,42 @@ class ValidationResultHandlerBase(ValidationResultHandler):
         Called after the validation result have been handled."""
         pass
 
-    def handle_module_errors(self, module_name: str, tag_errors: TagErrors):
+    def handle_module_errors(self, module_name: str, tag_errors: TagErrors) -> None:
         """Called to handle the errors in a single module.
         Only calls other methods that may contain the actual handling.
         """
         self.handle_module_errors_start(module_name, tag_errors)
-        for tag_id, tag_error in tag_errors.items():
+        error_items = sorted(tag_errors.items(), key=lambda x: x[0])
+        parents: list[BaseTag] = []
+        for tag_id, tag_error in error_items:
+            if tag_id.parents and tag_id.parents != parents:
+                parents = tag_id.parents
+                self.handle_tag_parents(parents)
             self.handle_tag_error(tag_id, tag_error)
         self.handle_module_errors_end(module_name, tag_errors)
 
-    def handle_module_errors_start(self, module_name: str, tag_errors: TagErrors):
+    def handle_module_errors_start(
+        self, module_name: str, tag_errors: TagErrors
+    ) -> None:
         """Placeholder method.
         Called before the errors for a single module are handled."""
         pass
 
-    def handle_module_errors_end(self, module_name: str, tag_errors: TagErrors):
+    def handle_module_errors_end(self, module_name: str, tag_errors: TagErrors) -> None:
         """Placeholder method.
         Called after the errors for a single module are handled."""
         pass
 
-    def handle_tag_error(self, tag_id: DicomTag, error: TagError):
+    def handle_tag_error(self, tag_id: DicomTag, error: TagError) -> None:
         """Placeholder method.
         Called to handle a single tag error. The actual error handling
         (logging, recording) shall be implemented here."""
+        pass
+
+    def handle_tag_parents(self, parents: list[int]) -> None:
+        """Placeholder method.
+        Called to handle parent sequence tags. Is called once
+        for one or more tag errors with the same parent sequences."""
         pass
 
 
@@ -107,11 +122,11 @@ class LoggingResultHandler(ValidationResultHandlerBase):
     by logging all errors.
     """
 
-    def __init__(self, dicom_info: DicomInfo, logger: logging.Logger):
+    def __init__(self, dicom_info: DicomInfo, logger: logging.Logger) -> None:
         self.dicom_info = dicom_info
         self.logger = logger
 
-    def handle_validation_start(self, result: ValidationResult):
+    def handle_validation_start(self, result: ValidationResult) -> None:
         iod_info = self.dicom_info.iods[result.sop_class_uid]
         self.logger.info(
             'SOP class is "%s" (%s)', result.sop_class_uid, iod_info["title"]
@@ -119,34 +134,36 @@ class LoggingResultHandler(ValidationResultHandlerBase):
         self.logger.debug("Checking modules for SOP Class")
         self.logger.debug("------------------------------")
 
-    def handle_module_errors_start(self, module_name: str, tag_errors: TagErrors):
+    def handle_module_errors_start(
+        self, module_name: str, tag_errors: TagErrors
+    ) -> None:
         self.logger.warning(f'\nModule "{module_name}":')
 
-    def handle_tag_error(self, tag_id: DicomTag, error: TagError):
-        msg = ""
-        indent = 0
-        if tag_id.parents:
-            indent += 1
-            msg = (
-                " / ".join(
-                    tag_name_from_id(tag, self.dicom_info.dictionary)
-                    for tag in tag_id.parents
-                )
-                + ":\n"
+    def handle_tag_parents(self, parents: list[BaseTag]) -> None:
+        self.logger.warning(
+            " / ".join(
+                tag_name_from_id(tag, self.dicom_info.dictionary) for tag in parents
             )
+            + ":"
+        )
+
+    def handle_tag_error(self, tag_id: DicomTag, error: TagError) -> None:
+        indent = 1 if tag_id.parents else 0
         tag_name = tag_name_from_id(tag_id.tag, self.dicom_info.dictionary)
-        msg += f"{'  ' * indent}Tag {tag_name}{self.error_message(error, indent)}"
+        msg = f"{'  ' * indent}Tag {tag_name}{self.error_message(error, indent)}"
         self.logger.warning(msg)
 
-    def handle_validation_result_start(self, validation_result: ValidationResult):
+    def handle_validation_result_start(
+        self, validation_result: ValidationResult
+    ) -> None:
         if validation_result.errors:
             self.logger.info("\nErrors\n======")
 
-    def handle_validation_result_end(self, validation_result: ValidationResult):
+    def handle_validation_result_end(self, validation_result: ValidationResult) -> None:
         if validation_result.errors:
             self.logger.info("\n======")
 
-    def handle_failed_validation_start(self, result: ValidationResult):
+    def handle_failed_validation_start(self, result: ValidationResult) -> None:
         match result.status:
             case Status.MissingSOPClassUID:
                 msg = "Missing SOP Class UID"
@@ -156,7 +173,7 @@ class LoggingResultHandler(ValidationResultHandlerBase):
                 msg = "Unknown error"
         self.logger.error(f"{msg} - aborting")
 
-    def error_message(self, error: TagError, indent) -> str:
+    def error_message(self, error: TagError, indent: int) -> str:
         match error.scope:
             case ErrorScope.SharedFuncGroup:
                 postfix = " in Shared Group"

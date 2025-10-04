@@ -182,8 +182,8 @@ class TestIODValidatorFuncGroups:
 
         messages = [rec.message for rec in caplog.records]
         assert '\nModule "Irradiation Event Identification":' in messages
+        assert "(5200,9229) (Shared Functional Groups Sequence):" in messages
         assert (
-            "(5200,9229) (Shared Functional Groups Sequence):\n"
             "  Tag (0018,9477) (Irradiation Event Identification Sequence) is missing"
             in messages
         )
@@ -203,10 +203,10 @@ class TestIODValidatorFuncGroups:
 
         messages = [rec.message for rec in caplog.records]
         assert '\nModule "Frame Anatomy":' in messages
+        assert "(5200,9230) (Per-Frame Functional Groups Sequence):" in messages
         assert (
-            "(5200,9230) (Per-Frame Functional Groups Sequence):\n"
-            "  Tag (0020,9071) (Frame Anatomy Sequence) is not allowed in both Shared and Per-Frame Groups"
-            in messages
+            "  Tag (0020,9071) (Frame Anatomy Sequence) is not allowed "
+            "in both Shared and Per-Frame Groups" in messages
         )
 
     @pytest.mark.shared_macros([FRAME_CONTENT])
@@ -240,8 +240,8 @@ class TestIODValidatorFuncGroups:
 
         messages = [rec.message for rec in caplog.records]
         assert '\nModule "Frame Content":' in messages
+        assert "(5200,9229) (Shared Functional Groups Sequence):" in messages
         assert (
-            "(5200,9229) (Shared Functional Groups Sequence):\n"
             "  Tag (0020,9111) (Frame Content Sequence) is not allowed in Shared Group"
             in messages
         )
@@ -259,8 +259,8 @@ class TestIODValidatorFuncGroups:
 
         messages = [rec.message for rec in caplog.records]
         assert '\nModule "Pixel Measures":' in messages
+        assert "(5200,9230) (Per-Frame Functional Groups Sequence):" in messages
         assert (
-            "(5200,9230) (Per-Frame Functional Groups Sequence):\n"
             "  Tag (0028,9110) (Pixel Measures Sequence) is not allowed in Per-Frame Group"
             in messages
         )
