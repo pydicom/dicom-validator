@@ -341,7 +341,6 @@ class IODValidator:
         The dictionary of found errors.
         """
         errors = TagErrors()
-
         for tag_id_string, attribute in attributes.items():
             if tag_id_string == "modules":
                 self._validate_func_group_modules(attribute)
@@ -367,9 +366,21 @@ class IODValidator:
                                 self._dataset_stack[-1].stack,
                             )
                         )
-                        errors.update(
-                            self._validate_attributes(attribute["items"], True)
+                        # the item attributes are only created at this point,
+                        # where we have descended into the related sequence item level
+                        item_attribute = attribute["items"]
+                        if "group_macros" in item_attribute:
+                            group_macros = item_attribute["group_macros"]
+                            items = item_attribute["items"]
+                        else:
+                            group_macros = None
+                            items = item_attribute
+                        item_attributes = self._expanded_module_info(
+                            items,
+                            group_macros,
+                            expand_items=True,
                         )
+                        errors.update(self._validate_attributes(item_attributes, True))
                         self._dataset_stack.pop()
 
         if report_unexpected_tags:
@@ -601,7 +612,7 @@ class IODValidator:
         return True
 
     def _get_existing_tags_of_module(
-        self, module_info: dict[str, dict]
+        self, module_info: dict[str, dict | str]
     ) -> set[DicomTag]:
         existing_tag_ids = set()
         for tag_id_string in module_info:
@@ -626,7 +637,7 @@ class IODValidator:
             group = group[:2] + "00"
 
         parents = [(d.tag or 0) for d in self._dataset_stack[1:]] or None
-        return DicomTag(BaseTag((int(group, 16) << 16) + int(element, 16)), parents)
+        return DicomTag((int(group, 16) << 16) + int(element, 16), parents)
 
     def _tag_matches(
         self, tag_value: Any, operator: ConditionOperator, values: list
@@ -650,18 +661,20 @@ class IODValidator:
         return False
 
     def _get_module_info(
-        self, module_ref: str, group_macros: dict[str, dict[str, dict]] | None = None
-    ) -> dict[str, dict]:
+        self,
+        module_ref: str,
+        group_macros: dict[str, dict[str, dict]] | None = None,
+    ) -> dict[str, dict | str]:
         return self._expanded_module_info(
-            module_ref, self._dicom_info.modules[module_ref], group_macros
+            self._dicom_info.modules[module_ref], group_macros
         )
 
     def _expanded_module_info(
         self,
-        module_ref: str,
         module_info: dict[str, dict],
         group_macros: dict[str, dict[str, dict]] | None,
-    ):
+        expand_items: bool = False,
+    ) -> dict[str, dict | str]:
         expanded_mod_info: dict[str, dict | str] = {}
         for k, v in module_info.items():
             if k == "include":
@@ -678,10 +691,14 @@ class IODValidator:
                         expanded_mod_info.update(
                             self._get_module_info(ref, group_macros)
                         )
+            elif not expand_items and k == "items":
+                # we shall not create the item attributes at this point, because
+                # they may have conditions that refer to item inside the sequence,
+                # and we are currently at a higher dataset level
+                # instead, we save the information needed to create them lazily
+                expanded_mod_info[k] = {"items": v, "group_macros": group_macros}
             elif isinstance(v, dict):
-                expanded_mod_info[k] = self._expanded_module_info(
-                    module_ref, v, group_macros
-                )
+                expanded_mod_info[k] = self._expanded_module_info(v, group_macros)
             else:
                 expanded_mod_info[k] = v
         return expanded_mod_info

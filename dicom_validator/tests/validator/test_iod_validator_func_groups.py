@@ -29,6 +29,12 @@ def new_data_set(shared_macros, per_frame_macros):
     data_set.ContentDate = "20000101"
     data_set.ContentTime = "120000"
     data_set.NumberOfFrames = "3"
+    mask_subtraction_seq = Sequence()
+    item = Dataset()
+    item.MaskOperation = "AVG_SUB"
+    mask_subtraction_seq.append(item)
+    data_set.MaskSubtractionSequence = mask_subtraction_seq
+
     shared_groups = Sequence()
     if shared_macros:
         item = Dataset()
@@ -179,6 +185,11 @@ class TestIODValidatorFuncGroups:
         assert not has_tag_error(
             result, "Referenced Image", 0x0008_1140, ErrorCode.TagMissing
         )
+
+        # Subtraction Item ID, required because of the SOP Class UID value (in dataset root)
+        assert has_tag_error(result, "Mask", 0x0028_9416, ErrorCode.TagMissing)
+        # Mask Frame Numbers, required because Mask Operation (inside the sequence item) is AVG_SUB
+        assert has_tag_error(result, "Mask", 0x0028_6110, ErrorCode.TagMissing)
 
         messages = [rec.message for rec in caplog.records]
         assert '\nModule "Irradiation Event Identification":' in messages

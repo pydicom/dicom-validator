@@ -15,10 +15,10 @@ from dicom_validator.validator.validation_result import Status, ErrorCode
 pytestmark = pytest.mark.usefixtures("disable_logging")
 
 
-def new_data_set(tags, ds: Dataset | None = None):
+def new_data_set(tags, *, top_level: bool = True):
     """Create a DICOM data set with the given attributes"""
     tags = tags or {}
-    data_set = ds or Dataset()
+    data_set = Dataset()
     if not tags:
         return data_set
     for tag, value in tags.items():
@@ -30,9 +30,13 @@ def new_data_set(tags, ds: Dataset | None = None):
         if vr == "SQ":
             items = []
             for item_tags in value:
-                items.append(new_data_set(item_tags, data_set))
+                items.append(new_data_set(item_tags, top_level=False))
             value = Sequence(items)
         data_set[tag] = DataElement(tag, vr, value)
+    if not top_level:
+        # this is a sequence item
+        return data_set
+
     # write the dataset into a file and read it back to ensure the real behavior
     if "SOPInstanceUID" not in data_set:
         data_set.SOPInstanceUID = "1.2.3"
@@ -759,3 +763,38 @@ class TestIODValidator:
             "values": ["closed"],
         }
         assert validator.validate()
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.ComprehensiveSRStorage,
+            "ValueType": "CONTAINER",
+            "ContinuityOfContent": "SEPARATE",
+            "ContentSequence": [
+                {
+                    "RelationshipType": "CONTAINS",
+                    "ValueType": "CONTAINER",
+                    "ContinuityOfContent": "SEPARATE",
+                    "ContentSequence": [
+                        {
+                            "RelationshipType": "HAS OBS CONTEXT",
+                            "ValueType": "UIDREF",
+                        }
+                    ],
+                }
+            ],
+        }
+    )
+    def test_recursive_reference(self, validator):
+        # regression test for #206
+        # Content Sequence (0040,A730) is defined recursively in SR Document Content
+        # and is allowed inside another Content Sequence item
+        result = validator.validate()
+        assert not has_tag_error(
+            result, "SR Document Content", 0x0040_A730, ErrorCode.TagUnexpected
+        )
+        # Continuity Of Content (0040,A050) is present with ValueType "CONTAINER",
+        # but not with ValueType "UIDREF";
+        # this is correct, so no error shall be shown for Continuity Of Content
+        assert not has_tag_error(
+            result, "SR Document Content", 0x0040_A050, ErrorCode.TagMissing
+        )

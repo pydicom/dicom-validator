@@ -17,6 +17,9 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 ### Fixes
 * tags not allowed in multi-frame functional groups have been listed
   as errors twice (see [#196](../../issues/196))
+* fixes to correctly evaluate SR documents (see [#206](../../issues/206)):
+  * sequences defined recursively in the standard are now supported
+  * conditions for including macros inside a sequence are now evaluated on the correct level
 
 ### Infrastructure
 * added Python 3.14 to CI (currently needs development version of `pydicom`)
