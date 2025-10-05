@@ -21,6 +21,12 @@ def new_data_set(shared_macros, per_frame_macros):
     data_set.ContentDate = "20000101"
     data_set.ContentTime = "120000"
     data_set.NumberOfFrames = "3"
+    mask_subtraction_seq = Sequence()
+    item = Dataset()
+    item.MaskOperation = "AVG_SUB"
+    mask_subtraction_seq.append(item)
+    data_set.MaskSubtractionSequence = mask_subtraction_seq
+
     shared_groups = Sequence()
     if shared_macros:
         item = Dataset()
@@ -149,6 +155,11 @@ class TestIODValidatorFuncGroups:
         # Referenced Image Sequence (not mandatory)
         assert not has_tag_error(result, "Referenced Image", "(0008,1140)", "missing")
 
+        # Subtraction Item ID, required because of the SOP Class UID value (in dataset root)
+        assert has_tag_error(result, "Mask", "(0028,9416)", "missing")
+        # Mask Frame Numbers, required because Mask Operation (inside the sequence item) is AVG_SUB
+        assert has_tag_error(result, "Mask", "(0028,6110)", "missing")
+
     @pytest.mark.shared_macros([FRAME_ANATOMY])
     @pytest.mark.per_frame_macros([FRAME_ANATOMY])
     def test_sequence_in_shared_and_per_frame(self, validator):
@@ -162,7 +173,7 @@ class TestIODValidatorFuncGroups:
         )
 
     @pytest.mark.shared_macros([FRAME_CONTENT])
-    @pytest.mark.per_frame_macros([FRAME_ANATOMY])
+    @pytest.mark.per_frame_macros([FRAME_CONTENT])
     def test_macro_not_allowed_in_shared_group(self, validator):
         result = validator.validate()
         # Frame Anatomy Sequence (present in shared groups)

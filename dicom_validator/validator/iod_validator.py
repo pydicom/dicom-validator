@@ -313,7 +313,6 @@ class IODValidator:
         The dictionary of found errors.
         """
         errors = {}
-
         for tag_id_string, attribute in attributes.items():
             if tag_id_string == "modules":
                 self._validate_func_group_modules(attribute)
@@ -336,9 +335,21 @@ class IODValidator:
                         self._dataset_stack.append(
                             DatasetStackItem(sq_item_dataset, tag_id_string)
                         )
-                        errors.update(
-                            self._validate_attributes(attribute["items"], True)
+                        # the item attributes are only created at this point,
+                        # where we have descended into the related sequence item level
+                        item_attribute = attribute["items"]
+                        if "group_macros" in item_attribute:
+                            group_macros = item_attribute["group_macros"]
+                            items = item_attribute["items"]
+                        else:
+                            group_macros = None
+                            items = item_attribute
+                        item_attributes = self._expanded_module_info(
+                            items,
+                            group_macros,
+                            expand_items=True,
                         )
+                        errors.update(self._validate_attributes(item_attributes, True))
                         self._dataset_stack.pop()
 
         if report_unexpected_tags:
@@ -617,7 +628,7 @@ class IODValidator:
             self._dicom_info.modules[module_ref], group_macros
         )
 
-    def _expanded_module_info(self, module_info, group_macros):
+    def _expanded_module_info(self, module_info, group_macros, expand_items=False):
         expanded_mod_info = {}
         for k, v in module_info.items():
             if k == "include":
@@ -634,6 +645,12 @@ class IODValidator:
                         expanded_mod_info.update(
                             self._get_module_info(ref, group_macros)
                         )
+            elif not expand_items and k == "items":
+                # we shall not create the item attributes at this point, because
+                # they may have conditions that refer to item inside the sequence,
+                # and we are currently at a higher dataset level
+                # instead, we save the information needed to create them lazily
+                expanded_mod_info[k] = {"items": v, "group_macros": group_macros}
             elif isinstance(v, dict):
                 expanded_mod_info[k] = self._expanded_module_info(v, group_macros)
             else:
