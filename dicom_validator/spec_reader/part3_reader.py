@@ -223,9 +223,7 @@ class Part3Reader(SpecReader):
                 )
             return
         include_ref = include_node.attrib["linkend"]
-        if self._current_refs and include_ref == self._current_refs[-1]:
-            self.logger.debug("Self reference in %s  - ignoring.", include_ref)
-            return
+        recursive = bool(self._current_refs) and (include_ref == self._current_refs[-1])
         self._current_refs.append(include_ref)
         element, label = self._get_ref_element_and_label(include_ref)
         if label not in self._module_descriptions:
@@ -234,9 +232,11 @@ class Part3Reader(SpecReader):
                 raise SpecReaderLookupError(
                     "Failed to lookup include reference " + include_ref
                 )
-            # it is allowed to have no attributes (example: Raw Data)
-            ref_description = self._parse_module_description(ref_node) or {}
-            self._module_descriptions[label] = ref_description
+            # recursive reference - prevent recursion
+            if not recursive:
+                # it is allowed to have no attributes (example: Raw Data)
+                ref_description = self._parse_module_description(ref_node) or {}
+                self._module_descriptions[label] = ref_description
         include_attr = {"ref": label}
         # this is currently the only occurring condition for includes
         cond_prefix = "if and only if "

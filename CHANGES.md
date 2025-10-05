@@ -3,8 +3,10 @@ The released versions correspond to PyPi releases.
 
 ## Unreleased
 
-### Infrastructure
-* added Python 3.14 to CI (needs development version of `pydicom`)
+### Fixes
+* fixes to correctly evaluate SR documents (see [#206](../../issues/206)):
+  * sequences defined recursively in the standard are now supported
+  * conditions for including macros inside a sequence are now evaluated on the correct level
 
 ## [Version 0.7.2](https://pypi.python.org/pypi/dicom-validator/0.7.2) (2025-08-16)
 Fixes parsing of some newer IODs and group macros.
