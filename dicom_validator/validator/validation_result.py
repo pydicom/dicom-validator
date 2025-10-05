@@ -56,6 +56,10 @@ class DicomTag:
     tag: BaseTag
     parents: list[BaseTag] | None = None
 
+    def __init__(self, tag: int, parents: list[int] | None = None):
+        self.tag = BaseTag(tag)
+        self.parents = [BaseTag(p) for p in parents] if parents else None
+
     def __hash__(self):
         return hash(self.tag + (sum(self.parents) if self.parents else 0))
 
