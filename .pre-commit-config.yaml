@@ -21,12 +21,12 @@ repos:
       - id: debug-statements
         language_version: python3
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.3
+    rev: v0.14.0
     hooks:
       - id: ruff
         args: [dicom_validator, --fix, --exit-non-zero-on-fix, --target-version=py310]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.20.0
+    rev: v3.21.0
     hooks:
       - id: pyupgrade
         args:
