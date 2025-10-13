@@ -51,8 +51,11 @@ class EditionReader:
     dict_info_json = "dict_info.json"
     uid_info_json = "uid_info.json"
 
-    def __init__(self, path: str | Path) -> None:
-        self.path = Path(path)
+    def __init__(self, path: str | Path | None = None) -> None:
+        if path is not None:
+            self.path = Path(path)
+        else:
+            self.path = Path.home() / "dicom-validator"
         self.logger = logging.getLogger()
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))

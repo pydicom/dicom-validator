@@ -83,7 +83,7 @@ def validator(dicom_info, request):
     marker = request.node.get_closest_marker("per_frame_macros")
     per_frame_macros = {} if marker is None else marker.args[0]
     data_set = new_data_set(shared_macros, per_frame_macros)
-    return IODValidator(data_set, dicom_info, logging.WARNING)
+    return IODValidator(data_set, dicom_info, log_level=logging.WARNING)
 
 
 FRAME_ANATOMY = {
@@ -128,7 +128,7 @@ class TestIODValidatorFuncGroups:
         data_set = new_data_set({}, {})
         del data_set[0x52009229]
         del data_set[0x52009230]
-        validator = IODValidator(data_set, dicom_info, logging.WARNING)
+        validator = IODValidator(data_set, dicom_info, log_level=logging.WARNING)
         result = validator.validate()
         group_result = self.ensure_group_result(result)
         assert DicomTag(0x5200_9229) in group_result

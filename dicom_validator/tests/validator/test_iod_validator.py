@@ -1,67 +1,12 @@
 import logging
 
-import pydicom
 import pytest
-from pydicom import DataElement, uid, Sequence, dcmwrite, dcmread
-from pydicom.datadict import dictionary_VR
-from pydicom.dataset import Dataset, FileMetaDataset
-from pydicom.filebase import DicomBytesIO
-from pydicom.tag import Tag
+from pydicom import uid
 
 from dicom_validator.tests.utils import has_tag_error
-from dicom_validator.validator.iod_validator import IODValidator
 from dicom_validator.validator.validation_result import Status, ErrorCode
 
 pytestmark = pytest.mark.usefixtures("disable_logging")
-
-
-def new_data_set(tags, *, top_level: bool = True):
-    """Create a DICOM data set with the given attributes"""
-    tags = tags or {}
-    data_set = Dataset()
-    if not tags:
-        return data_set
-    for tag, value in tags.items():
-        tag = Tag(tag)  # raises for invalid tag
-        try:
-            vr = dictionary_VR(tag)
-        except KeyError:
-            vr = "LO"
-        if vr == "SQ":
-            items = []
-            for item_tags in value:
-                items.append(new_data_set(item_tags, top_level=False))
-            value = Sequence(items)
-        data_set[tag] = DataElement(tag, vr, value)
-    if not top_level:
-        # this is a sequence item
-        return data_set
-
-    # write the dataset into a file and read it back to ensure the real behavior
-    if "SOPInstanceUID" not in data_set:
-        data_set.SOPInstanceUID = "1.2.3"
-    data_set.file_meta = FileMetaDataset()
-    data_set.file_meta.TransferSyntaxUID = pydicom.uid.ExplicitVRLittleEndian
-    fp = DicomBytesIO()
-    kwargs = (
-        {"write_like_original": False}
-        if int(pydicom.__version_info__[0]) < 3
-        else {"enforce_file_format": True}
-    )
-    dcmwrite(fp, data_set, **kwargs)
-    fp.seek(0)
-    return dcmread(fp)
-
-
-@pytest.fixture
-def validator(dicom_info, request):
-    marker = request.node.get_closest_marker("tag_set")
-    if marker is None:
-        tag_set = {}
-    else:
-        tag_set = marker.args[0]
-    data_set = new_data_set(tag_set)
-    return IODValidator(data_set, dicom_info, logging.WARNING)
 
 
 class TestIODValidator:

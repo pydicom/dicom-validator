@@ -41,13 +41,13 @@ class ValidationResultHandlerBase(ValidationResultHandler):
     and implement the actual handling in some or all placeholder methods.
     """
 
-    def handle_validation_start(self, result: ValidationResult):
+    def handle_validation_start(self, result: ValidationResult) -> None:
         """Placeholder method.
         Called before the validation has started. Only the SOP Class UID
         is set at this point."""
         pass
 
-    def handle_validation_result(self, result: ValidationResult):
+    def handle_validation_result(self, result: ValidationResult) -> None:
         """Called after the validation has finished. All found errors are
         recorded in the validation result.
         Only calls other methods that may contain the actual handling."""
@@ -61,19 +61,21 @@ class ValidationResultHandlerBase(ValidationResultHandler):
                         self.handle_module_errors(module_name, tag_errors)
                 self.handle_validation_result_end(result)
 
-    def handle_failed_validation_start(self, result: ValidationResult):
+    def handle_failed_validation_start(self, result: ValidationResult) -> None:
         """Placeholder method.
         Called in case the validation could not be started. Only the error code
         is set in the result. The validation is aborted after this call."""
         pass
 
-    def handle_validation_result_start(self, validation_result: ValidationResult):
+    def handle_validation_result_start(
+        self, validation_result: ValidationResult
+    ) -> None:
         """Placeholder method.
         Called after the validation result is available and before the result
         handling starts."""
         pass
 
-    def handle_validation_result_end(self, validation_result: ValidationResult):
+    def handle_validation_result_end(self, validation_result: ValidationResult) -> None:
         """Placeholder method.
         Called after the validation result have been handled."""
         pass
@@ -84,11 +86,14 @@ class ValidationResultHandlerBase(ValidationResultHandler):
         """
         self.handle_module_errors_start(module_name, tag_errors)
         error_items = sorted(tag_errors.items(), key=lambda x: x[0])
-        parents: list[BaseTag] = []
+        parents: list[BaseTag] | None = []
         for tag_id, tag_error in error_items:
             if tag_id.parents and tag_id.parents != parents:
+                if parents is not None:
+                    self.handle_tag_parents_end(parents)
                 parents = tag_id.parents
-                self.handle_tag_parents(parents)
+                if parents is not None:
+                    self.handle_tag_parents_start(parents)
             self.handle_tag_error(tag_id, tag_error)
         self.handle_module_errors_end(module_name, tag_errors)
 
@@ -110,10 +115,16 @@ class ValidationResultHandlerBase(ValidationResultHandler):
         (logging, recording) shall be implemented here."""
         pass
 
-    def handle_tag_parents(self, parents: list[int]) -> None:
+    def handle_tag_parents_start(self, parents: list[BaseTag]) -> None:
         """Placeholder method.
         Called to handle parent sequence tags. Is called once
         for one or more tag errors with the same parent sequences."""
+        pass
+
+    def handle_tag_parents_end(self, parents: list[BaseTag]) -> None:
+        """Placeholder method.
+        Called to handle parent sequence tags. Is called once
+        after one or more tag errors with the same parent sequences appeared."""
         pass
 
 
@@ -128,6 +139,8 @@ class LoggingResultHandler(ValidationResultHandlerBase):
 
     def handle_validation_start(self, result: ValidationResult) -> None:
         iod_info = self.dicom_info.iods[result.sop_class_uid]
+        if result.file_path:
+            self.logger.info(f"Validating DICOM file {result.file_path}")
         self.logger.info(
             'SOP class is "%s" (%s)', result.sop_class_uid, iod_info["title"]
         )
@@ -139,7 +152,7 @@ class LoggingResultHandler(ValidationResultHandlerBase):
     ) -> None:
         self.logger.warning(f'\nModule "{module_name}":')
 
-    def handle_tag_parents(self, parents: list[BaseTag]) -> None:
+    def handle_tag_parents_start(self, parents: list[BaseTag]) -> None:
         self.logger.warning(
             " / ".join(
                 tag_name_from_id(tag, self.dicom_info.dictionary) for tag in parents
@@ -169,6 +182,10 @@ class LoggingResultHandler(ValidationResultHandlerBase):
                 msg = "Missing SOP Class UID"
             case Status.UnknownSOPClassUID:
                 msg = f"Unknown or retired SOP Class UID: {result.sop_class_uid}"
+            case Status.MissingFile:
+                msg = f"Missing DICOM File: {result.file_path}"
+            case Status.InvalidFile:
+                msg = f"Invalid DICOM File: {result.file_path}"
             case _:
                 msg = "Unknown error"
         self.logger.error(f"{msg} - aborting")
