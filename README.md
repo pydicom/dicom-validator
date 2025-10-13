@@ -147,6 +147,43 @@ Support for more cases may be added in the future.
 Defined terms are _not_ checked, because they are allowed to be user-defined, which means
 that any value may be valid.
 
+### Using the IOD validator programmatically
+The commandline tool is based on the `DicomFileValidator` and `IODValidator` classes, which
+can also be used directly in another application, if you want to have better control of the output.
+To initialize such a class, you need the DICOM information (as a `DicomInfo` instance)
+read from the JSON files as described above.
+First, the needed edition of the DICOM standard has to be downloaded and processed.
+This needs to be done only once for a given edition:
+
+```py
+from pathlib import Path
+from dicom_validator.spec_reader.edition_reader import EditionReader
+
+reader = EditionReader()  # uses the default location <user home>/dicom-validator
+# if the edition is not downloaded yet, load_dicom_info will download and process it
+dicom_info = reader.load_dicom_info("2025b")  # could also use "current" for the current standard
+```
+Using this DICOM information, you can validate a DICOM file, or all DICOM files
+in a given directory:
+```py
+from dicom_validator.validator.dicom_file_validator import DicomFileValidator
+
+validator = DicomFileValidator(dicom_info)
+result = validator.validate(dicom_file_path)
+```
+This will create the same output as the command line tool. If you need your own error
+handling instead, you can write your own error handler, and use it instead:
+```py
+from dicom_validator.validator.html_error_handler import HtmlErrorHandler
+...
+handler = HtmlErrorHandler(dicom_info)
+validator = DicomFileValidator(dicom_info, error_handler=handler)
+validator.validate(dicom_file_path)
+with open("result.html", "w") as f:
+    f.write(handler.html)
+```
+This uses the `HtmlErrorHandler` class, which is included as a simple error handler example.
+
 ## dump_dcm_info
 
 This is a very simple DICOM dump tool, which uses

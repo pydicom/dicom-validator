@@ -107,7 +107,7 @@ class ValidationResult:
     """The validation result for a specific DICOM dataset."""
 
     sop_class_uid: str = ""
-    filename = ""
+    file_path: str = ""
     status: Status = Status.Passed
     errors: int = 0
     module_errors: ModuleErrors | None = None

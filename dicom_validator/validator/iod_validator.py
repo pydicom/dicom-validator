@@ -132,9 +132,11 @@ class IODValidator:
         self,
         dataset: Dataset,
         dicom_info: DicomInfo,
+        *,
         log_level: int = logging.INFO,
         suppress_vr_warnings: bool = False,
         error_handler: ValidationResultHandler | None = None,
+        file_path: str = "",
     ) -> None:
         """Create an IODValidator instance.
 
@@ -145,7 +147,7 @@ class IODValidator:
         dicom_info : dict
             The DICOM information as extracted from the standard.
         log_level : int
-            The log level of the used logger.
+            The log level of the logger, if using the default error handler.
         suppress_vr_warnings : bool
             If True, skip the VR validation of DICOM tags.
         error_handler : ValidationResultHandler
@@ -157,12 +159,15 @@ class IODValidator:
         self._dicom_info = dicom_info
         self._func_group_info = FunctionalGroupInfo({}, set())
         self._suppress_vr_warnings = suppress_vr_warnings
-        self.result = ValidationResult()
-        self.logger = logging.getLogger("validator")
-        self.logger.level = log_level
-        if not self.logger.hasHandlers():
-            self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.handler = error_handler or LoggingResultHandler(dicom_info, self.logger)
+        self.result = ValidationResult(file_path=file_path)
+        if error_handler is not None:
+            self.handler = error_handler
+        else:
+            logger = logging.getLogger("validator")
+            if not logger.hasHandlers():
+                logger.addHandler(logging.StreamHandler(sys.stdout))
+            logger.level = log_level
+            self.handler = LoggingResultHandler(dicom_info, logger)
 
     def validate(self) -> ValidationResult:
         """Validates current dataset.
@@ -645,7 +650,6 @@ class IODValidator:
         try:
             values = [type(tag_value)(value) for value in values]
         except ValueError:
-            self.logger.debug(f"type for '{values}' does not match '{tag_value}'")
             # the values are of the wrong type - ignore them
             return False
         if operator == ConditionOperator.EqualsValue:
