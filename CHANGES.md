@@ -1,7 +1,8 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
 
-## Unreleased
+## [Version 0.7.3](https://pypi.python.org/pypi/dicom-validator/0.7.3) (2025-10-13)
+Fixes handling of nested sequences.
 
 ### Fixes
 * fixes to correctly evaluate SR documents (see [#206](../../issues/206)):
