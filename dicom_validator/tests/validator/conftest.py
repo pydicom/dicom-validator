@@ -7,7 +7,7 @@ import pytest
 from dicom_validator.spec_reader.edition_reader import EditionReader
 from dicom_validator.validator.dicom_info import DicomInfo
 
-CURRENT_REVISION = "2025d"
+CURRENT_EDITION = "2025d"
 
 
 def pytest_configure(config):
@@ -30,7 +30,7 @@ def standard_path():
 
 @pytest.fixture(scope="session")
 def json_fixture_path(standard_path):
-    yield standard_path / CURRENT_REVISION / "json"
+    yield standard_path / CURRENT_EDITION / "json"
 
 
 @pytest.fixture(scope="session")

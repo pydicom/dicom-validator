@@ -34,8 +34,8 @@ jobs:
         if: steps.cache-dicom.outputs.cache-hit != 'true'
         run: |
           pip install -e .
-          python .github/workflows/get_revision.py 2015b "`pwd`/dicom_validator/tests/fixtures/standard"
-          python .github/workflows/get_revision.py 2025d "`pwd`/dicom_validator/tests/fixtures/standard"
+          python .github/workflows/get_edition.py 2015b "`pwd`/dicom_validator/tests/fixtures/standard"
+          python .github/workflows/get_edition.py 2025d "`pwd`/dicom_validator/tests/fixtures/standard"
 
       - name: Install dependencies
         run: |

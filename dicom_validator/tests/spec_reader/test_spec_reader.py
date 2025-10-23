@@ -29,5 +29,5 @@ def test_existing_doc_files(fs):
 
 
 def test_cleaned_uid():
-    orig_value = "1.2.840.10008.5." "\u200b1.\u200b4.\u200b1.\u200b1.\u200b88.\u200b72"
+    orig_value = "1.2.840.10008.5.\u200b1.\u200b4.\u200b1.\u200b1.\u200b88.\u200b72"
     assert SpecReader.cleaned_value(orig_value) == "1.2.840.10008.5.1.4.1.1.88.72"

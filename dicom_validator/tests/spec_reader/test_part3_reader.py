@@ -49,9 +49,9 @@ class TestReadPart3:
             reader.iod_description("A.6")
 
     @pytest.mark.parametrize(
-        "revision,iod_name",
+        "edition,iod_name",
         [("2015b", "Computed Tomography Image IOD"), ("2025d", "CT Image IOD")],
-        indirect=["revision"],
+        indirect=["edition"],
         scope="session",
     )
     def test_lookup_sop_class(self, reader, iod_name):
@@ -63,9 +63,9 @@ class TestReadPart3:
         assert description["title"] == iod_name
 
     @pytest.mark.parametrize(
-        "revision,module_nr",
+        "edition,module_nr",
         [("2015b", 27), ("2025d", 29)],
-        indirect=["revision"],
+        indirect=["edition"],
         scope="session",
     )
     def test_get_iod_modules(self, reader, module_nr):
@@ -78,7 +78,7 @@ class TestReadPart3:
         assert module["ref"] == "C.7.5.1"
         assert module["use"] == "M"
 
-    @pytest.mark.parametrize("revision", ["2015b", "2025d"], indirect=True)
+    @pytest.mark.parametrize("edition", ["2015b", "2025d"], indirect=True)
     def test_optional_iod_module(self, reader):
         description = reader.iod_description(chapter="A.38.1")
         assert "modules" in description
@@ -89,9 +89,9 @@ class TestReadPart3:
         assert module["use"] == "U"
 
     @pytest.mark.parametrize(
-        "revision,desc_nr",
+        "edition,desc_nr",
         [("2015b", 110), ("2025d", 174)],
-        indirect=["revision"],
+        indirect=["edition"],
         scope="session",
     )
     def test_iod_descriptions(self, reader, desc_nr):
@@ -102,9 +102,9 @@ class TestReadPart3:
         assert "A.38.1" in descriptions
 
     @pytest.mark.parametrize(
-        "revision,macro_nr",
+        "edition,macro_nr",
         [("2015b", 24), ("2025d", 28)],
-        indirect=["revision"],
+        indirect=["edition"],
         scope="session",
     )
     def test_group_macros(self, reader, macro_nr):
@@ -154,9 +154,9 @@ class TestReadPart3:
         assert len(macros) == 16
 
     @pytest.mark.parametrize(
-        "revision,desc_nr",
+        "edition,desc_nr",
         [("2015b", 9), ("2025d", 14)],
-        indirect=["revision"],
+        indirect=["edition"],
         scope="session",
     )
     def test_module_description(self, reader, desc_nr):
@@ -169,9 +169,9 @@ class TestReadPart3:
         assert description["(0012,0031)"]["type"] == "2"
 
     @pytest.mark.parametrize(
-        "revision,desc_nr, seq_desc_nr",
+        "edition,desc_nr, seq_desc_nr",
         [("2015b", 3, 3), ("2025d", 7, 4)],
-        indirect=["revision"],
+        indirect=["edition"],
         scope="session",
     )
     def test_sequence_inside_module_description(self, reader, desc_nr, seq_desc_nr):
@@ -200,9 +200,9 @@ class TestReadPart3:
         assert "(0028,0103)" in description
 
     @pytest.mark.parametrize(
-        "revision,desc_nr",
+        "edition,desc_nr",
         [("2015b", 452), ("2025d", 671)],
-        indirect=["revision"],
+        indirect=["edition"],
         scope="session",
     )
     def test_module_descriptions(self, reader, desc_nr):
@@ -210,9 +210,9 @@ class TestReadPart3:
         assert len(descriptions) == desc_nr
 
     @pytest.mark.parametrize(
-        "revision,include_nr",
+        "edition,include_nr",
         [("2015b", 9), ("2025d", 10)],
-        indirect=["revision"],
+        indirect=["edition"],
         scope="session",
     )
     def test_conditional_include_in_sr_module(self, reader, include_nr):
@@ -244,7 +244,7 @@ class TestReadPart3:
         assert enums == [{"val": ["FAILURE", "WARNING", "INFORMATIVE"]}]
 
     @pytest.mark.parametrize(
-        "revision", ["2015b", "2025d"], indirect=True, scope="session"
+        "edition", ["2015b", "2025d"], indirect=True, scope="session"
     )
     def test_linked_enum_values(self, reader):
         description = reader.module_description("10.24")
@@ -257,7 +257,7 @@ class TestReadPart3:
         assert tag["enums"] == [{"val": ["CONTINUOUS", "TRIGGERED", "AUTOMATIC"]}]
 
     @pytest.mark.parametrize(
-        "revision", ["2015b", "2025d"], indirect=True, scope="session"
+        "edition", ["2015b", "2025d"], indirect=True, scope="session"
     )
     def test_graphic_annotation_sequence(self, reader):
         description = reader.module_description("C.10.5")

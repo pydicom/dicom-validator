@@ -22,8 +22,8 @@ def dicom_fixture_path(fixture_path):
 
 
 @pytest.mark.order(0)
-@pytest.mark.parametrize("revision", ["2015b", "2025d"])
-def test_validate_sr(revision, caplog, standard_path, dicom_fixture_path):
+@pytest.mark.parametrize("edition", ["2015b", "2025d"])
+def test_validate_sr(edition, caplog, standard_path, dicom_fixture_path):
     # test also for 2015b to test an issue causing an exception
     rtdose_path = dicom_fixture_path / "rtdose.dcm"
     # recreate json files to avoid getting the cached ones
@@ -32,7 +32,7 @@ def test_validate_sr(revision, caplog, standard_path, dicom_fixture_path):
         "-src",
         str(standard_path),
         "-r",
-        revision,
+        edition,
         "--recreate-json",
         str(rtdose_path),
     ]

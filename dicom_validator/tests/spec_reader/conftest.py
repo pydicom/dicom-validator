@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-CURRENT_REVISION = "2025d"
+CURRENT_EDITION = "2025d"
 
 
 def pytest_configure(config):
@@ -24,29 +24,29 @@ def standard_path(fixture_path):
 
 
 @pytest.fixture(scope="session")
-def revision(request):
+def edition(request):
     if hasattr(request, "param"):
-        revision = request.param
+        edition = request.param
     else:
-        revision = CURRENT_REVISION
-    yield revision
+        edition = CURRENT_EDITION
+    yield edition
 
 
 @pytest.fixture(scope="session")
-def revision_path(standard_path, revision):
-    yield standard_path / revision
+def edition_path(standard_path, edition):
+    yield standard_path / edition
 
 
 @pytest.fixture(scope="session")
-def spec_fixture_path(revision_path):
-    yield revision_path / "docbook"
+def spec_fixture_path(edition_path):
+    yield edition_path / "docbook"
 
 
 @pytest.fixture(scope="session")
-def dict_info(revision_path):
+def dict_info(edition_path):
     from dicom_validator.spec_reader.edition_reader import EditionReader
 
-    json_fixture_path = revision_path / "json"
+    json_fixture_path = edition_path / "json"
     with open(
         json_fixture_path / EditionReader.dict_info_json, encoding="utf8"
     ) as info_file:

@@ -7,12 +7,11 @@ import os
 import re
 import sys
 from collections.abc import Iterable, Sequence
-from pathlib import Path
 
 from pydicom import config, dcmread, Dataset, DataElement
 from pydicom.errors import InvalidDicomError
 
-from dicom_validator.spec_reader.edition_reader import EditionReader
+from dicom_validator.command_line_utils import dicom_info_from_args, add_edition_args
 from dicom_validator.validator.dicom_info import DicomInfo
 
 
@@ -35,22 +34,22 @@ class DataElementDumper:
         for uid_dict in dicom_info.dictionary.values():
             self.uid_info.update(uid_dict)
 
-        tags = tags or []
         self.tags: list[str] = []
-        for tag in tags:
-            match = self.tag_regex.match(tag)
-            if match:
-                self.tags.append(f"({match.group(1)},{match.group(2)})")
-            else:
-                matching = [
-                    tag_id
-                    for tag_id in dicom_info.dictionary
-                    if dicom_info.dictionary[tag_id]["name"].replace(" ", "") == tag
-                ]
-                if matching:
-                    self.tags.append(matching[0])
+        if tags is not None:
+            for tag in tags:
+                match = self.tag_regex.match(tag)
+                if match:
+                    self.tags.append(f"({match.group(1)},{match.group(2)})")
                 else:
-                    print(f"{tag} is not a valid tag expression - ignoring")
+                    matching = [
+                        tag_id
+                        for tag_id in dicom_info.dictionary
+                        if dicom_info.dictionary[tag_id]["name"].replace(" ", "") == tag
+                    ]
+                    if matching:
+                        self.tags.append(matching[0])
+                    else:
+                        print(f"{tag} is not a valid tag expression - ignoring")
 
     def print_dataset(self, dataset: Dataset) -> None:
         dataset.walk(
@@ -144,25 +143,12 @@ class DataElementDumper:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Dumps DICOM information dictionary from " "DICOM file using PS3.6"
+        description="Dumps DICOM information dictionary from DICOM file using PS3.6"
     )
     parser.add_argument(
         "dicomfiles", help="Path(s) of DICOM files or directories to parse", nargs="+"
     )
-    parser.add_argument(
-        "--standard-path",
-        "-src",
-        help="Path with the DICOM specs in docbook " "and json format",
-        default=str(Path.home() / "dicom-validator"),
-    )
-    parser.add_argument(
-        "--revision",
-        "-r",
-        help='Standard revision (e.g. "2014c"), year of '
-        'revision, "current" or "local" (latest '
-        "locally installed)",
-        default="current",
-    )
+    add_edition_args(parser)
     parser.add_argument(
         "--max-value-len",
         "-ml",
@@ -191,15 +177,10 @@ def main() -> int:
         default=False,
     )
     args = parser.parse_args()
-
-    edition_reader = EditionReader(args.standard_path)
-    destination = edition_reader.get_revision(args.revision, args.recreate_json)
-    if destination is None:
-        print(f"Failed to get DICOM edition {args.revision} - aborting")
+    dicom_info = dicom_info_from_args(args)
+    if dicom_info is None:
         return 1
 
-    json_path = destination / "json"
-    dicom_info = EditionReader.load_dicom_info(json_path)
     dumper = DataElementDumper(
         dicom_info, args.max_value_len, args.show_image_data, args.show_tags
     )
