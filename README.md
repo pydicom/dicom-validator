@@ -41,12 +41,12 @@ pip install dicom-validator
 ## Usage
 ```
 validate_iods [-h] [--standard-path STANDARD_PATH]
-              [--revision REVISION] [--force-read] [--recreate-json]
+              [--edition EDITION] [--force-read] [--recreate-json]
               [--suppress-vr-warnings] [--verbose]
               dicomfiles [dicomfiles ...]
 
 dump_dcm_info [-h] [--standard-path STANDARD_PATH]
-              [--revision REVISION] [--max-value-len MAX_VALUE_LEN]
+              [--edition EDITION] [--max-value-len MAX_VALUE_LEN]
               [--show-tags [SHOW_TAGS [SHOW_TAGS ...]]]
               [--show-image-data] [--recreate-json]
               dicomfiles [dicomfiles ...]
@@ -64,8 +64,8 @@ These files are then used by the tools. Periodically (once a month), the tools
 check for a newer version of the DICOM standard and download it if found.
 
 It is also possible to use older versions of the standard via the command line
-option `--revision` or `-r`, provided they are available for download
-(at the time of writing, standards are available since revision 2014a). A
+option `--edition` or `-e`, provided they are available for download
+(at the time of writing, standards are available since edition 2014a). A
 list of currently available editions can be found in
 *<user home>/dicom-validator/editions.json* after a tool has been called
 the first time.
@@ -90,7 +90,7 @@ The output for a single file may look like this:
 ```
 (py3_test) c:\dev\GitHub\dicom-validator>validate_iods "c:\dev\DICOM Data\WG02\Enhanced-XA\ENHXA"
 
-Using DICOM revision 2023c
+Using DICOM edition 2023c
 SOP class is "1.2.840.10008.5.1.4.1.1.12.1.1" (Enhanced XA Image IOD)
 
 Errors
@@ -139,7 +139,7 @@ Only the given standard is used to evaluate the files. If
 the DICOM file has been written using an older standard, it may conform to
 that standard, but not to the newest one. Tags that are retired in the
 version of the standard used for parsing are not considered at all.
-You can always check against an older standard by using the `--revision` option.
+You can always check against an older standard by using the `--edition` option.
 
 #### Enumerated values and defined terms
 Most enumerated values are checked against, but some are ignored due to parsing issues.
