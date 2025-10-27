@@ -31,7 +31,7 @@ jobs:
         pyinstaller dicom-validator.spec -y
 
     - name: Archive artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: windows_exe
         path: dist/*.exe
