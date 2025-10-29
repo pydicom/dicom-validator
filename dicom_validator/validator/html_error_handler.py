@@ -28,11 +28,13 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         self.sop_class = ""
 
     def handle_validation_result_start(self, result: ValidationResult) -> None:
+        """Start a new HTML section for a validation result."""
         file_path = f"{result.file_path}<br>" if result.file_path else ""
         self.sop_class = result.sop_class_uid
         self.html += f"<h2>{file_path}SOP Class {self.sop_class}</h2>"
 
     def handle_validation_result_end(self, result: ValidationResult) -> None:
+        """Finalize the HTML output for a validation result."""
         self.html = f"<html><body>{self.html}</body></html>"
 
     @staticmethod
@@ -43,18 +45,36 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
 
     @staticmethod
     def url_exists(url):
+        """Check whether a URL is reachable via an HTTP HEAD request.
+
+        Parameters
+        ----------
+        url : str
+            Fully-qualified URL.
+
+        Returns
+        -------
+        bool
+            `True` if the server responds with a status code < 400.
+        """
         p = urlparse(url)
         conn = HTTPSConnection(p.netloc)
         conn.request("HEAD", p.path)
         return conn.getresponse().status < 400
 
     def valid_url_for_ref(self, ref: str) -> str | None:
-        """Returns the URL for the module reference in the DICOM standard.
-        All URLs are for PS3.3 of the standard.
+        """Return a valid URL to the referenced PS3.3 section if it exists.
 
-        Some of the modules are described on a separate HTML page, some are
-        part of a higher level chapter. We are checking for an existing reference
-        by sending a HEAD request until we find a valid page."""
+        Parameters
+        ----------
+        ref : str
+            Section reference label (e.g., 'C.7.6.1').
+
+        Returns
+        -------
+        str | None
+            URL to the best-matching PS3.3 HTML section, or `None` if not found.
+        """
         valid_ref = self.valid_refs.get(ref)
         if valid_ref:
             return self.url_for_ref(valid_ref)
@@ -71,6 +91,7 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
     def handle_module_errors_start(
         self, module_name: str, tag_errors: TagErrors
     ) -> None:
+        """Start a new HTML list for errors in a specific module."""
         sop_class_info = self.dicom_info.iods[self.sop_class]
         if module_name in sop_class_info["modules"]:
             ref = sop_class_info["modules"][module_name]["ref"]
@@ -84,10 +105,23 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         self.html += f"<h3>{module_ref}</h3>\n<ul>"
 
     def handle_module_errors_end(self, module_name: str, tag_errors: TagErrors) -> None:
+        """Close the HTML list for the current module's errors."""
         self.html += "</ul>\n"
 
     @staticmethod
     def error_message(error: TagError) -> str:
+        """Return a human-readable message fragment for a tag error.
+
+        Parameters
+        ----------
+        error : TagError
+            The error to be rendered.
+
+        Returns
+        -------
+        str
+            A short message starting with a space to append after the tag name.
+        """
         match error.scope:
             case ErrorScope.SharedFuncGroup:
                 postfix = " in Shared Group"
@@ -121,17 +155,32 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
                 return ""
 
     def tag_name(self, tag_id: BaseTag) -> str:
+        """Return a human-readable name for a tag, including its ID.
+
+        Parameters
+        ----------
+        tag_id : BaseTag
+            DICOM tag identifier.
+
+        Returns
+        -------
+        str
+            A string like 'Patient Name (0010,0010)' when known, otherwise the
+            tag ID string.
+        """
         dict_info = self.dicom_info.dictionary
         if str(tag_id) in dict_info:
             return f'{dict_info[str(tag_id)]["name"]} {tag_id}'
         return str(tag_id)
 
     def handle_tag_error(self, tag_id: DicomTag, error: TagError) -> None:
+        """Append a single tag error as an HTML list item."""
         self.html += (
             f"<li>{self.tag_name(tag_id.tag)}{self.error_message(error)}</li>\n"
         )
 
     def handle_tag_parents_start(self, parents: list[BaseTag]) -> None:
+        """Start a new section header listing parent sequence tags."""
         msg = (
             " / ".join(
                 tag_name_from_id(tag, self.dicom_info.dictionary) for tag in parents

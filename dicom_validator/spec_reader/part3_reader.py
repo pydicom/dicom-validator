@@ -48,6 +48,18 @@ class Part3Reader(SpecReader):
         self._enum_parser = EnumParser(self.find_section)
 
     def find_section(self, name):
+        """Find a section element by its label within PS3.3.
+
+        Parameters
+        ----------
+        name : str
+            Section label without the `sect_` prefix (e.g., 'C.7.6.1').
+
+        Returns
+        -------
+        Element | None
+            The matching section element, or `None` if not found.
+        """
         return self.get_doc_root().find(f".//{self.docbook_ns}section[@label='{name}']")
 
     def iod_description(self, chapter):

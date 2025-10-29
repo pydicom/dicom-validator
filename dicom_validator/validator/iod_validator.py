@@ -31,6 +31,9 @@ from dicom_validator.validator.validation_result import (
 
 
 class DatasetStackItem:
+    """Holds either the root dataset, or a dataset in a sequence item together
+    with the related sequence tag ID and the parent sequence tag IDs."""
+
     def __init__(
         self,
         dataset: Dataset,
@@ -128,6 +131,8 @@ class InvalidParameterError(Exception):
 
 
 class IODValidator:
+    """Performs the actual IOD validation of a single DICOM dataset."""
+
     def __init__(
         self,
         dataset: Dataset,

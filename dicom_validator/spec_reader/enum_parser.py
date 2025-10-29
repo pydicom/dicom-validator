@@ -59,6 +59,19 @@ class EnumParser:
         return []
 
     def parse_variable_list(self, var_list) -> dict:
+        """Parse a DocBook `variablelist` for enumerated values.
+
+        Parameters
+        ----------
+        var_list : Element
+            A DocBook `variablelist` element.
+
+        Returns
+        -------
+        dict
+            A dictionary with keys `val` (list of values) and optional `index`
+            when the list applies to a specific value position; otherwise empty.
+        """
         # we assume that a variablelist contains enumerated values or defined terms
         # we ignore defined terms, as they do not limit the possible values
         title = var_list.find(self.docbook_ns + "title")
@@ -86,6 +99,20 @@ class EnumParser:
         return result
 
     def parse_linked_variablelist(self, node) -> dict:
+        """Follow `xref` links to a section containing enumerated values.
+
+        Parameters
+        ----------
+        node : Element
+            DocBook element whose paragraph may contain `xref` pointers to
+            a section with a `variablelist` of enumerated values.
+
+        Returns
+        -------
+        dict
+            Parsed enumerated values dictionary as returned by
+            `parse_variable_list`, or empty dict if none found.
+        """
         for xref in node.findall(f"{self.docbook_ns}para/{self.docbook_ns}xref"):
             link = xref.attrib.get("linkend")
             if link and link.startswith("sect_"):

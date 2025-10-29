@@ -8,6 +8,18 @@ from dicom_validator.validator.dicom_file_validator import DicomFileValidator
 
 
 def validate(args: argparse.Namespace) -> int:
+    """Validate one or more DICOM files according to their IOD definitions.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed command-line arguments.
+
+    Returns
+    -------
+    int
+        The total number of errors across all validated files (0 on success).
+    """
     dicom_info = dicom_info_from_args(args)
     if dicom_info is None:
         return 1
@@ -24,6 +36,7 @@ def validate(args: argparse.Namespace) -> int:
 
 
 def main(args: Sequence[str] | None = None) -> int:
+    """Command-line entry point for the `validate_iods` tool."""
     parser = argparse.ArgumentParser(description="Validates DICOM file IODs")
     parser.add_argument(
         "dicomfiles",
