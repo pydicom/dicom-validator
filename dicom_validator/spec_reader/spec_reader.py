@@ -34,6 +34,18 @@ class SpecReader:
     docbook_ns = "{http://docbook.org/ns/docbook}"
 
     def __init__(self, spec_dir: str | Path) -> None:
+        """Initialize a reader for DICOM standard DocBook files.
+
+        Parameters
+        ----------
+        spec_dir : str | pathlib.Path
+            Directory containing the DocBook XML files (e.g., `part03.xml`).
+
+        Raises
+        ------
+        SpecReaderFileError
+            If the provided directory is empty.
+        """
         self.spec_dir = Path(spec_dir)
         self.part_nr: int = 0
         if not list(self.spec_dir.iterdir()):
@@ -54,6 +66,7 @@ class SpecReader:
         return self._doc_trees.get(self.part_nr)
 
     def get_doc_root(self) -> OptionalElement:
+        """Return the XML root element of the current part, or `None` if unavailable."""
         doc_tree = self._get_doc_tree()
         if doc_tree:
             return doc_tree.getroot()
@@ -85,6 +98,7 @@ class SpecReader:
 
     @staticmethod
     def cleaned_value(value: str) -> str:
+        """Return `value` with zero-width space (U+200B) characters removed."""
         return value.replace("\u200b", "")
 
     @staticmethod

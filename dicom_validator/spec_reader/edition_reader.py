@@ -61,18 +61,66 @@ class EditionReader:
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
     def editions_path(self) -> Path:
+        """Return the path to the JSON file containing the identifiers of
+        all found DICOM editions as a comma separated list."""
         return self.path / "editions.json"
 
     def docbook_path(self, edition: str) -> Path:
+        """Return the local path where docbook XML files for an edition reside.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g. '2025c').
+
+        Returns
+        -------
+        Path
+            Directory path to the docbook sources for the given edition.
+        """
         return self.path / edition / "docbook"
 
     def json_path(self, edition: str) -> Path:
+        """Return the local path where JSON cache files are stored
+        that contain the processed information for a DICOM edition.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g. '2025c').
+
+        Returns
+        -------
+        Path
+            Directory path to the JSON cache for the given edition.
+        """
         return self.path / edition / "json"
 
     def version_path(self, edition: str) -> Path:
+        """Return the path of the file that stores the version string
+        of the dicom-validator version used to create the JSON cache files.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g. '2025c').
+
+        Returns
+        -------
+        Path
+            Path to the version file within the JSON cache directory.
+        """
         return self.json_path(edition) / "version"
 
     def update_edition(self) -> None:
+        """Fetch the list of available DICOM editions and cache it locally.
+
+        Notes
+        -----
+        Writes `editions.html` as downloaded, and `editions.json` as created
+        from the HTML file under the base path.
+        Logs a warning if the retrieval of the editions file failed.
+        """
         try:
             self.logger.info("Getting DICOM editions...")
             self.retrieve(self.path / self.html_filename)
@@ -81,10 +129,31 @@ class EditionReader:
             self.logger.warning("Failed to get DICOM editions: %s", str(exception))
 
     def retrieve(self, html_path: Path) -> None:
+        """Download the editions HTML page to the given path.
+
+        Parameters
+        ----------
+        html_path : pathlib.Path
+            Destination path for the downloaded `editions.html`.
+        """
         html_path.parent.mkdir(exist_ok=True)
         urlretrieve(self.base_url, html_path)
 
     def get_editions(self, update: bool = True) -> list[str] | None:
+        """Return available DICOM edition identifiers, updating the cache if needed.
+
+        Parameters
+        ----------
+        update : bool, optional
+            If `True`, refresh the local cache when it is older than ~30 days
+            or missing. If `False`, only read from the cache, creating it only if empty.
+
+        Returns
+        -------
+        list[str] | None
+            Sorted list of edition identifiers (e.g., '2025c'), or `None` if
+            unavailable.
+        """
         editions_path = self.editions_path()
         if editions_path.exists():
             if update:
@@ -107,6 +176,13 @@ class EditionReader:
         return None
 
     def read_from_html(self) -> list[str]:
+        """Parse the downloaded editions HTML and extract edition identifiers.
+
+        Returns
+        -------
+        list[str]
+            List of edition identifiers found in the HTML.
+        """
         html_path = self.path / self.html_filename
         with open(html_path, encoding="utf8") as html_file:
             contents = html_file.read()
@@ -116,6 +192,7 @@ class EditionReader:
         return parser.editions
 
     def write_to_json(self) -> None:
+        """Write the parsed editions list to the JSON cache file."""
         editions = self.read_from_html()
         if editions:
             editions_path = self.editions_path()
@@ -123,9 +200,22 @@ class EditionReader:
                 json_file.write(json.dumps(editions))
 
     def get_edition(self, edition_str: str) -> str | None:
-        """Get the edition matching the edition or None.
-        The edition can be the edition name, the year of the edition,
-        'current', or 'local'.
+        """Resolve an edition selector to a concrete edition identifier, updating the
+        available editions if needed.
+
+        Parameters
+        ----------
+        edition_str : str
+            One of:
+            - Exact edition name (e.g., '2025c')
+            - Year (e.g., '2025') to select the latest available revision of that year
+            - 'current' for the latest published edition
+            - 'local' for the latest locally available edition
+
+        Returns
+        -------
+        str | None
+            The resolved edition identifier or `None` if it cannot be determined.
         """
         editions_opt = self.get_editions(edition_str != "local")
         if not editions_opt:
@@ -142,9 +232,17 @@ class EditionReader:
         return None
 
     def is_current(self, edition_str: str) -> bool:
-        """Get the edition matching the edition or None.
-        The edition can be the edition name, the year of the edition,
-        or 'current'.
+        """Check whether the given selector refers to the current edition.
+
+        Parameters
+        ----------
+        edition_str : str
+            Edition selector as accepted by `get_edition`.
+
+        Returns
+        -------
+        bool
+            `True` if it resolves to the latest edition, otherwise `False`.
         """
         if edition_str is None:
             return True
@@ -161,12 +259,41 @@ class EditionReader:
         return False
 
     def get_edition_and_path(self, edition_str: str) -> tuple[str | None, Path | None]:
+        """Resolve an edition selector and return its local base path.
+
+        Parameters
+        ----------
+        edition_str : str
+            Edition selector as accepted by `get_edition`.
+
+        Returns
+        -------
+        tuple[str | None, Path | None]
+            The resolved edition and its local base directory, or `(None, None)`
+            if it cannot be resolved.
+        """
         edition = self.get_edition(edition_str)
         if edition is not None:
             return edition, self.path / edition
         return None, None
 
     def get_chapter(self, edition: str, chapter: int) -> bool:
+        """Ensure the DocBook file for a given part is present locally,
+        downloading it if needed.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g., '2025c').
+        chapter : int
+            DICOM standard part number (e.g., 3, 4, or 6).
+
+        Returns
+        -------
+        bool
+            `True` if the file exists locally or is downloaded successfully,
+            otherwise `False`.
+        """
         file_path = self.docbook_path(edition) / f"part{chapter:02}.xml"
         if file_path.exists():
             return True
@@ -190,11 +317,37 @@ class EditionReader:
             return False
 
     def load_info(self, edition: str, info_json: str) -> dict:
+        """Load a JSON info file for the given edition.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g., '2025c').
+        info_json : str
+            File name within the edition's JSON directory.
+
+        Returns
+        -------
+        dict
+            Parsed JSON content.
+        """
         json_path = self.json_path(edition)
         with open(json_path / info_json, encoding="utf8") as info_file:
             return json.load(info_file)
 
     def load_dicom_info(self, edition: str) -> DicomInfo:
+        """Load all DICOM info JSON files and build a `DicomInfo` instance.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g., '2025c').
+
+        Returns
+        -------
+        DicomInfo
+            Aggregated information from dictionary, IOD, and module JSON.
+        """
         return DicomInfo(
             self.load_info(edition, self.dict_info_json),
             self.load_info(edition, self.iod_info_json),
@@ -202,6 +355,18 @@ class EditionReader:
         )
 
     def json_files_exist(self, edition: str) -> bool:
+        """Check if all expected JSON files exist for the given edition.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g., '2025c').
+
+        Returns
+        -------
+        bool
+            `True` if all JSON files are present; otherwise `False`.
+        """
         json_path = self.json_path(edition)
         for filename in (
             self.dict_info_json,
@@ -215,9 +380,28 @@ class EditionReader:
 
     @staticmethod
     def dump_description(description: dict) -> str:
+        """Serialize a description dictionary to a pretty-printed JSON string.
+
+        Parameters
+        ----------
+        description : dict
+            Dictionary structure to serialize.
+
+        Returns
+        -------
+        str
+            Pretty-printed JSON string.
+        """
         return json.dumps(description, sort_keys=True, indent=2, cls=DefinitionEncoder)
 
     def create_json_files(self, edition: str) -> None:
+        """Parse DocBook sources and (re)create all JSON cache files.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g., '2025c').
+        """
         json_path = self.json_path(edition)
         docbook_path = self.docbook_path(edition)
         self.logger.info(
@@ -256,6 +440,24 @@ class EditionReader:
     def get_edition_path(
         self, edition_str: str, recreate_json: bool = False, create_json: bool = True
     ) -> Path | None:
+        """Prepare local files for an edition and return its base path.
+
+        Parameters
+        ----------
+        edition_str : str
+            Edition selector as accepted by `get_edition`.
+        recreate_json : bool, optional
+            If `True`, force re-creating the JSON cache files regardless of
+            their age. Defaults to `False`.
+        create_json : bool, optional
+            If `True`, create JSON cache files if missing or outdated.
+            Defaults to `True`.
+
+        Returns
+        -------
+        Path | None
+            Local base directory of the edition, or `None` on failure.
+        """
         edition, destination = self.get_edition_and_path(edition_str)
         if destination is None or edition is None:
             self.logger.error(f"DICOM edition {edition} not found.")
@@ -284,13 +486,33 @@ class EditionReader:
         return destination
 
     def is_current_version(self, edition: str) -> bool:
+        """Check whether the local JSON cache matches this package version exactly.
+        We want an exact match as the format is not guaranteed to be downwards compatible.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g., '2025c').
+
+        Returns
+        -------
+        bool
+            `True` if the stored version is equal to this package's `__version__`.
+        """
         version_path = self.version_path(edition)
         if not version_path.exists():
             return False
         with open(version_path, encoding="utf8") as f:
-            return f.read() >= __version__
+            return f.read() == __version__
 
     def write_current_version(self, edition: str) -> None:
+        """Write this package's version string into the edition's cache.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g., '2025c').
+        """
         self.json_path(edition).mkdir(parents=True, exist_ok=True)
         with open(self.version_path(edition), "w", encoding="utf8") as f:
             f.write(__version__)

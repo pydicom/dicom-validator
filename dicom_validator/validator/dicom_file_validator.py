@@ -46,6 +46,18 @@ class DicomFileValidator:
         self._error_handler = error_handler
 
     def validate(self, path: str | PathLike) -> dict[str, ValidationResult]:
+        """Validate a single DICOM file or all files under a directory.
+
+        Parameters
+        ----------
+        path : str | os.PathLike
+            Path to a DICOM file or a directory containing DICOM files.
+
+        Returns
+        -------
+        dict[str, ValidationResult]
+            A mapping from file path to its validation result.
+        """
         results: dict[str, ValidationResult] = {}
         path = os.fspath(path)
         if not os.path.exists(path):
@@ -60,6 +72,18 @@ class DicomFileValidator:
         return results
 
     def validate_dir(self, dir_path: str) -> dict[str, ValidationResult]:
+        """Validate all DICOM files contained in a directory tree.
+
+        Parameters
+        ----------
+        dir_path : str
+            Path to a directory that will be traversed recursively.
+
+        Returns
+        -------
+        dict[str, ValidationResult]
+            A mapping from file path to its validation result for all files found.
+        """
         results: dict[str, ValidationResult] = {}
         for root, _, names in os.walk(dir_path):
             for name in names:
@@ -67,6 +91,18 @@ class DicomFileValidator:
         return results
 
     def validate_file(self, file_path: str) -> dict[str, ValidationResult]:
+        """Validate a single DICOM file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to a DICOM file.
+
+        Returns
+        -------
+        dict[str, ValidationResult]
+            A mapping containing exactly one entry for the given file.
+        """
         try:
             # dcmread calls validate_value by default. If values don't match
             # required VR (value representation), it emits a warning but
