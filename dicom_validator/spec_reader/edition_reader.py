@@ -59,6 +59,7 @@ class EditionReader:
         self.logger = logging.getLogger()
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
+            self.logger.setLevel(logging.INFO)
 
     def editions_path(self) -> Path:
         """Return the path to the JSON file containing the identifiers of
@@ -482,7 +483,7 @@ class EditionReader:
             or recreate_json
         ):
             self.create_json_files(edition)
-        print(f"Using DICOM edition {edition}")
+        self.logger.info(f"Using DICOM edition {edition}")
         return destination
 
     def is_current_version(self, edition: str) -> bool:

@@ -16,6 +16,9 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
   `--revision`; also renamed `revision` to `edition` elsewhere in function names
 * logging the errors has been decoupled from validation via an error handler argument
 
+### Features
+* added support for conditional enum values
+
 ### Fixes
 * tags not allowed in multi-frame functional groups have been listed
   as errors twice (see [#196](../../issues/196))

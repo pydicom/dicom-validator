@@ -4,6 +4,12 @@ from xml.etree import ElementTree
 import pytest
 from pydicom.valuerep import VR
 
+from dicom_validator.spec_reader.condition import (
+    Condition,
+    ConditionType,
+    ConditionOperator,
+)
+from dicom_validator.spec_reader.condition_parser import ConditionParser
 from dicom_validator.spec_reader.enum_parser import EnumParser
 from dicom_validator.spec_reader.part3_reader import Part3Reader
 
@@ -20,8 +26,8 @@ def find_chapter(name: str):
 
 
 @pytest.fixture
-def parser() -> Generator[EnumParser, None, None]:
-    yield EnumParser(find_chapter)
+def parser(dict_info) -> Generator[EnumParser, None, None]:
+    yield EnumParser(find_chapter, ConditionParser(dict_info))
 
 
 def section(contents, label="C.42.3.5") -> ElementTree.Element | None:
@@ -89,6 +95,26 @@ class TestEnumParser:
         </variablelist>"""
         assert parser.parse(section(content), VR.SH) == [{"val": ["YES", "NO"]}]
 
+    def test_enums_for_tag(self, parser):
+        content = """<variablelist spacing="compact">
+            <title>Enumerated Values for Shading Style (0070,1701):</title>
+            <varlistentry>
+                <term>SINGLESIDED</term>
+                <listitem>
+                    <para xml:id="para_473d9354-6a53-44e8-ad28-f22416acfb56">Only "front-facing" voxels are shaded.</para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>DOUBLESIDED</term>
+                <listitem>
+                    <para xml:id="para_b1cd12b0-4f01-4370-bb13-ab04d3f1b048">"Front-facing" and "back-facing" voxels are shaded.</para>
+                </listitem>
+            </varlistentry>
+        </variablelist>"""
+        assert parser.parse(section(content), VR.CS) == [
+            {"val": ["SINGLESIDED", "DOUBLESIDED"]}
+        ]
+
     def test_int_enums(self, parser):
         content = """<variablelist>
         <title>Enumerated Values:</title>
@@ -113,7 +139,7 @@ class TestEnumParser:
         </variablelist>"""
         assert parser.parse(section(content), VR.US) == [{"val": [16, 17]}]
 
-    def test_linked_enum(self):
+    def test_linked_enum(self, dict_info):
         content = """<para>Bla blah, see
         <xref linkend="sect_10.7.1.2" xrefstyle="select: label"/>.</para>"
         """
@@ -136,7 +162,7 @@ class TestEnumParser:
             </varlistentry>
         </variablelist>
         """
-        parser = EnumParser(lambda s: section(linked, s))
+        parser = EnumParser(lambda s: section(linked, s), ConditionParser(dict_info))
         assert parser.parse(section(content), VR.SH) == [
             {"val": ["GEOMETRY", "FIDUCIAL"]}
         ]
@@ -165,4 +191,54 @@ class TestEnumParser:
         assert parser.parse(section(content), VR.CS) == [
             {"index": 1, "val": ["DERIVED"]},
             {"index": 2, "val": ["PRIMARY"]},
+        ]
+
+    def test_values_with_condition(self, parser):
+        content = """
+        <variablelist spacing="compact">
+            <title>Enumerated Values if Segmentation Type (0062,0001) is BINARY or FRACTIONAL:</title>
+            <varlistentry>
+                <term>MONOCHROME2</term>
+                <listitem>
+                    <para xml:id="para_8e13fa16-ef94-4273-9bf1-4476d60c86f2"/>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+        <variablelist spacing="compact" termlength="3in">
+            <title>Enumerated Values if Segmentation Type (0062,0001) is LABELMAP:</title>
+            <varlistentry>
+                <term>MONOCHROME2</term>
+                <listitem>
+                    <para xml:id="para_c0295049-6342-4816-b56f-c0de51206c23"/>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>PALETTE COLOR</term>
+                <listitem>
+                    <para xml:id="para_7cc0cd10-131d-43cd-815c-f585fb0c09c8"/>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+        """
+        assert parser.parse(section(content), VR.CS) == [
+            {
+                "val": ["MONOCHROME2"],
+                "cond": Condition(
+                    ConditionType.MandatoryOrUserDefined,
+                    ConditionOperator.EqualsValue,
+                    "(0062,0001)",
+                    0,
+                    ["BINARY", "FRACTIONAL"],
+                ),
+            },
+            {
+                "val": ["MONOCHROME2", "PALETTE COLOR"],
+                "cond": Condition(
+                    ConditionType.MandatoryOrUserDefined,
+                    ConditionOperator.EqualsValue,
+                    "(0062,0001)",
+                    0,
+                    ["LABELMAP"],
+                ),
+            },
         ]

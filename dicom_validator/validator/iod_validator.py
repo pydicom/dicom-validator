@@ -462,6 +462,10 @@ class IODValidator:
                             # correct index; otherwise there will only be one entry
                             if "index" in enums and int(enums["index"]) != i + 1:
                                 continue
+                            # check an existing condition
+                            if cond := enums.get("cond"):
+                                if not self._object_is_required_or_allowed(cond)[0]:
+                                    continue
                             if v not in enums["val"]:
                                 error.code = ErrorCode.EnumValueNotAllowed
                                 error.context = error.context or {}
