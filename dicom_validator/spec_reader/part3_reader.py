@@ -45,7 +45,7 @@ class Part3Reader(SpecReader):
         if not self.logger.hasHandlers():
             self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self._condition_parser = ConditionParser(self._dict_info)
-        self._enum_parser = EnumParser(self.find_section)
+        self._enum_parser = EnumParser(self.find_section, self._condition_parser)
 
     def find_section(self, name):
         """Find a section element by its label within PS3.3.

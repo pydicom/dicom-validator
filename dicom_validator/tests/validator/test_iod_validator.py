@@ -504,6 +504,55 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
+            "SOPClassUID": uid.SegmentationStorage,
+            "PatientID": "ZZZ",
+            "SegmentationType": "BINARY",
+            "PhotometricInterpretation": "PALETTE COLOR",
+        }
+    )
+    def test_invalid_enum_value_with_condition(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
+        result = validator.validate()
+
+        # Photometric Interpretation not allowed for this Segmentation Type
+        assert has_tag_error(
+            result,
+            "Segmentation Image",
+            0x0028_0004,
+            ErrorCode.EnumValueNotAllowed,
+            {"value": "PALETTE COLOR", "allowed": ["MONOCHROME2"]},
+        )
+
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "Segmentation Image":' in messages
+        assert (
+            "Tag (0028,0004) (Photometric Interpretation) - enum value 'PALETTE COLOR' not allowed,\n"
+            "  allowed values: MONOCHROME2"
+        ) in messages
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.SegmentationStorage,
+            "PatientID": "ZZZ",
+            "SegmentationType": "LABELMAP",
+            "PhotometricInterpretation": "PALETTE COLOR",
+        }
+    )
+    def test_valid_enum_value_with_condition(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
+        result = validator.validate()
+
+        # Photometric Interpretation allowed for this Segmentation Type
+        assert not has_tag_error(
+            result,
+            "Segmentation Image",
+            0x0028_0004,
+            ErrorCode.EnumValueNotAllowed,
+            {"value": "PALETTE COLOR", "allowed": ["MONOCHROME2"]},
+        )
+
+    @pytest.mark.tag_set(
+        {
             "SOPClassUID": uid.CTImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",

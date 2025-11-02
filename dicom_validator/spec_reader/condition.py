@@ -162,6 +162,20 @@ class Condition:
                 attribs.append(f"values={self.values}")
         return " ".join(attribs)
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Condition):
+            return False
+        return (
+            self.type == other.type
+            and self.operator == other.operator
+            and self.tag == other.tag
+            and self.index == other.index
+            and self.values == other.values
+            and self.and_conditions == other.and_conditions
+            and self.or_conditions == other.or_conditions
+            and self.other_condition == other.other_condition
+        )
+
     @classmethod
     def read_condition(
         cls, condition_dict: dict, condition: Optional["Condition"] = None
