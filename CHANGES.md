@@ -22,6 +22,8 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 ### Fixes
 * tags not allowed in multi-frame functional groups have been listed
   as errors twice (see [#196](../../issues/196))
+* fixed handling of enum values for a specific tag
+* fixed handling of multiple definitions for referenced enum values
 
 ### Infrastructure
 * added Python 3.14 to CI (currently needs development version of `pydicom`)
