@@ -4,6 +4,7 @@ for specific Storage SOP Classes.
 The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 """
 
+import copy
 import logging
 from itertools import groupby
 
@@ -286,7 +287,18 @@ class Part3Reader(SpecReader):
             if info:
                 enum_values = self._enum_parser.parse(columns[3], info["vr"])
                 if enum_values:
-                    current_descriptions[-1][tag_id]["enums"] = enum_values
+                    used_enum_values = []
+                    for enum_value in enum_values:
+                        # filter out enum definitions that
+                        # are not related to the current tag
+                        if "tag" in enum_value:
+                            if enum_value["tag"] != tag_id:
+                                continue
+                            enum_value = copy.deepcopy(enum_value)
+                            del enum_value["tag"]
+                        used_enum_values.append(enum_value)
+                    if used_enum_values:
+                        current_descriptions[-1][tag_id]["enums"] = used_enum_values
 
             last_tag_id = tag_id
         return last_tag_id

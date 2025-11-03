@@ -59,7 +59,10 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         """
         p = urlparse(url)
         conn = HTTPSConnection(p.netloc)
-        conn.request("HEAD", p.path)
+        try:
+            conn.request("HEAD", p.path)
+        except Exception:
+            return False
         return conn.getresponse().status < 400
 
     def valid_url_for_ref(self, ref: str) -> str | None:

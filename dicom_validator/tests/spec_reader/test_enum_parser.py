@@ -112,7 +112,7 @@ class TestEnumParser:
             </varlistentry>
         </variablelist>"""
         assert parser.parse(section(content), VR.CS) == [
-            {"val": ["SINGLESIDED", "DOUBLESIDED"]}
+            {"tag": "(0070,1701)", "val": ["SINGLESIDED", "DOUBLESIDED"]}
         ]
 
     def test_int_enums(self, parser):
@@ -167,7 +167,76 @@ class TestEnumParser:
             {"val": ["GEOMETRY", "FIDUCIAL"]}
         ]
 
-    def test_value_for_value(self, parser):
+    def test_linked_enum_with_tag(self, dict_info):
+        content = (
+            '<para xml:id="para_97e843f4-e558-44fd-8858-5b899ad5eeb7">'
+            'See <xref linkend="sect_C.8.12.4.1.5" xrefstyle="select: label"/> '
+            "for further explanation.</para>"
+        )
+        linked = """
+        <title>Photometric Interpretation and Samples per Pixel</title>
+        <variablelist spacing="compact">
+            <title>Enumerated Values for Photometric Interpretation (0028,0004):</title>
+            <varlistentry>
+                <term>MONOCHROME2</term>
+                <listitem>
+                    <para xml:id="para_7a7f7d7f-3c23-4ec2-990e-a3fad60a5863"/>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>RGB</term>
+                <listitem>
+                    <para xml:id="para_2ba62380-d35e-429a-9f39-f2af10ca8dfb"/>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+        <variablelist spacing="compact">
+            <title>Enumerated Values for Samples per Pixel (0028,0002) when Photometric Interpretation (0028,0004) is MONOCHROME2:</title>
+            <varlistentry>
+                <term>1</term>
+                <listitem>
+                    <para xml:id="para_4eef8f1d-9f61-4bb9-8d57-b5e987cdd413"/>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+        <variablelist spacing="compact">
+            <title>Enumerated Values for Samples per Pixel (0028,0002) when Photometric Interpretation (0028,0004) is not MONOCHROME2:</title>
+            <varlistentry>
+                <term>3</term>
+                <listitem>
+                    <para xml:id="para_502ba4c0-30a4-4341-833f-f73c2cde930d"/>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+        """
+        parser = EnumParser(lambda s: section(linked, s), ConditionParser(dict_info))
+        assert parser.parse(section(content), VR.SH) == [
+            {"tag": "(0028,0004)", "val": ["MONOCHROME2", "RGB"]},
+            {
+                "tag": "(0028,0002)",
+                "val": ["1"],
+                "cond": Condition(
+                    ConditionType.MandatoryOrUserDefined,
+                    ConditionOperator.EqualsValue,
+                    "(0028,0004)",
+                    0,
+                    ["MONOCHROME2"],
+                ),
+            },
+            {
+                "tag": "(0028,0002)",
+                "val": ["3"],
+                "cond": Condition(
+                    ConditionType.MandatoryOrUserDefined,
+                    ConditionOperator.NotEqualsValue,
+                    "(0028,0004)",
+                    0,
+                    ["MONOCHROME2"],
+                ),
+            },
+        ]
+
+    def test_enum_value_for_value(self, parser):
         content = """
         <variablelist spacing="compact">
             <title>Enumerated Values for Value 1:</title>
@@ -191,6 +260,28 @@ class TestEnumParser:
         assert parser.parse(section(content), VR.CS) == [
             {"index": 1, "val": ["DERIVED"]},
             {"index": 2, "val": ["PRIMARY"]},
+        ]
+
+    def test_value_for_enum_value(self, parser):
+        content = """
+        <variablelist spacing="compact">
+            <title>Value 2 Enumerated Values:</title>
+            <varlistentry>
+                <term>IMAGE</term>
+                <listitem>
+                    <para xml:id="para_bb573f6c-2620-4591-9fc9-81303702994f"/>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>REPROJECTION</term>
+                <listitem>
+                    <para xml:id="para_39df48ba-44f2-4c5a-8110-228b8cfc9abb"/>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+        """
+        assert parser.parse(section(content), VR.CS) == [
+            {"index": 2, "val": ["IMAGE", "REPROJECTION"]},
         ]
 
     def test_values_with_condition(self, parser):
