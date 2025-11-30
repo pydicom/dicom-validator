@@ -7,7 +7,7 @@ from typing import Any, cast
 from pydicom import config, Sequence, Dataset, DataElement
 from pydicom.multival import MultiValue
 from pydicom.tag import BaseTag, Tag
-from pydicom.valuerep import validate_value
+from pydicom.valuerep import validate_value, VR
 
 from dicom_validator.spec_reader.condition import (
     ConditionType,
@@ -39,10 +39,14 @@ class DatasetStackItem:
         dataset: Dataset,
         tag: BaseTag | None = None,
         stack: list[BaseTag] | None = None,
+        in_func_group: bool = False,
     ) -> None:
         self.dataset = dataset
         self.tag = tag
         self.stack = stack
+        self.in_func_group = in_func_group
+        if not in_func_group:
+            self.in_func_group = tag in (0x5200_9229, 0x5200_9230)
         if tag is not None:
             if stack is None:
                 self.stack = [tag]
@@ -104,11 +108,13 @@ class FunctionalGroupInfo:
             elif error.code == ErrorCode.TagMissing:
                 # for missing tags, we also have to check if the error does not appear
                 # in the per-frame group because it is part of a missing sequence
+                handled_tags = []
                 for per_frame_tag in per_frame:
-                    if per_frame_tag.tag in [t.tag for t in shared]:
+                    if per_frame_tag.parents and tag.tag in per_frame_tag.parents[1:]:
                         result[per_frame_tag] = per_frame[per_frame_tag]
-                        del per_frame[per_frame_tag]
-                        break
+                        handled_tags.append(per_frame_tag)
+                for handled_tag in handled_tags:
+                    del per_frame[handled_tag]
             else:
                 # other errors (unexpected tag, missing value) shall always remain
                 result[tag] = shared[tag]
@@ -116,11 +122,13 @@ class FunctionalGroupInfo:
         for tag, error in per_frame.items():
             if error.code == ErrorCode.TagMissing:
                 # same check as above
+                handled_tags = []
                 for shared_tag in shared:
-                    if shared_tag.tag in [t.tag for t in per_frame]:
+                    if shared_tag.parents and tag.tag in shared_tag.parents[1:]:
                         result[shared_tag] = shared[shared_tag]
-                        del shared[shared_tag]
-                        break
+                        handled_tags.append(shared_tag)
+                for handled_tag in handled_tags:
+                    del shared[handled_tag]
             else:
                 result[tag] = per_frame[tag]
         return result
@@ -374,6 +382,7 @@ class IODValidator:
                                 sq_item_dataset,
                                 tag_id.tag,
                                 self._dataset_stack[-1].stack,
+                                self._dataset_stack[-1].in_func_group,
                             )
                         )
                         # the item attributes are only created at this point,
@@ -566,8 +575,7 @@ class IODValidator:
             return self._tag_exists(tag_id)
         elif operator == ConditionOperator.Absent:
             return not self._tag_exists(tag_id)
-        elif self._tag_exists(tag_id):
-            data_element = self._lookup_tag(tag_id)
+        elif data_element := self._lookup_tag(tag_id):
             assert data_element is not None
             index = condition["index"]
             if index > 0:
@@ -635,10 +643,48 @@ class IODValidator:
                 existing_tag_ids.add(tag_id)
         return existing_tag_ids
 
-    def _lookup_tag(self, tag_id: DicomTag) -> DataElement | None:
+    def _lookup_tag_in_func_group(
+        self, tag: DicomTag, seq_tag: int
+    ) -> DataElement | None:
+        """Lookup a tag in the functional group if it wasn't directly found
+        at the current level (e.g. the current sequence).
+        """
+        dataset = self._dataset_stack[0].dataset
+        if seq_tag not in dataset:
+            return None
+        if not len(dataset[seq_tag].value):
+            return None
+        seq_item: Dataset = dataset[seq_tag].value[0]
+        # the tag may be a top-level sequence
+        if tag.tag in seq_item:
+            return seq_item[tag.tag]
+        # otherwise, only check top-level tags in all sequences
+        # as only these are referenced in conditions
+        for seq in seq_item.values():
+            if seq.VR != VR.SQ or not len(seq.value):
+                continue
+            item: Dataset = seq.value[0]
+            if tag.tag in item:
+                return item[tag.tag]
+        return None
+
+    def _lookup_tag_in_func_groups(self, tag: DicomTag) -> DataElement | None:
+        """Lookup a tag in the functional groups if it wasn't directly found
+        at the current level (e.g. thr current sequence).
+        """
+        if tag.parents is None:
+            return None
+        if element := self._lookup_tag_in_func_group(tag, tag.parents[0]):
+            return element
+        other_group_tag = 0x5200_9230 if tag.parents[0] == 0x5200_9229 else 0x5200_9229
+        return self._lookup_tag_in_func_group(tag, other_group_tag)
+
+    def _lookup_tag(self, tag: DicomTag) -> DataElement | None:
         for stack_item in reversed(self._dataset_stack):
-            if tag_id.tag in stack_item.dataset:
-                return stack_item.dataset[tag_id.tag]
+            if tag.tag in stack_item.dataset:
+                return stack_item.dataset[tag.tag]
+        if self._dataset_stack[-1].in_func_group:
+            return self._lookup_tag_in_func_groups(tag)
         return None
 
     def _tag_exists(self, tag_id: DicomTag) -> bool:

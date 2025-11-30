@@ -101,17 +101,8 @@ FRAME_ANATOMY = {
     ]
 }
 
-FRAME_VOI_LUT = {
-    "FrameVOILUTSequence": [{"WindowCenter": "7200", "WindowWidth": "12800"}]
-}
 
 FRAME_CONTENT = {"FrameContentSequence": [{"FrameReferenceDateTime": "200001011200"}]}
-
-PIXEL_MEASURES = {"PixelMeasuresSequence": [{"PixelSpacing": "0.1\\0.1"}]}
-
-TIMING_RELATED_PARAMS = {
-    "MRTimingAndRelatedParametersSequence": [{"RFEchoTrainLength": None}]
-}
 
 
 class TestIODValidatorFuncGroups:
@@ -160,7 +151,9 @@ class TestIODValidatorFuncGroups:
         )
 
     @pytest.mark.shared_macros([FRAME_ANATOMY])
-    @pytest.mark.per_frame_macros([FRAME_VOI_LUT])
+    @pytest.mark.per_frame_macros(
+        [{"FrameVOILUTSequence": [{"WindowCenter": "7200", "WindowWidth": "12800"}]}]
+    )
     def test_missing_sequences(self, validator, caplog):
         caplog.set_level(logging.WARNING)
         result = validator.validate()
@@ -258,7 +251,9 @@ class TestIODValidatorFuncGroups:
         )
 
     @pytest.mark.shared_macros([])
-    @pytest.mark.per_frame_macros([PIXEL_MEASURES])
+    @pytest.mark.per_frame_macros(
+        [{"PixelMeasuresSequence": [{"PixelSpacing": "0.1\\0.1"}]}]
+    )
     def test_macro_not_allowed_in_per_frame_group(self, validator, caplog):
         caplog.set_level(logging.WARNING)
         validator._dataset.SOPClassUID = uid.VLWholeSlideMicroscopyImageStorage
@@ -276,7 +271,9 @@ class TestIODValidatorFuncGroups:
             in messages
         )
 
-    @pytest.mark.shared_macros([TIMING_RELATED_PARAMS])
+    @pytest.mark.shared_macros(
+        [{"MRTimingAndRelatedParametersSequence": [{"RFEchoTrainLength": None}]}]
+    )
     @pytest.mark.per_frame_macros([FRAME_CONTENT])
     def test_empty_tag_in_shared_group(self, validator):
         # regression test for KeyError in this case
@@ -287,3 +284,78 @@ class TestIODValidatorFuncGroups:
         assert has_tag_error(
             result, "MR Timing and Related Parameters", 0x0018_9240, ErrorCode.TagEmpty
         )
+
+    @pytest.mark.shared_macros(
+        [
+            {
+                "MRModifierSequence": [
+                    {"Spoiling": "NONE", "PartialFourierDirection": "PHASE"}
+                ]
+            }
+        ]
+    )
+    @pytest.mark.per_frame_macros(
+        [
+            {
+                "EchoPulseSequence": "GRADIENT",
+                "MRImageFrameTypeSequence": [
+                    {"FrameType": "ORIGINAL\\PRIMARY\\M\\NONE"}
+                ],
+            }
+        ]
+    )
+    def test_shared_group_tag_condition_depending_on_per_frame_group_tag(
+        self, validator
+    ):
+        # regression test for #226
+        validator._dataset.SOPClassUID = uid.EnhancedMRImageStorage
+        result = validator.validate()
+        # Spoiling in Shared Group, condition depends on FrameType in Per-Frame Group
+        assert not has_tag_error(
+            result, "MR Modifier", 0x0018_9016, ErrorCode.TagNotAllowed
+        )
+        # Partial Fourier Direction in Shared Group, condition depends on FrameType
+        # in Per-Frame Group, which has the wrong value
+        assert has_tag_error(
+            result, "MR Modifier", 0x0018_9036, ErrorCode.TagNotAllowed
+        )
+        # Partial Fourier missing with FrameType ORIGINAL
+        assert has_tag_error(result, "MR Modifier", 0x0018_9081, ErrorCode.TagMissing)
+
+    @pytest.mark.shared_macros(
+        [
+            {
+                "EchoPulseSequence": "GRADIENT",
+                "MRImageFrameTypeSequence": [
+                    {"FrameType": "ORIGINAL\\PRIMARY\\M\\NONE"}
+                ],
+            }
+        ]
+    )
+    @pytest.mark.per_frame_macros(
+        [
+            {
+                "MRModifierSequence": [
+                    {"Spoiling": "NONE", "PartialFourierDirection": "PHASE"}
+                ]
+            }
+        ]
+    )
+    def test_per_frame_group_tag_condition_depending_on_shared_group_tag(
+        self, validator
+    ):
+        validator._dataset.SOPClassUID = uid.EnhancedMRImageStorage
+        validator._dataset.ImageType = "ORIGINAL\\PRIMARY"
+        result = validator.validate()
+        # Spoiling in Per-Frame Group, condition depends on FrameType
+        # and Echo Pulse Sequence in Shared Group, which have the correct value
+        assert not has_tag_error(
+            result, "MR Modifier", 0x0018_9016, ErrorCode.TagNotAllowed
+        )
+        # Partial Fourier Direction in Per-Frame Group, condition depends on FrameType
+        # in Shared Group, which has the wrong value
+        assert has_tag_error(
+            result, "MR Modifier", 0x0018_9036, ErrorCode.TagNotAllowed
+        )
+        # Partial Fourier missing with FrameType ORIGINAL
+        assert has_tag_error(result, "MR Modifier", 0x0018_9081, ErrorCode.TagMissing)
