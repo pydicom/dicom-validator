@@ -660,7 +660,10 @@ class IODValidator:
             return seq_item[tag.tag]
         # otherwise, only check top-level tags in all sequences
         # as only these are referenced in conditions
-        for seq in seq_item.values():
+        for elem_tag in seq_item.keys():
+            # access via indexing to ensure we get a fully decoded DataElement
+            # (pydicom decodes deferred RawDataElements inside Dataset.__getitem__)
+            seq = seq_item[elem_tag]
             if seq.VR != VR.SQ or not len(seq.value):
                 continue
             item: Dataset = seq.value[0]
