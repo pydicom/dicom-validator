@@ -42,20 +42,20 @@ class TestFakeDicomFileValidator:
         )
 
     @staticmethod
-    def assert_fatal_error(validator, filename, error_code):
+    def assert_fatal_error(validator, filename, error_code, is_error=True):
         result_dict = validator.validate(filename)
         assert len(result_dict) == 1
         assert filename in result_dict
         result = result_dict[filename]
         assert result.status == error_code
-        assert result.errors == 1
+        assert result.errors == (1 if is_error else 0)
 
     def test_non_existing_file(self, validator):
         self.assert_fatal_error(validator, "non_existing", Status.MissingFile)
 
     def test_invalid_file(self, fs, validator):
         fs.create_file("test", contents="invalid")
-        self.assert_fatal_error(validator, "test", Status.InvalidFile)
+        self.assert_fatal_error(validator, "test", Status.InvalidFile, is_error=False)
 
     def test_missing_sop_class(self, validator):
         filename = "test.dcm"

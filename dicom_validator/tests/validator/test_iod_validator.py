@@ -19,9 +19,7 @@ class TestIODValidator:
         result = validator.validate()
         assert result.status == Status.MissingSOPClassUID
         assert result.errors == 1
-        assert [rec.message for rec in caplog.records] == [
-            "Missing SOP Class UID - aborting"
-        ]
+        assert [rec.message for rec in caplog.records] == ["Missing SOP Class UID"]
 
     @pytest.mark.tag_set({"SOPClassUID": "1.2.3"})
     def test_invalid_sop_class_id(self, validator, caplog):
@@ -30,7 +28,7 @@ class TestIODValidator:
         assert result.status == Status.UnknownSOPClassUID
         assert result.errors == 1
         assert [rec.message for rec in caplog.records] == [
-            "Unknown or retired SOP Class UID: 1.2.3 - aborting"
+            "Unknown or retired SOP Class UID: 1.2.3"
         ]
 
     @pytest.mark.tag_set(
