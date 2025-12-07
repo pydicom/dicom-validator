@@ -1,4 +1,5 @@
 import logging
+import sys
 from abc import abstractmethod
 from typing import Protocol
 
@@ -175,6 +176,8 @@ class LoggingResultHandler(ValidationResultHandlerBase):
     def handle_validation_result_end(self, validation_result: ValidationResult) -> None:
         if validation_result.errors:
             self.logger.info("\n======")
+        else:
+            self.logger.info("\n")
 
     def handle_failed_validation_start(self, result: ValidationResult) -> None:
         match result.status:
@@ -185,10 +188,10 @@ class LoggingResultHandler(ValidationResultHandlerBase):
             case Status.MissingFile:
                 msg = f"Missing DICOM File: {result.file_path}"
             case Status.InvalidFile:
-                msg = f"Invalid DICOM File: {result.file_path}"
+                msg = f"Not a DICOM File: {result.file_path} - ignoring"
             case _:
                 msg = "Unknown error"
-        self.logger.error(f"{msg} - aborting")
+        self.logger.error(msg)
 
     def error_message(self, error: TagError, indent: int) -> str:
         match error.scope:
@@ -227,3 +230,11 @@ class LoggingResultHandler(ValidationResultHandlerBase):
                 return f" has invalid value '{error.context['value']}' for VR {error.context['VR'] if error.context else ''}"
             case _:
                 return ""
+
+
+def default_error_handler(dicom_info: DicomInfo, log_level: int = logging.INFO):
+    logger = logging.getLogger("validator")
+    if not logger.hasHandlers():
+        logger.addHandler(logging.StreamHandler(sys.stdout))
+    logger.level = log_level
+    return LoggingResultHandler(dicom_info, logger)

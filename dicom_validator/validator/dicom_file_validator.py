@@ -6,7 +6,10 @@ from pydicom import config, dcmread
 from pydicom.errors import InvalidDicomError
 
 from dicom_validator.validator.dicom_info import DicomInfo
-from dicom_validator.validator.error_handler import ValidationResultHandler
+from dicom_validator.validator.error_handler import (
+    ValidationResultHandler,
+    default_error_handler,
+)
 from dicom_validator.validator.iod_validator import IODValidator
 from dicom_validator.validator.validation_result import ValidationResult, Status
 
@@ -64,6 +67,7 @@ class DicomFileValidator:
             results[path] = ValidationResult(
                 file_path=path, status=Status.MissingFile, errors=1
             )
+            self.handle_error(results[path])
         else:
             if os.path.isdir(path):
                 results.update(self.validate_dir(path))
@@ -113,10 +117,10 @@ class DicomFileValidator:
             data_set = dcmread(file_path, defer_size=1024, force=self._force_read)
 
         except InvalidDicomError:
+            result = ValidationResult(file_path=file_path, status=Status.InvalidFile)
+            self.handle_error(result)
             return {
-                file_path: ValidationResult(
-                    file_path=file_path, status=Status.InvalidFile, errors=1
-                )
+                file_path: result,
             }
         return {
             file_path: IODValidator(
@@ -128,3 +132,9 @@ class DicomFileValidator:
                 file_path=file_path,
             ).validate()
         }
+
+    def handle_error(self, result: ValidationResult) -> None:
+        handler = self._error_handler or default_error_handler(
+            self._dicom_info, self.log_level
+        )
+        handler.handle_validation_result(result)

@@ -15,6 +15,7 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 * changed `--revision` to `--edition` to conform to DICOM vocabulary, deprecated
   `--revision`; also renamed `revision` to `edition` elsewhere in function names
 * logging the errors has been decoupled from validation via an error handler argument
+* do not count non-DICOM files as errors, if not using `--force`
 
 ### Features
 * added support for conditional enum values

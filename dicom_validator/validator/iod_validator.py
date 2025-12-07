@@ -1,6 +1,5 @@
 import json
 import logging
-import sys
 from dataclasses import dataclass
 from typing import Any, cast
 
@@ -15,8 +14,8 @@ from dicom_validator.spec_reader.condition import (
 )
 from dicom_validator.validator.dicom_info import DicomInfo
 from dicom_validator.validator.error_handler import (
-    LoggingResultHandler,
     ValidationResultHandler,
+    default_error_handler,
 )
 from dicom_validator.validator.validation_result import (
     ValidationResult,
@@ -176,11 +175,7 @@ class IODValidator:
         if error_handler is not None:
             self.handler = error_handler
         else:
-            logger = logging.getLogger("validator")
-            if not logger.hasHandlers():
-                logger.addHandler(logging.StreamHandler(sys.stdout))
-            logger.level = log_level
-            self.handler = LoggingResultHandler(dicom_info, logger)
+            self.handler = default_error_handler(dicom_info, log_level)
 
     def validate(self) -> ValidationResult:
         """Validates current dataset.
