@@ -27,6 +27,7 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 * fixed handling of multiple definitions for referenced enum values
 * fixed handling of conditions in functional groups (see [#226](../../issues/226))
 * fixed crash when looking up tags in functional groups with lazily-decoded DICOM files
+* fixed error count for functional groups
 
 ### Infrastructure
 * added Python 3.14 to CI (currently needs development version of `pydicom`)
