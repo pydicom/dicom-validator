@@ -15,7 +15,7 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 * changed `--revision` to `--edition` to conform to DICOM vocabulary, deprecated
   `--revision`; also renamed `revision` to `edition` elsewhere in function names
 * logging the errors has been decoupled from validation via an error handler argument
-* do not count non-DICOM files as errors, if not using `--force`
+* do not count non-DICOM files as errors, if not using `--force-read`
 
 ### Features
 * added support for conditional enum values
@@ -32,6 +32,7 @@ In line with pydicom, support for Python 3.9 will be removed in that version.
 ### Infrastructure
 * added Python 3.14 to CI (currently needs development version of `pydicom`)
 * removed support for Python 3.9
+* added initial documentation on `ReadTheDocs`
 
 ## [Version 0.7.3](https://pypi.python.org/pypi/dicom-validator/0.7.3) (2025-10-13)
 Fixes handling of nested sequences.
