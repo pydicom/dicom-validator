@@ -29,21 +29,9 @@ from dicom_validator import __version__  # noqa: E402
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.doctest",
-    "sphinx.ext.coverage",
     "sphinx.ext.napoleon",  # Numpy style docstrings
-    "sphinx.ext.viewcode",
-    "sphinx.ext.extlinks",
+    "myst_parser",
 ]
-
-# Shortcuts for sphinx.ext.extlinks
-extlinks = {
-    # Usage :dcm:`link text <part05/sect_6.2.html>`
-    "dcm": ("http://dicom.nema.org/medical/dicom/current/output/chtml/%s", None),
-    "gh": ("https://github.com/pydicom/%s", None),
-    "issue": ("https://github.com/pydicom/dicom-validator/issues/%s", "#%s"),
-    "pr": ("https://github.com/pydicom/dicom-validator/pull/%s", "#%s"),
-}
 
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
@@ -52,7 +40,7 @@ napoleon_numpy_docstring = True
 templates_path = ["_templates"]
 
 # The suffix of source filenames.
-source_suffix = [".rst"]
+source_suffix = [".rst", ".md"]
 
 # The encoding of source files.
 # source_encoding = "utf-8-sig"
@@ -105,6 +93,9 @@ exclude_patterns: list[str] = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
+# Avoid highlighting in included text documents
+highlight_language = "none"
+
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
 
@@ -128,7 +119,7 @@ html_theme = "furo"
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-# html_title = None
+html_title = f"dicom-validator {release}"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
