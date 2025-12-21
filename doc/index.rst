@@ -1,8 +1,7 @@
-dicom-validator - Simple DICOM validator based on DICOM specs
-=============================================================
+dicom-validator
+===============
 
-Content of the documentation
-----------------------------
+`A simple validator based on the docbook DICOM specification`
 
 .. toctree::
     :maxdepth: 2
@@ -11,3 +10,11 @@ Content of the documentation
     source/validate_uids
     source/validation
     source/validator_api
+
+.. toctree::
+    :caption: About the project
+    :hidden:
+
+    source/release_notes
+    source/contributing
+    source/license

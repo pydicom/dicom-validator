@@ -1,3 +1,4 @@
 sphinx>=2.3.1
 pydicom
 furo
+myst-parser
