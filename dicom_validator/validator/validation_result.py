@@ -8,12 +8,18 @@ class ErrorCode(enum.Enum):
     """Defines the kind of error found for a DICOM tag in a module."""
 
     NoError = 0
-    TagMissing = 1  # tag is missing from a module
-    TagEmpty = 2  # type 1 tag is empty
-    TagUnexpected = 3  # tag is not in any allowed module
-    TagNotAllowed = 4  # tag not allowed by a condition
-    EnumValueNotAllowed = 5  # value not in the list of allowed enum values
-    InvalidValue = 6  # the value failed the VR validation
+    TagMissing = 1
+    """Mandatory tag is missing from a module"""
+    TagEmpty = 2
+    """Type 1 or 1C tag is empty"""
+    TagUnexpected = 3
+    """Tag is not in any allowed module"""
+    TagNotAllowed = 4
+    """Tag not allowed by a condition"""
+    EnumValueNotAllowed = 5
+    """Value not in the list of allowed enum values"""
+    InvalidValue = 6
+    """The value failed the VR validation"""
 
 
 class ErrorScope(enum.Enum):
@@ -22,36 +28,59 @@ class ErrorScope(enum.Enum):
     same error code as errors unrelated to functional groups."""
 
     General = 0
+    """Tag not inside a functional group sequence"""
     SharedFuncGroup = 1
+    """Tag inside the shared the functional group sequence"""
     PerFrameFuncGroup = 2
+    """Tag inside the per-frame the functional group sequence"""
     BothFuncGroups = 3
+    """Tag in both shared and per-frame functional group sequences"""
 
 
 class TagType(str, enum.Enum):
     """The DICOM tag type used in a specific module."""
 
-    Undefined = "Undefined"  # tag not in an expected module
+    Undefined = "Undefined"
     Type1 = "1"
+    """Tag must exist and not be empty"""
     Type1C = "1C"
+    """Tag must exist and not be empty if the condition is fulfilled"""
     Type2 = "2"
+    """Tag must exist"""
     Type2C = "2C"
+    """Tag must exist if the condition is fulfilled"""
     Type3 = "3"
+    """Tag is optional"""
 
 
 class Status(enum.Enum):
     """The result state after validation."""
 
-    Passed = 0  # no errors found in validation
-    Failed = 1  # some violations found in validation
-    MissingFile = 2  # file to be validated is missing
-    InvalidFile = 3  # file to be validated is invalid DICOM
-    MissingSOPClassUID = 4  # file to be validated has no SOP Class UID
-    UnknownSOPClassUID = 5  # the SOP Class UID in the file to be validated is unknown
+    Passed = 0
+    """No errors found in validation"""
+    Failed = 1
+    """Some violations found in validation"""
+    MissingFile = 2
+    """File to be validated is missing"""
+    InvalidFile = 3
+    """File to be validated is invalid DICOM"""
+    MissingSOPClassUID = 4
+    """File to be validated has no SOP Class UID"""
+    UnknownSOPClassUID = 5
+    """The SOP Class UID in the file to be validated is unknown"""
 
 
 @dataclass
 class DicomTag:
-    """Represents a DICOM tag together with parent sequences, if any."""
+    """Represents a DICOM tag together with parent sequences, if any.
+
+    Attributes
+    ----------
+    tag:
+        The DICOM tag ID
+    parents:
+        List of parent DICOM tag IDs if the tag is inside a sequence, or `None`
+    """
 
     tag: BaseTag
     parents: list[BaseTag] | None = None
@@ -87,7 +116,19 @@ class DicomTag:
 
 @dataclass
 class TagError:
-    """Represents error found for a specific DICOM tag."""
+    """Represents the error found for a specific DICOM tag.
+
+    Attributes
+    ----------
+    type:
+        Type of tag (1, 1C, 2, 2C, 3)
+    code:
+        Error code of the tag error
+    scope:
+        Scope (root or functional groups) where the tag error occurred
+    context:
+        Contains additional information for some errors
+    """
 
     type: TagType = TagType.Undefined
     code: ErrorCode = ErrorCode.NoError
@@ -104,7 +145,22 @@ ModuleErrors = dict[str, TagErrors]
 
 @dataclass
 class ValidationResult:
-    """The validation result for a specific DICOM dataset."""
+    """The validation result for a specific DICOM dataset.
+
+    Attributes
+    ----------
+    sop_class_uid:
+        The SOP Class UID of the dataset
+    file_path:
+        The path of the DICOM file if known
+    status:
+        Status of the validation
+    errors:
+        Number of validation errors found
+    module_errors:
+        Tag errors per module, where module name is the key, and a dictionary with errors
+        per DICOM tag ID is the value
+    """
 
     sop_class_uid: str = ""
     file_path: str = ""

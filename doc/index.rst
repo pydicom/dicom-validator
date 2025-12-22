@@ -9,6 +9,7 @@ dicom-validator
     source/intro
     source/validate_uids
     source/validation
+    source/api_usage
     source/validator_api
 
 .. toctree::

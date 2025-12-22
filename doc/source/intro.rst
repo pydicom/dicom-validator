@@ -23,8 +23,8 @@ DICOM standard.
 
 **Disclaimer:**
 No guarantees are given for the correctness of the results.
-This is beta-stage software which was mostly developed as a proof of concept.
-Also check the limitations for *validate_iods* described below.
+This is beta-stage software which was mostly developed as a proof of concept
+and has some inherent :ref:`limitations <limitations>`.
 
 Installation
 ~~~~~~~~~~~~
@@ -59,7 +59,7 @@ Use the *--help* option for each script do get more specific usage info.
 
 Access to the DICOM standard
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Upon first start of a tool, part of the latest version of the DICOM standard
+Upon first start of a tool, parts of the latest version of the DICOM standard
 in docbook format (specifically, parts 3.3, 3.4 and 3.6) are downloaded,
 parsed, and the needed information saved in json files. If the *--src*
 parameter is not provided, the files are downloaded to and looked up in
@@ -69,10 +69,9 @@ check for a newer version of the DICOM standard and download it if found.
 
 It is also possible to use older versions of the standard via the command line
 option *--edition* or *-e*, provided they are available for download
-(at the time of writing, standards are available since edition 2014a). A
-list of currently available editions can be found in
-*<user home>/dicom-validator/editions.json* after a tool has been called
-the first time.
+(standards in docbook format are available since edition 2014a). A list of currently
+available editions can be found in *<user home>/dicom-validator/editions.json* after
+a tool has been called the first time.
 
 History
 ~~~~~~~

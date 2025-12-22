@@ -119,7 +119,7 @@ Used DICOM standard edition
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Per default, the latest locally available edition of the DICOM standard is used for
 validation. If no edition is available, or if a newer version is available (this is
-checked once a month), the relevant parts of the newest version of the standard is downloaded
+checked once a month), the relevant parts of the newest version of the standard are downloaded
 and processed. If the *--src* parameter is not provided, *<user home>/dicom-validator/* is
 used to store the files locally.
 It is also possible to use a specific version of the standard via the command line
@@ -133,6 +133,8 @@ value is too long for the VR, has illegal characters or the wrong format. This V
 is done directly by ``pydicom`` - the tool only collects the results. If these are not wanted,
 as they are not strictly IOD violations, they can be switched off by using the command line option
 *--suppress-vr-warnings*.
+
+.. _limitations:
 
 Limitations
 ~~~~~~~~~~~
