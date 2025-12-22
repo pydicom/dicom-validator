@@ -11,9 +11,9 @@ SOP classes and IODs
 All checks are performed based on the *SOP Class UID* found in the dataset.
 Each DICOM dataset must contain exactly one *SOP Class UID* that defines the kind of the
 contained data. Each UID is mapped to a *SOP Class* name in PS3.6.
-Each SOP Class is related to an Information Object Definition (IOD), which are
+Each SOP Class is related to an *Information Object Definition* (IOD), which are
 described in the DICOM standard. Information about SOP Classes and IODs can be found in
-`PS3.4, chapter 6 <https://dicom.nema.org/medical/dicom/current/output/html/part04.html#chapter_6>`__.
+`PS3.4, chapter 6 <https://dicom.nema.org/medical/dicom/current/output/chtml/part04/chapter_6.html>`__.
 This part also contains
 `a table <https://dicom.nema.org/medical/dicom/current/output/chtml/part04/sect_B.5.html>`__
 which relates SOP Classes to IOD descriptions (which reside in PS3.3).
@@ -31,7 +31,7 @@ instance. Each module defines the usage in the given IOD:
 
 Any module not listed for the IOD is not allowed to be present.
 
-Each module is defined by a module table, also in PS3.3. Modules specific to a UID are defined
+Each module is defined by a module table, also located in PS3.3. Modules specific to a UID are defined
 with the IOD definition, modules used by more than one IOD are listed separately in PS3.3.
 Most modules are used by more than one IOD. For example, the
 `Patient <https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.7.html#sect_C.7.1.1>`__
@@ -46,9 +46,9 @@ Module Attributes
 Each attribute is related to a DICOM tag as defined in the DICOM dictionary in PS3.6.
 An attribute definition in the module attribute table comprises:
 
-* *Attribute Name*: This is actually the name of the related DICOM tag
+* *Attribute Name*: The name of the related DICOM tag
 * *Tag*: The tag ID of the related DICOM tag
-* *Type*: This defines the usage of the tag in the module, simular to the usage of the module itself;
+* *Type*: Defines the usage of the tag in the module, simular to the usage of the module itself;
   the following types are defined:
 
   * *Type 1*: the attribute is mandatory and must contain a value
@@ -63,13 +63,16 @@ Usage in the tool
 ~~~~~~~~~~~~~~~~~
 Parts of the standard used
 ..........................
-For the validation, PS3.3, PS3.4 and PS3.6 are used. Specifically, the data dictionary in PS3.6
-is used to get information about DICOM tags (e.g. tag name, VR and VM), and SOP Class names
+For the validation, PS3.3, PS3.4 and PS3.6 are used. Specifically, the
+`data dictionary <https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_6.html>`__
+in PS3.6 is used to get information about DICOM tags (e.g. tag name, VR and VM), and
+`SOP Class names <https://dicom.nema.org/medical/dicom/current/output/chtml/part06/chapter_A.html>`__
 from SOP class UIDs. While this information is also contained in ``pydicom``, we want to use exactly
 the information from a given revision of the standard (which may be newer or older as the one used
 by ``pydicom``).
-PS3.4 is used to map the SOP classes to IOD descriptions, and the IOD and module descriptions are
-extracted from PS3.3.
+`PS3.4 <https://dicom.nema.org/medical/dicom/current/output/chtml/part04/chapter_6.html>`__
+is used to map the SOP classes to IOD descriptions, and the IOD and module descriptions are
+extracted from `PS3.3 <https://dicom.nema.org/medical/dicom/current/output/chtml/part03/chapter_A.html>`__.
 
 .. _validation_logic:
 
@@ -142,10 +145,10 @@ too small.
 
 Handling of functional group sequences
 ......................................
-Functional group sequences need special handling due to the fact that tags may reside both in the
-shared and in the per-frame functional group sequence. Each item in the per-frame functional groups
-is checked separately, and if a mandatory tag is missing, it is looked up in the shared functional
-group sequence. The opposite case, that a tag is missing in the shared functional group, but present
-in the per-frame functional group is not strictly allowed according to the standard, but also handled
-and not seen as an error. Functional group handling may still need some tweaking, so this behavior
-may still change in future versions.
+`Functional group sequences <https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.7.6.16.html>`__
+need special handling due to the fact that tags may reside both in the shared and in the per-frame
+functional group sequence. Each item in the per-frame functional groups is checked separately, and
+if a mandatory tag is missing, it is looked up in the shared functional group sequence. The opposite
+case, that a tag is missing in the shared functional group, but present in the per-frame functional
+group is not strictly allowed according to the standard, but also handled and not seen as an error.
+Functional group handling may still need some tweaking, so this behavior may still change in future versions.

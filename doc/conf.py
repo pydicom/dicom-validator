@@ -33,6 +33,9 @@ extensions = [
     "myst_parser",
 ]
 
+# alphabetical order makes not much sense
+autodoc_member_order = "bysource"
+
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 

@@ -1,10 +1,6 @@
 # Dicom Validator Release Notes
 The released versions correspond to PyPi releases.
-
-## Planned changes for 0.8 release
-
-For Python 3.14 support, we depend on the (yet unreleased) pydicom 3.1.
-In line with pydicom, support for Python 3.9 will be removed in that version.
+`dicom-validator` versions follow [Semantic Versioning](https://semver.org/).
 
 ## Unreleased
 
