@@ -26,9 +26,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Medical Science Apps.",
 ]
 dependencies = [
-    "pydicom>=2.3; python_version < '3.14'",
-    "pydicom@git+https://github.com/pydicom/pydicom ; python_version >= '3.14'",
-    "lxml; python_version < '3.14'",
+    "pydicom>=3.0",
+    "lxml",
     "pyparsing>=3.2"
 ]
 description = "Python DICOM validator using input from DICOM specs in docbook format"
@@ -44,6 +43,12 @@ dev = [
     "pyfakefs>=5.0.0",
     "pytest",
     "pytest-order"
+]
+
+docs = [
+    "sphinx>=2.3.1",
+    "furo",
+    "myst-parser",
 ]
 
 [project.urls]
