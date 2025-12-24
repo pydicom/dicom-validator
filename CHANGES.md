@@ -2,7 +2,8 @@
 The released versions correspond to PyPi releases.
 `dicom-validator` versions follow [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## [Version 0.8.0](https://pypi.python.org/pypi/dicom-validator/0.8.0) (2025-12-24)
+Reworked result handling, allowed and documented using the validator programmatically.
 
 ### Changes
 * removed support for Python 3.9
@@ -15,6 +16,7 @@ The released versions correspond to PyPi releases.
 * do not count non-DICOM files as errors, if not using `--force-read`
 
 ### Features
+* add better support for using the validator programmatically
 * added support for conditional enum values
 
 ### Fixes
@@ -27,7 +29,7 @@ The released versions correspond to PyPi releases.
 * fixed error count for functional groups
 
 ### Documentation
-* added initial documentation on `ReadTheDocs`
+* added initial documentation on `ReadTheDocs`, including API documentation
 
 ### Infrastructure
 * added Python 3.14 to CI (currently needs development version of `pydicom`)
