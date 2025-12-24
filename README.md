@@ -30,6 +30,10 @@ changed to `dicom-validator` together with the move to the `pydicom`
 organization to reflect the fact that no other tools are planned, and that the
 DICOM validator is the relevant tool.
 
+## Documentation
+Documentation for the [current main branch](https://dicom-validator.readthedocs.io/en/latest/)
+and for the [latest release](https://dicom-validator.readthedocs.io/en/stable/) is available
+on `Read the Docs`.
 
 ## Installation
 
