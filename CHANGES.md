@@ -16,7 +16,7 @@ Reworked result handling, allowed and documented using the validator programmati
 * do not count non-DICOM files as errors, if not using `--force-read`
 
 ### Features
-* add better support for using the validator programmatically
+* added better support for using the validator programmatically
 * added support for conditional enum values
 
 ### Fixes
@@ -32,7 +32,7 @@ Reworked result handling, allowed and documented using the validator programmati
 * added initial documentation on `ReadTheDocs`, including API documentation
 
 ### Infrastructure
-* added Python 3.14 to CI (currently needs development version of `pydicom`)
+* added Python 3.14 to the CI
 
 ## [Version 0.7.3](https://pypi.python.org/pypi/dicom-validator/0.7.3) (2025-10-13)
 Fixes handling of nested sequences.
@@ -67,7 +67,7 @@ Fixes condition parser problems with newest DICOM standard.
 * fixed condition parser to work with current DICOM standard
 
 ### Infrastructure
-* update the tests for current version 2025b
+* updated the tests for current version 2025b
 
 ## [Version 0.7.0](https://pypi.python.org/pypi/dicom-validator/0.7.0) (2025-05-25)
 Uses a grammar parser as condition parser.
@@ -88,7 +88,7 @@ Fixes an incompatibility with newer pydicom versions.
 * support values of type list in addition to MultiValue (see [#165](https://github.com/pydicom/dicom-validator/issues/165))
 
 ### Infrastructure
-* update the tests for current version 2025a
+* updated the tests for current version 2025a
 
 ## [Version 0.6.4](https://pypi.python.org/pypi/dicom-validator/0.6.4) (2024-12-19)
 Bugfix release.
@@ -97,7 +97,7 @@ Bugfix release.
 * fixed handling of empty type 2 enumerated values (see [#147](https://github.com/pydicom/dicom-validator/issues/147))
 
 ### Infrastructure
-* update the tests for current version 2024e
+* updated the tests for current version 2024e
 * added CI tests for Python 3.13
 
 ## [Version 0.6.3](https://pypi.python.org/pypi/dicom-validator/0.6.3) (2024-10-24)
@@ -129,7 +129,7 @@ Some condition parser fixes.
 ### Fixes
 * fixed `(0070,0024) Graphic Filled` condition (see [#115](https://github.com/pydicom/dicom-validator/issues/115))
 * fixed a case of mixed ORed values and conditions
-* handle ", that is " clause in condition
+* handle `, that is ` clause in condition
 
 ## [Version 0.6.0](https://pypi.python.org/pypi/dicom-validator/0.6.0) (2024-07-15)
 Adds Windows executable to GitHub release.
