@@ -23,7 +23,6 @@ from dicom_validator.spec_reader.spec_reader import (
     SpecReaderLookupError,
 )
 
-
 # Some conditions from the spec are hard to parse with a few general rules.
 # Instead of implementing a full parser for these cases, we may define them here.
 # CAUTION: The same tag may appear with different conditions in different contexts
