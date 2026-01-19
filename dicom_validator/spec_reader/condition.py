@@ -5,7 +5,6 @@ from pydicom.tag import BaseTag
 
 from dicom_validator.tag_tools import tag_name_from_id
 
-
 ValuesType = list[Union[str, int]]
 
 
