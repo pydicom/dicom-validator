@@ -2,6 +2,12 @@
 The released versions correspond to PyPi releases.
 `dicom-validator` versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+* tags with a non-fulfilled "shall not be present if" condition have been incorrectly
+  shown as erroneous (see [#258](https://github.com/pydicom/dicom-validator/issues/258))
+
+### Fixes
+
 ## [Version 0.8.0](https://pypi.python.org/pypi/dicom-validator/0.8.0) (2025-12-24)
 Reworked result handling, allowed and documented using the validator programmatically.
 

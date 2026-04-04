@@ -518,6 +518,7 @@ class IODValidator:
             return True, True
         allowed = (
             condition_type == ConditionType.MandatoryOrUserDefined
+            or condition_type == ConditionType.NotAllowedOrUserDefined
             or condition_type == ConditionType.MandatoryOrConditional
             and self._composite_object_matches_condition(condition["other_cond"])
         )
