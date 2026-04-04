@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-CURRENT_EDITION = "2025d"
+CURRENT_EDITION = "2026b"
 
 
 def pytest_configure(config):

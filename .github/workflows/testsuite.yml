@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: dicom_validator/tests/fixtures/standard
-          key: "2015b_2025d"
+          key: "2015b_2026b"
           enableCrossOsArchive: true
 
       - name: Download DICOM standard
@@ -35,7 +35,7 @@ jobs:
         run: |
           pip install -e .
           python .github/workflows/get_edition.py 2015b "`pwd`/dicom_validator/tests/fixtures/standard"
-          python .github/workflows/get_edition.py 2025d "`pwd`/dicom_validator/tests/fixtures/standard"
+          python .github/workflows/get_edition.py 2026b "`pwd`/dicom_validator/tests/fixtures/standard"
 
       - name: Install dependencies
         run: |

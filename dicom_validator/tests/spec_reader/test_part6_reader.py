@@ -15,7 +15,7 @@ class TestPart6Reader:
 
     def test_data_elements(self, dict_reader):
         elements = dict_reader.data_elements()
-        assert len(elements) == 5257
+        assert len(elements) == 5266
 
     def test_sop_class_uids(self, dict_reader):
         sop_class_uids = dict_reader.sop_class_uids()
