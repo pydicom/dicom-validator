@@ -192,6 +192,36 @@ class TestIODValidator:
 
     @pytest.mark.tag_set(
         {
+            "SOPClassUID": uid.XRayAngiographicImageStorage,
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "RescaleIntercept": 0,
+            "ModalityLUTSequence": {},
+        }
+    )
+    def test_condition_for_tag_not_allowed_met(self, validator):
+        result = validator.validate()
+        assert has_tag_error(
+            result, "Modality LUT", 0x0028_3000, ErrorCode.TagNotAllowed
+        )
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.XRayAngiographicImageStorage,
+            "PatientName": "XXX",
+            "PatientID": "ZZZ",
+            "ModalityLUTSequence": {},
+        }
+    )
+    def test_condition_for_tag_not_allowed_not_met(self, validator):
+        """Regression test for #258."""
+        result = validator.validate()
+        assert not has_tag_error(
+            result, "Modality LUT", 0x0028_3000, ErrorCode.TagNotAllowed
+        )
+
+    @pytest.mark.tag_set(
+        {
             "SOPClassUID": uid.EnhancedXAImageStorage,
             "PatientName": "XXX",
             "PatientID": "ZZZ",
