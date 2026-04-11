@@ -30,6 +30,50 @@ jobs:
         python -m build
         pyinstaller dicom-validator.spec -y
 
+    - name: Smoke test executables
+      shell: pwsh
+      run: |
+        $standardPath = Join-Path $PWD "dicom_validator/tests/fixtures/standard"
+        $dicomPath = Join-Path $PWD "dicom_validator/tests/fixtures/dicom/rtdose.dcm"
+
+        & .\dist\validate_iods.exe --help
+        if ($LASTEXITCODE -ne 0) {
+          throw "validate_iods.exe --help failed."
+        }
+
+        $validateOutput = & .\dist\validate_iods.exe -src $standardPath -r 2025a $dicomPath 2>&1
+        $validateExitCode = $LASTEXITCODE
+        $validateText = ($validateOutput | Out-String)
+        Write-Output $validateText
+        if ($validateText -match "ModuleNotFoundError|Failed to execute script") {
+          throw "validate_iods.exe crashed during the smoke test."
+        }
+        if ($validateText -notmatch "Using DICOM revision 2025a|SOP class is") {
+          throw "validate_iods.exe did not reach validation logic."
+        }
+        if ($validateExitCode -lt 0) {
+          throw "validate_iods.exe returned an invalid exit code."
+        }
+
+        & .\dist\dump_dcm_info.exe --help
+        if ($LASTEXITCODE -ne 0) {
+          throw "dump_dcm_info.exe --help failed."
+        }
+
+        $dumpOutput = & .\dist\dump_dcm_info.exe -src $standardPath -r 2025a $dicomPath --show-tags PatientID 2>&1
+        $dumpExitCode = $LASTEXITCODE
+        $dumpText = ($dumpOutput | Out-String)
+        Write-Output $dumpText
+        if ($dumpText -match "ModuleNotFoundError|Failed to execute script") {
+          throw "dump_dcm_info.exe crashed during the smoke test."
+        }
+        if ($dumpText -notmatch "Patient ID") {
+          throw "dump_dcm_info.exe did not produce the expected output."
+        }
+        if ($dumpExitCode -ne 0) {
+          throw "dump_dcm_info.exe returned a non-zero exit code."
+        }
+
     - name: Archive artifacts
       uses: actions/upload-artifact@v7
       with:
