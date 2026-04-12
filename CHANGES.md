@@ -2,6 +2,13 @@
 The released versions correspond to PyPi releases.
 `dicom-validator` versions follow [Semantic Versioning](https://semver.org/).
 
+## [Version 0.8.2](https://pypi.python.org/pypi/dicom-validator/0.8.2) (Date TBD)
+
+### Fixes
+
+* Added missing dependencies in Windows executables
+* Automated smoke test for Windows executables in GitHub action
+
 ## [Version 0.8.1](https://pypi.python.org/pypi/dicom-validator/0.8.1) (2026-04-04)
 Fixes bug in handling "shall not be present" condition.
 

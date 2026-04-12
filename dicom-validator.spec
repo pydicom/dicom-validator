@@ -10,6 +10,7 @@ datas = []
 binaries = []
 hiddenimports = []
 hiddenimports += collect_submodules('pydicom')
+hiddenimports += collect_submodules('pyparsing')
 tmp_ret = collect_all('lxml')
 datas += tmp_ret[0];  hiddenimports += tmp_ret[2]
 
