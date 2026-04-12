@@ -14,14 +14,14 @@ is responsible for the download of the docbook version of the standard, the extr
 the relevant information into `json` files, and for loading this information into a
 :class:`~dicom_validator.validator.dicom_info.DicomInfo` object.
 To get the DICOM information you can use
-:meth:`~dicom_validator.spec_reader.edition_reader.EditionReader.load_dicom_info`:
+:meth:`~dicom_validator.spec_reader.edition_reader.EditionReader.dicom_info_for_edition`:
 
 .. code:: python
 
     # uses the default location <user home>/dicom-validator
     reader = EditionReader()
-    # if the edition is not downloaded yet, load_dicom_info will download and process it
-    dicom_info = reader.load_dicom_info("2025b")
+    # if the edition is not downloaded yet, dicom_info_for_edition will download and process it
+    dicom_info = reader.dicom_info_for_edition("2025b")
 
 You can also use a custom location to store the DICOM standard by using the optional `path`
 argument for the `EditionReader`.

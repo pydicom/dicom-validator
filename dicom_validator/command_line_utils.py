@@ -33,7 +33,11 @@ def add_edition_args(parser: argparse.ArgumentParser) -> None:
 def dicom_info_from_args(args: argparse.Namespace) -> DicomInfo | None:
     """Retrieve DICOM info using edition related parser arguments."""
     if not os.path.exists(args.standard_path):
-        print(f"Invalid standard path {args.standard_path} - aborting")
+        try:
+            Path(args.standard_path).mkdir(parents=True)
+        except OSError:
+            print(f"Failed to create {args.standard_path} - aborting")
+            return None
     if args.revision:
         edition_str = args.revision
         warnings.warn(

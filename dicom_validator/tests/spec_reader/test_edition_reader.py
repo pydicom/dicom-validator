@@ -10,7 +10,11 @@ from xml.etree import ElementTree
 import pytest
 
 from dicom_validator import __version__
-from dicom_validator.spec_reader.edition_reader import EditionReader
+from dicom_validator.spec_reader.edition_reader import (
+    EditionReader,
+    InvalidEditionError,
+    EditionLoadError,
+)
 from dicom_validator.tests.validator.conftest import CURRENT_EDITION
 
 pytestmark = pytest.mark.usefixtures("fs")
@@ -304,3 +308,52 @@ def test_failing_retrieval(retrieve_mock, base_path, edition_path, caplog):
     reader = EditionReader(base_path)
     assert reader.get_editions() is None
     assert "Failed to get DICOM editions" in caplog.text
+
+
+def test_dicom_info_for_edition_invalid_edition(base_path):
+    reader = MemoryEditionReader(base_path, "")
+    with pytest.raises(InvalidEditionError):
+        reader.dicom_info_for_edition("invalid")
+
+
+@patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
+def test_dicom_info_for_edition_failing_download(
+    retrieve_mock, fs, base_path, edition_path
+):
+    reader = MemoryEditionReader(base_path, "")
+    fs.create_file(edition_path, contents='["2014a", "2014c", "2015a"]')
+    retrieve_mock.side_effect = BaseException
+    with pytest.raises(EditionLoadError):
+        reader.dicom_info_for_edition("2014c")
+
+
+def test_dicom_info_for_existing_edition(fs, fixture_path, standard_path, edition_path):
+    root_dir = fs.add_real_directory(standard_path).path
+    reader = EditionReader(root_dir)
+    dicom_info = reader.dicom_info_for_edition("2015b")
+    assert dicom_info.dictionary
+    assert dicom_info.iods
+    assert dicom_info.modules
+
+
+@patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
+@patch("dicom_validator.spec_reader.spec_reader.ElementTree", ElementTree)
+def test_dicom_info_for_edition_download_edition(
+    retrieve_mock, fs, fixture_path, standard_path, edition_path
+):
+    def retrieve(url, path):
+        source = str(path).replace("2014c", "dummy").replace("standard" + os.sep, "")
+        fs.add_real_file(source, target_path=path)
+
+    root_dir = fs.add_real_directory(standard_path).path
+    fs.add_real_directory(fixture_path / "dummy", target_path=standard_path / "dummy")
+    root_path = Path(root_dir)
+    reader = EditionReader(root_path)
+    retrieve_mock.side_effect = lambda url, path: retrieve(url, path)
+    json_path = root_path / "2014c" / "json"
+    assert not json_path.exists()
+    dicom_info = reader.dicom_info_for_edition("2014c")
+    assert json_path.exists()
+    assert dicom_info.dictionary
+    assert dicom_info.iods
+    assert dicom_info.modules
