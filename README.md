@@ -164,8 +164,8 @@ from pathlib import Path
 from dicom_validator.spec_reader.edition_reader import EditionReader
 
 reader = EditionReader()  # uses the default location <user home>/dicom-validator
-# if the edition is not downloaded yet, load_dicom_info will download and process it
-dicom_info = reader.load_dicom_info("2025b")  # could also use "current" for the current standard
+# if the edition is not downloaded yet, dicom_info_for_edition will download and process it
+dicom_info = reader.dicom_info_for_edition("2025b")  # could also use "current" for the current standard
 ```
 Using this DICOM information, you can validate a DICOM file, or all DICOM files
 in a given directory:

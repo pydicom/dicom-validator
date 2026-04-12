@@ -4,8 +4,12 @@ The released versions correspond to PyPi releases.
 
 ## [Version 0.8.2](https://pypi.python.org/pypi/dicom-validator/0.8.2) (Date TBD)
 
-### Fixes
+### Features
+* added convenience method `EditionReader.dicom_info_for_edition` for easier
+  usage as API, adapted the (incorrect) documentation
+  (see [#258](https://github.com/pydicom/dicom-validator/issues/258))
 
+### Fixes
 * Added missing dependencies in Windows executables
 * Automated smoke test for Windows executables in GitHub action
 

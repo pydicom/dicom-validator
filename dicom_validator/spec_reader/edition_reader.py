@@ -19,6 +19,14 @@ from dicom_validator.spec_reader.serializer import DefinitionEncoder
 from dicom_validator.validator.dicom_info import DicomInfo
 
 
+class InvalidEditionError(ValueError):
+    pass
+
+
+class EditionLoadError(RuntimeError):
+    pass
+
+
 class EditionParser(html_parser.HTMLParser, ABC):
     edition_re = re.compile(r"\d\d\d\d[a-h]")
 
@@ -354,6 +362,34 @@ class EditionReader:
             self.load_info(edition, self.iod_info_json),
             self.load_info(edition, self.module_info_json),
         )
+
+    def dicom_info_for_edition(self, edition: str) -> DicomInfo:
+        """Looks up the edition, downloads and processes the DICOM files if needed,
+        and returns the existing or newly created DICOM info object.
+
+        Parameters
+        ----------
+        edition : str
+            Edition identifier (e.g., '2025c' or 'current').
+
+        Raises
+        ------
+        InvalidEditionError
+            If the `edition` argument has an invalid format or value.
+
+        EditionLoadError
+            If the edition could not be loaded. This could be due to a download error,
+            or an error while parsing the DICOM files.
+        """
+        valid_edition = self.get_edition(edition)
+        if valid_edition is None:
+            raise InvalidEditionError(f"Invalid DICOM edition {edition} - aborting")
+        destination = self.get_edition_path(valid_edition)
+        if destination is None:
+            raise EditionLoadError(
+                f"Failed to get DICOM edition {valid_edition} - aborting"
+            )
+        return self.load_dicom_info(valid_edition)
 
     def json_files_exist(self, edition: str) -> bool:
         """Check if all expected JSON files exist for the given edition.
