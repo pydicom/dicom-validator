@@ -2,7 +2,8 @@
 The released versions correspond to PyPi releases.
 `dicom-validator` versions follow [Semantic Versioning](https://semver.org/).
 
-## [Version 0.8.2](https://pypi.python.org/pypi/dicom-validator/0.8.2) (Date TBD)
+## [Version 0.8.2](https://pypi.python.org/pypi/dicom-validator/0.8.2) (2026-04-12)
+Fixes Windows executable and API documentation.
 
 ### Features
 * added convenience method `EditionReader.dicom_info_for_edition` for easier
