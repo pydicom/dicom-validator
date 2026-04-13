@@ -35,7 +35,7 @@ jobs:
         pyinstaller dicom-validator.spec -y
 
     - name: Publish Windows executables on GitHub
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
