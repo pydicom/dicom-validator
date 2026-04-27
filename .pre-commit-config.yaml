@@ -22,7 +22,7 @@ repos:
       - id: debug-statements
         language_version: python3
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.11
+    rev: v0.15.12
     hooks:
       - id: ruff
         args: [dicom_validator, --fix, --exit-non-zero-on-fix, --target-version=py310]
@@ -33,6 +33,6 @@ repos:
         args:
           - --py310-plus
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.1
+    rev: v1.20.2
     hooks:
       - id: mypy
