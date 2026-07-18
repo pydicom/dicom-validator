@@ -37,6 +37,14 @@ jobs:
           python .github/workflows/get_edition.py 2015b "`pwd`/dicom_validator/tests/fixtures/standard"
           python .github/workflows/get_edition.py 2026b "`pwd`/dicom_validator/tests/fixtures/standard"
 
+      - name: Save DICOM standard in cache
+        if: steps.cache-dicom.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: dicom_validator/tests/fixtures/standard
+          key: "2015b_2026b"
+          enableCrossOsArchive: true
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
