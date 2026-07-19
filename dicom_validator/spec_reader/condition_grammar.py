@@ -52,7 +52,7 @@ class ConditionGrammar:
         # pyparsing is quite slow, so for some performance improvement
         # we use packrat parsing for caching, and Regex where possible
         # to reduce the number of function calls
-        ParserElement.enablePackrat()
+        ParserElement.enable_packrat()
         value_grammar = self._value_grammar(self._tag_expression_grammar(is_value=True))
         tag_expression_grammar = self._tag_expression_grammar(is_value=False)
         simple_condition_grammar = (

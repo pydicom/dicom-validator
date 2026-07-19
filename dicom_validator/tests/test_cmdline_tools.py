@@ -31,7 +31,7 @@ def test_validate_sr(edition, caplog, standard_path, dicom_fixture_path):
     cmd_line_args = [
         "-src",
         str(standard_path),
-        "-r",
+        "-e",
         edition,
         "--recreate-json",
         str(rtdose_path),
