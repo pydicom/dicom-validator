@@ -1,18 +1,17 @@
 import re
-
 from collections.abc import Callable
 from typing import Optional
 
-from pydicom.valuerep import VR, INT_VR, STR_VR
+from pydicom.valuerep import INT_VR, STR_VR, VR
 
 from dicom_validator.spec_reader.condition_parser import ConditionParser
 
 try:
     import lxml.etree as ElementTree
 except ImportError:
-    import xml.etree.ElementTree as ElementTree
+    from xml.etree import ElementTree
 
-from dicom_validator.spec_reader.condition import ValuesType, ConditionType, Condition
+from dicom_validator.spec_reader.condition import Condition, ConditionType, ValuesType
 
 OptionalElement = Optional[ElementTree.Element]
 

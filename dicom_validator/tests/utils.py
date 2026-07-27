@@ -1,4 +1,4 @@
-from dicom_validator.validator.validation_result import ValidationResult, ErrorCode
+from dicom_validator.validator.validation_result import ErrorCode, ValidationResult
 
 
 def has_tag_error(

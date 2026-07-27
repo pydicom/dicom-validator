@@ -3,7 +3,7 @@ import logging
 import sys
 from collections.abc import Sequence
 
-from dicom_validator.command_line_utils import dicom_info_from_args, add_edition_args
+from dicom_validator.command_line_utils import add_edition_args, dicom_info_from_args
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
 
 

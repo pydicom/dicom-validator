@@ -11,7 +11,7 @@ from dicom_validator.validator.error_handler import (
     default_error_handler,
 )
 from dicom_validator.validator.iod_validator import IODValidator
-from dicom_validator.validator.validation_result import ValidationResult, Status
+from dicom_validator.validator.validation_result import Status, ValidationResult
 
 
 class DicomFileValidator:

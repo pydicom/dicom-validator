@@ -3,31 +3,31 @@ from re import RegexFlag
 from urllib.parse import ParseResult
 
 from pyparsing import (
-    ParserElement,
-    Group,
-    OneOrMore,
-    Suppress,
-    Combine,
-    Opt,
-    Word,
-    nums,
-    alphanums,
-    DelimitedList,
-    ZeroOrMore,
-    ParseException,
-    alphas,
-    CaselessKeyword,
-    Keyword,
-    Regex,
     AtLineStart,
+    CaselessKeyword,
+    Combine,
+    DelimitedList,
+    Group,
+    Keyword,
+    OneOrMore,
+    Opt,
+    ParseException,
+    ParserElement,
+    Regex,
+    Suppress,
+    Word,
+    ZeroOrMore,
+    alphanums,
+    alphas,
+    nums,
 )
 
 from dicom_validator.spec_reader.condition import (
-    ConditionOperator,
-    ConditionMeaning,
     Condition,
-    is_binary_condition,
+    ConditionMeaning,
+    ConditionOperator,
     ConditionType,
+    is_binary_condition,
 )
 
 

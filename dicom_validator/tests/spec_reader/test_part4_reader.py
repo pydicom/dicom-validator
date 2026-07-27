@@ -1,6 +1,6 @@
-from xml.etree import ElementTree
 from pathlib import Path
 from unittest.mock import patch
+from xml.etree import ElementTree
 
 import pytest
 

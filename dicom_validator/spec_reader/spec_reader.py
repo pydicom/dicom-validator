@@ -8,7 +8,7 @@ from typing import Optional
 try:
     import lxml.etree as ElementTree
 except ImportError:
-    import xml.etree.ElementTree as ElementTree
+    from xml.etree import ElementTree
 from pathlib import Path
 
 OptionalElement = Optional[ElementTree.Element]

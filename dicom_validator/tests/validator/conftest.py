@@ -5,12 +5,12 @@ from pathlib import Path
 import pydicom
 import pytest
 from pydicom import (
+    DataElement,
+    Dataset,
+    FileMetaDataset,
+    Sequence,
     dcmread,
     dcmwrite,
-    FileMetaDataset,
-    DataElement,
-    Sequence,
-    Dataset,
     uid,
 )
 from pydicom.datadict import dictionary_VR

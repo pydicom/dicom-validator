@@ -4,7 +4,7 @@ import pytest
 from pydicom import uid
 
 from dicom_validator.tests.utils import has_tag_error
-from dicom_validator.validator.validation_result import Status, ErrorCode
+from dicom_validator.validator.validation_result import ErrorCode, Status
 
 pytestmark = pytest.mark.usefixtures("disable_logging")
 

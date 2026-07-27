@@ -9,13 +9,13 @@ from dicom_validator.spec_reader.condition import Condition, ConditionType
 from dicom_validator.tag_tools import tag_name_from_id
 from dicom_validator.validator.dicom_info import DicomInfo
 from dicom_validator.validator.validation_result import (
-    ErrorCode,
-    TagError,
-    ValidationResult,
-    ErrorScope,
-    TagErrors,
     DicomTag,
+    ErrorCode,
+    ErrorScope,
     Status,
+    TagError,
+    TagErrors,
+    ValidationResult,
 )
 
 
@@ -46,7 +46,6 @@ class ValidationResultHandlerBase(ValidationResultHandler):
         """Placeholder method.
         Called before the validation has started. Only the SOP Class UID
         is set at this point."""
-        pass
 
     def handle_validation_result(self, result: ValidationResult) -> None:
         """Called after the validation has finished. All found errors are
@@ -66,7 +65,6 @@ class ValidationResultHandlerBase(ValidationResultHandler):
         """Placeholder method.
         Called in case the validation could not be started. Only the error code
         is set in the result. The validation is aborted after this call."""
-        pass
 
     def handle_validation_result_start(
         self, validation_result: ValidationResult
@@ -74,12 +72,10 @@ class ValidationResultHandlerBase(ValidationResultHandler):
         """Placeholder method.
         Called after the validation result is available and before the result
         handling starts."""
-        pass
 
     def handle_validation_result_end(self, validation_result: ValidationResult) -> None:
         """Placeholder method.
         Called after the validation result have been handled."""
-        pass
 
     def handle_module_errors(self, module_name: str, tag_errors: TagErrors) -> None:
         """Called to handle the errors in a single module.
@@ -103,30 +99,25 @@ class ValidationResultHandlerBase(ValidationResultHandler):
     ) -> None:
         """Placeholder method.
         Called before the errors for a single module are handled."""
-        pass
 
     def handle_module_errors_end(self, module_name: str, tag_errors: TagErrors) -> None:
         """Placeholder method.
         Called after the errors for a single module are handled."""
-        pass
 
     def handle_tag_error(self, tag_id: DicomTag, error: TagError) -> None:
         """Placeholder method.
         Called to handle a single tag error. The actual error handling
         (logging, recording) shall be implemented here."""
-        pass
 
     def handle_tag_parents_start(self, parents: list[BaseTag]) -> None:
         """Placeholder method.
         Called to handle parent sequence tags. Is called once
         for one or more tag errors with the same parent sequences."""
-        pass
 
     def handle_tag_parents_end(self, parents: list[BaseTag]) -> None:
         """Placeholder method.
         Called to handle parent sequence tags. Is called once
         after one or more tag errors with the same parent sequences appeared."""
-        pass
 
 
 class LoggingResultHandler(ValidationResultHandlerBase):

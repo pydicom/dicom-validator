@@ -17,7 +17,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 
-from dicom_validator import __version__  # noqa: E402
+from dicom_validator import __version__
 
 # -- General configuration ------------------------------------------------
 

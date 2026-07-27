@@ -8,10 +8,10 @@ import re
 import sys
 from collections.abc import Iterable, Sequence
 
-from pydicom import config, dcmread, Dataset, DataElement
+from pydicom import DataElement, Dataset, config, dcmread
 from pydicom.errors import InvalidDicomError
 
-from dicom_validator.command_line_utils import dicom_info_from_args, add_edition_args
+from dicom_validator.command_line_utils import add_edition_args, dicom_info_from_args
 from dicom_validator.validator.dicom_info import DicomInfo
 
 
@@ -108,9 +108,7 @@ class DataElementDumper:
 
     def print_sequence(self, sequence: Iterable[Dataset]) -> None:
         indent = 2 * self.level
-        format_string = "{{}}Item {{:<{}}} [Dataset with {{}} element(s)]".format(
-            56 - indent
-        )
+        format_string = f"{{}}Item {{:<{56 - indent}}} [Dataset with {{}} element(s)]"
         for i, dataset in enumerate(sequence):
             print(format_string.format(" " * indent, i + 1, len(dataset)))
             self.level += 1
