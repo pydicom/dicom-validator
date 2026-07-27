@@ -4,12 +4,12 @@ from xml.etree import ElementTree
 
 import pytest
 
-from dicom_validator.spec_reader.condition import ConditionType, ConditionOperator
+from dicom_validator.spec_reader.condition import ConditionOperator, ConditionType
 from dicom_validator.spec_reader.part3_reader import Part3Reader
 from dicom_validator.spec_reader.spec_reader import (
+    SpecReaderFileError,
     SpecReaderLookupError,
     SpecReaderParseError,
-    SpecReaderFileError,
 )
 
 

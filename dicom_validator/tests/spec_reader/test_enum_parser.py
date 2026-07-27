@@ -6,8 +6,8 @@ from pydicom.valuerep import VR
 
 from dicom_validator.spec_reader.condition import (
     Condition,
-    ConditionType,
     ConditionOperator,
+    ConditionType,
 )
 from dicom_validator.spec_reader.condition_parser import ConditionParser
 from dicom_validator.spec_reader.enum_parser import EnumParser

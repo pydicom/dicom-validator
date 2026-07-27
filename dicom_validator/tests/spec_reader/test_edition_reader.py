@@ -1,9 +1,8 @@
 import os
 import time
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any
-
-from collections.abc import Generator
 from unittest.mock import patch
 from xml.etree import ElementTree
 
@@ -11,9 +10,9 @@ import pytest
 
 from dicom_validator import __version__
 from dicom_validator.spec_reader.edition_reader import (
+    EditionLoadError,
     EditionReader,
     InvalidEditionError,
-    EditionLoadError,
 )
 from dicom_validator.tests.validator.conftest import CURRENT_EDITION
 

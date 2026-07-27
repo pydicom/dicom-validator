@@ -6,21 +6,20 @@ The information is taken from PS3.3 in docbook format as provided by ACR NEMA.
 
 import copy
 import logging
-from itertools import groupby
-
 import sys
+from itertools import groupby
 
 from dicom_validator.spec_reader.condition import (
     Condition,
-    ConditionType,
     ConditionOperator,
+    ConditionType,
 )
 from dicom_validator.spec_reader.condition_parser import ConditionParser
 from dicom_validator.spec_reader.enum_parser import EnumParser
 from dicom_validator.spec_reader.spec_reader import (
     SpecReader,
-    SpecReaderParseError,
     SpecReaderLookupError,
+    SpecReaderParseError,
 )
 
 # Some conditions from the spec are hard to parse with a few general rules.

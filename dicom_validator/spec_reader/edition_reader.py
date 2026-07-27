@@ -6,9 +6,8 @@ import re
 import sys
 import time
 from abc import ABC
-from pathlib import Path
-
 from collections.abc import Iterable
+from pathlib import Path
 from urllib.request import urlretrieve
 
 from dicom_validator import __version__
@@ -307,9 +306,7 @@ class EditionReader:
         if file_path.exists():
             return True
         edition_part = "current" if self.is_current(edition) else edition
-        url = "{0}{1}/source/docbook/part{2:02}/part{2:02}.xml".format(
-            self.base_url, edition_part, chapter
-        )
+        url = f"{self.base_url}{edition_part}/source/docbook/part{chapter:02}/part{chapter:02}.xml"
         try:
             self.logger.info(f"Downloading DICOM spec {edition} PS3.{chapter}...")
             urlretrieve(url, file_path)

@@ -8,11 +8,11 @@ from dicom_validator.tests.utils import has_tag_error
 from dicom_validator.validator.dicom_info import DicomInfo
 from dicom_validator.validator.iod_validator import IODValidator
 from dicom_validator.validator.validation_result import (
-    ValidationResult,
-    TagErrors,
+    DicomTag,
     ErrorCode,
     ErrorScope,
-    DicomTag,
+    TagErrors,
+    ValidationResult,
 )
 
 pytestmark = pytest.mark.usefixtures("disable_logging")

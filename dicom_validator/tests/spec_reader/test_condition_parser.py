@@ -1,6 +1,6 @@
 import pytest
 
-from dicom_validator.spec_reader.condition import ConditionType, ConditionOperator
+from dicom_validator.spec_reader.condition import ConditionOperator, ConditionType
 from dicom_validator.spec_reader.condition_parser import ConditionParser
 
 

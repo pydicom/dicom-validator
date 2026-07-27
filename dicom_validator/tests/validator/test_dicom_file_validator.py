@@ -7,7 +7,7 @@ from pydicom import dcmwrite
 from pydicom.dataset import Dataset, FileDataset, FileMetaDataset
 
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
-from dicom_validator.validator.validation_result import Status, DicomTag, ErrorCode
+from dicom_validator.validator.validation_result import DicomTag, ErrorCode, Status
 
 pytestmark = pytest.mark.usefixtures("disable_logging")
 

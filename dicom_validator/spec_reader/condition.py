@@ -1,11 +1,11 @@
 import enum
-from typing import Optional, Any, Union
+from typing import Any, Optional
 
 from pydicom.tag import BaseTag
 
 from dicom_validator.tag_tools import tag_name_from_id
 
-ValuesType = list[Union[str, int]]
+ValuesType = list[str | int]
 
 
 class ConditionType(str, enum.Enum):  # replace later with StrEnum from Python 3.11

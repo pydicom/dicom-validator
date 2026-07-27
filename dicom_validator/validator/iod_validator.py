@@ -3,14 +3,14 @@ import logging
 from dataclasses import dataclass
 from typing import Any, cast
 
-from pydicom import config, Sequence, Dataset, DataElement
+from pydicom import DataElement, Dataset, Sequence, config
 from pydicom.multival import MultiValue
 from pydicom.tag import BaseTag, Tag
-from pydicom.valuerep import validate_value, VR
+from pydicom.valuerep import VR, validate_value
 
 from dicom_validator.spec_reader.condition import (
-    ConditionType,
     ConditionOperator,
+    ConditionType,
 )
 from dicom_validator.validator.dicom_info import DicomInfo
 from dicom_validator.validator.error_handler import (
@@ -18,14 +18,14 @@ from dicom_validator.validator.error_handler import (
     default_error_handler,
 )
 from dicom_validator.validator.validation_result import (
-    ValidationResult,
-    Status,
-    TagErrors,
-    ErrorCode,
-    TagError,
-    TagType,
-    ErrorScope,
     DicomTag,
+    ErrorCode,
+    ErrorScope,
+    Status,
+    TagError,
+    TagErrors,
+    TagType,
+    ValidationResult,
 )
 
 
@@ -102,7 +102,7 @@ class FunctionalGroupInfo:
             per_frame_tag = DicomTag(tag.tag, [0x5200_9230] + tag.parents[1:])
             if per_frame.get(per_frame_tag) == error:
                 # if the error appears in both sequences, it is real
-                result[tag] = shared[tag]
+                result[tag] = error
                 del per_frame[per_frame_tag]
             elif error.code == ErrorCode.TagMissing:
                 # for missing tags, we also have to check if the error does not appear
@@ -116,7 +116,7 @@ class FunctionalGroupInfo:
                     del per_frame[handled_tag]
             else:
                 # other errors (unexpected tag, missing value) shall always remain
-                result[tag] = shared[tag]
+                result[tag] = error
 
         for tag, error in per_frame.items():
             if error.code == ErrorCode.TagMissing:
@@ -129,7 +129,7 @@ class FunctionalGroupInfo:
                 for handled_tag in handled_tags:
                     del shared[handled_tag]
             else:
-                result[tag] = per_frame[tag]
+                result[tag] = error
         return result
 
 

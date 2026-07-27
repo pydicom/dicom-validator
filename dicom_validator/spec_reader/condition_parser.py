@@ -2,8 +2,8 @@ from pyparsing import ParseException
 
 from dicom_validator.spec_reader.condition import (
     Condition,
-    ConditionType,
     ConditionMeaning,
+    ConditionType,
 )
 from dicom_validator.spec_reader.condition_grammar import ConditionGrammar
 

@@ -7,12 +7,12 @@ from dicom_validator.tag_tools import tag_name_from_id
 from dicom_validator.validator.dicom_info import DicomInfo
 from dicom_validator.validator.error_handler import ValidationResultHandlerBase
 from dicom_validator.validator.validation_result import (
-    ValidationResult,
-    TagErrors,
-    TagError,
-    ErrorScope,
-    ErrorCode,
     DicomTag,
+    ErrorCode,
+    ErrorScope,
+    TagError,
+    TagErrors,
+    ValidationResult,
 )
 
 

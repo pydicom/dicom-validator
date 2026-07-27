@@ -1,7 +1,7 @@
 from dicom_validator.spec_reader.condition import (
     Condition,
-    ConditionType,
     ConditionOperator,
+    ConditionType,
 )
 
 

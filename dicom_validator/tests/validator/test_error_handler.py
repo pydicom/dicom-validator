@@ -4,10 +4,10 @@ import pytest
 from pydicom import uid
 
 from dicom_validator.validator.dicom_file_validator import DicomFileValidator
-from dicom_validator.validator.html_error_handler import HtmlErrorHandler
 from dicom_validator.validator.error_handler import (
     ValidationResultHandler,
 )
+from dicom_validator.validator.html_error_handler import HtmlErrorHandler
 from dicom_validator.validator.validation_result import (
     ValidationResult,
 )
