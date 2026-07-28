@@ -420,9 +420,7 @@ class Part3Reader(SpecReader):
             title_node = self._find(sections_node, ["title"])
             if title_node is not None:
                 title = title_node.text
-                if any(
-                    [title.endswith(title_ending) for title_ending in title_endings]
-                ):
+                if any(title.endswith(title_ending) for title_ending in title_endings):
                     found_nodes.append(sections_node)
             if depth > 0:
                 found_nodes.extend(

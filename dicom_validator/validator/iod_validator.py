@@ -299,7 +299,7 @@ class IODValidator:
             if is_per_frame:
                 shared_result = self._func_group_info.shared_results.get(module_name)
                 if shared_result is not None:
-                    seq_tag = self._tag_id(list(module_info.keys())[0])
+                    seq_tag = self._tag_id(next(iter(module_info.keys())))
                     return self._func_group_info.combined(module_name, seq_tag, result)
                 return result
 
@@ -453,9 +453,10 @@ class IODValidator:
         elif has_tag:
             value = self._dataset_stack[-1].dataset[tag_id.tag].value
             vr = self._dataset_stack[-1].dataset[tag_id.tag].VR
-            if value_required:
-                if value is None or isinstance(value, (Sequence, str)) and not value:
-                    error.code = ErrorCode.TagEmpty
+            if value_required and (
+                value is None or isinstance(value, (Sequence, str)) and not value
+            ):
+                error.code = ErrorCode.TagEmpty
             if value is not None and (not isinstance(value, str) or value):
                 if not isinstance(value, (MultiValue, list)):
                     value = [value]
@@ -467,9 +468,10 @@ class IODValidator:
                             if "index" in enums and int(enums["index"]) != i + 1:
                                 continue
                             # check an existing condition
-                            if cond := enums.get("cond"):
-                                if not self._object_is_required_or_allowed(cond)[0]:
-                                    continue
+                            if (
+                                cond := enums.get("cond")
+                            ) and not self._object_is_required_or_allowed(cond)[0]:
+                                continue
                             if v not in enums["val"]:
                                 error.code = ErrorCode.EnumValueNotAllowed
                                 error.context = error.context or {}
@@ -656,7 +658,8 @@ class IODValidator:
             return seq_item[tag.tag]
         # otherwise, only check top-level tags in all sequences
         # as only these are referenced in conditions
-        for elem_tag in seq_item.keys():
+        seq_item_keys = seq_item.keys()
+        for elem_tag in seq_item_keys:
             # access via indexing to ensure we get a fully decoded DataElement
             # (pydicom decodes deferred RawDataElements inside Dataset.__getitem__)
             seq = seq_item[elem_tag]
@@ -743,9 +746,11 @@ class IODValidator:
                             continue
                         expanded_mod_info["modules"] = group_macros
                     else:
-                        if "cond" in info:
-                            if not self._object_is_required_or_allowed(info["cond"])[0]:
-                                continue
+                        if (
+                            "cond" in info
+                            and not self._object_is_required_or_allowed(info["cond"])[0]
+                        ):
+                            continue
                         expanded_mod_info.update(
                             self._get_module_info(ref, group_macros)
                         )

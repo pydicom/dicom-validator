@@ -281,7 +281,7 @@ def test_get_non_existing_edition(
 def test_failing_download(retrieve_mock, fs, base_path, edition_path, caplog):
     reader = MemoryEditionReader(base_path, "")
     fs.create_file(edition_path, contents='["2014a", "2014c", "2015a"]')
-    retrieve_mock.side_effect = BaseException
+    retrieve_mock.side_effect = OSError
     assert reader.get_edition_path("2014c") is None
     assert "Failed to download" in caplog.text
 
@@ -303,7 +303,7 @@ def test_partial_download(retrieve_mock, fs, base_path, edition_path):
 
 @patch("dicom_validator.spec_reader.edition_reader.urlretrieve")
 def test_failing_retrieval(retrieve_mock, base_path, edition_path, caplog):
-    retrieve_mock.side_effect = AttributeError
+    retrieve_mock.side_effect = OSError
     reader = EditionReader(base_path)
     assert reader.get_editions() is None
     assert "Failed to get DICOM editions" in caplog.text
@@ -321,7 +321,7 @@ def test_dicom_info_for_edition_failing_download(
 ):
     reader = MemoryEditionReader(base_path, "")
     fs.create_file(edition_path, contents='["2014a", "2014c", "2015a"]')
-    retrieve_mock.side_effect = BaseException
+    retrieve_mock.side_effect = AttributeError
     with pytest.raises(EditionLoadError):
         reader.dicom_info_for_edition("2014c")
 

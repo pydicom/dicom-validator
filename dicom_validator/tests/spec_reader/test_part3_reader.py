@@ -229,7 +229,7 @@ class TestReadPart3:
         #   Include Table C.18.1-1 “Numeric Measurement Macro Attributes”
         #   if and only if Value Type (0040,A040) is NUM.
         assert "C.18.1-1" in [d["ref"] for d in description["include"]]
-        include = [d for d in description["include"] if d["ref"] == "C.18.1-1"][0]
+        include = next(d for d in description["include"] if d["ref"] == "C.18.1-1")
         condition = include["cond"]
         assert condition.type == ConditionType.MandatoryOrNotAllowed
         assert condition.operator == ConditionOperator.EqualsValue

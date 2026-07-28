@@ -3,15 +3,13 @@ SpecReader reads information from DICOM standard files in docbook format as
 provided by ACR-NEMA.
 """
 
-from typing import Optional
+from __future__ import annotations
 
 try:
     import lxml.etree as ElementTree
 except ImportError:
     from xml.etree import ElementTree
 from pathlib import Path
-
-OptionalElement = Optional[ElementTree.Element]
 
 
 class SpecReaderError(Exception):
@@ -65,14 +63,16 @@ class SpecReader:
                 )
         return self._doc_trees.get(self.part_nr)
 
-    def get_doc_root(self) -> OptionalElement:
+    def get_doc_root(self) -> ElementTree.Element | None:
         """Return the XML root element of the current part, or `None` if unavailable."""
         doc_tree = self._get_doc_tree()
         if doc_tree:
             return doc_tree.getroot()
         return None
 
-    def _find(self, node: ElementTree.Element, elements: list[str]) -> OptionalElement:
+    def _find(
+        self, node: ElementTree.Element, elements: list[str]
+    ) -> ElementTree.Element | None:
         search_string = "/".join([self.docbook_ns + element for element in elements])
         if node is not None:
             return node.find(search_string)

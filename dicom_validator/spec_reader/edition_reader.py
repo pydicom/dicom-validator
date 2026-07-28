@@ -8,6 +8,7 @@ import time
 from abc import ABC
 from collections.abc import Iterable
 from pathlib import Path
+from urllib.error import ContentTooShortError
 from urllib.request import urlretrieve
 
 from dicom_validator import __version__
@@ -133,7 +134,7 @@ class EditionReader:
             self.logger.info("Getting DICOM editions...")
             self.retrieve(self.path / self.html_filename)
             self.write_to_json()
-        except BaseException as exception:
+        except (OSError, ContentTooShortError) as exception:
             self.logger.warning("Failed to get DICOM editions: %s", str(exception))
 
     def retrieve(self, html_path: Path) -> None:
@@ -165,9 +166,9 @@ class EditionReader:
         editions_path = self.editions_path()
         if editions_path.exists():
             if update:
-                today = datetime.datetime.today()
+                today = datetime.datetime.now(tz=datetime.timezone.utc)
                 modified_date = datetime.datetime.fromtimestamp(
-                    editions_path.stat().st_mtime
+                    editions_path.stat().st_mtime, tz=datetime.timezone.utc
                 )
                 # no need to update the edition dir more than once a month
                 update = (today - modified_date).days > 30
@@ -262,9 +263,7 @@ class EditionReader:
             return edition_str == editions[-1]
         if len(edition_str) == 4:
             return editions[-1].startswith(edition_str)
-        if edition_str == "current":
-            return True
-        return False
+        return edition_str == "current"
 
     def get_edition_and_path(self, edition_str: str) -> tuple[str | None, Path | None]:
         """Resolve an edition selector and return its local base path.
@@ -311,7 +310,7 @@ class EditionReader:
             self.logger.info(f"Downloading DICOM spec {edition} PS3.{chapter}...")
             urlretrieve(url, file_path)
             return True
-        except BaseException as exception:
+        except (OSError, AttributeError, ContentTooShortError) as exception:
             self.logger.error(f"Failed to download {url}: {exception}")
             if file_path.exists():
                 try:
