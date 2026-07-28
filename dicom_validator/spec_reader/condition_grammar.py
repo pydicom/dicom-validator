@@ -489,10 +489,9 @@ class ConditionGrammar:
             expr_index += 1
         tag_name = tag_expr[expr_index]
         expr_index += 1
-        if len(tag_expr) > expr_index:
-            if is_index(tag_expr[expr_index]):
-                tag_index = int(tag_expr[expr_index]) - 1
-                expr_index += 1
+        if len(tag_expr) > expr_index and is_index(tag_expr[expr_index]):
+            tag_index = int(tag_expr[expr_index]) - 1
+            expr_index += 1
         tag_id = tag_expr[expr_index] if len(tag_expr) > expr_index else None
         expr_index += 1
         if len(tag_expr) > expr_index and is_index(tag_expr[expr_index]):
@@ -509,12 +508,12 @@ class ConditionGrammar:
 
         if not tag_id:
             # tag name only - look it up
-            for tag_id, entry in self.dict_info.items():
+            for info_tag_id, entry in self.dict_info.items():
                 if entry["name"] == tag_name:
-                    return tag_id
-            for tag_id, entry in self.uid_dict_info.items():
+                    return info_tag_id
+            for info_tag_id, entry in self.uid_dict_info.items():
                 if entry["name"] == tag_name:
-                    return tag_id
+                    return info_tag_id
             return None
 
         # we have both tag name and ID

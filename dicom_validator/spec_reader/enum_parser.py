@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import re
 from collections.abc import Callable
-from typing import Optional
 
 from pydicom.valuerep import INT_VR, STR_VR, VR
 
@@ -12,8 +13,6 @@ except ImportError:
     from xml.etree import ElementTree
 
 from dicom_validator.spec_reader.condition import Condition, ConditionType, ValuesType
-
-OptionalElement = Optional[ElementTree.Element]
 
 
 class EnumParser:
@@ -30,7 +29,7 @@ class EnumParser:
 
     def __init__(
         self,
-        find_section: Callable[[str], OptionalElement],
+        find_section: Callable[[str], ElementTree.Element | None],
         condition_parser: ConditionParser,
     ) -> None:
         self._find_section = find_section
@@ -44,9 +43,8 @@ class EnumParser:
         var_lists = node.findall(self.docbook_ns + "variablelist")
         enum_lists = [self.parse_variable_list(e) for e in var_lists]
         enum_lists = [e for e in enum_lists if e]
-        if not enum_lists:
-            if linked_enums := self.parse_linked_variablelists(node):
-                enum_lists.extend(linked_enums)
+        if not enum_lists and (linked_enums := self.parse_linked_variablelists(node)):
+            enum_lists.extend(linked_enums)
 
         if enum_lists:
             if vr == VR.AT:

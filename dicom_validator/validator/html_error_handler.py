@@ -1,4 +1,5 @@
-from http.client import HTTPSConnection
+from http.client import CannotSendHeader, HTTPSConnection
+from typing import ClassVar
 from urllib.parse import urlparse
 
 from pydicom.tag import BaseTag
@@ -20,7 +21,7 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
     """An example error handler that writes DICOM errors to a simple HTML page,
     adding links to each affected module."""
 
-    valid_refs: dict[str, str] = {}
+    valid_refs: ClassVar[dict[str, str]] = {}
 
     def __init__(self, dicom_info: DicomInfo) -> None:
         self.dicom_info = dicom_info
@@ -61,7 +62,7 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         conn = HTTPSConnection(p.netloc)
         try:
             conn.request("HEAD", p.path)
-        except Exception:
+        except (ValueError, TypeError, CannotSendHeader):
             return False
         return conn.getresponse().status < 400
 

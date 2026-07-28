@@ -1,5 +1,5 @@
 import enum
-from typing import Any, Optional
+from typing import Any
 
 from pydicom.tag import BaseTag
 
@@ -177,7 +177,7 @@ class Condition:
 
     @classmethod
     def read_condition(
-        cls, condition_dict: dict, condition: Optional["Condition"] = None
+        cls, condition_dict: dict, condition: "Condition | None" = None
     ) -> "Condition":
         """Create or update a Condition object from a condition dict.
         Parameters
