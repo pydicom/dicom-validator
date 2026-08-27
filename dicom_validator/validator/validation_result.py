@@ -20,6 +20,8 @@ class ErrorCode(enum.Enum):
     """Value not in the list of allowed enum values"""
     InvalidValue = 6
     """The value failed the VR validation"""
+    InvalidSequence = 7
+    """Invalid DICOM sequence"""
 
 
 class ErrorScope(enum.Enum):

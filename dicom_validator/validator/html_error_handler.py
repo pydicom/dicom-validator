@@ -155,6 +155,8 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
                     vr = error.context.get("VR", "")
                     info = f" '{value}' for VR {vr}"
                 return f" has invalid value{info}"
+            case ErrorCode.InvalidSequence:
+                return " is not a valid sequence"
             case _:
                 return ""
 

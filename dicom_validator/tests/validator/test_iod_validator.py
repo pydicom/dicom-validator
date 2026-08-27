@@ -1,7 +1,7 @@
 import logging
 
 import pytest
-from pydicom import uid
+from pydicom import DataElement, uid
 
 from dicom_validator.tests.utils import has_tag_error
 from dicom_validator.validator.validation_result import ErrorCode, Status
@@ -122,6 +122,31 @@ class TestIODValidator:
         assert '\nModule "Patient":' in messages
         assert (
             "Tag (0010,0022) (Type of Patient ID) has invalid value 'lowercase' for VR CS"
+            in messages
+        )
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.CTImageStorage,
+            "DerivationCodeSequence": DataElement(
+                "DerivationCodeSequence", "OB", b"\x00" * 10
+            ),
+        }
+    )
+    def test_invalid_sequence(self, validator, caplog):
+        caplog.set_level(logging.WARNING)
+        result = validator.validate()
+
+        assert result.status == Status.Failed
+        assert "General Reference" in result.module_errors
+        assert has_tag_error(
+            result, "General Reference", 0x0008_9215, ErrorCode.InvalidSequence
+        )
+
+        messages = [rec.message for rec in caplog.records]
+        assert '\nModule "General Reference":' in messages
+        assert (
+            "Tag (0008,9215) (Derivation Code Sequence) is not a valid sequence, ignoring it"
             in messages
         )
 

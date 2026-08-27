@@ -2,6 +2,12 @@
 The released versions correspond to PyPi releases.
 `dicom-validator` versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Changes
+* an invalid sequence (incorrect VR) is now handled as a validation error
+  instead of raising a `RuntimeError` (see [#288](https://github.com/pydicom/dicom-validator/issues/288))
+
 ## [Version 0.8.2](https://pypi.python.org/pypi/dicom-validator/0.8.2) (2026-04-12)
 Fixes Windows executable and API documentation.
 

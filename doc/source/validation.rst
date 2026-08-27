@@ -106,6 +106,7 @@ According to the described logic, the following validation errors are defined:
 * *Tag not allowed*: A tag is found that is not allowed by a condition
 * *Enum value not allowed*: A tag has a value that is not one of the allowed enum values for this tag
 * *Invalid value*: The tag value fails the VR validation as performed by ``pydicom``
+* *Invalid sequence*: A sequence tag has an incorrect VR and is ignored in the validation
 
 Condition parsing
 .................

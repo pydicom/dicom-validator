@@ -219,6 +219,8 @@ class LoggingResultHandler(ValidationResultHandlerBase):
             case ErrorCode.InvalidValue:
                 error.context = error.context or {}
                 return f" has invalid value '{error.context['value']}' for VR {error.context['VR'] if error.context else ''}"
+            case ErrorCode.InvalidSequence:
+                return " is not a valid sequence, ignoring it"
             case _:
                 return ""
 

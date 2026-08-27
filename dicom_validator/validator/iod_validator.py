@@ -370,7 +370,8 @@ class IODValidator:
                     if data_elem is None:
                         continue
                     if data_elem.VR != "SQ":
-                        raise RuntimeError(f"Not a sequence: {data_elem}")
+                        errors[tag_id] = TagError(code=ErrorCode.InvalidSequence)
+                        continue
                     for sq_item_dataset in data_elem.value:
                         self._dataset_stack.append(
                             DatasetStackItem(

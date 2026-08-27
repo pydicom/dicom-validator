@@ -94,6 +94,9 @@ def new_data_set(tags, *, top_level: bool = True):
         return data_set
     for tag, value in tags.items():
         tag = Tag(tag)  # raises for invalid tag
+        if isinstance(value, DataElement):
+            data_set[tag] = value
+            continue
         try:
             vr = dictionary_VR(tag)
         except KeyError:
