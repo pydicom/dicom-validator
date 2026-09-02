@@ -119,6 +119,68 @@ class ValidationResultHandlerBase(ValidationResultHandler):
         Called to handle parent sequence tags. Is called once
         after one or more tag errors with the same parent sequences appeared."""
 
+    def _error_message(
+        self, error: TagError, dictionary: dict, indent: int = 0
+    ) -> str:
+        """Return a human-readable message fragment for a tag error.
+
+        Parameters
+        ----------
+        error : TagError
+            The error to be rendered.
+        dictionary : dict
+            The DICOM dictionary (`DicomInfo.dictionary`), used to look up
+            condition text for `ErrorCode.TagNotAllowed` errors.
+        indent : int
+            Current indentation level, in case the message itself needs to
+            be indented further (e.g. for a condition on multiple lines).
+            Defaults to 0.
+
+        Returns
+        -------
+        str
+            A message fragment starting with a space, to be appended after
+            the tag name.
+        """
+        match error.scope:
+            case ErrorScope.SharedFuncGroup:
+                postfix = " in Shared Group"
+            case ErrorScope.PerFrameFuncGroup:
+                postfix = " in Per-Frame Group"
+            case ErrorScope.BothFuncGroups:
+                postfix = " in both Shared and Per-Frame Groups"
+            case _:
+                postfix = ""
+
+        match error.code:
+            case ErrorCode.TagMissing:
+                return f" is missing{postfix}"
+            case ErrorCode.TagEmpty:
+                return " is empty"
+            case ErrorCode.TagUnexpected:
+                return f" is unexpected{postfix}"
+            case ErrorCode.TagNotAllowed:
+                msg = f" is not allowed{postfix}"
+                if error.context and "cond" in error.context:
+                    indent += 1
+                    condition = Condition.read_condition(error.context["cond"])
+                    if condition.type != ConditionType.UserDefined:
+                        msg += f" by condition:\n{'  ' * indent}{condition.to_string(dictionary)}"
+                return msg
+            case ErrorCode.EnumValueNotAllowed:
+                error.context = error.context or {}
+                return (
+                    f" - enum value '{error.context.get('value', '')}' not allowed,\n"
+                    f"  allowed values: {', '.join([str(v) for v in error.context.get('allowed', [])])}"
+                )
+            case ErrorCode.InvalidValue:
+                error.context = error.context or {}
+                return f" has invalid value '{error.context['value']}' for VR {error.context['VR'] if error.context else ''}"
+            case ErrorCode.InvalidSequence:
+                return " is not a valid sequence, ignoring it"
+            case _:
+                return ""
+
 
 class LoggingResultHandler(ValidationResultHandlerBase):
     """Handles the result of the validation of a single DICOM file
@@ -185,44 +247,27 @@ class LoggingResultHandler(ValidationResultHandlerBase):
         self.logger.error(msg)
 
     def error_message(self, error: TagError, indent: int) -> str:
-        match error.scope:
-            case ErrorScope.SharedFuncGroup:
-                postfix = " in Shared Group"
-            case ErrorScope.PerFrameFuncGroup:
-                postfix = " in Per-Frame Group"
-            case ErrorScope.BothFuncGroups:
-                postfix = " in both Shared and Per-Frame Groups"
-            case _:
-                postfix = ""
+        """Return a human-readable message fragment for a tag error.
 
-        match error.code:
-            case ErrorCode.TagMissing:
-                return f" is missing{postfix}"
-            case ErrorCode.TagEmpty:
-                return " is empty"
-            case ErrorCode.TagUnexpected:
-                return f" is unexpected{postfix}"
-            case ErrorCode.TagNotAllowed:
-                msg = f" is not allowed{postfix}"
-                if error.context and "cond" in error.context:
-                    indent += 1
-                    condition = Condition.read_condition(error.context["cond"])
-                    if condition.type != ConditionType.UserDefined:
-                        msg += f" by condition:\n{'  ' * indent}{condition.to_string(self.dicom_info.dictionary)}"
-                return msg
-            case ErrorCode.EnumValueNotAllowed:
-                error.context = error.context or {}
-                return (
-                    f" - enum value '{error.context.get('value', '')}' not allowed,\n"
-                    f"  allowed values: {', '.join([str(v) for v in error.context.get('allowed', [])])}"
-                )
-            case ErrorCode.InvalidValue:
-                error.context = error.context or {}
-                return f" has invalid value '{error.context['value']}' for VR {error.context['VR'] if error.context else ''}"
-            case ErrorCode.InvalidSequence:
-                return " is not a valid sequence, ignoring it"
-            case _:
-                return ""
+        Parameters
+        ----------
+        error : TagError
+            The error to be rendered.
+        indent : int
+            Current indentation level, in case the message itself needs to
+            be indented further (e.g. for a condition on multiple lines).
+
+        Returns
+        -------
+        str
+            A message fragment starting with a space, to be appended after
+            the tag name.
+        """
+        return self._error_message(
+            error=error,
+            dictionary=self.dicom_info.dictionary,
+            indent=indent,
+        )
 
 
 def default_error_handler(dicom_info: DicomInfo, log_level: int = logging.INFO):

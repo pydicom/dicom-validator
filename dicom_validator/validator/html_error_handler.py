@@ -1,3 +1,4 @@
+import html
 from http.client import CannotSendHeader, HTTPSConnection
 from typing import ClassVar
 from urllib.parse import urlparse
@@ -9,8 +10,6 @@ from dicom_validator.validator.dicom_info import DicomInfo
 from dicom_validator.validator.error_handler import ValidationResultHandlerBase
 from dicom_validator.validator.validation_result import (
     DicomTag,
-    ErrorCode,
-    ErrorScope,
     TagError,
     TagErrors,
     ValidationResult,
@@ -112,8 +111,7 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         """Close the HTML list for the current module's errors."""
         self.html += "</ul>\n"
 
-    @staticmethod
-    def error_message(error: TagError) -> str:
+    def error_message(self, error: TagError) -> str:
         """Return a human-readable message fragment for a tag error.
 
         Parameters
@@ -126,39 +124,11 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         str
             A short message starting with a space to append after the tag name.
         """
-        match error.scope:
-            case ErrorScope.SharedFuncGroup:
-                postfix = " in Shared Group"
-            case ErrorScope.PerFrameFuncGroup:
-                postfix = " in Per-Frame Group"
-            case ErrorScope.BothFuncGroups:
-                postfix = " in both Shared and Per-Frame Groups"
-            case _:
-                postfix = ""
-
-        match error.code:
-            case ErrorCode.TagMissing:
-                return f" is missing{postfix}"
-            case ErrorCode.TagEmpty:
-                return " is empty"
-            case ErrorCode.TagUnexpected:
-                return f" is unexpected{postfix}"
-            case ErrorCode.TagNotAllowed:
-                return f" is not allowed{postfix}"
-            case ErrorCode.EnumValueNotAllowed:
-                error.context = error.context or {}
-                return f" - enum value '{error.context.get('value', '')}' not allowed"
-            case ErrorCode.InvalidValue:
-                info = ""
-                if error.context is not None:
-                    value = error.context.get("value", "")
-                    vr = error.context.get("VR", "")
-                    info = f" '{value}' for VR {vr}"
-                return f" has invalid value{info}"
-            case ErrorCode.InvalidSequence:
-                return " is not a valid sequence"
-            case _:
-                return ""
+        message = self._error_message(
+            error=error,
+            dictionary=self.dicom_info.dictionary,
+        )
+        return html.escape(message).replace("\n", "<br>")
 
     def tag_name(self, tag_id: BaseTag) -> str:
         """Return a human-readable name for a tag, including its ID.
