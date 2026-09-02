@@ -2,6 +2,13 @@
 The released versions correspond to PyPi releases.
 `dicom-validator` versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Changes
+* method to handle error message formatting added to `ValidationResultHandlerBase` 
+  and used by `LoggingResultHandler` and `HtmlErrorHandler` (see
+  [#291](https://github.com/pydicom/dicom-validator/issues/291))
+
 ## [Version 0.8.3](https://pypi.python.org/pypi/dicom-validator/0.8.3) (2026-08-28)
 Changed invalid sequence handling.
 
