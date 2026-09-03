@@ -43,11 +43,13 @@ class NullValidationResultHandler(ValidationResultHandler):
     returns, without any additional reporting.
     """
 
-    def handle_validation_start(self, result: ValidationResult) -> None:
-        ...  # no-op: this handler intentionally does no reporting
+    def handle_validation_start(
+        self, result: ValidationResult
+    ) -> None: ...  # no-op: this handler intentionally does no reporting
 
-    def handle_validation_result(self, result: ValidationResult) -> None:
-        ...  # no-op: this handler intentionally does no reporting
+    def handle_validation_result(
+        self, result: ValidationResult
+    ) -> None: ...  # no-op: this handler intentionally does no reporting
 
 
 class ValidationResultHandlerBase(ValidationResultHandler):
