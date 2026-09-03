@@ -80,8 +80,11 @@ This is done with the assumption that validating a single dataset is fast, and t
 to handle each error directly as it appears (if this assumption turns out not to hold, this
 behavior may change in the future).
 
-Note that the error handling API is very simple. If you do not want to do any handling, you
-can write a null handler:
+Note that the error handling API is very simple.
+
+A null handler
+~~~~~~~~~~~~~~
+If you do not want to do any handling, you can write a null handler:
 
 .. code:: python
 
@@ -104,6 +107,24 @@ And use this for your validation:
     result = validator.validate()
     # handle result yourself
 
+Formatting results and errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you want to render `TagError` or `ValidationResult` objects as human-readable text
+without writing your own formatting, you can use
+:class:`~dicom_validator.validator.error_handler.ValidationResultFormatter` directly - it
+does not require a handler at all:
+
+.. code:: python
+
+    from dicom_validator.validator.error_handler import ValidationResultFormatter
+
+    formatter = ValidationResultFormatter(dicom_info.dictionary)
+    for module_name, tag_errors in (result.module_errors or {}).items():
+        for tag_id, error in tag_errors.items():
+            print(f"{module_name}: {tag_id}{formatter.error_message(error)}")
+
+Custom handlers
+~~~~~~~~~~~~~~~
 You could also move your result handling into `handle_validation_result`.
 The more useful option is to base your handler on
 :class:`~dicom_validator.validator.error_handler.ValidationResultHandlerBase`. This already provides
