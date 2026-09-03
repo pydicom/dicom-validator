@@ -193,14 +193,16 @@ def test_formatter_error_message_tag_not_allowed(dicom_info, validator) -> None:
             ValidationResult(status=Status.InvalidFile, file_path="foo.dcm"),
             "Not a DICOM File: foo.dcm - ignoring",
         ),
-        (ValidationResult(status="UNKNOWN"), "Unknown error"),
+        # Passed is never actually passed to this method, but the default branch should still
+        # behave sensibly if it's ever reached
+        (ValidationResult(status=Status.Passed), "Unknown error"),
     ],
     ids=[
         "missing-sop-class-uid",
         "unknown-sop-class-uid",
         "missing-file",
         "invalid-file",
-        "unknown-status",
+        "unreachable-status-fallback",
     ],
 )
 def test_formatter_failed_validation_message(result, expected) -> None:
