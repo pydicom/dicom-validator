@@ -36,6 +36,20 @@ class ValidationResultHandler(Protocol):
         ...
 
 
+class NullValidationResultHandler(ValidationResultHandler):
+    """A no-op handler.
+
+    Useful when you only want to read the `ValidationResult` after `validate()`
+    returns, without any additional reporting.
+    """
+
+    def handle_validation_start(self, result: ValidationResult) -> None:
+        ...  # no-op: this handler intentionally does no reporting
+
+    def handle_validation_result(self, result: ValidationResult) -> None:
+        ...  # no-op: this handler intentionally does no reporting
+
+
 class ValidationResultHandlerBase(ValidationResultHandler):
     """Provides a skeleton implementation for a result handler.
     An easy way to implement another handler is to derive from this class

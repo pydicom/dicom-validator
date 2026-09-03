@@ -105,14 +105,19 @@ And use this for your validation:
 
     validator = IODValidator(ds, dicom_info, error_handler=NullValidationResultHandler())
     result = validator.validate()
-    # handle result yourself
+    # handle the result yourself
+
+For convenience, a null handler is implemented in
+:class:`~dicom_validator.validator.error_handler.NullValidationResultHandler`.
 
 Formatting results and errors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you want to render `TagError` or `ValidationResult` objects as human-readable text
 without writing your own formatting, you can use
-:class:`~dicom_validator.validator.error_handler.ValidationResultFormatter` directly - it
-does not require a handler at all:
+:class:`~dicom_validator.validator.error_handler.ValidationResultFormatter`.
+
+This works well together with a null handler: validate as shown above, then format the `result`
+it returns:
 
 .. code:: python
 
