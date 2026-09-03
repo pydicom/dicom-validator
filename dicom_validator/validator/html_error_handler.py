@@ -1,3 +1,4 @@
+import html
 from http.client import CannotSendHeader, HTTPSConnection
 from typing import ClassVar
 from urllib.parse import urlparse
@@ -6,11 +7,12 @@ from pydicom.tag import BaseTag
 
 from dicom_validator.tag_tools import tag_name_from_id
 from dicom_validator.validator.dicom_info import DicomInfo
-from dicom_validator.validator.error_handler import ValidationResultHandlerBase
+from dicom_validator.validator.error_handler import (
+    ValidationResultFormatter,
+    ValidationResultHandlerBase,
+)
 from dicom_validator.validator.validation_result import (
     DicomTag,
-    ErrorCode,
-    ErrorScope,
     TagError,
     TagErrors,
     ValidationResult,
@@ -25,6 +27,7 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
 
     def __init__(self, dicom_info: DicomInfo) -> None:
         self.dicom_info = dicom_info
+        self._formatter = ValidationResultFormatter(dicom_info.dictionary)
         self.html = ""
         self.sop_class = ""
 
@@ -37,6 +40,11 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
     def handle_validation_result_end(self, result: ValidationResult) -> None:
         """Finalize the HTML output for a validation result."""
         self.html = f"<html><body>{self.html}</body></html>"
+
+    def handle_failed_validation_start(self, result: ValidationResult) -> None:
+        """Add a paragraph explaining why the validation could not be started."""
+        message = self._formatter.failed_validation_message(result)
+        self.html += f"<p>{html.escape(message)}</p>"
 
     @staticmethod
     def url_for_ref(ref) -> str:
@@ -126,39 +134,8 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         str
             A short message starting with a space to append after the tag name.
         """
-        match error.scope:
-            case ErrorScope.SharedFuncGroup:
-                postfix = " in Shared Group"
-            case ErrorScope.PerFrameFuncGroup:
-                postfix = " in Per-Frame Group"
-            case ErrorScope.BothFuncGroups:
-                postfix = " in both Shared and Per-Frame Groups"
-            case _:
-                postfix = ""
-
-        match error.code:
-            case ErrorCode.TagMissing:
-                return f" is missing{postfix}"
-            case ErrorCode.TagEmpty:
-                return " is empty"
-            case ErrorCode.TagUnexpected:
-                return f" is unexpected{postfix}"
-            case ErrorCode.TagNotAllowed:
-                return f" is not allowed{postfix}"
-            case ErrorCode.EnumValueNotAllowed:
-                error.context = error.context or {}
-                return f" - enum value '{error.context.get('value', '')}' not allowed"
-            case ErrorCode.InvalidValue:
-                info = ""
-                if error.context is not None:
-                    value = error.context.get("value", "")
-                    vr = error.context.get("VR", "")
-                    info = f" '{value}' for VR {vr}"
-                return f" has invalid value{info}"
-            case ErrorCode.InvalidSequence:
-                return " is not a valid sequence"
-            case _:
-                return ""
+        message = ValidationResultFormatter().error_message(error)
+        return html.escape(message).replace("\n", "<br>")
 
     def tag_name(self, tag_id: BaseTag) -> str:
         """Return a human-readable name for a tag, including its ID.
@@ -171,13 +148,10 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         Returns
         -------
         str
-            A string like 'Patient Name (0010,0010)' when known, otherwise the
-            tag ID string.
+            A string like '(0010,0010) (Patient's Name)' when known, otherwise
+            the tag ID string.
         """
-        dict_info = self.dicom_info.dictionary
-        if str(tag_id) in dict_info:
-            return f'{dict_info[str(tag_id)]["name"]} {tag_id}'
-        return str(tag_id)
+        return tag_name_from_id(tag_id, self.dicom_info.dictionary)
 
     def handle_tag_error(self, tag_id: DicomTag, error: TagError) -> None:
         """Append a single tag error as an HTML list item."""

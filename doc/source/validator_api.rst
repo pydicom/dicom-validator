@@ -35,6 +35,11 @@ Base classes
 .. autoclass:: dicom_validator.validator.error_handler.ValidationResultHandlerBase
     :members:
 
+Null error handler
+~~~~~~~~~~~~~~~~~~
+.. autoclass:: dicom_validator.validator.error_handler.NullValidationResultHandler
+    :members:
+
 Default error handler
 ~~~~~~~~~~~~~~~~~~~~~
 .. autoclass:: dicom_validator.validator.error_handler.LoggingResultHandler
@@ -43,4 +48,9 @@ Default error handler
 Example error handler
 ~~~~~~~~~~~~~~~~~~~~~
 .. autoclass:: dicom_validator.validator.html_error_handler.HtmlErrorHandler
+    :members:
+
+Error Formatting
+~~~~~~~~~~~~~~~~
+.. autoclass:: dicom_validator.validator.error_handler.ValidationResultFormatter
     :members:
