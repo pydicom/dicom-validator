@@ -7,7 +7,10 @@ from pydicom.tag import BaseTag
 
 from dicom_validator.tag_tools import tag_name_from_id
 from dicom_validator.validator.dicom_info import DicomInfo
-from dicom_validator.validator.error_handler import ValidationResultHandlerBase
+from dicom_validator.validator.error_handler import (
+    ValidationResultFormatter,
+    ValidationResultHandlerBase,
+)
 from dicom_validator.validator.validation_result import (
     DicomTag,
     TagError,
@@ -24,6 +27,7 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
 
     def __init__(self, dicom_info: DicomInfo) -> None:
         self.dicom_info = dicom_info
+        self._formatter = ValidationResultFormatter(dicom_info.dictionary)
         self.html = ""
         self.sop_class = ""
 
@@ -36,6 +40,11 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
     def handle_validation_result_end(self, result: ValidationResult) -> None:
         """Finalize the HTML output for a validation result."""
         self.html = f"<html><body>{self.html}</body></html>"
+
+    def handle_failed_validation_start(self, result: ValidationResult) -> None:
+        """Add a paragraph explaining why the validation could not be started."""
+        message = self._formatter.failed_validation_message(result)
+        self.html += f"<p>{html.escape(message)}</p>"
 
     @staticmethod
     def url_for_ref(ref) -> str:
@@ -111,7 +120,8 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         """Close the HTML list for the current module's errors."""
         self.html += "</ul>\n"
 
-    def error_message(self, error: TagError) -> str:
+    @staticmethod
+    def error_message(error: TagError) -> str:
         """Return a human-readable message fragment for a tag error.
 
         Parameters
@@ -124,10 +134,7 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         str
             A short message starting with a space to append after the tag name.
         """
-        message = self._error_message(
-            error=error,
-            dictionary=self.dicom_info.dictionary,
-        )
+        message = ValidationResultFormatter().error_message(error)
         return html.escape(message).replace("\n", "<br>")
 
     def tag_name(self, tag_id: BaseTag) -> str:
@@ -141,13 +148,10 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         Returns
         -------
         str
-            A string like 'Patient Name (0010,0010)' when known, otherwise the
-            tag ID string.
+            A string like '(0010,0010) (Patient's Name)' when known, otherwise
+            the tag ID string.
         """
-        dict_info = self.dicom_info.dictionary
-        if str(tag_id) in dict_info:
-            return f'{dict_info[str(tag_id)]["name"]} {tag_id}'
-        return str(tag_id)
+        return tag_name_from_id(tag_id, self.dicom_info.dictionary)
 
     def handle_tag_error(self, tag_id: DicomTag, error: TagError) -> None:
         """Append a single tag error as an HTML list item."""
