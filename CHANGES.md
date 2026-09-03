@@ -5,9 +5,17 @@ The released versions correspond to PyPi releases.
 ## Unreleased
 
 ### Changes
-* method to handle error message formatting added to `ValidationResultHandlerBase` 
-  and used by `LoggingResultHandler` and `HtmlErrorHandler` (see
-  [#291](https://github.com/pydicom/dicom-validator/issues/291))
+* tag error and failed-validation message formatting is now shared via a new
+  `ValidationResultFormatter` class, used by both `LoggingResultHandler` and
+  `HtmlErrorHandler` (see [#291](https://github.com/pydicom/dicom-validator/issues/291))
+* added `NullValidationResultHandler`, a no-op handler as already seen in the API
+  documentation, provided as a small convenience.
+
+### Fixes
+* `HtmlErrorHandler`  now reports why validation cannot be started, matching `LoggingResultHandler`
+* `HtmlErrorHandler` tag error messages now include the same detail as
+  `LoggingResultHandler` for enum values and invalid sequences, and tag names
+  are now ordered consistently with `LoggingResultHandler`'s output
 
 ## [Version 0.8.3](https://pypi.python.org/pypi/dicom-validator/0.8.3) (2026-08-28)
 Changed invalid sequence handling.
