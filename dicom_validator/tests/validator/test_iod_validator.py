@@ -845,3 +845,18 @@ class TestIODValidator:
         assert not has_tag_error(
             result, "SR Document Content", 0x0040_A050, ErrorCode.TagMissing
         )
+
+    @pytest.mark.tag_set(
+        {
+            "SOPClassUID": uid.MultiFrameTrueColorSecondaryCaptureImageStorage,
+            "NumberOfFrames": "3",
+            "FrameIncrementPointer": 0x0018_2001,
+            "PageNumberVector": "1\\2\\3",
+            "InstanceNumber": "1",
+        }
+    )
+    def test_optional_functional_group_module(self, validator):
+        result = validator.validate()
+        assert not has_tag_error(
+            result, "Multi-frame Functional Groups", 0x5200_9229, ErrorCode.TagMissing
+        )

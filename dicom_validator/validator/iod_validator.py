@@ -314,7 +314,7 @@ class IODValidator:
         # So, let's see if it exists "strongly" enough to be considered
         # for further checks.
         if maybe_existing_modules and not self._does_module_strongly_exist(
-            cast(str, module["ref"]), maybe_existing_modules
+            module["ref"], maybe_existing_modules
         ):
             return {}
 
@@ -624,10 +624,11 @@ class IODValidator:
         a_module_ref: str, maybe_existing_modules: dict[str, set[DicomTag]]
     ) -> bool:
         a_tags = maybe_existing_modules[a_module_ref]
+        tags_only_in_a = a_tags.copy()
         for b_ref, b_tags in maybe_existing_modules.items():
             if b_ref == a_module_ref:
                 continue
-            tags_only_in_a = a_tags - (a_tags & b_tags)
+            tags_only_in_a -= b_tags
             if len(tags_only_in_a) == 0:
                 return False
         return True

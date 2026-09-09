@@ -29,6 +29,8 @@ The released versions correspond to PyPi releases.
   `LoggingResultHandler`, including condition text, enum values, and invalid
   sequences, and tag names are now ordered consistently with
   `LoggingResultHandler`'s output
+* mandatory tags in user defined modules that share tags with mandatory modules could be
+  reported as missing in some cases (see [#294](https://github.com/pydicom/dicom-validator/issues/294))
 
 ## [Version 0.8.3](https://pypi.python.org/pypi/dicom-validator/0.8.3) (2026-08-28)
 Changed invalid sequence handling.
