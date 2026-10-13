@@ -377,10 +377,10 @@ class ConditionGrammar:
         value_index3 = Regex(r"(, )?Value (?P<index>\d)").set_parse_action(
             lambda r: r.index
         )
-        prefix1_regex = "((the|a) )?[vV]alue( (of|for))?"
+        prefix1_regex = "((the|a) )?[Vv]alue( (of|for))?"
         prefix2_regex = "(the|either|Attribute)?"
         tag_expr_prefix = Suppress(
-            Regex(f"({prefix1_regex}|{prefix2_regex})( the( [vV]alue))?")
+            Regex(f"({prefix1_regex}|{prefix2_regex})( the( [Vv]alue))?")
         ) + Opt(tag_id)
         tag_name_expr = Opt(value_index1 | value_index2 | tag_expr_prefix) + tag_name
         action = (

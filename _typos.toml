@@ -1,4 +1,9 @@
-[default.extend-words]
-acn = "ACN"
-datas = "datas"
-alue = "alue"
+[default]
+extend-words = {
+    acn = "ACN",
+    datas = "datas",
+}
+extend-ignore-re = [
+    "<para xml:id=\"para_[0-9a-f-]+",
+    "\\[Vv]alue",
+]
