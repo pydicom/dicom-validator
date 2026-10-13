@@ -674,7 +674,7 @@ class IODValidator:
 
     def _lookup_tag_in_func_groups(self, tag: DicomTag) -> DataElement | None:
         """Lookup a tag in the functional groups if it wasn't directly found
-        at the current level (e.g. thr current sequence).
+        at the current level (e.g. the current sequence).
         """
         if tag.parents is None:
             return None

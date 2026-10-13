@@ -48,7 +48,7 @@ An attribute definition in the module attribute table comprises:
 
 * *Attribute Name*: The name of the related DICOM tag
 * *Tag*: The tag ID of the related DICOM tag
-* *Type*: Defines the usage of the tag in the module, simular to the usage of the module itself;
+* *Type*: Defines the usage of the tag in the module, similar to the usage of the module itself;
   the following types are defined:
 
   * *Type 1*: the attribute is mandatory and must contain a value
@@ -139,8 +139,8 @@ However, there is a number of conditions that cannot be handled by the validator
 
 Currently, 35-40% of all conditions in the standard are of this kind.
 All such conditions are handled conservatively, e.g. a 1C/2C tag is handled as a type 3 tag.
-If the unparseable condition is part of an AND condition, it is ignored, if it is part of an OR
-condition, the whole condition is deemed unparseable.
+If the unparsable condition is part of an AND condition, it is ignored, if it is part of an OR
+condition, the whole condition is deemed unparsable.
 All that means that some validations may not be found, and the number of found validations may be
 too small.
 
