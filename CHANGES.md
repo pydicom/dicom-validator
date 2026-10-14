@@ -2,6 +2,12 @@
 The released versions correspond to PyPi releases.
 `dicom-validator` versions follow [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+### Fixes
+* DICOM filenames in HTML report headings are escaped so markup characters
+  remain filename text.
+
 ## [Version 0.9.0](https://pypi.python.org/pypi/dicom-validator/0.9.0) (2026-09-09)
 Slightly changed public API.
 
