@@ -33,7 +33,9 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
 
     def handle_validation_result_start(self, result: ValidationResult) -> None:
         """Start a new HTML section for a validation result."""
-        file_path = f"{result.file_path}<br>" if result.file_path else ""
+        file_path = (
+            f"{html.escape(str(result.file_path))}<br>" if result.file_path else ""
+        )
         self.sop_class = result.sop_class_uid
         self.html += f"<h2>{file_path}SOP Class {self.sop_class}</h2>"
 
