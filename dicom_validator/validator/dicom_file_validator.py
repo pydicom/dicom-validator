@@ -106,7 +106,14 @@ class DicomFileValidator:
         -------
         dict[str, ValidationResult]
             A mapping containing exactly one entry for the given file.
+
+        Notes
+        -----
+        Temporarily disables pydicom's process-wide reading validation until
+        dataset validation and result handling finish, including deferred reads.
+        This is not thread-safe with concurrent pydicom reads.
         """
+        reading_mode = config.settings.reading_validation_mode
         try:
             # dcmread calls validate_value by default. If values don't match
             # required VR (value representation), it emits a warning but
@@ -119,11 +126,8 @@ class DicomFileValidator:
         except InvalidDicomError:
             result = ValidationResult(file_path=file_path, status=Status.InvalidFile)
             self.handle_error(result)
-            return {
-                file_path: result,
-            }
-        return {
-            file_path: IODValidator(
+        else:
+            result = IODValidator(
                 data_set,
                 self._dicom_info,
                 log_level=self.log_level,
@@ -131,7 +135,9 @@ class DicomFileValidator:
                 error_handler=self._error_handler,
                 file_path=file_path,
             ).validate()
-        }
+        finally:
+            config.settings.reading_validation_mode = reading_mode
+        return {file_path: result}
 
     def handle_error(self, result: ValidationResult) -> None:
         handler = self._error_handler or default_error_handler(
