@@ -5,6 +5,8 @@ The released versions correspond to PyPi releases.
 ## Unreleased
 
 ### Fixes
+* Optional HTML report links no longer interrupt reporting on network or HTTP
+  errors, and link-check connections are closed after use.
 * DICOM filenames in HTML report headings are escaped so markup characters
   remain filename text.
 

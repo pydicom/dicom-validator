@@ -1,5 +1,6 @@
 import html
-from http.client import CannotSendHeader, HTTPSConnection
+from contextlib import closing
+from http.client import HTTPException, HTTPSConnection
 from typing import ClassVar
 from urllib.parse import urlparse
 
@@ -66,15 +67,16 @@ class HtmlErrorHandler(ValidationResultHandlerBase):
         Returns
         -------
         bool
-            `True` if the server responds with a status code < 400.
+            `True` if the server responds with a status code < 400,
+            otherwise `False`, including when the request fails.
         """
-        p = urlparse(url)
-        conn = HTTPSConnection(p.netloc)
         try:
-            conn.request("HEAD", p.path)
-        except (ValueError, TypeError, CannotSendHeader):
+            p = urlparse(url)
+            with closing(HTTPSConnection(p.netloc)) as conn:
+                conn.request("HEAD", p.path)
+                return conn.getresponse().status < 400
+        except (ValueError, TypeError, HTTPException, OSError):
             return False
-        return conn.getresponse().status < 400
 
     def valid_url_for_ref(self, ref: str) -> str | None:
         """Return a valid URL to the referenced PS3.3 section if it exists.

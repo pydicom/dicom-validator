@@ -58,23 +58,32 @@ def dicom_fixture_path():
     yield Path(__file__).parent.parent / "fixtures" / "dicom"
 
 
-def test_html_error_handler(dicom_info, dicom_fixture_path) -> None:
+@pytest.fixture
+def html_handler(dicom_info, monkeypatch):
+    monkeypatch.setattr(HtmlErrorHandler, "valid_refs", {})
+    monkeypatch.setattr(
+        HtmlErrorHandler,
+        "url_exists",
+        staticmethod(lambda url: url == HtmlErrorHandler.url_for_ref("C.8.8")),
+    )
+    return HtmlErrorHandler(dicom_info)
+
+
+def test_html_error_handler(dicom_info, dicom_fixture_path, html_handler) -> None:
     rtdose_path = dicom_fixture_path / "rtdose.dcm"
-    handler = HtmlErrorHandler(dicom_info)
-    validator = DicomFileValidator(dicom_info, error_handler=handler)
+    validator = DicomFileValidator(dicom_info, error_handler=html_handler)
     validator.validate(rtdose_path)
     assert (
         '<h3><a href="https://dicom.nema.org/medical/dicom/current/output/chtml/part03'
-        '/sect_C.8.8.html">RT Series</a></h3>' in handler.html
+        '/sect_C.8.8.html">RT Series</a></h3>' in html_handler.html
     )
 
 
-def test_html_error_handler_failed_validation(dicom_info, validator) -> None:
+def test_html_error_handler_failed_validation(validator, html_handler) -> None:
     """Check that a failed validation is reported."""
-    handler = HtmlErrorHandler(dicom_info)
-    validator.handler = handler
+    validator.handler = html_handler
     validator.validate()
-    assert "<p>Missing SOP Class UID</p>" in handler.html
+    assert "<p>Missing SOP Class UID</p>" in html_handler.html
 
 
 @pytest.mark.tag_set(
@@ -85,14 +94,13 @@ def test_html_error_handler_failed_validation(dicom_info, validator) -> None:
         ),
     }
 )
-def test_html_error_handler_invalid_sequence(dicom_info, validator) -> None:
+def test_html_error_handler_invalid_sequence(validator, html_handler) -> None:
     """Check that an invalid sequence is reported."""
-    handler = HtmlErrorHandler(dicom_info)
-    validator.handler = handler
+    validator.handler = html_handler
     validator.validate()
     assert (
         "<li>(0008,9215) (Derivation Code Sequence)"
-        " is not a valid sequence, ignoring it</li>" in handler.html
+        " is not a valid sequence, ignoring it</li>" in html_handler.html
     )
 
 
