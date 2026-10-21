@@ -1,5 +1,7 @@
 import logging
 import os
+from collections.abc import Iterator
+from contextlib import contextmanager
 from os import PathLike
 
 from pydicom import config, dcmread
@@ -12,6 +14,21 @@ from dicom_validator.validator.error_handler import (
 )
 from dicom_validator.validator.iod_validator import IODValidator
 from dicom_validator.validator.validation_result import Status, ValidationResult
+
+
+@contextmanager
+def set_validation_mode(mode: int) -> Iterator[None]:
+    """Temporarily set pydicom's process-wide reading validation mode.
+
+    Restore the previous mode on exit, including when the body raises.
+    This does not change writing validation and is not thread-safe.
+    """
+    reading_mode = config.settings.reading_validation_mode
+    try:
+        config.settings.reading_validation_mode = mode
+        yield
+    finally:
+        config.settings.reading_validation_mode = reading_mode
 
 
 class DicomFileValidator:
@@ -113,30 +130,29 @@ class DicomFileValidator:
         dataset validation and result handling finish, including deferred reads.
         This is not thread-safe with concurrent pydicom reads.
         """
-        reading_mode = config.settings.reading_validation_mode
-        try:
-            # dcmread calls validate_value by default. If values don't match
-            # required VR (value representation), it emits a warning but
-            # does not provide the tag and value that caused the warning.
-            # We will handle it later (optionally) by calling validate_value
-            # directly.
-            config.settings.reading_validation_mode = config.IGNORE
-            data_set = dcmread(file_path, defer_size=1024, force=self._force_read)
+        with set_validation_mode(config.IGNORE):
+            try:
+                # dcmread calls validate_value by default. If values don't match
+                # required VR (value representation), it emits a warning but
+                # does not provide the tag and value that caused the warning.
+                # We will handle it later (optionally) by calling validate_value
+                # directly.
+                data_set = dcmread(file_path, defer_size=1024, force=self._force_read)
 
-        except InvalidDicomError:
-            result = ValidationResult(file_path=file_path, status=Status.InvalidFile)
-            self.handle_error(result)
-        else:
-            result = IODValidator(
-                data_set,
-                self._dicom_info,
-                log_level=self.log_level,
-                suppress_vr_warnings=self._suppress_vr_warnings,
-                error_handler=self._error_handler,
-                file_path=file_path,
-            ).validate()
-        finally:
-            config.settings.reading_validation_mode = reading_mode
+            except InvalidDicomError:
+                result = ValidationResult(
+                    file_path=file_path, status=Status.InvalidFile
+                )
+                self.handle_error(result)
+            else:
+                result = IODValidator(
+                    data_set,
+                    self._dicom_info,
+                    log_level=self.log_level,
+                    suppress_vr_warnings=self._suppress_vr_warnings,
+                    error_handler=self._error_handler,
+                    file_path=file_path,
+                ).validate()
         return {file_path: result}
 
     def handle_error(self, result: ValidationResult) -> None:
