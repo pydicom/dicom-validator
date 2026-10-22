@@ -3,10 +3,16 @@ from pathlib import Path
 
 import pydicom
 import pytest
-from pydicom import dcmwrite
+from pydicom import DataElement, config, dcmread, dcmwrite
 from pydicom.dataset import Dataset, FileDataset, FileMetaDataset
 
-from dicom_validator.validator.dicom_file_validator import DicomFileValidator
+from dicom_validator.validator.dicom_file_validator import (
+    DicomFileValidator,
+    set_reading_validation_mode,
+)
+from dicom_validator.validator.dicom_info import DicomInfo
+from dicom_validator.validator.error_handler import NullValidationResultHandler
+from dicom_validator.validator.iod_validator import IODValidator
 from dicom_validator.validator.validation_result import DicomTag, ErrorCode, Status
 
 pytestmark = pytest.mark.usefixtures("disable_logging")
@@ -107,3 +113,107 @@ def test_that_pixeldata_is_read(dicom_fixture_path, validator: DicomFileValidato
     assert oper_name_error.code == ErrorCode.TagMissing
     # if PixelData is not read, RT Dose will show errors
     assert "RT Dose" not in result.module_errors
+
+
+@pytest.fixture(params=[config.IGNORE, config.WARN, config.RAISE])
+def reading_mode(request, monkeypatch):
+    monkeypatch.setattr(config.settings, "reading_validation_mode", request.param)
+    return request.param
+
+
+@pytest.fixture
+def mode_validator():
+    return DicomFileValidator(
+        DicomInfo({}, {}, {}), error_handler=NullValidationResultHandler()
+    )
+
+
+@pytest.fixture
+def deferred_dicom_file(tmp_path):
+    filename = str(tmp_path / "deferred.dcm")
+    dataset = FileDataset(
+        filename, Dataset(), file_meta=TestFakeDicomFileValidator.create_metadata()
+    )
+    dataset.SOPClassUID = dataset.file_meta.MediaStorageSOPClassUID
+    dataset.add(
+        DataElement("PatientID", "LO", "A" * 2048, validation_mode=config.IGNORE)
+    )
+    dcmwrite(filename, dataset, **TestFakeDicomFileValidator.enforce_file_format())
+    # The oversized LO value is deferred by the same threshold used in validate_file.
+    assert dcmread(filename, defer_size=1024)._dict[0x0010_0020].value is None
+    return filename
+
+
+def test_reading_mode_restored_after_validation(
+    mode_validator, deferred_dicom_file, reading_mode
+):
+    writing_mode = config.settings.writing_validation_mode
+    result = mode_validator.validate_file(deferred_dicom_file)[deferred_dicom_file]
+    assert result.status == Status.UnknownSOPClassUID
+    assert config.settings.reading_validation_mode == reading_mode
+    assert config.settings.writing_validation_mode == writing_mode
+
+
+def test_reading_mode_restored_after_invalid_file(
+    mode_validator, tmp_path, reading_mode
+):
+    filename = str(tmp_path / "invalid.dcm")
+    Path(filename).write_bytes(b"not a DICOM file")
+    result = mode_validator.validate_file(filename)[filename]
+    assert result.status == Status.InvalidFile
+    assert config.settings.reading_validation_mode == reading_mode
+
+
+def test_reading_mode_restored_after_read_error(mode_validator, tmp_path, reading_mode):
+    with pytest.raises(FileNotFoundError):
+        mode_validator.validate_file(str(tmp_path / "missing.dcm"))
+    assert config.settings.reading_validation_mode == reading_mode
+
+
+@pytest.mark.parametrize("method", ["__init__", "validate"])
+def test_reading_mode_restored_after_validation_error(
+    mode_validator, deferred_dicom_file, reading_mode, method, monkeypatch
+):
+    def fail_validation(self, *args, **kwargs):
+        assert config.settings.reading_validation_mode == config.IGNORE
+        raise RuntimeError("validation failed")
+
+    monkeypatch.setattr(IODValidator, method, fail_validation)
+    with pytest.raises(RuntimeError, match="validation failed"):
+        mode_validator.validate_file(deferred_dicom_file)
+    assert config.settings.reading_validation_mode == reading_mode
+
+
+@pytest.mark.parametrize("invalid_file", [False, True])
+def test_reading_mode_restored_after_handler_error(
+    mode_validator, deferred_dicom_file, reading_mode, invalid_file, monkeypatch
+):
+    def fail_handler(result):
+        assert config.settings.reading_validation_mode == config.IGNORE
+        raise RuntimeError("handler failed")
+
+    if invalid_file:
+        Path(deferred_dicom_file).write_bytes(b"not a DICOM file")
+    monkeypatch.setattr(
+        mode_validator._error_handler, "handle_validation_result", fail_handler
+    )
+    with pytest.raises(RuntimeError, match="handler failed"):
+        mode_validator.validate_file(deferred_dicom_file)
+    assert config.settings.reading_validation_mode == reading_mode
+
+
+@pytest.mark.parametrize("temporary_mode", [config.IGNORE, config.WARN, config.RAISE])
+def test_validation_mode_context_restores_nested_modes(reading_mode, temporary_mode):
+    writing_mode = config.settings.writing_validation_mode
+    with set_reading_validation_mode(temporary_mode):
+        assert config.settings.reading_validation_mode == temporary_mode
+        with (
+            pytest.raises(RuntimeError, match="inner failure"),
+            set_reading_validation_mode(config.IGNORE),
+        ):
+            assert config.settings.reading_validation_mode == config.IGNORE
+            raise RuntimeError("inner failure")
+        assert config.settings.reading_validation_mode == temporary_mode
+        assert config.settings.writing_validation_mode == writing_mode
+    assert config.settings.reading_validation_mode == reading_mode
+    assert config.settings.writing_validation_mode == writing_mode
