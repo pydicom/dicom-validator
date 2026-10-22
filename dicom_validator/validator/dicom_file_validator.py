@@ -17,7 +17,7 @@ from dicom_validator.validator.validation_result import Status, ValidationResult
 
 
 @contextmanager
-def set_validation_mode(mode: int) -> Iterator[None]:
+def set_reading_validation_mode(mode: int) -> Iterator[None]:
     """Temporarily set pydicom's process-wide reading validation mode.
 
     Restore the previous mode on exit, including when the body raises.
@@ -130,7 +130,7 @@ class DicomFileValidator:
         dataset validation and result handling finish, including deferred reads.
         This is not thread-safe with concurrent pydicom reads.
         """
-        with set_validation_mode(config.IGNORE):
+        with set_reading_validation_mode(config.IGNORE):
             try:
                 # dcmread calls validate_value by default. If values don't match
                 # required VR (value representation), it emits a warning but

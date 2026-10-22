@@ -8,7 +8,7 @@ from pydicom.dataset import Dataset, FileDataset, FileMetaDataset
 
 from dicom_validator.validator.dicom_file_validator import (
     DicomFileValidator,
-    set_validation_mode,
+    set_reading_validation_mode,
 )
 from dicom_validator.validator.dicom_info import DicomInfo
 from dicom_validator.validator.error_handler import NullValidationResultHandler
@@ -205,11 +205,11 @@ def test_reading_mode_restored_after_handler_error(
 @pytest.mark.parametrize("temporary_mode", [config.IGNORE, config.WARN, config.RAISE])
 def test_validation_mode_context_restores_nested_modes(reading_mode, temporary_mode):
     writing_mode = config.settings.writing_validation_mode
-    with set_validation_mode(temporary_mode):
+    with set_reading_validation_mode(temporary_mode):
         assert config.settings.reading_validation_mode == temporary_mode
         with (
             pytest.raises(RuntimeError, match="inner failure"),
-            set_validation_mode(config.IGNORE),
+            set_reading_validation_mode(config.IGNORE),
         ):
             assert config.settings.reading_validation_mode == config.IGNORE
             raise RuntimeError("inner failure")
