@@ -5,6 +5,7 @@ The released versions correspond to PyPi releases.
 ## Unreleased
 
 ### Fixes
+* Error totals correctly count accumulated module errors across repeated updates.
 * File validation restores the caller's pydicom reading validation mode after
   dataset validation and result handling, including when either raises an error.
 * DICOM filenames in HTML report headings are escaped so markup characters

@@ -178,4 +178,4 @@ class ValidationResult:
     def add_tag_errors(self, module_name: str, tag_errors: TagErrors) -> None:
         nr_module_errors = len(self.module_errors.get(module_name, []))
         self.module_errors.setdefault(module_name, {}).update(tag_errors)
-        self.errors += len(tag_errors) - nr_module_errors
+        self.errors += len(self.module_errors[module_name]) - nr_module_errors
