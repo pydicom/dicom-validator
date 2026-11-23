@@ -120,8 +120,8 @@ Used DICOM standard edition
 Per default, the latest locally available edition of the DICOM standard is used for
 validation. If no edition is available, or if a newer version is available (this is
 checked once a month), the relevant parts of the newest version of the standard are downloaded
-and processed. If the *--src* parameter is not provided, *<user home>/dicom-validator/* is
-used to store the files locally.
+and processed. Use ``--standard-path`` to set the local storage directory. The
+default is ``<user home>/dicom-validator/``.
 It is also possible to use a specific version of the standard via the command line
 option *--edition* or *-e*. This allows to define a specific version (e.g., "2025e"), or a year
 (e.g., "2022"), in which case the latest version for that year is used.
