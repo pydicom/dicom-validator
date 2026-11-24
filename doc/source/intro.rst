@@ -51,27 +51,29 @@ Usage
 
   dump_dcm_info [-h] [--standard-path STANDARD_PATH]
                 [--edition EDITION] [--max-value-len MAX_VALUE_LEN]
-                [--show-tags [SHOW_TAGS [SHOW_TAGS ...]]]
                 [--show-image-data] [--recreate-json]
-                dicomfiles [dicomfiles ...]
+                dicomfiles [dicomfiles ...] [--show-tags [SHOW_TAGS ...]]
 
-Use the *--help* option for each script do get more specific usage info.
+Use ``--help`` for the full list of options for each command.
+
+Pass file paths before ``--show-tags``, which accepts a list of tags::
+
+  dump_dcm_info --standard-path ./dicom-specs example.dcm --show-tags SOPClassUID 0008,0018
 
 Access to the DICOM standard
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Upon first start of a tool, parts of the latest version of the DICOM standard
 in docbook format (specifically, parts 3.3, 3.4 and 3.6) are downloaded,
-parsed, and the needed information saved in json files. If the *--src*
-parameter is not provided, the files are downloaded to and looked up in
-*<user home>/dicom-validator/*.
+parsed, and the needed information saved in JSON files. Use ``--standard-path``
+to set the directory where the tools store and look up these files. The default
+is ``<user home>/dicom-validator/``.
 These files are then used by the tools. Periodically (once a month), the tools
 check for a newer version of the DICOM standard and download it if found.
 
 It is also possible to use older versions of the standard via the command line
 option *--edition* or *-e*, provided they are available for download
-(standards in docbook format are available since edition 2014a). A list of currently
-available editions can be found in *<user home>/dicom-validator/editions.json* after
-a tool has been called the first time.
+(standards in docbook format are available since edition 2014a). Once downloaded,
+``editions.json`` in the cache directory lists the available editions.
 
 History
 ~~~~~~~

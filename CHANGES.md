@@ -12,6 +12,8 @@ The released versions correspond to PyPi releases.
   errors, and link-check connections are closed after use.
 * DICOM filenames in HTML report headings are escaped so markup characters
   remain filename text.
+* Correct the documented option for the DICOM standard cache and clarify the
+  argument order for `dump_dcm_info --show-tags`.
 
 ## [Version 0.9.0](https://pypi.python.org/pypi/dicom-validator/0.9.0) (2026-09-09)
 Slightly changed public API.
