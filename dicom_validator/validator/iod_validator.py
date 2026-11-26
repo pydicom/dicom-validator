@@ -578,8 +578,8 @@ class IODValidator:
             assert data_element is not None
             index = condition["index"]
             if index > 0:
-                if index <= data_element.VM:
-                    tag_value = data_element.value[index - 1]
+                if index < data_element.VM:
+                    tag_value = data_element.value[index]
             elif data_element.VM > 1:
                 tag_value = data_element.value[0]
             else:

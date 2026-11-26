@@ -5,6 +5,8 @@ The released versions correspond to PyPi releases.
 ## Unreleased
 
 ### Fixes
+* Indexed tag value conditions (Value 2, 3, 4) now read the matching 0-based
+  element instead of the preceding value.
 * Error totals correctly count accumulated module errors across repeated updates.
 * File validation restores the caller's pydicom reading validation mode after
   dataset validation and result handling, including when either raises an error.
